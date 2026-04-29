@@ -1,56 +1,93 @@
 # @robustarush/material
 
-Material web components built with [Stencil](https://stenciljs.com/).
-Tailwind v4 produces a single external stylesheet that components adopt into
-their shadow roots — no per-component style bundling.
+Material 3 web components built with [Stencil](https://stenciljs.com/),
+styled with Tailwind v4 against MD3 design tokens.
 
 ## Quick start
 
 ```bash
 npm install
-npm start            # builds Tailwind in --watch and runs the Stencil dev server
+npm start
 ```
 
-Open <http://localhost:3333>.
+Open <http://localhost:3333>. Three watchers run in parallel: theme bundling,
+Tailwind compilation, and Stencil's dev server.
+
+## Two stylesheets, two jobs
+
+```
+/static/material/theme.css      Material 3 tokens (--md-sys-color-*)
+/static/material/material.css   Tailwind utilities + component styles
+```
+
+**`theme.css`** ships exactly the variables produced by
+[Material Theme Builder](https://material-foundation.github.io/material-theme-builder/),
+scoped to six classes: `.light`, `.dark`, `.light-medium-contrast`,
+`.dark-medium-contrast`, `.light-high-contrast`, `.dark-high-contrast`.
+
+**`material.css`** generates Tailwind utilities (`bg-primary`,
+`text-on-surface`, …) from a `@theme` block whose values are
+`var(--md-sys-color-*)` references. Result: utilities follow whichever theme
+class is active.
+
+### Activating a theme
+
+```html
+<html class="light">…</html>
+```
+
+Or pick any of the 6 contrast variants. Custom properties cascade into shadow
+DOM, so every component picks up the active theme without doing anything.
+
+### How styling reaches shadow DOM
+
+- `theme.css` is loaded once in the host page (light DOM only) — its variables
+  inherit into every shadow tree for free.
+- `material.css` is adopted into each shadow root via
+  [`adoptedStyleSheets`](https://developer.mozilla.org/en-US/docs/Web/API/Document/adoptedStyleSheets):
+  fetched once, parsed once, shared by all instances.
+
+Override the `material.css` URL per page:
+
+```html
+<meta name="material-stylesheet" content="/assets/material.css" />
+```
+
+Default URL is `/static/material/material.css` — matches Django's
+`staticfiles` layout so dev and production hit the same path.
 
 ## Project layout
 
 ```
 src/
   components/
-    material-button/        # one component per folder, tag prefix is `material-`
+    material-button/      # one component per folder, tag prefix `material-`
   global/
-    material.css            # Tailwind v4 entry: @import "tailwindcss"; + @theme tokens
+    material.css          # @import "tailwindcss"; + @theme bridge to MD3 vars
+  theme/
+    theme.css             # @import all 6 generated theme files
+    light.css dark.css
+    light-mc.css dark-mc.css
+    light-hc.css dark-hc.css
   utils/
-    adopted-styles.ts       # adoptMaterialStyles(shadowRoot) helper
+    adopted-styles.ts     # adoptMaterialStyles(shadowRoot)
 www/
-  index.html                # dev host page
-  static/material/material.css   # Tailwind output (gitignored)
+  index.html              # dev host page
+  static/material/
+    material.css          # build output (gitignored)
+    theme.css             # build output (gitignored)
 ```
 
-## How styling works
+## Regenerating the theme
 
-1. `npm run build:css` compiles `src/global/material.css` to
-   `www/static/material/material.css` using `@tailwindcss/cli`.
-2. The host page links the same file:
-   ```html
-   <link rel="stylesheet" href="/static/material/material.css" />
-   ```
-3. Each component calls `adoptMaterialStyles(this.el.shadowRoot)` in
-   `connectedCallback`. The CSS is fetched once, parsed into a single
-   `CSSStyleSheet`, and adopted by every shadow root via
-   [`adoptedStyleSheets`](https://developer.mozilla.org/en-US/docs/Web/API/Document/adoptedStyleSheets).
-   No FOUC after the first load; no duplicate parsing.
+1. Open <https://material-foundation.github.io/material-theme-builder/>.
+2. Pick a seed colour or upload an image.
+3. Export → Web → CSS — you get six files.
+4. Replace the files in `src/theme/`. Filenames must stay the same.
+5. `npm run build:theme` (or just keep `npm start` running).
 
-### Overriding the stylesheet URL
-
-Default: `/static/material/material.css` (matches Django staticfiles).
-
-Override per page:
-
-```html
-<meta name="material-stylesheet" content="/assets/material.css" />
-```
+No component change is required — the bridge in `material.css` keeps Tailwind
+utilities pointed at whatever MD3 tokens the new theme defines.
 
 ## Adding a component
 
@@ -58,7 +95,7 @@ Override per page:
 npx stencil generate material-card
 ```
 
-Then in the new component:
+Pattern:
 
 ```tsx
 import { Component, Element, h } from '@stencil/core';
@@ -71,17 +108,22 @@ export class MaterialCard {
     if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
   }
   render() {
-    return <div class="rounded-lg shadow p-4 bg-white"><slot /></div>;
+    return (
+      <div class="rounded-lg p-4 bg-surface-container text-on-surface shadow">
+        <slot />
+      </div>
+    );
   }
 }
 ```
 
-Tailwind classes used in `.tsx` files are picked up automatically — the
-`@source "../**/*.{ts,tsx}"` directive in `material.css` tells Tailwind v4
-where to scan.
+MD3-aware Tailwind classes available out of the box: `bg-primary`,
+`text-on-primary`, `bg-surface-container-{lowest,low,'',high,highest}`,
+`bg-secondary-container`, `border-outline-variant`, `text-on-surface-variant`,
+… see `src/global/material.css` for the full list.
 
 ## Build
 
 ```bash
-npm run build        # tailwind --minify, then stencil build (dist/, loader/, www/)
+npm run build   # theme.css → material.css → stencil dist/, loader/, www/
 ```

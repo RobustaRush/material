@@ -3,6 +3,7 @@ dist/
 loader/
 www/build/
 www/static/material/material.css
+www/static/material/theme.css
 .stencil/
 *.log
 .DS_Store

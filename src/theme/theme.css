@@ -1,0 +1,29 @@
+/*
+ * Material 3 design tokens.
+ *
+ * Generated with Material Theme Builder
+ * (https://material-foundation.github.io/material-theme-builder/),
+ * Export → Web → CSS.
+ *
+ * Each imported file defines one class. Activate a theme by setting the
+ * matching class on <html> (or any ancestor of the components):
+ *
+ *   <html class="light">                   default light
+ *   <html class="dark">                    default dark
+ *   <html class="light-medium-contrast">   medium-contrast variants
+ *   <html class="dark-medium-contrast">
+ *   <html class="light-high-contrast">     high-contrast variants
+ *   <html class="dark-high-contrast">
+ *
+ * To re-skin the system, regenerate these files and replace them — no
+ * component rebuild is needed. Tokens cascade into shadow DOM as CSS
+ * custom properties, so Tailwind utilities (bg-primary, text-on-surface,
+ * ...) bridged in material.css automatically follow the active theme.
+ */
+
+@import "./light.css";
+@import "./dark.css";
+@import "./light-mc.css";
+@import "./dark-mc.css";
+@import "./light-hc.css";
+@import "./dark-hc.css";

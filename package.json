@@ -1,7 +1,7 @@
 {
   "name": "@robustarush/material",
   "version": "0.0.1",
-  "description": "Material web components built with Stencil. Tailwind v4 stylesheet is compiled externally and adopted into each component's shadow root.",
+  "description": "Material 3 web components built with Stencil. External Tailwind stylesheet, swappable theme.",
   "license": "MIT",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -13,10 +13,12 @@
     "loader/"
   ],
   "scripts": {
-    "build": "npm run build:css && stencil build",
+    "build": "npm run build:theme && npm run build:css && stencil build",
     "build:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --minify",
+    "build:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --minify",
     "dev:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --watch",
-    "start": "concurrently -k -n css,stencil -c blue,magenta \"npm:dev:css\" \"stencil build --dev --watch --serve\"",
+    "dev:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --watch",
+    "start": "concurrently -k -n theme,css,stencil -c green,blue,magenta \"npm:dev:theme\" \"npm:dev:css\" \"stencil build --dev --watch --serve\"",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate"

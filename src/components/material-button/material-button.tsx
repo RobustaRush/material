@@ -16,7 +16,7 @@ export class MaterialButton {
 
   render() {
     return (
-      <button class="rounded-full px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition">
+      <button class="rounded-full px-6 py-2.5 bg-primary text-on-primary hover:opacity-90 transition">
         {this.label}
       </button>
     );
