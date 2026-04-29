@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Tailwind v4 scans source files for class usage. The CSS file lives at
+   src/global/, so reach back up to cover all components. */
+@source "../**/*.{ts,tsx}";
+
+/* Project-wide design tokens go here. Example:
+@theme {
+  --color-primary: oklch(0.55 0.18 250);
+  --font-display: "Inter", sans-serif;
+}
+*/
