@@ -81,10 +81,12 @@
 }
 
 /* MD3 state layer for material-button: 8% on-color overlay on hover,
-   12% on active. currentColor = on-color текущего варианта. */
-:host button { position: relative; overflow: hidden; }
+   12% on active. currentColor = on-color текущего варианта.
+   Scoped via [data-variant] so other shadow-DOM components (e.g. checkbox)
+   are not affected. */
+:host button[data-variant] { position: relative; overflow: hidden; }
 
-:host button:enabled:active::after {
+:host button[data-variant]:enabled:active::after {
   content: "";
   position: absolute;
   left: var(--ripple-x, 50%);
@@ -108,9 +110,9 @@
 :host button[data-variant="outlined"],
 :host button[data-variant="text"]     { --btn-bg: transparent; }
 
-:host button:not(:disabled):hover {
+:host button[data-variant]:not(:disabled):hover {
   background-color: color-mix(in srgb, currentColor 8%, var(--btn-bg));
 }
-:host button:not(:disabled):active {
+:host button[data-variant]:not(:disabled):active {
   background-color: color-mix(in srgb, currentColor 12%, var(--btn-bg));
 }

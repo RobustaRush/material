@@ -173,6 +173,100 @@
       </details>
     </section>
 
+    <!-- ================================================================
+         material-checkbox
+         ================================================================ -->
+    <section id="material-checkbox" class="space-y-6">
+      <header>
+        <h2 class="text-xl font-semibold">material-checkbox</h2>
+        <p class="text-on-surface-variant text-sm mt-1">
+          MD3 checkbox — 18dp box, 48dp target, 40dp state-layer.
+          Form-associated: submits its <code>value</code> when checked.
+        </p>
+      </header>
+
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+        <code class="text-sm text-on-surface-variant">states</code>
+        <div class="flex gap-4 flex-wrap items-center">
+          <material-checkbox label="Unselected"></material-checkbox>
+          <material-checkbox label="Selected" checked></material-checkbox>
+          <material-checkbox label="Indeterminate" indeterminate></material-checkbox>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">disabled</code>
+        <div class="flex gap-4 flex-wrap items-center">
+          <material-checkbox label="Off" disabled></material-checkbox>
+          <material-checkbox label="On" checked disabled></material-checkbox>
+          <material-checkbox label="Mixed" indeterminate disabled></material-checkbox>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">no label</code>
+        <div class="flex gap-2 flex-wrap items-center">
+          <material-checkbox aria-label="Standalone unchecked"></material-checkbox>
+          <material-checkbox aria-label="Standalone checked" checked></material-checkbox>
+          <material-checkbox aria-label="Standalone mixed" indeterminate></material-checkbox>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">help text</code>
+        <div class="flex gap-6 flex-wrap items-start">
+          <material-checkbox label="Plain"></material-checkbox>
+          <material-checkbox label="Marketing" help-text="Promotions and product news"></material-checkbox>
+          <material-checkbox id="help-toggle-cb" checked label="Updates" help-text="Click button to toggle help text"></material-checkbox>
+          <material-button id="help-toggle-btn" variant="outlined" size="xs" label="Toggle help"></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">error</code>
+        <div class="flex gap-6 flex-wrap items-start">
+          <material-checkbox label="Plain"></material-checkbox>
+          <material-checkbox label="Required" error error-text="This field is required"></material-checkbox>
+          <material-checkbox label="Selected" checked error error-text="Conflicts with another option"></material-checkbox>
+          <material-checkbox label="Silent error" error help-text="Help text is hidden when error has no message"></material-checkbox>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">in a form</code>
+        <form id="checkbox-demo-form" class="flex flex-col gap-2">
+          <material-checkbox name="newsletter" value="yes" label="Subscribe to newsletter"></material-checkbox>
+          <material-checkbox name="terms" value="accepted" required label="Accept terms"></material-checkbox>
+          <div class="flex gap-3 mt-1">
+            <material-button variant="filled" size="xs" label="Submit"></material-button>
+            <material-button variant="text" size="xs" type="reset" label="Reset"></material-button>
+          </div>
+          <output id="checkbox-demo-output" class="text-sm text-on-surface-variant font-mono"></output>
+        </form>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- states --&gt;
+&lt;material-checkbox label="Subscribe"&gt;&lt;/material-checkbox&gt;
+&lt;material-checkbox label="Selected" checked&gt;&lt;/material-checkbox&gt;
+&lt;material-checkbox label="Mixed" indeterminate&gt;&lt;/material-checkbox&gt;
+&lt;material-checkbox label="Locked" disabled&gt;&lt;/material-checkbox&gt;
+
+&lt;!-- two-line label via help-text — primary label position is anchored,
+     so toggling help-text won't shift the row layout --&gt;
+&lt;material-checkbox label="Marketing" help-text="Promotions and news"&gt;&lt;/material-checkbox&gt;
+
+&lt;!-- error state: error-text replaces help-text and recolors the box.
+     `error` alone (no errorText) still flips visuals — text slot stays empty --&gt;
+&lt;material-checkbox label="Required" error error-text="This field is required"&gt;&lt;/material-checkbox&gt;
+
+&lt;!-- standalone (no label, supply aria-label) --&gt;
+&lt;material-checkbox aria-label="Select row"&gt;&lt;/material-checkbox&gt;
+
+&lt;!-- form-associated --&gt;
+&lt;form&gt;
+  &lt;material-checkbox name="terms" value="accepted" required label="Accept terms"&gt;&lt;/material-checkbox&gt;
+&lt;/form&gt;
+
+&lt;!-- listen for changes --&gt;
+&lt;script&gt;
+  document.querySelector('material-checkbox')
+    .addEventListener('change', e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+      </details>
+    </section>
+
   </main>
 
   <footer class="border-t border-outline-variant px-8 py-6 text-center text-sm text-on-surface-variant">
@@ -207,6 +301,33 @@
       picker.addEventListener('change', e => {
         applyTheme(e.target.value);
         localStorage.setItem('material-theme', e.target.value);
+      });
+    })();
+
+    // Checkbox form demo: serialize form state on submit so the form-associated
+    // contract is visible (only checked boxes contribute their name=value pair).
+    (function () {
+      const form = document.getElementById('checkbox-demo-form');
+      const out = document.getElementById('checkbox-demo-output');
+      if (!form || !out) return;
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const data = new FormData(form);
+        const pairs = [...data.entries()].map(([k, v]) => `${k}=${v}`);
+        out.textContent = pairs.length ? pairs.join(' & ') : '(empty)';
+      });
+      form.addEventListener('reset', () => { out.textContent = ''; });
+    })();
+
+    // Demonstrate that toggling helpText at runtime doesn't move the primary
+    // label or the checkbox visual — the property change only adds/removes
+    // content below the label.
+    (function () {
+      const btn = document.getElementById('help-toggle-btn');
+      const cb = document.getElementById('help-toggle-cb');
+      if (!btn || !cb) return;
+      btn.addEventListener('click', () => {
+        cb.helpText = cb.helpText ? '' : 'Click button to toggle help text';
       });
     })();
   </script>
