@@ -2,7 +2,7 @@
   "name": "@robustarush/material",
   "version": "0.0.1",
   "description": "Material 3 web components built with Stencil. External Tailwind stylesheet, swappable theme.",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
   "es2017": "dist/esm/index.js",
