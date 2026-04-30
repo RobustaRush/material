@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* Tailwind v4 scans source files for class usage. The CSS file lives at
-   src/global/, so reach back up to cover all components. */
-@source "../**/*.{ts,tsx}";
+   src/global/, so reach back up to cover components and the demo page. */
+@source "../**/*.{ts,tsx,html}";
 
 /*
  * Bridge Material 3 design tokens (--md-sys-color-*) into Tailwind's theme

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@robustarush/material — components</title>
+
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h1 class="text-2xl font-bold">@robustarush/material</h1>
+      <p class="text-on-surface-variant text-sm">
+        Material 3 web components — Stencil + Tailwind v4
+      </p>
+    </div>
+    <label class="flex items-center gap-2 text-sm">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-14">
+
+    <!-- ================================================================
+         material-button
+         ================================================================ -->
+    <section id="material-button" class="space-y-6">
+      <header>
+        <h2 class="text-xl font-semibold">material-button</h2>
+        <p class="text-on-surface-variant text-sm mt-1">
+          Five MD3 styles via <code>variant</code>. Add <code>disabled</code> to lock and dim.
+        </p>
+      </header>
+
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+        <code class="text-sm text-on-surface-variant">filled</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="filled" label="Save"></material-button>
+          <material-button variant="filled" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">tonal</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="tonal" label="Add to list"></material-button>
+          <material-button variant="tonal" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">elevated</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="elevated" label="Open"></material-button>
+          <material-button variant="elevated" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">outlined</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="outlined" label="Cancel"></material-button>
+          <material-button variant="outlined" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">text</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="text" label="Learn more"></material-button>
+          <material-button variant="text" label="Disabled" disabled></material-button>
+        </div>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-button variant="filled" label="Save"&gt;&lt;/material-button&gt;
+&lt;material-button variant="outlined" label="Cancel"&gt;&lt;/material-button&gt;
+&lt;material-button variant="text" label="Disabled" disabled&gt;&lt;/material-button&gt;</code></pre>
+      </details>
+    </section>
+
+    <!-- ================================================================
+         material-card
+         ================================================================ -->
+    <section id="material-card" class="space-y-6">
+      <header>
+        <h2 class="text-xl font-semibold">material-card</h2>
+        <p class="text-on-surface-variant text-sm mt-1">
+          Slotted container in three MD3 surface styles via <code>variant</code>.
+        </p>
+      </header>
+
+      <div class="grid sm:grid-cols-3 gap-4">
+        <material-card variant="elevated">
+          <h3 class="font-semibold">Elevated</h3>
+          <p class="text-on-surface-variant text-sm mt-2">
+            Sits on a low container surface with a soft shadow.
+          </p>
+        </material-card>
+
+        <material-card variant="filled">
+          <h3 class="font-semibold">Filled</h3>
+          <p class="text-on-surface-variant text-sm mt-2">
+            Highest container tone — useful for emphasized inline regions.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined">
+          <h3 class="font-semibold">Outlined</h3>
+          <p class="text-on-surface-variant text-sm mt-2">
+            Plain surface with an outline-variant border. Lowest visual weight.
+          </p>
+        </material-card>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-card variant="elevated"&gt;
+  &lt;h3&gt;Title&lt;/h3&gt;
+  &lt;p&gt;Body content via slot&lt;/p&gt;
+&lt;/material-card&gt;</code></pre>
+      </details>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-outline-variant px-8 py-6 text-center text-sm text-on-surface-variant">
+    Override the stylesheet path with
+    <code>&lt;meta name="material-stylesheet" content="..." /&gt;</code> — see README.
+  </footer>
+
+  <script>
+    // Theme switcher: swap one of six MD3 contrast classes on <html>.
+    // CSS custom properties cascade into shadow DOM, so every component follows.
+    (function () {
+      const THEMES = [
+        'light', 'dark',
+        'light-medium-contrast', 'dark-medium-contrast',
+        'light-high-contrast', 'dark-high-contrast',
+      ];
+      const root = document.documentElement;
+      const picker = document.getElementById('theme-picker');
+
+      function applyTheme(name) {
+        root.classList.remove(...THEMES);
+        root.classList.add(name);
+      }
+
+      const saved = localStorage.getItem('material-theme');
+      const initial = (saved && THEMES.includes(saved))
+        ? saved
+        : (THEMES.find(t => root.classList.contains(t)) || 'light');
+      applyTheme(initial);
+      picker.value = initial;
+
+      picker.addEventListener('change', e => {
+        applyTheme(e.target.value);
+        localStorage.setItem('material-theme', e.target.value);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,9 +1,8 @@
 node_modules/
 dist/
 loader/
-www/build/
-www/static/material/material.css
-www/static/material/theme.css
+www/
+src/components.d.ts
 .stencil/
 *.log
 .DS_Store

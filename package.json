@@ -7,6 +7,7 @@
   "module": "dist/index.js",
   "es2017": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
   "unpkg": "dist/material/material.esm.js",
   "files": [
     "dist/",

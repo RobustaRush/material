@@ -60,8 +60,10 @@ Default URL is `/static/material/material.css` — matches Django's
 
 ```
 src/
+  index.html              # dev showcase page (Stencil compiles → www/index.html)
   components/
     material-button/      # one component per folder, tag prefix `material-`
+    material-card/
   global/
     material.css          # @import "tailwindcss"; + @theme bridge to MD3 vars
   theme/
@@ -71,12 +73,17 @@ src/
     light-hc.css dark-hc.css
   utils/
     adopted-styles.ts     # adoptMaterialStyles(shadowRoot)
-www/
-  index.html              # dev host page
+www/                      # build output, fully gitignored — owned by Stencil + Tailwind CLI
+  index.html              # generated from src/index.html
+  build/                  # Stencil bundles
   static/material/
-    material.css          # build output (gitignored)
-    theme.css             # build output (gitignored)
+    material.css
+    theme.css
 ```
+
+> **Don't edit `www/index.html`** — Stencil regenerates it from
+> `src/index.html` on every build and wipes the directory on `start`. Edit
+> the source file instead.
 
 ## Regenerating the theme
 
