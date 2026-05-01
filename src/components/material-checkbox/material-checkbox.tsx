@@ -63,7 +63,7 @@ export class MaterialCheckbox {
   @Prop() errorText?: string;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
-  @Event() change!: EventEmitter<{ checked: boolean; indeterminate: boolean }>;
+  @Event() checkedChange!: EventEmitter<{ checked: boolean; indeterminate: boolean }>;
 
   // Captured once before first render — reflected props rewrite the live
   // attributes after every toggle, so `hasAttribute('checked')` can't tell us
@@ -107,7 +107,7 @@ export class MaterialCheckbox {
     } else {
       this.checked = !this.checked;
     }
-    this.change.emit({ checked: this.checked, indeterminate: this.indeterminate });
+    this.checkedChange.emit({ checked: this.checked, indeterminate: this.indeterminate });
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {

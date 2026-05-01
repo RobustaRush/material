@@ -71,13 +71,13 @@ export class MaterialTextfield {
   @Prop() wideTrailing = false;
 
   @State() private passwordVisible = false;
-  @Prop() prefix?: string;
-  @Prop() suffix?: string;
+  @Prop() leadingText?: string;
+  @Prop() trailingText?: string;
   @Prop() maxLength?: number;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
-  @Event() change!: EventEmitter<{ value: string }>;
-  @Event({ eventName: 'input' }) inputEvent!: EventEmitter<{ value: string }>;
+  @Event() valueChange!: EventEmitter<{ value: string }>;
+  @Event() valueInput!: EventEmitter<{ value: string }>;
 
   // Captured before first render so the form-default survives reflected-prop
   // writes (hasAttribute('value') no longer reports the original at reset).
@@ -115,11 +115,11 @@ export class MaterialTextfield {
   private handleInput = (e: Event) => {
     const target = e.target as HTMLInputElement;
     this.value = target.value;
-    this.inputEvent.emit({ value: this.value });
+    this.valueInput.emit({ value: this.value });
   };
 
   private handleChange = () => {
-    this.change.emit({ value: this.value });
+    this.valueChange.emit({ value: this.value });
   };
 
   private togglePassword = (e: CustomEvent<{ selected: boolean }>) => {
@@ -128,7 +128,7 @@ export class MaterialTextfield {
 
   render() {
     const { variant, label, helpText, errorText, error,
-            prefix, suffix, leadingIcon, trailingIcon, maxLength } = this;
+            leadingText, trailingText, leadingIcon, trailingIcon, maxLength } = this;
 
     const showPwdToggle = this.passwordToggle && this.type === 'password';
     const hasTrailingSlot = !!this.el.querySelector(':scope > [slot="trailing"]');
@@ -186,7 +186,7 @@ export class MaterialTextfield {
             selected-icon="visibility_off"
             disabled={this.disabled}
             aria-label={this.passwordVisible ? 'Hide password' : 'Show password'}
-            onChange={this.togglePassword as any}
+            onSelectedChange={this.togglePassword as any}
           />
         ) : (
           <slot name="trailing" />
@@ -241,10 +241,10 @@ export class MaterialTextfield {
           'group-hover:bg-on-surface ' +
           'group-focus-within:h-0.5 group-focus-within:bg-primary';
 
-      const innerL = hasLeading ? 'pl-12' : (prefix ? 'pl-4' : '');
-      const innerR = reserveTrailing ? (this.wideTrailing ? 'pr-24' : 'pr-12') : (suffix ? 'pr-4' : '');
-      const inputL = hasLeading ? '' : (prefix ? 'pl-1' : 'pl-4');
-      const inputR = reserveTrailing ? '' : (suffix ? 'pr-1' : 'pr-4');
+      const innerL = hasLeading ? 'pl-12' : (leadingText ? 'pl-4' : '');
+      const innerR = reserveTrailing ? (this.wideTrailing ? 'pr-24' : 'pr-12') : (trailingText ? 'pr-4' : '');
+      const inputL = hasLeading ? '' : (leadingText ? 'pl-1' : 'pl-4');
+      const inputR = reserveTrailing ? '' : (trailingText ? 'pr-1' : 'pr-4');
       const affixFilled = `${AFFIX_BASE} self-stretch pt-6 pb-2`;
 
       return (
@@ -255,12 +255,12 @@ export class MaterialTextfield {
             {showStaticTrailing && renderIcon('right', trailingIcon)}
             {renderTrailingAction()}
             <div class={`flex items-end h-full ${innerL} ${innerR}`}>
-              {prefix && (
-                <span class={affixFilled} aria-hidden="true">{prefix}</span>
+              {leadingText && (
+                <span class={affixFilled} aria-hidden="true">{leadingText}</span>
               )}
               {renderInput(`w-full h-full pt-6 pb-2 ${inputL} ${inputR}`)}
-              {suffix && (
-                <span class={affixFilled} aria-hidden="true">{suffix}</span>
+              {trailingText && (
+                <span class={affixFilled} aria-hidden="true">{trailingText}</span>
               )}
             </div>
             {label && (
@@ -299,8 +299,8 @@ export class MaterialTextfield {
 
     const innerL = hasLeading ? 'pl-12' : '';
     const innerR = reserveTrailing ? (this.wideTrailing ? 'pr-24' : 'pr-12') : '';
-    const inputL = hasLeading ? '' : (prefix ? 'pl-1' : 'pl-4');
-    const inputR = reserveTrailing ? '' : (suffix ? 'pr-1' : 'pr-4');
+    const inputL = hasLeading ? '' : (leadingText ? 'pl-1' : 'pl-4');
+    const inputR = reserveTrailing ? '' : (trailingText ? 'pr-1' : 'pr-4');
 
     return (
       <div class="block w-full">
@@ -310,12 +310,12 @@ export class MaterialTextfield {
           {showStaticTrailing && renderIcon('right', trailingIcon)}
           {renderTrailingAction()}
           <div class={`flex items-center h-full ${innerL} ${innerR}`}>
-            {prefix && (
-              <span class={`${AFFIX_BASE} pl-4`} aria-hidden="true">{prefix}</span>
+            {leadingText && (
+              <span class={`${AFFIX_BASE} pl-4`} aria-hidden="true">{leadingText}</span>
             )}
             {renderInput(`w-full h-full leading-14 ${inputL} ${inputR}`)}
-            {suffix && (
-              <span class={`${AFFIX_BASE} pr-4`} aria-hidden="true">{suffix}</span>
+            {trailingText && (
+              <span class={`${AFFIX_BASE} pr-4`} aria-hidden="true">{trailingText}</span>
             )}
           </div>
           {label && (

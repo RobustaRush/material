@@ -54,7 +54,7 @@ export class MaterialFileField {
   @State() private pickedName: string | null = null;
   @State() private pendingClear = false;
 
-  @Event() change!: EventEmitter<{ file: File | null; cleared: boolean }>;
+  @Event() fileChange!: EventEmitter<{ file: File | null; cleared: boolean }>;
 
   private fileInput?: HTMLInputElement;
 
@@ -87,7 +87,7 @@ export class MaterialFileField {
     const file = input.files?.[0] ?? null;
     this.pickedName = file?.name ?? null;
     if (file) this.pendingClear = false;
-    this.change.emit({ file, cleared: false });
+    this.fileChange.emit({ file, cleared: false });
   };
 
   private handleClearToggle = (e: CustomEvent<{ selected: boolean }>) => {
@@ -99,7 +99,7 @@ export class MaterialFileField {
       this.pickedName = null;
       if (this.fileInput) this.fileInput.value = '';
     }
-    this.change.emit({ file: null, cleared: next });
+    this.fileChange.emit({ file: null, cleared: next });
   };
 
   private handleChangeClick = (e: MouseEvent) => {
@@ -155,7 +155,7 @@ export class MaterialFileField {
                   (this.pendingClear ? this.undoLabel : this.clearLabel) ||
                   undefined
                 }
-                onChange={this.handleClearToggle as any}
+                onSelectedChange={this.handleClearToggle as any}
               />
             )}
             <material-icon-button

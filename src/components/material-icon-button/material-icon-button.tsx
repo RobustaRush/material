@@ -144,7 +144,7 @@ export class MaterialIconButton {
   @Prop() value = 'on';
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
-  @Event() change!: EventEmitter<{ selected: boolean }>;
+  @Event() selectedChange!: EventEmitter<{ selected: boolean }>;
 
   private defaultSelected = false;
 
@@ -185,7 +185,7 @@ export class MaterialIconButton {
     if (this.disabled) return;
     if (this.toggle) {
       this.selected = !this.selected;
-      this.change.emit({ selected: this.selected });
+      this.selectedChange.emit({ selected: this.selected });
       return;
     }
     const form = this.internals.form;

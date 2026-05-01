@@ -24,9 +24,9 @@
 
 ## Events
 
-| Event    | Description | Type                                                         |
-| -------- | ----------- | ------------------------------------------------------------ |
-| `change` |             | `CustomEvent<{ checked: boolean; indeterminate: boolean; }>` |
+| Event           | Description | Type                                                         |
+| --------------- | ----------- | ------------------------------------------------------------ |
+| `checkedChange` |             | `CustomEvent<{ checked: boolean; indeterminate: boolean; }>` |
 
 
 ----------------------------------------------

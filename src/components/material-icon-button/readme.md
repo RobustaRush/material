@@ -26,9 +26,9 @@
 
 ## Events
 
-| Event    | Description | Type                                  |
-| -------- | ----------- | ------------------------------------- |
-| `change` |             | `CustomEvent<{ selected: boolean; }>` |
+| Event            | Description | Type                                  |
+| ---------------- | ----------- | ------------------------------------- |
+| `selectedChange` |             | `CustomEvent<{ selected: boolean; }>` |
 
 
 ## Dependencies
