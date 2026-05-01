@@ -80,6 +80,19 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Hide native number-input spinners. Scoped to :host so it only affects
+   inputs inside material components (e.g. material-textfield), not any
+   stray inputs in the host page. */
+:host input[type="number"]::-webkit-outer-spin-button,
+:host input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+:host input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* MD3 state layer for material-button: 8% on-color overlay on hover,
    12% on active. currentColor = on-color текущего варианта.
    Scoped via [data-variant] so other shadow-DOM components (e.g. checkbox)
