@@ -86,10 +86,11 @@ export class MaterialTextfield {
 
   componentWillLoad() {
     this.defaultValue = this.value;
+    // Block first render until the shared Tailwind sheet is adopted.
+    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
-    if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
     this.syncFormValue();
   }
 

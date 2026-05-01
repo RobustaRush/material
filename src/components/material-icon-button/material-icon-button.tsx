@@ -150,10 +150,10 @@ export class MaterialIconButton {
 
   componentWillLoad() {
     this.defaultSelected = this.selected;
+    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
-    if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
     this.syncFormValue();
   }
 

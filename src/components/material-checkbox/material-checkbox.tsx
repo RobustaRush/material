@@ -74,10 +74,10 @@ export class MaterialCheckbox {
   componentWillLoad() {
     this.defaultChecked = this.checked;
     this.defaultIndeterminate = this.indeterminate;
+    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
-    if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
     this.syncFormValue();
   }
 

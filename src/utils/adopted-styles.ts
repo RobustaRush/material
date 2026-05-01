@@ -27,10 +27,10 @@ function attach(root: ShadowRoot, s: CSSStyleSheet): void {
   }
 }
 
-export function adoptMaterialStyles(root: ShadowRoot): void {
+export function adoptMaterialStyles(root: ShadowRoot): Promise<void> {
   if (sheet) {
     attach(root, sheet);
-    return;
+    return Promise.resolve();
   }
   pending.push(root);
   inflight ??= fetch(resolveHref())
@@ -45,4 +45,5 @@ export function adoptMaterialStyles(root: ShadowRoot): void {
       for (const r of pending.splice(0)) attach(r, s);
       return s;
     });
+  return inflight.then(() => undefined);
 }

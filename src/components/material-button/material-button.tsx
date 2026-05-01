@@ -50,8 +50,10 @@ export class MaterialButton {
   @Prop() value?: string;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
-  connectedCallback() {
-    if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
+  componentWillLoad() {
+    // Block first render until the shared Tailwind sheet is adopted, so the
+    // component never paints in its un-styled (light-DOM) state.
+    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   formDisabledCallback(disabled: boolean) {

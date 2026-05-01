@@ -58,8 +58,8 @@ export class MaterialFileField {
 
   private fileInput?: HTMLInputElement;
 
-  connectedCallback() {
-    if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
+  componentWillLoad() {
+    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   private openPicker = () => {

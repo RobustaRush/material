@@ -35,8 +35,8 @@ export class MaterialNavigationItem {
 
   @Event() materialSelect!: EventEmitter<{ value?: string }>;
 
-  connectedCallback() {
-    if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
+  componentWillLoad() {
+    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   private handleClick = (e: MouseEvent) => {

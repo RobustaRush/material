@@ -26,8 +26,11 @@ export class MaterialNavigationRail {
   @Prop() modality: MaterialNavigationRailModality = 'standard';
   @Prop({ reflect: true }) hideOnCollapse = false;
 
+  componentWillLoad() {
+    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
+  }
+
   connectedCallback() {
-    if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
     this.syncItems();
   }
 

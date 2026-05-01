@@ -18,8 +18,8 @@ export class MaterialCard {
 
   @Prop() variant: MaterialCardVariant = 'elevated';
 
-  connectedCallback() {
-    if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
+  componentWillLoad() {
+    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   render() {
