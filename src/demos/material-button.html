@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-button — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="flex items-center gap-4">
+      <a href="/" class="text-on-surface-variant text-sm hover:text-on-surface">← All components</a>
+      <div>
+        <h1 class="text-xl font-bold">material-button</h1>
+        <p class="text-on-surface-variant text-sm">
+          Five MD3 styles via <code>variant</code>. Add <code>disabled</code> to lock and dim.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-6">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+        <code class="text-sm text-on-surface-variant">filled</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="filled" label="Save"></material-button>
+          <material-button variant="filled" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">tonal</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="tonal" label="Add to list"></material-button>
+          <material-button variant="tonal" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">elevated</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="elevated" label="Open"></material-button>
+          <material-button variant="elevated" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">outlined</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="outlined" label="Cancel"></material-button>
+          <material-button variant="outlined" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">text</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="text" label="Learn more"></material-button>
+          <material-button variant="text" label="Disabled" disabled></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">with icon</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="filled" icon="add" label="Create"></material-button>
+          <material-button variant="tonal" icon="favorite" label="Like"></material-button>
+          <material-button variant="outlined" icon="download" label="Export"></material-button>
+          <material-button variant="text" trailing-icon="arrow_forward" label="Next"></material-button>
+          <material-button variant="outlined" icon="settings" trailing-icon="expand_more" label="Options"></material-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">sizes</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-button variant="filled" size="xs" label="XS"></material-button>
+          <material-button variant="filled" size="s"  label="Small"></material-button>
+          <material-button variant="filled" size="m"  label="Medium"></material-button>
+          <material-button variant="filled" size="l"  label="Large"></material-button>
+          <material-button variant="filled" size="xl" label="X-Large"></material-button>
+        </div>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- variants --&gt;
+&lt;material-button variant="filled" label="Save"&gt;&lt;/material-button&gt;
+&lt;material-button variant="tonal" label="Add to list"&gt;&lt;/material-button&gt;
+&lt;material-button variant="elevated" label="Open"&gt;&lt;/material-button&gt;
+&lt;material-button variant="outlined" label="Cancel"&gt;&lt;/material-button&gt;
+&lt;material-button variant="text" label="Learn more"&gt;&lt;/material-button&gt;
+
+&lt;!-- icons --&gt;
+&lt;material-button variant="filled" icon="add" label="Create"&gt;&lt;/material-button&gt;
+&lt;material-button variant="text" trailing-icon="arrow_forward" label="Next"&gt;&lt;/material-button&gt;
+&lt;material-button variant="outlined" icon="settings" trailing-icon="expand_more" label="Options"&gt;&lt;/material-button&gt;
+
+&lt;!-- sizes: xs | s (default) | m | l | xl --&gt;
+&lt;material-button size="m" label="Medium"&gt;&lt;/material-button&gt;
+&lt;material-button size="xl" label="X-Large"&gt;&lt;/material-button&gt;
+
+&lt;!-- form: type="submit" by default, formAssociated --&gt;
+&lt;form&gt;
+  &lt;material-button label="Save" type="submit"&gt;&lt;/material-button&gt;
+  &lt;material-button label="Reset" variant="text" type="reset"&gt;&lt;/material-button&gt;
+&lt;/form&gt;
+
+&lt;!-- options --&gt;
+&lt;material-button label="Press me" shape-morph&gt;&lt;/material-button&gt;
+&lt;material-button label="Disabled" disabled&gt;&lt;/material-button&gt;
+&lt;material-button icon="check" aria-label="Confirm"&gt;&lt;/material-button&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

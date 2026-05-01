@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-textfield — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="flex items-center gap-4">
+      <a href="/" class="text-on-surface-variant text-sm hover:text-on-surface">← All components</a>
+      <div>
+        <h1 class="text-xl font-bold">material-textfield · material-file-field</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 text field — 56dp container, floating label, supporting text, error state.
+          Outlined uses native <code>&lt;fieldset&gt;</code>+<code>&lt;legend&gt;</code> notch
+          so it works on any background.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-6">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-6 items-start">
+        <code class="text-sm text-on-surface-variant pt-3">filled</code>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <material-textfield variant="filled" label="Empty"></material-textfield>
+          <material-textfield variant="filled" label="Populated" value="Hello"></material-textfield>
+          <material-textfield variant="filled" label="Disabled" value="Locked" disabled></material-textfield>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">outlined</code>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <material-textfield label="Empty"></material-textfield>
+          <material-textfield label="Populated" value="Hello"></material-textfield>
+          <material-textfield label="Disabled" value="Locked" disabled></material-textfield>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">help text</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textfield variant="filled" label="Username" help-text="Letters and digits only"></material-textfield>
+          <material-textfield label="Email" help-text="We'll never share your address" type="email"></material-textfield>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">error</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textfield variant="filled" label="Password" type="password" value="abc" error error-text="At least 8 characters"></material-textfield>
+          <material-textfield label="Email" value="not-an-email" error error-text="Enter a valid email address"></material-textfield>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">icons</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textfield variant="filled" label="Search" leading-icon="search"></material-textfield>
+          <material-textfield label="Phone" leading-icon="phone" trailing-icon="cancel" type="tel"></material-textfield>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">trailing action</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textfield variant="filled" label="Password" type="password" value="hunter2" password-toggle></material-textfield>
+          <material-textfield label="Attachment" help-text="Click the icon to pick a file" id="tf-attach">
+            <material-icon-button slot="trailing" size="s" variant="standard"
+                                  icon="attach_file" aria-label="Choose file"></material-icon-button>
+          </material-textfield>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">file field</code>
+        <form id="ff-form" class="space-y-4" onsubmit="event.preventDefault(); document.getElementById('ff-out').textContent = JSON.stringify([...new FormData(event.target)].map(([k,v]) => [k, v instanceof File ? `File(${v.name||'-'})` : v]));">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <material-file-field variant="filled" name="resume_filled" label="Resume"
+                                 current-url="https://example.com/resume.pdf" current-name="resume.pdf"
+                                 change-label="Change file" clear-label="Clear file"
+                                 undo-label="Undo clear" download-label="Download file"
+                                 help-text="Click filename or icon to replace"></material-file-field>
+            <material-file-field name="contract_outlined" label="Contract"
+                                 change-label="Change file" clear-label="Clear file"
+                                 undo-label="Undo clear" download-label="Download file"
+                                 help-text="No initial file"></material-file-field>
+          </div>
+          <div class="flex items-center gap-3 pt-2">
+            <material-button type="submit" variant="filled" label="Submit form"></material-button>
+            <code id="ff-out" class="text-xs text-on-surface-variant"></code>
+          </div>
+        </form>
+
+        <code class="text-sm text-on-surface-variant pt-3">prefix / suffix</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textfield variant="filled" label="Amount" leading-text="$" trailing-text=".00" type="number"></material-textfield>
+          <material-textfield label="Email" trailing-text="@viewflow.io" help-text="Username only"></material-textfield>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">char counter</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textfield variant="filled" label="Bio" help-text="Tell us about yourself" max-length="80"></material-textfield>
+          <material-textfield label="Title" max-length="40" value="Initial value"></material-textfield>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">row with checkbox</code>
+        <div class="flex gap-4 items-center flex-wrap">
+          <material-textfield variant="filled" label="Search" leading-icon="search" class="max-w-xs"></material-textfield>
+          <material-checkbox label="Match case"></material-checkbox>
+          <material-checkbox label="Whole word"></material-checkbox>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">on tinted bg</code>
+        <div class="rounded-lg p-4 bg-secondary-container space-y-4">
+          <p class="text-sm text-on-secondary-container">Outlined keeps a real notch — works on any background.</p>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <material-textfield label="Subject"></material-textfield>
+            <material-textfield label="Subject" value="Filled in"></material-textfield>
+          </div>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">in a form</code>
+        <form id="textfield-demo-form" class="flex flex-col gap-3 max-w-md">
+          <material-textfield name="email" label="Email" type="email" required help-text="Required"></material-textfield>
+          <material-textfield name="password" label="Password" type="password" required help-text="At least 8 characters"></material-textfield>
+          <div class="flex gap-3 mt-1">
+            <material-button variant="filled" size="xs" label="Sign in"></material-button>
+            <material-button variant="text" size="xs" type="reset" label="Reset"></material-button>
+          </div>
+          <output id="textfield-demo-output" class="text-sm text-on-surface-variant font-mono"></output>
+        </form>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- variants: outlined (default) | filled --&gt;
+&lt;material-textfield label="Email"&gt;&lt;/material-textfield&gt;
+&lt;material-textfield variant="filled" label="Email"&gt;&lt;/material-textfield&gt;
+
+&lt;!-- supporting text + error --&gt;
+&lt;material-textfield label="Email" help-text="We'll never share it"&gt;&lt;/material-textfield&gt;
+&lt;material-textfield label="Email" error error-text="Enter a valid email"&gt;&lt;/material-textfield&gt;
+
+&lt;!-- icons + affixes --&gt;
+&lt;material-textfield label="Search" leading-icon="search"&gt;&lt;/material-textfield&gt;
+&lt;material-textfield label="Amount" leading-text="$" trailing-text=".00" type="number"&gt;&lt;/material-textfield&gt;
+
+&lt;!-- char counter --&gt;
+&lt;material-textfield label="Bio" max-length="80"&gt;&lt;/material-textfield&gt;
+
+&lt;!-- form-associated --&gt;
+&lt;form&gt;
+  &lt;material-textfield name="email" label="Email" type="email" required&gt;&lt;/material-textfield&gt;
+&lt;/form&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    document.querySelector('#tf-attach [slot="trailing"]')
+      ?.addEventListener('click', () => alert('Open file picker dialog'));
+
+    serializeFormToOutput('textfield-demo-form', 'textfield-demo-output');
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-navigation-rail — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="flex items-center gap-4">
+      <a href="/" class="text-on-surface-variant text-sm hover:text-on-surface">← All components</a>
+      <div>
+        <h1 class="text-xl font-bold">material-navigation-rail</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 Expressive nav rail — collapsed (96dp) and expanded (220–360dp).
+          Items via slotted <code>&lt;material-navigation-item&gt;</code>; the rail
+          propagates layout when toggled. Click the menu icon to expand.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-6">
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">collapsed · top alignment</p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[480px] flex">
+            <material-navigation-rail>
+              <material-icon-button slot="menu" variant="standard" icon="menu" aria-label="Toggle navigation"></material-icon-button>
+              <material-icon-button slot="fab" variant="tonal" icon="edit" aria-label="Compose"></material-icon-button>
+              <material-navigation-item icon="inbox" label="Inbox" active></material-navigation-item>
+              <material-navigation-item icon="send" label="Outbox"></material-navigation-item>
+              <material-navigation-item icon="favorite" label="Favorites"></material-navigation-item>
+              <material-navigation-item icon="delete" label="Trash"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant">
+              Page content
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">expanded · center alignment</p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[480px] flex">
+            <material-navigation-rail expanded alignment="center">
+              <material-icon-button slot="menu" variant="standard" icon="menu_open" aria-label="Collapse"></material-icon-button>
+              <material-navigation-item icon="dashboard" label="Dashboard"></material-navigation-item>
+              <material-navigation-item icon="folder" label="Projects" active></material-navigation-item>
+              <material-navigation-item icon="group" label="Team"></material-navigation-item>
+              <material-navigation-item icon="settings" slot="bottom" label="Settings"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant">
+              Page content
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-navigation-rail&gt;
+  &lt;material-icon-button slot="menu" variant="standard" icon="menu"
+                         aria-label="Menu"&gt;&lt;/material-icon-button&gt;
+  &lt;material-icon-button slot="fab" variant="tonal" icon="edit"
+                         aria-label="Compose"&gt;&lt;/material-icon-button&gt;
+
+  &lt;material-navigation-item icon="inbox"    label="Inbox" active&gt;&lt;/material-navigation-item&gt;
+  &lt;material-navigation-item icon="send"     label="Outbox"&gt;&lt;/material-navigation-item&gt;
+  &lt;material-navigation-item icon="favorite" label="Favorites"&gt;&lt;/material-navigation-item&gt;
+
+  &lt;material-navigation-item slot="bottom" icon="settings"
+                             label="Settings"&gt;&lt;/material-navigation-item&gt;
+&lt;/material-navigation-rail&gt;
+
+&lt;!-- menu slot toggles `expanded` automatically; opt out with data-no-rail-toggle --&gt;
+&lt;!-- or drive it manually --&gt;
+&lt;script&gt;
+  document.querySelector('material-navigation-rail').expanded = true;
+&lt;/script&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

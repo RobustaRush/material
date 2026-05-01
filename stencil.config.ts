@@ -12,6 +12,7 @@ export const config: Config = {
       type: 'www',
       serviceWorker: null,
       empty: false,
+      copy: [{ src: 'demos', dest: 'demos', warn: true }],
     },
   ],
   testing: {
