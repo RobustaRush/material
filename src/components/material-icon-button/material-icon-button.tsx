@@ -157,11 +157,16 @@ export class MaterialIconButton {
     this.syncFormValue();
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @Watch('selected')
   @Watch('toggle')
   @Watch('value')
+  @Watch('disabled')
   syncFormValue() {
-    if (this.toggle) {
+    if (this.toggle && !this.disabled) {
       this.internals.setFormValue(this.selected ? this.value : null);
     } else {
       this.internals.setFormValue(null);
@@ -235,9 +240,8 @@ export class MaterialIconButton {
     return (
       <button
         type={isToggle ? 'button' : this.type}
-        role={isToggle ? 'switch' : undefined}
         aria-pressed={isToggle ? String(this.selected) : undefined}
-        aria-label={this.ariaLabel ?? icon}
+        aria-label={this.ariaLabel}
         disabled={this.disabled}
         data-selected={isToggle ? String(this.selected) : null}
         class={`group ${

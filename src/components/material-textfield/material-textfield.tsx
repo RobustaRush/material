@@ -94,8 +94,13 @@ export class MaterialTextfield {
   }
 
   @Watch('value')
+  @Watch('disabled')
   syncFormValue() {
-    this.internals.setFormValue(this.value ?? '');
+    this.internals.setFormValue(this.disabled ? null : (this.value ?? ''));
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
   }
 
   formResetCallback() {
@@ -201,7 +206,7 @@ export class MaterialTextfield {
         required={this.required}
         readonly={this.readOnly}
         maxLength={maxLength}
-        aria-label={this.ariaLabel ?? (label ? undefined : 'textfield')}
+        aria-label={this.ariaLabel}
         aria-invalid={error ? 'true' : null}
         aria-describedby={subText ? 'description' : null}
         onInput={this.handleInput}

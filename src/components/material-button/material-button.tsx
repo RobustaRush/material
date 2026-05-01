@@ -14,12 +14,13 @@ const VARIANTS: Record<MaterialButtonVariant, string> = {
 };
 
 // MD3 Expressive sizes — height/padding/label/icon per spec.
-const SIZES: Record<MaterialButtonSize, { btn: string; icon: string }> = {
-  xs: { btn: 'h-8 px-3 text-xs gap-1',          icon: 'text-base' },
-  s:  { btn: 'h-10 px-6 text-sm gap-2',         icon: 'text-lg' },
-  m:  { btn: 'h-14 px-6 text-base gap-2',       icon: 'text-2xl' },
-  l:  { btn: 'h-24 px-12 text-2xl gap-3',       icon: 'text-3xl' },
-  xl: { btn: 'h-[136px] px-16 text-3xl gap-4',  icon: 'text-4xl' },
+// Pressed radius per spec: xs/s 8dp, m 12dp, l/xl 16dp.
+const SIZES: Record<MaterialButtonSize, { btn: string; icon: string; pressed: string }> = {
+  xs: { btn: 'h-8 px-3 text-xs gap-1',           icon: 'text-[20px]', pressed: 'active:rounded-[8px]'  },
+  s:  { btn: 'h-10 px-6 text-sm gap-2',          icon: 'text-[24px]', pressed: 'active:rounded-[8px]'  },
+  m:  { btn: 'h-14 px-6 text-base gap-2',        icon: 'text-[24px]', pressed: 'active:rounded-[12px]' },
+  l:  { btn: 'h-24 px-12 text-2xl gap-3',        icon: 'text-[32px]', pressed: 'active:rounded-[16px]' },
+  xl: { btn: 'h-[136px] px-16 text-3xl gap-4',   icon: 'text-[40px]', pressed: 'active:rounded-[16px]' },
 };
 
 const BASE =
@@ -39,10 +40,10 @@ export class MaterialButton {
 
   @Prop() variant: MaterialButtonVariant = 'filled';
   @Prop() size: MaterialButtonSize = 's';
-  @Prop() type: MaterialButtonType = 'submit';
-  @Prop() disabled = false;
+  @Prop() type: MaterialButtonType = 'button';
+  @Prop({ reflect: true }) disabled = false;
   @Prop() shapeMorph = false;
-  @Prop() label = 'Button';
+  @Prop() label?: string;
   @Prop() icon?: string;
   @Prop() trailingIcon?: string;
   @Prop() name?: string;
@@ -51,6 +52,10 @@ export class MaterialButton {
 
   connectedCallback() {
     if (this.el.shadowRoot) adoptMaterialStyles(this.el.shadowRoot);
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
   }
 
   private handleClick = () => {
@@ -76,7 +81,7 @@ export class MaterialButton {
         disabled={this.disabled}
         aria-label={this.ariaLabel}
         data-variant={this.variant}
-        class={`${BASE} ${size.btn} ${VARIANTS[this.variant]} ${this.shapeMorph ? 'active:rounded-lg' : ''}`}
+        class={`${BASE} ${size.btn} ${VARIANTS[this.variant]} ${this.shapeMorph ? size.pressed : ''}`}
         onClick={this.handleClick}
         onPointerDown={this.handlePointerDown}
       >
