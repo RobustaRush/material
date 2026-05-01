@@ -6,3 +6,4 @@ src/components.d.ts
 .stencil/
 *.log
 .DS_Store
+.playwright-cli/
