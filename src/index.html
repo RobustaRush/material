@@ -508,6 +508,77 @@
       </details>
     </section>
 
+    <!-- ================================================================
+         material-navigation-rail
+         ================================================================ -->
+    <section id="material-navigation-rail" class="space-y-6">
+      <header>
+        <h2 class="text-xl font-semibold">material-navigation-rail</h2>
+        <p class="text-on-surface-variant text-sm mt-1">
+          MD3 Expressive nav rail — collapsed (96dp) and expanded (220–360dp).
+          Items via slotted <code>&lt;material-navigation-item&gt;</code>; the rail
+          propagates layout when toggled.
+        </p>
+      </header>
+
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">collapsed · top alignment</p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[480px] flex">
+            <material-navigation-rail id="rail-1">
+              <material-icon-button slot="menu" variant="standard" icon="menu" aria-label="Toggle navigation"></material-icon-button>
+              <material-icon-button slot="fab" variant="tonal" icon="edit" aria-label="Compose"></material-icon-button>
+              <material-navigation-item icon="inbox" label="Inbox" active></material-navigation-item>
+              <material-navigation-item icon="send" label="Outbox"></material-navigation-item>
+              <material-navigation-item icon="favorite" label="Favorites"></material-navigation-item>
+              <material-navigation-item icon="delete" label="Trash"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant">
+              Page content
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">expanded · center alignment</p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[480px] flex">
+            <material-navigation-rail expanded alignment="center">
+              <material-icon-button slot="menu" variant="standard" icon="menu_open" aria-label="Collapse"></material-icon-button>
+              <material-navigation-item icon="dashboard" label="Dashboard"></material-navigation-item>
+              <material-navigation-item icon="folder" label="Projects" active></material-navigation-item>
+              <material-navigation-item icon="group" label="Team"></material-navigation-item>
+              <material-navigation-item icon="settings" slot="bottom" label="Settings"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant">
+              Page content
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-navigation-rail&gt;
+  &lt;material-icon-button slot="menu" variant="standard" icon="menu"
+                         aria-label="Menu"&gt;&lt;/material-icon-button&gt;
+  &lt;material-icon-button slot="fab" variant="tonal" icon="edit"
+                         aria-label="Compose"&gt;&lt;/material-icon-button&gt;
+
+  &lt;material-navigation-item icon="inbox"    label="Inbox" active&gt;&lt;/material-navigation-item&gt;
+  &lt;material-navigation-item icon="send"     label="Outbox"&gt;&lt;/material-navigation-item&gt;
+  &lt;material-navigation-item icon="favorite" label="Favorites"&gt;&lt;/material-navigation-item&gt;
+
+  &lt;material-navigation-item slot="bottom" icon="settings"
+                             label="Settings"&gt;&lt;/material-navigation-item&gt;
+&lt;/material-navigation-rail&gt;
+
+&lt;!-- toggle layout --&gt;
+&lt;script&gt;
+  document.querySelector('material-navigation-rail').expanded = true;
+&lt;/script&gt;</code></pre>
+      </details>
+    </section>
+
   </main>
 
   <footer class="border-t border-outline-variant px-8 py-6 text-center text-sm text-on-surface-variant">
