@@ -13,9 +13,9 @@
 </head>
 <body class="bg-background text-on-background min-h-screen">
 
-  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
-    <div class="flex items-center gap-4">
-      <a href="/" class="text-on-surface-variant text-sm hover:text-on-surface">← All components</a>
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
       <div>
         <h1 class="text-xl font-bold">material-navigation-rail</h1>
         <p class="text-on-surface-variant text-sm">
@@ -25,7 +25,7 @@
         </p>
       </div>
     </div>
-    <label class="flex items-center gap-2 text-sm">
+    <label class="flex items-center gap-2 text-sm shrink-0">
       <span class="text-on-surface-variant">Theme</span>
       <select id="theme-picker"
               class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
