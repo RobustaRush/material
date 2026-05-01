@@ -49,6 +49,8 @@ export class MaterialButton {
   @Prop() name?: string;
   @Prop() value?: string;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'popovertarget' }) popoverTarget?: string;
+  @Prop({ attribute: 'popovertargetaction' }) popoverTargetAction?: 'toggle' | 'show' | 'hide';
 
   componentWillLoad() {
     // Block first render until the shared Tailwind sheet is adopted, so the
@@ -62,6 +64,22 @@ export class MaterialButton {
 
   private handleClick = () => {
     if (this.disabled) return;
+    if (this.popoverTarget) {
+      const root = this.el.getRootNode() as Document | ShadowRoot;
+      const target = (root as Document).getElementById?.(this.popoverTarget);
+      if (target && 'togglePopover' in target) {
+        const action = this.popoverTargetAction ?? 'toggle';
+        const t = target as HTMLElement & {
+          togglePopover: (force?: boolean) => void;
+          showPopover: () => void;
+          hidePopover: () => void;
+        };
+        if (action === 'show') t.showPopover();
+        else if (action === 'hide') t.hidePopover();
+        else t.togglePopover();
+        return;
+      }
+    }
     const form = this.internals.form;
     if (!form) return;
     if (this.type === 'submit') form.requestSubmit();

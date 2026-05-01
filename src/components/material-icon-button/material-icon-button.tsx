@@ -123,6 +123,7 @@ const STATE_LAYER =
 
 @Component({
   tag: 'material-icon-button',
+  styleUrl: 'material-icon-button.css',
   shadow: true,
   formAssociated: true,
 })
@@ -143,6 +144,8 @@ export class MaterialIconButton {
   @Prop() name?: string;
   @Prop() value = 'on';
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'popovertarget' }) popoverTarget?: string;
+  @Prop({ attribute: 'popovertargetaction' }) popoverTargetAction?: 'toggle' | 'show' | 'hide';
 
   @Event() selectedChange!: EventEmitter<{ selected: boolean }>;
 
@@ -183,6 +186,22 @@ export class MaterialIconButton {
 
   private handleClick = () => {
     if (this.disabled) return;
+    if (this.popoverTarget) {
+      const root = this.el.getRootNode() as Document | ShadowRoot;
+      const target = (root as Document).getElementById?.(this.popoverTarget);
+      if (target && 'togglePopover' in target) {
+        const action = this.popoverTargetAction ?? 'toggle';
+        const t = target as HTMLElement & {
+          togglePopover: (force?: boolean) => void;
+          showPopover: () => void;
+          hidePopover: () => void;
+        };
+        if (action === 'show') t.showPopover();
+        else if (action === 'hide') t.hidePopover();
+        else t.togglePopover();
+        return;
+      }
+    }
     if (this.toggle) {
       this.selected = !this.selected;
       this.selectedChange.emit({ selected: this.selected });

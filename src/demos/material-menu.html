@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-menu — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-menu</h1>
+        <p class="text-on-surface-variant text-sm">
+          Vertical MD3 menu. Anchored to a trigger via <code>popovertarget</code>; flips and scrolls inside the viewport.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Basic — leading icons + trailing shortcut text</h2>
+      <p class="text-on-surface-variant text-sm">Click the trigger; the menu opens anchored below it.</p>
+      <div>
+        <material-button id="t1" label="Edit…" trailing-icon="expand_more" popovertarget="m1"></material-button>
+      </div>
+
+      <material-menu id="m1" anchor="#t1">
+        <material-menu-item label="Cut" leading-icon="content_cut" trailing-text="⌘X" value="cut"></material-menu-item>
+        <material-menu-item label="Copy" leading-icon="content_copy" trailing-text="⌘C" value="copy"></material-menu-item>
+        <material-menu-item label="Paste" leading-icon="content_paste" trailing-text="⌘V" value="paste"></material-menu-item>
+        <material-menu-item label="Delete" leading-icon="delete" disabled value="delete"></material-menu-item>
+        <material-menu-item label="Settings…" leading-icon="settings" divider="top" value="settings"></material-menu-item>
+      </material-menu>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Selection — checkbox items keep the menu open</h2>
+      <div>
+        <material-icon-button id="t2" icon="filter_list" variant="tonal" aria-label="Filters" popovertarget="m2"></material-icon-button>
+      </div>
+
+      <material-menu id="m2" anchor="#t2" placement="bottom-start">
+        <material-menu-item keep-open value="unread">
+          <material-checkbox slot="leading"></material-checkbox>
+          Unread
+        </material-menu-item>
+        <material-menu-item keep-open value="starred">
+          <material-checkbox slot="leading" checked></material-checkbox>
+          Starred
+        </material-menu-item>
+        <material-menu-item keep-open value="muted">
+          <material-checkbox slot="leading"></material-checkbox>
+          Muted
+        </material-menu-item>
+        <material-menu-item label="Apply" trailing-icon="check" divider="top" value="apply"></material-menu-item>
+      </material-menu>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Long list — clamps to viewport and scrolls</h2>
+      <div>
+        <material-button id="t3" label="Pick a country" trailing-icon="arrow_drop_down" popovertarget="m3"></material-button>
+      </div>
+      <material-menu id="m3" anchor="#t3" max-height="320"></material-menu>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Edge of viewport — flips above</h2>
+      <div class="h-[60vh]"></div>
+      <div>
+        <material-button id="t4" label="Open near bottom" trailing-icon="expand_less" popovertarget="m4"></material-button>
+      </div>
+      <material-menu id="m4" anchor="#t4">
+        <material-menu-item label="Profile" leading-icon="person" value="profile"></material-menu-item>
+        <material-menu-item label="Notifications" leading-icon="notifications" value="notifications" supporting-text="3 new this week"></material-menu-item>
+        <material-menu-item label="Sign out" leading-icon="logout" value="signout" divider="top"></material-menu-item>
+      </material-menu>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-lg font-semibold">Selection log</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Trigger anywhere on the page; popovertarget points at the menu's id. --&gt;
+&lt;material-button label="Edit…" trailing-icon="expand_more"
+                 popovertarget="my-menu"&gt;&lt;/material-button&gt;
+
+&lt;material-menu id="my-menu" anchor="#my-trigger"&gt;
+  &lt;material-menu-item label="Cut"   leading-icon="content_cut"   trailing-text="⌘X" value="cut"&gt;&lt;/material-menu-item&gt;
+  &lt;material-menu-item label="Copy"  leading-icon="content_copy"  trailing-text="⌘C" value="copy"&gt;&lt;/material-menu-item&gt;
+  &lt;material-menu-item label="Paste" leading-icon="content_paste" trailing-text="⌘V" value="paste"&gt;&lt;/material-menu-item&gt;
+  &lt;material-menu-item label="Delete" leading-icon="delete" disabled value="delete"&gt;&lt;/material-menu-item&gt;
+  &lt;material-menu-item label="Settings…" leading-icon="settings" divider="top" value="settings"&gt;&lt;/material-menu-item&gt;
+&lt;/material-menu&gt;
+
+&lt;!-- Listen for selections (event bubbles + composed). --&gt;
+&lt;script&gt;
+  document.getElementById('my-menu').addEventListener('materialMenuSelect', e =&gt; {
+    console.log('selected', e.detail.value);
+  });
+&lt;/script&gt;
+
+&lt;!-- Checkbox items: keep-open prevents auto-close; click anywhere on the row toggles the box. --&gt;
+&lt;material-menu id="filters" anchor="#filter-btn"&gt;
+  &lt;material-menu-item keep-open value="unread"&gt;
+    &lt;material-checkbox slot="leading"&gt;&lt;/material-checkbox&gt;
+    Unread
+  &lt;/material-menu-item&gt;
+  &lt;material-menu-item keep-open value="starred"&gt;
+    &lt;material-checkbox slot="leading" checked&gt;&lt;/material-checkbox&gt;
+    Starred
+  &lt;/material-menu-item&gt;
+  &lt;material-menu-item label="Apply" trailing-icon="check" divider="top" value="apply"&gt;&lt;/material-menu-item&gt;
+&lt;/material-menu&gt;
+
+&lt;!-- Long lists: max-height clamps; viewport room is the other ceiling. --&gt;
+&lt;material-menu id="picker" anchor="#picker-btn" max-height="320"&gt;…&lt;/material-menu&gt;
+
+&lt;!-- Placement: bottom-start (default) | bottom-end | top-start | top-end.
+     Auto-flips to the opposite side when it would overflow the viewport. --&gt;
+&lt;material-menu placement="bottom-end" offset="8"&gt;…&lt;/material-menu&gt;
+
+&lt;!-- Programmatic open/close. The menu uses the HTML Popover API under the hood. --&gt;
+&lt;script&gt;
+  const menu = document.getElementById('my-menu');
+  menu.show();        // or: menu.open = true
+  menu.hide();        // or: menu.open = false
+  menu.addEventListener('materialMenuOpen',  () =&gt; console.log('opened'));
+  menu.addEventListener('materialMenuClose', () =&gt; console.log('closed'));
+&lt;/script&gt;
+
+&lt;!-- Item anatomy --&gt;
+&lt;material-menu-item
+    label="Notifications"
+    leading-icon="notifications"
+    trailing-icon="chevron_right"
+    supporting-text="3 new this week"
+    value="notifications"&gt;&lt;/material-menu-item&gt;
+
+&lt;!-- Slots override the icon/text props for richer content (avatars, switches, etc.) --&gt;
+&lt;material-menu-item value="profile"&gt;
+  &lt;img slot="leading" src="/avatar.png" class="w-6 h-6 rounded-full" /&gt;
+  Mikhail
+  &lt;span slot="trailing" class="text-xs"&gt;Online&lt;/span&gt;
+&lt;/material-menu-item&gt;</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    // Populate long-list menu.
+    const countries = ['Argentina','Australia','Austria','Belgium','Brazil','Canada','Chile','China','Colombia','Czechia','Denmark','Egypt','Estonia','Finland','France','Germany','Greece','Hungary','Iceland','India','Indonesia','Ireland','Israel','Italy','Japan','Kenya','Latvia','Lithuania','Mexico','Morocco','Netherlands','New Zealand','Nigeria','Norway','Pakistan','Peru','Philippines','Poland','Portugal','Romania','Saudi Arabia','Singapore','Slovakia','South Africa','South Korea','Spain','Sweden','Switzerland','Thailand','Turkey','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Vietnam'];
+    const longMenu = document.getElementById('m3');
+    for (const name of countries) {
+      const item = document.createElement('material-menu-item');
+      item.setAttribute('label', name);
+      item.setAttribute('value', name.toLowerCase());
+      longMenu.appendChild(item);
+    }
+
+    // Log selections from every menu on the page.
+    const log = document.getElementById('log');
+    document.addEventListener('materialMenuSelect', (e) => {
+      const menu = e.target.closest('material-menu');
+      log.textContent = `[${menu?.id}] selected → ${e.detail.value}`;
+    });
+  </script>
+</body>
+</html>

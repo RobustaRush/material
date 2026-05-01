@@ -6,6 +6,11 @@
    Variant background is parameterised via --btn-bg; hover/active mix
    currentColor (= on-color of the variant) against it at MD3 8% / 12%. */
 
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
 :host button[data-variant] {
   position: relative;
   overflow: hidden;
