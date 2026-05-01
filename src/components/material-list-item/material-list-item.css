@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  outline: none;
+}
+
+:host(:focus-visible) > div,
+:host(:focus-visible) > a > div {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: -2px;
+}
+
+:host([divider="top"]) {
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+:host([divider="bottom"]) {
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-list — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-list</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 list — 1/2/3-line items with leading/trailing slots; selection: none / single / multi.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">One-line — text only (56dp)</h2>
+      <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item label="Inbox"></material-list-item>
+        <material-list-item label="Starred" divider="top"></material-list-item>
+        <material-list-item label="Snoozed" divider="top"></material-list-item>
+        <material-list-item label="Drafts" divider="top"></material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">One-line — leading icon + trailing text/icon</h2>
+      <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item label="Wi-Fi" leading-icon="wifi" trailing-text="Robusta-5G" trailing-icon="chevron_right"></material-list-item>
+        <material-list-item label="Bluetooth" leading-icon="bluetooth" trailing-text="On" trailing-icon="chevron_right" divider="top"></material-list-item>
+        <material-list-item label="Airplane mode" leading-icon="flight" trailing-icon="chevron_right" divider="top"></material-list-item>
+        <material-list-item label="VPN" leading-icon="vpn_lock" disabled trailing-icon="chevron_right" divider="top"></material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Two-line — supporting text (72dp)</h2>
+      <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item
+          label="Notifications"
+          leading-icon="notifications"
+          supporting-text="3 new this week"
+          trailing-icon="chevron_right"></material-list-item>
+        <material-list-item
+          label="Storage"
+          leading-icon="storage"
+          supporting-text="42.1 GB of 64 GB used"
+          trailing-text="66%"
+          divider="top"></material-list-item>
+        <material-list-item
+          label="Battery"
+          leading-icon="battery_full"
+          supporting-text="Charging — 1h 12m to full"
+          divider="top"></material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Three-line — overline + supporting text (88dp)</h2>
+      <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item
+          overline="Alert"
+          label="Server CPU above 90%"
+          supporting-text="api-prod-2 has been at 94% for 12 minutes — auto-scaling triggered."
+          leading-icon="warning"
+          trailing-icon="chevron_right"></material-list-item>
+        <material-list-item
+          overline="Backup"
+          label="Daily snapshot complete"
+          supporting-text="3.4 GB written to s3://robusta-backups/2026-05-01/. Retention: 30 days."
+          leading-icon="cloud_done"
+          divider="top"></material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Leading avatars</h2>
+      <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item label="Alex Chen" supporting-text="alex@example.com">
+          <span slot="leading" class="w-10 h-10 rounded-full bg-primary text-on-primary inline-flex items-center justify-center text-sm font-medium">AC</span>
+          <material-icon-button slot="trailing" icon="more_vert" variant="standard" aria-label="More"></material-icon-button>
+        </material-list-item>
+        <material-list-item label="Brianna Olsen" supporting-text="brianna@example.com" divider="top">
+          <span slot="leading" class="w-10 h-10 rounded-full bg-tertiary text-on-tertiary inline-flex items-center justify-center text-sm font-medium">BO</span>
+          <material-icon-button slot="trailing" icon="more_vert" variant="standard" aria-label="More"></material-icon-button>
+        </material-list-item>
+        <material-list-item label="Cameron Singh" supporting-text="cameron@example.com" divider="top">
+          <span slot="leading" class="w-10 h-10 rounded-full bg-secondary text-on-secondary inline-flex items-center justify-center text-sm font-medium">CS</span>
+          <material-icon-button slot="trailing" icon="more_vert" variant="standard" aria-label="More"></material-icon-button>
+        </material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Multi-select — leading checkboxes</h2>
+      <material-list id="filters" selection="multi" class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item value="unread" label="Unread">
+          <material-checkbox slot="leading"></material-checkbox>
+        </material-list-item>
+        <material-list-item value="starred" label="Starred" selected divider="top">
+          <material-checkbox slot="leading" checked></material-checkbox>
+        </material-list-item>
+        <material-list-item value="muted" label="Muted" divider="top">
+          <material-checkbox slot="leading"></material-checkbox>
+        </material-list-item>
+        <material-list-item value="archived" label="Archived" divider="top">
+          <material-checkbox slot="leading"></material-checkbox>
+        </material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Single-select — expressive variant</h2>
+      <material-list id="theme-list" selection="single" variant="expressive" class="rounded-xl bg-surface-container-low p-2">
+        <material-list-item value="system" label="System default" leading-icon="settings_suggest"></material-list-item>
+        <material-list-item value="light" label="Light" leading-icon="light_mode" selected></material-list-item>
+        <material-list-item value="dark" label="Dark" leading-icon="dark_mode"></material-list-item>
+        <material-list-item value="hc" label="High contrast" leading-icon="contrast"></material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Navigation — href + trailing chevron</h2>
+      <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item href="#account" label="Account" leading-icon="person" trailing-icon="chevron_right"></material-list-item>
+        <material-list-item href="#privacy" label="Privacy & security" leading-icon="lock" trailing-icon="chevron_right" divider="top"></material-list-item>
+        <material-list-item href="#about"   label="About"               leading-icon="info" trailing-icon="chevron_right" divider="top"></material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-lg font-semibold">Selection log</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Plain list --&gt;
+&lt;material-list&gt;
+  &lt;material-list-item label="Inbox" leading-icon="inbox"&gt;&lt;/material-list-item&gt;
+  &lt;material-list-item label="Starred" leading-icon="star" divider="top"&gt;&lt;/material-list-item&gt;
+&lt;/material-list&gt;
+
+&lt;!-- Two-line + trailing action --&gt;
+&lt;material-list-item
+    label="Notifications"
+    supporting-text="3 new this week"
+    leading-icon="notifications"
+    trailing-icon="chevron_right"&gt;&lt;/material-list-item&gt;
+
+&lt;!-- Multi-select with leading checkboxes (clicking the row toggles the box) --&gt;
+&lt;material-list selection="multi"&gt;
+  &lt;material-list-item value="unread" label="Unread"&gt;
+    &lt;material-checkbox slot="leading"&gt;&lt;/material-checkbox&gt;
+  &lt;/material-list-item&gt;
+  &lt;material-list-item value="starred" label="Starred" selected&gt;
+    &lt;material-checkbox slot="leading" checked&gt;&lt;/material-checkbox&gt;
+  &lt;/material-list-item&gt;
+&lt;/material-list&gt;
+
+&lt;!-- Single-select, expressive variant (rounded selection highlight) --&gt;
+&lt;material-list selection="single" variant="expressive"&gt;
+  &lt;material-list-item value="light" label="Light" leading-icon="light_mode" selected&gt;&lt;/material-list-item&gt;
+  &lt;material-list-item value="dark"  label="Dark"  leading-icon="dark_mode"&gt;&lt;/material-list-item&gt;
+&lt;/material-list&gt;
+
+&lt;!-- Navigation list — href turns the row into a link --&gt;
+&lt;material-list-item href="/settings/account" label="Account"
+                    leading-icon="person" trailing-icon="chevron_right"&gt;&lt;/material-list-item&gt;
+
+&lt;!-- Listen for selection --&gt;
+&lt;script&gt;
+  document.querySelector('material-list').addEventListener('materialListSelect', e =&gt; {
+    console.log(e.detail.value, e.detail.checked);
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    const log = document.getElementById('log');
+    document.addEventListener('materialListSelect', (e) => {
+      const list = e.target.closest('material-list');
+      const { value, checked } = e.detail;
+      const checkedPart = typeof checked === 'boolean' ? ` (checked=${checked})` : '';
+      log.textContent = `[${list?.id || 'list'}] → ${value ?? '(no value)'}${checkedPart}`;
+    });
+  </script>
+</body>
+</html>
