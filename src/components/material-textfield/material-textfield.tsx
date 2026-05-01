@@ -35,6 +35,7 @@ const AFFIX_BASE =
 
 @Component({
   tag: 'material-textfield',
+  styleUrl: 'material-textfield.css',
   shadow: true,
   formAssociated: true,
 })

@@ -29,6 +29,7 @@ const BASE =
 
 @Component({
   tag: 'material-button',
+  styleUrl: 'material-button.css',
   shadow: true,
   formAssociated: true,
 })

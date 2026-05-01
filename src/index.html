@@ -131,6 +131,105 @@
     </section>
 
     <!-- ================================================================
+         material-icon-button
+         ================================================================ -->
+    <section id="material-icon-button" class="space-y-6">
+      <header>
+        <h2 class="text-xl font-semibold">material-icon-button</h2>
+        <p class="text-on-surface-variant text-sm mt-1">
+          MD3 Expressive icon buttons — 4 colors × 5 sizes × round/square × default/narrow/wide.
+          Toggle variant morphs shape on selection. XS/S keep a 48dp accessibility target.
+        </p>
+      </header>
+
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+        <code class="text-sm text-on-surface-variant">filled</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button icon="edit" aria-label="Edit"></material-icon-button>
+          <material-icon-button icon="edit" aria-label="Disabled" disabled></material-icon-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">tonal</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button variant="tonal" icon="favorite" aria-label="Like"></material-icon-button>
+          <material-icon-button variant="tonal" icon="favorite" aria-label="Disabled" disabled></material-icon-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">outlined</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button variant="outlined" icon="settings" aria-label="Settings"></material-icon-button>
+          <material-icon-button variant="outlined" icon="settings" aria-label="Disabled" disabled></material-icon-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">standard</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button variant="standard" icon="more_vert" aria-label="More"></material-icon-button>
+          <material-icon-button variant="standard" icon="more_vert" aria-label="Disabled" disabled></material-icon-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">sizes</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button size="xs" icon="add" aria-label="XS"></material-icon-button>
+          <material-icon-button size="s"  icon="add" aria-label="S"></material-icon-button>
+          <material-icon-button size="m"  icon="add" aria-label="M"></material-icon-button>
+          <material-icon-button size="l"  icon="add" aria-label="L"></material-icon-button>
+          <material-icon-button size="xl" icon="add" aria-label="XL"></material-icon-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">square</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button shape="square" size="xs" icon="bolt" aria-label="XS"></material-icon-button>
+          <material-icon-button shape="square" size="s"  icon="bolt" aria-label="S"></material-icon-button>
+          <material-icon-button shape="square" size="m"  icon="bolt" aria-label="M"></material-icon-button>
+          <material-icon-button shape="square" size="l"  icon="bolt" aria-label="L"></material-icon-button>
+          <material-icon-button shape="square" size="xl" icon="bolt" aria-label="XL"></material-icon-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">widths</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button size="m" width="narrow"  icon="menu" aria-label="Narrow"></material-icon-button>
+          <material-icon-button size="m" width="default" icon="menu" aria-label="Default"></material-icon-button>
+          <material-icon-button size="m" width="wide"    icon="menu" aria-label="Wide"></material-icon-button>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">toggle</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button toggle variant="filled"   icon="favorite_border" selected-icon="favorite" aria-label="Favorite"></material-icon-button>
+          <material-icon-button toggle variant="tonal"    icon="bookmark_border" selected-icon="bookmark" aria-label="Save"></material-icon-button>
+          <material-icon-button toggle variant="outlined" icon="visibility_off"  selected-icon="visibility" aria-label="Show"></material-icon-button>
+          <material-icon-button toggle variant="standard" icon="star_border"     selected-icon="star" aria-label="Star"></material-icon-button>
+          <material-icon-button toggle variant="filled"   icon="favorite_border" selected-icon="favorite" selected aria-label="Already favorite"></material-icon-button>
+        </div>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- variants: filled (default) | tonal | outlined | standard --&gt;
+&lt;material-icon-button icon="edit" aria-label="Edit"&gt;&lt;/material-icon-button&gt;
+&lt;material-icon-button variant="tonal" icon="favorite" aria-label="Like"&gt;&lt;/material-icon-button&gt;
+
+&lt;!-- sizes: xs | s (default) | m | l | xl --&gt;
+&lt;material-icon-button size="l" icon="add" aria-label="Add"&gt;&lt;/material-icon-button&gt;
+
+&lt;!-- shapes: round (default) | square --&gt;
+&lt;material-icon-button shape="square" icon="bolt" aria-label="Boost"&gt;&lt;/material-icon-button&gt;
+
+&lt;!-- widths: default | narrow | wide --&gt;
+&lt;material-icon-button size="m" width="wide" icon="menu" aria-label="Menu"&gt;&lt;/material-icon-button&gt;
+
+&lt;!-- toggle: shape morphs round↔square on selection; selected-icon optional --&gt;
+&lt;material-icon-button toggle icon="favorite_border" selected-icon="favorite"
+                       aria-label="Favorite"&gt;&lt;/material-icon-button&gt;
+
+&lt;!-- form-associated: submits name=value when toggle is selected --&gt;
+&lt;form&gt;
+  &lt;material-icon-button toggle name="pin" value="on" icon="push_pin"
+                         aria-label="Pin"&gt;&lt;/material-icon-button&gt;
+&lt;/form&gt;</code></pre>
+      </details>
+    </section>
+
+    <!-- ================================================================
          material-card
          ================================================================ -->
     <section id="material-card" class="space-y-6">
