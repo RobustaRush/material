@@ -412,6 +412,38 @@
           <material-textfield label="Phone" leading-icon="phone" trailing-icon="cancel" type="tel"></material-textfield>
         </div>
 
+        <code class="text-sm text-on-surface-variant pt-3">trailing action</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textfield variant="filled" label="Password" type="password" value="hunter2" password-toggle></material-textfield>
+          <material-textfield label="Attachment" help-text="Click the icon to pick a file" id="tf-attach">
+            <material-icon-button slot="trailing" size="s" variant="standard"
+                                  icon="attach_file" aria-label="Choose file"></material-icon-button>
+          </material-textfield>
+        </div>
+        <script>
+          document.querySelector('#tf-attach [slot="trailing"]')
+            ?.addEventListener('click', () => alert('Open file picker dialog'));
+        </script>
+
+        <code class="text-sm text-on-surface-variant pt-3">file field</code>
+        <form id="ff-form" class="space-y-4" onsubmit="event.preventDefault(); document.getElementById('ff-out').textContent = JSON.stringify([...new FormData(event.target)].map(([k,v]) => [k, v instanceof File ? `File(${v.name||'-'})` : v]));">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <material-file-field variant="filled" name="resume_filled" label="Resume"
+                                 current-url="https://example.com/resume.pdf" current-name="resume.pdf"
+                                 change-label="Change file" clear-label="Clear file"
+                                 undo-label="Undo clear" download-label="Download file"
+                                 help-text="Click filename or icon to replace"></material-file-field>
+            <material-file-field name="contract_outlined" label="Contract"
+                                 change-label="Change file" clear-label="Clear file"
+                                 undo-label="Undo clear" download-label="Download file"
+                                 help-text="No initial file"></material-file-field>
+          </div>
+          <div class="flex items-center gap-3 pt-2">
+            <material-button type="submit" variant="filled" label="Submit form"></material-button>
+            <code id="ff-out" class="text-xs text-on-surface-variant"></code>
+          </div>
+        </form>
+
         <code class="text-sm text-on-surface-variant pt-3">prefix / suffix</code>
         <div class="grid sm:grid-cols-2 gap-4">
           <material-textfield variant="filled" label="Amount" prefix="$" suffix=".00" type="number"></material-textfield>

@@ -31,6 +31,21 @@
 | `change` |             | `CustomEvent<{ selected: boolean; }>` |
 
 
+## Dependencies
+
+### Used by
+
+ - [material-file-field](../material-file-field)
+ - [material-textfield](../material-textfield)
+
+### Graph
+```mermaid
+graph TD;
+  material-file-field --> material-icon-button
+  material-textfield --> material-icon-button
+  style material-icon-button fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

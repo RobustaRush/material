@@ -4,6 +4,7 @@ import {
   Event,
   EventEmitter,
   Prop,
+  State,
   Watch,
   AttachInternals,
   h,
@@ -57,6 +58,19 @@ export class MaterialTextfield {
   @Prop({ reflect: true }) error = false;
   @Prop() leadingIcon?: string;
   @Prop() trailingIcon?: string;
+  // Built-in show/hide toggle for type=password. When set, an interactive
+  // trailing icon-button is rendered and the input type flips between
+  // 'password' and 'text' based on local state.
+  @Prop() passwordToggle = false;
+  // Visually grays + strikes-through the input value (e.g. for a deferred
+  // "clear" state in composed components like material-file-field). The
+  // input stays focusable and accessible.
+  @Prop() dimmed = false;
+  // Reserve extra right-side padding (pr-24 instead of pr-12) so a trailing
+  // slot can host two icon-buttons side by side.
+  @Prop() wideTrailing = false;
+
+  @State() private passwordVisible = false;
   @Prop() prefix?: string;
   @Prop() suffix?: string;
   @Prop() maxLength?: number;
@@ -103,15 +117,29 @@ export class MaterialTextfield {
     this.change.emit({ value: this.value });
   };
 
+  private togglePassword = (e: CustomEvent<{ selected: boolean }>) => {
+    this.passwordVisible = e.detail.selected;
+  };
+
   render() {
     const { variant, label, helpText, errorText, error,
             prefix, suffix, leadingIcon, trailingIcon, maxLength } = this;
+
+    const showPwdToggle = this.passwordToggle && this.type === 'password';
+    const hasTrailingSlot = !!this.el.querySelector(':scope > [slot="trailing"]');
+    const hasLeadingSlot = !!this.el.querySelector(':scope > [slot="leading"]');
+    const hasTrailingAction = showPwdToggle || hasTrailingSlot;
+    const hasLeading = !!leadingIcon || hasLeadingSlot;
+    const effectiveType = showPwdToggle && this.passwordVisible ? 'text' : this.type;
+    const showStaticTrailing = !!trailingIcon && !hasTrailingAction;
+    const showStaticLeading = !!leadingIcon && !hasLeadingSlot;
+    const reserveTrailing = !!trailingIcon || hasTrailingAction;
 
     const subText = error ? errorText : helpText;
     const showCounter = typeof maxLength === 'number';
     const subToneCls = error ? 'text-error' : 'text-on-surface-variant';
     const iconToneCls = error ? 'text-error' : 'text-on-surface-variant';
-    const labelLeft = leadingIcon ? 'left-12' : 'left-4';
+    const labelLeft = hasLeading ? 'left-12' : 'left-4';
 
     const labelRest =
       `absolute ${labelLeft} top-1/2 -translate-y-1/2 ` +
@@ -130,11 +158,42 @@ export class MaterialTextfield {
       </span>
     );
 
+    // Leading slot — when provided, replaces the static leading-icon span.
+    // Same 12dp-from-edge positioning so it lines up with the icon spec.
+    const renderLeadingSlot = () => hasLeadingSlot && (
+      <span class={`absolute left-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center ${iconToneCls}`}>
+        <slot name="leading" />
+      </span>
+    );
+
+    // Interactive trailing area — sized to keep the visual icon ~12dp from
+    // the right edge, matching the static trailing-icon position. Uses a
+    // size-s icon-button (40dp visual inside a 48dp tap target).
+    const renderTrailingAction = () => hasTrailingAction && (
+      <span class="absolute right-1 top-1/2 -translate-y-1/2 z-10">
+        {showPwdToggle ? (
+          <material-icon-button
+            size="s"
+            variant="standard"
+            toggle
+            selected={this.passwordVisible}
+            icon="visibility"
+            selected-icon="visibility_off"
+            disabled={this.disabled}
+            aria-label={this.passwordVisible ? 'Hide password' : 'Show password'}
+            onChange={this.togglePassword as any}
+          />
+        ) : (
+          <slot name="trailing" />
+        )}
+      </span>
+    );
+
     const renderInput = (extraCls: string) => (
       <input
         ref={el => (this.inputEl = el)}
-        class={`${INPUT_BASE} ${extraCls}`}
-        type={this.type}
+        class={`${INPUT_BASE} ${extraCls} ${this.dimmed ? 'text-on-surface/40 line-through' : ''}`}
+        type={effectiveType}
         name={this.name}
         value={this.value}
         placeholder={this.placeholder ?? ' '}
@@ -177,17 +236,19 @@ export class MaterialTextfield {
           'group-hover:bg-on-surface ' +
           'group-focus-within:h-0.5 group-focus-within:bg-primary';
 
-      const innerL = leadingIcon ? 'pl-12' : (prefix ? 'pl-4' : '');
-      const innerR = trailingIcon ? 'pr-12' : (suffix ? 'pr-4' : '');
-      const inputL = leadingIcon ? '' : (prefix ? 'pl-1' : 'pl-4');
-      const inputR = trailingIcon ? '' : (suffix ? 'pr-1' : 'pr-4');
+      const innerL = hasLeading ? 'pl-12' : (prefix ? 'pl-4' : '');
+      const innerR = reserveTrailing ? (this.wideTrailing ? 'pr-24' : 'pr-12') : (suffix ? 'pr-4' : '');
+      const inputL = hasLeading ? '' : (prefix ? 'pl-1' : 'pl-4');
+      const inputR = reserveTrailing ? '' : (suffix ? 'pr-1' : 'pr-4');
       const affixFilled = `${AFFIX_BASE} self-stretch pt-6 pb-2`;
 
       return (
         <div class="block w-full">
           <div class="group relative w-full h-14 rounded-t bg-surface-container-highest hover:bg-surface-container-high transition-colors">
-            {renderIcon('left', leadingIcon)}
-            {renderIcon('right', trailingIcon)}
+            {showStaticLeading && renderIcon('left', leadingIcon)}
+            {renderLeadingSlot()}
+            {showStaticTrailing && renderIcon('right', trailingIcon)}
+            {renderTrailingAction()}
             <div class={`flex items-end h-full ${innerL} ${innerR}`}>
               {prefix && (
                 <span class={affixFilled} aria-hidden="true">{prefix}</span>
@@ -216,7 +277,7 @@ export class MaterialTextfield {
       'group-focus-within:top-0 group-focus-within:text-xs ' +
       'group-has-[input:not(:placeholder-shown)]:top-0 ' +
       'group-has-[input:not(:placeholder-shown)]:text-xs' +
-      (leadingIcon
+      (hasLeading
         ? ' group-focus-within:left-4 group-has-[input:not(:placeholder-shown)]:left-4'
         : '');
 
@@ -231,16 +292,18 @@ export class MaterialTextfield {
       ? '-ml-[2px]'
       : '-ml-px group-focus-within:-ml-[2px]';
 
-    const innerL = leadingIcon ? 'pl-12' : '';
-    const innerR = trailingIcon ? 'pr-12' : '';
-    const inputL = leadingIcon ? '' : (prefix ? 'pl-1' : 'pl-4');
-    const inputR = trailingIcon ? '' : (suffix ? 'pr-1' : 'pr-4');
+    const innerL = hasLeading ? 'pl-12' : '';
+    const innerR = reserveTrailing ? (this.wideTrailing ? 'pr-24' : 'pr-12') : '';
+    const inputL = hasLeading ? '' : (prefix ? 'pl-1' : 'pl-4');
+    const inputR = reserveTrailing ? '' : (suffix ? 'pr-1' : 'pr-4');
 
     return (
       <div class="block w-full">
         <div class="group relative w-full h-14">
-          {renderIcon('left', leadingIcon)}
-          {renderIcon('right', trailingIcon)}
+          {showStaticLeading && renderIcon('left', leadingIcon)}
+          {renderLeadingSlot()}
+          {showStaticTrailing && renderIcon('right', trailingIcon)}
+          {renderTrailingAction()}
           <div class={`flex items-center h-full ${innerL} ${innerR}`}>
             {prefix && (
               <span class={`${AFFIX_BASE} pl-4`} aria-hidden="true">{prefix}</span>
