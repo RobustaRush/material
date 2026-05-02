@@ -108,17 +108,18 @@ const TARGET =
 
 // Visual container — non-interactive. Focus, hover & press visuals ride the parent
 // button via `group-*:` modifiers (the span itself never receives focus or :active).
-// `relative + overflow-hidden` so the absolute state-layer ::after stays inside the
-// rounded shape and morphs with it.
+// `relative` only — the state layer below carries its own `rounded-[inherit]` so it
+// matches the container's morphed shape without clipping its siblings (e.g. badges).
 const CONTAINER_BASE =
-  'relative overflow-hidden inline-flex items-center justify-center box-border ' +
+  'relative inline-flex items-center justify-center box-border ' +
   'transition-[border-radius,background-color,color] ' +
   'group-focus-visible:outline-2 group-focus-visible:outline-secondary group-focus-visible:outline-offset-2';
 
 // MD3 state layer: 8% on hover, 10% on focus/pressed. currentColor = icon color =
 // the on-color of the container, which is the canonical state-layer color.
+// `rounded-[inherit]` keeps the layer shaped like the container as the radius morphs.
 const STATE_LAYER =
-  'absolute inset-0 pointer-events-none bg-current opacity-0 transition-opacity ' +
+  'absolute inset-0 pointer-events-none bg-current opacity-0 transition-opacity rounded-[inherit] ' +
   'group-hover:opacity-[0.08] group-focus-visible:opacity-[0.10] group-active:opacity-[0.10]';
 
 @Component({
@@ -237,6 +238,9 @@ export class MaterialIconButton {
 
     // Pressed-radius morph rides the button's :active state via group-active: —
     // the visual span isn't the click target, so its own :active never fires.
+    // Badge slot is anchored to a wrapper hugging the icon glyph so the badge sits
+    // at the icon's top-trailing corner per MD3, not at the button's bounding-box
+    // corner (which on round L/XL buttons is well outside the icon).
     const visual = (
       <span
         class={[
@@ -250,8 +254,13 @@ export class MaterialIconButton {
         aria-hidden="true"
       >
         <span class={STATE_LAYER} aria-hidden="true"></span>
-        <span class={`material-symbols leading-none ${sz.icon} relative`} aria-hidden="true">
-          {icon}
+        <span class="relative inline-flex">
+          <span class={`material-symbols leading-none ${sz.icon}`} aria-hidden="true">
+            {icon}
+          </span>
+          <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 pointer-events-none z-10">
+            <slot name="badge" />
+          </span>
         </span>
       </span>
     );

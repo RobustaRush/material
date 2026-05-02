@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-badge — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-badge</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 badge — small dot for unread state, large pill for counts up to 4 chars (e.g. <code>"999+"</code>).
+          Anchored to a host icon via <code>slot="badge"</code>; default Error color, with <code>primary</code> / <code>tertiary</code> alternatives.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Variants</h2>
+      <p class="text-on-surface-variant text-sm">
+        Omit <code>value</code> for a 6dp dot; pass a string for a 16dp pill that grows
+        with content. Caller is responsible for clamping (the component does not interpret the value).
+      </p>
+      <div class="flex flex-wrap gap-8 items-end">
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">notifications</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge></material-badge>
+            </span>
+          </span>
+          <code>dot</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">notifications</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge value="1"></material-badge>
+            </span>
+          </span>
+          <code>"1"</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">notifications</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge value="8"></material-badge>
+            </span>
+          </span>
+          <code>"8"</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">notifications</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge value="42"></material-badge>
+            </span>
+          </span>
+          <code>"42"</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">notifications</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge value="999+"></material-badge>
+            </span>
+          </span>
+          <code>"999+"</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Colors</h2>
+      <p class="text-on-surface-variant text-sm">
+        MD3 strongly recommends the default Error role; <code>primary</code> and <code>tertiary</code>
+        are exposed for non-alert accents. Custom colors must clear 3:1 contrast against their host.
+      </p>
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+        <code class="text-sm text-on-surface-variant">error · default</code>
+        <div class="flex gap-6 items-center">
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge></material-badge>
+            </span>
+          </span>
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge value="3"></material-badge>
+            </span>
+          </span>
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge value="999+"></material-badge>
+            </span>
+          </span>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">primary</code>
+        <div class="flex gap-6 items-center">
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge color="primary"></material-badge>
+            </span>
+          </span>
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge color="primary" value="3"></material-badge>
+            </span>
+          </span>
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge color="primary" value="999+"></material-badge>
+            </span>
+          </span>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">tertiary</code>
+        <div class="flex gap-6 items-center">
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge color="tertiary"></material-badge>
+            </span>
+          </span>
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge color="tertiary" value="3"></material-badge>
+            </span>
+          </span>
+          <span class="relative inline-flex w-6 h-6 items-center justify-center">
+            <span class="material-symbols text-[24px]" aria-hidden="true">mail</span>
+            <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+              <material-badge color="tertiary" value="999+"></material-badge>
+            </span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Hosts</h2>
+      <p class="text-on-surface-variant text-sm">
+        Robusta components that anchor a badge via <code>slot="badge"</code>: icon-button (top-right of
+        the icon), navigation-item (collapsed top-right of indicator, expanded trailing edge of row),
+        and any list-item via the <code>trailing</code> slot.
+      </p>
+
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div class="rounded-xl bg-surface-container-low border border-outline-variant p-6 space-y-4">
+          <p class="text-sm text-on-surface-variant"><code>material-icon-button</code></p>
+          <div class="flex gap-4 items-center">
+            <material-icon-button variant="standard" icon="mail" aria-label="Mail, 3 unread">
+              <material-badge slot="badge" value="3"></material-badge>
+            </material-icon-button>
+            <material-icon-button variant="standard" icon="notifications" aria-label="Notifications, new">
+              <material-badge slot="badge"></material-badge>
+            </material-icon-button>
+            <material-icon-button variant="filled" size="m" icon="chat" aria-label="Chats, 12 unread">
+              <material-badge slot="badge" value="12"></material-badge>
+            </material-icon-button>
+            <material-icon-button variant="tonal" size="m" icon="campaign" aria-label="Campaigns, 999+ pending">
+              <material-badge slot="badge" value="999+"></material-badge>
+            </material-icon-button>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-surface-container-low border border-outline-variant p-6 space-y-4">
+          <p class="text-sm text-on-surface-variant"><code>material-navigation-item</code> · expanded</p>
+          <div class="bg-surface rounded-2xl p-2 max-w-xs">
+            <material-navigation-item variant="rail-expanded" icon="inbox" label="Inbox" active aria-label="Inbox, 8 unread">
+              <material-badge slot="badge" value="8"></material-badge>
+            </material-navigation-item>
+            <material-navigation-item variant="rail-expanded" icon="send" label="Outbox" aria-label="Outbox, new">
+              <material-badge slot="badge"></material-badge>
+            </material-navigation-item>
+            <material-navigation-item variant="rail-expanded" icon="campaign" label="Announcements" aria-label="Announcements, 999+ unread">
+              <material-badge slot="badge" value="999+"></material-badge>
+            </material-navigation-item>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-surface-container-low border border-outline-variant p-6 space-y-4 sm:col-span-2">
+          <p class="text-sm text-on-surface-variant"><code>material-list-item</code> · trailing slot</p>
+          <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+            <material-list-item label="All inboxes" leading-icon="inbox" aria-label="All inboxes, 24 unread">
+              <material-badge slot="trailing" value="24"></material-badge>
+            </material-list-item>
+            <material-list-item label="Personal" leading-icon="person" divider="top" aria-label="Personal, new">
+              <material-badge slot="trailing"></material-badge>
+            </material-list-item>
+            <material-list-item label="Promotions" leading-icon="local_offer" divider="top" aria-label="Promotions, 999+ unread">
+              <material-badge slot="trailing" value="999+"></material-badge>
+            </material-list-item>
+          </material-list>
+        </div>
+      </div>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Small dot — unread indicator --&gt;
+&lt;material-icon-button icon="mail" aria-label="Mail, new"&gt;
+  &lt;material-badge slot="badge"&gt;&lt;/material-badge&gt;
+&lt;/material-icon-button&gt;
+
+&lt;!-- Large pill — count, with caller-clamped value --&gt;
+&lt;material-icon-button icon="chat" aria-label="Chats, 12 unread"&gt;
+  &lt;material-badge slot="badge" value="12"&gt;&lt;/material-badge&gt;
+&lt;/material-icon-button&gt;
+
+&lt;!-- 4-char overflow — caller passes the final string --&gt;
+&lt;material-icon-button icon="campaign" aria-label="Campaigns, 999+"&gt;
+  &lt;material-badge slot="badge" value="999+"&gt;&lt;/material-badge&gt;
+&lt;/material-icon-button&gt;
+
+&lt;!-- Color: error (default) | primary | tertiary --&gt;
+&lt;material-badge color="primary" value="3"&gt;&lt;/material-badge&gt;
+
+&lt;!-- Navigation item — already exposes slot="badge" --&gt;
+&lt;material-navigation-item icon="inbox" label="Inbox" aria-label="Inbox, 8 unread"&gt;
+  &lt;material-badge slot="badge" value="8"&gt;&lt;/material-badge&gt;
+&lt;/material-navigation-item&gt;
+
+&lt;!-- Ad-hoc on a custom icon — wrap in a positioned ancestor --&gt;
+&lt;span class="relative inline-flex"&gt;
+  &lt;span class="material-symbols"&gt;mail&lt;/span&gt;
+  &lt;span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2"&gt;
+    &lt;material-badge value="3"&gt;&lt;/material-badge&gt;
+  &lt;/span&gt;
+&lt;/span&gt;</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

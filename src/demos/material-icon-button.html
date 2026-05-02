@@ -98,6 +98,25 @@
           <material-icon-button toggle variant="standard" icon="star_border"     selected-icon="star" aria-label="Star"></material-icon-button>
           <material-icon-button toggle variant="filled"   icon="favorite_border" selected-icon="favorite" selected aria-label="Already favorite"></material-icon-button>
         </div>
+
+        <code class="text-sm text-on-surface-variant">badge</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button variant="standard" icon="notifications" aria-label="Notifications, new">
+            <material-badge slot="badge"></material-badge>
+          </material-icon-button>
+          <material-icon-button variant="standard" icon="mail" aria-label="Mail, 3 unread">
+            <material-badge slot="badge" value="3"></material-badge>
+          </material-icon-button>
+          <material-icon-button variant="filled" icon="chat" aria-label="Chats, 12 unread">
+            <material-badge slot="badge" value="12"></material-badge>
+          </material-icon-button>
+          <material-icon-button variant="tonal" size="m" icon="campaign" aria-label="Campaigns, 999+ pending">
+            <material-badge slot="badge" value="999+"></material-badge>
+          </material-icon-button>
+          <material-icon-button variant="standard" size="l" icon="inbox" aria-label="Inbox, 8 unread">
+            <material-badge slot="badge" value="8"></material-badge>
+          </material-icon-button>
+        </div>
       </div>
 
       <details class="rounded-lg bg-surface-container-low border border-outline-variant">

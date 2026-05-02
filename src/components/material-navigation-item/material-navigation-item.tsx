@@ -84,18 +84,22 @@ export class MaterialNavigationItem {
         : 'bg-transparent text-on-surface-variant',
     ].join(' ');
 
+    // Badge slot lives OUTSIDE the indicator's overflow-hidden box; the wrapper
+    // hugs the indicator so anchoring stays at the indicator's top-trailing edge.
     return (
       <span class="flex flex-col items-center justify-center w-full py-2 gap-1">
-        <span class={indicator}>
-          {this.stateLayer()}
-          <span
-            class="material-symbols leading-none text-[24px] relative"
-            style={this.iconStyle()}
-            aria-hidden="true"
-          >
-            {this.iconName()}
+        <span class="relative inline-flex">
+          <span class={indicator}>
+            {this.stateLayer()}
+            <span
+              class="material-symbols leading-none text-[24px] relative"
+              style={this.iconStyle()}
+              aria-hidden="true"
+            >
+              {this.iconName()}
+            </span>
           </span>
-          <span class="absolute top-0 right-2 translate-x-1/2 -translate-y-1/2">
+          <span class="absolute top-0 right-2 translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
             <slot name="badge" />
           </span>
         </span>

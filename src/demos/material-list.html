@@ -163,6 +163,22 @@
     </section>
 
     <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Trailing badges — unread / count indicators</h2>
+      <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item label="All inboxes" leading-icon="inbox" aria-label="All inboxes, 24 unread">
+          <material-badge slot="trailing" value="24"></material-badge>
+        </material-list-item>
+        <material-list-item label="Personal" leading-icon="person" divider="top" aria-label="Personal, new">
+          <material-badge slot="trailing"></material-badge>
+        </material-list-item>
+        <material-list-item label="Promotions" leading-icon="local_offer" divider="top" aria-label="Promotions, 999+ unread">
+          <material-badge slot="trailing" value="999+"></material-badge>
+        </material-list-item>
+        <material-list-item label="Updates" leading-icon="campaign" divider="top"></material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
       <h2 class="text-lg font-semibold">Navigation — href + trailing chevron</h2>
       <material-list class="rounded-xl border border-outline-variant overflow-hidden">
         <material-list-item href="#account" label="Account" leading-icon="person" trailing-icon="chevron_right"></material-list-item>
