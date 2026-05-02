@@ -1,0 +1,14 @@
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+  pointer-events: none;
+}
+
+.indicator {
+  /* Rotation is driven from the rAF morph loop so spin and morph share the
+     same eased per-segment timing — the indicator rests on each shape and
+     accelerates through the morph, matching the reference video
+     (loading-indicator/images/animation.mp4). */
+  transform-origin: center;
+  will-change: transform;
+}

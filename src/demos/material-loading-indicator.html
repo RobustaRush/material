@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-loading-indicator — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-loading-indicator</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 Expressive loading indicator — spins while morphing through 7 shapes (~4.7s cycle).
+          <code>default</code> sits on a surface; <code>contained</code> adds a primary-container disk for placement over content.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Default — sizes</h2>
+      <p class="text-on-surface-variant text-sm">
+        Bare active indicator on a surface. Color tracks <code>primary</code>. Spec range 24–240dp; default 48dp.
+      </p>
+      <div class="flex flex-wrap items-end gap-10">
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-loading-indicator size="24" label="Loading"></material-loading-indicator>
+          <code>24</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-loading-indicator size="48" label="Loading"></material-loading-indicator>
+          <code>48 (default)</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-loading-indicator size="96" label="Loading"></material-loading-indicator>
+          <code>96</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-loading-indicator size="160" label="Loading"></material-loading-indicator>
+          <code>160</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Contained — sizes</h2>
+      <p class="text-on-surface-variant text-sm">
+        Adds a circular <code>primary-container</code> disk; indicator fills with <code>on-primary-container</code>.
+        Use over content (cards, images, lists), or for pull-to-refresh.
+      </p>
+      <div class="flex flex-wrap items-end gap-10">
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-loading-indicator variant="contained" size="24" label="Loading"></material-loading-indicator>
+          <code>24</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-loading-indicator variant="contained" size="48" label="Loading"></material-loading-indicator>
+          <code>48 (default)</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-loading-indicator variant="contained" size="96" label="Loading"></material-loading-indicator>
+          <code>96</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-loading-indicator variant="contained" size="160" label="Loading"></material-loading-indicator>
+          <code>160</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Over content</h2>
+      <p class="text-on-surface-variant text-sm">
+        Centered above a busy surface. The contained variant carries enough contrast to remain legible without dimming the underlying content.
+      </p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="relative h-44 rounded-xl bg-surface-container border border-outline-variant overflow-hidden">
+          <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-2 p-4 opacity-60">
+            <div class="bg-tertiary-container rounded"></div>
+            <div class="bg-secondary-container rounded col-span-2"></div>
+            <div class="bg-primary-container rounded"></div>
+            <div class="bg-tertiary-container rounded"></div>
+            <div class="bg-secondary-container rounded"></div>
+            <div class="bg-primary-container rounded col-span-3"></div>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <material-loading-indicator variant="contained" size="56" label="Loading content"></material-loading-indicator>
+          </div>
+          <p class="absolute left-3 top-3 text-xs text-on-surface-variant"><code>contained</code> over content</p>
+        </div>
+        <div class="relative h-44 rounded-xl bg-surface-container border border-outline-variant overflow-hidden">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <material-loading-indicator size="56" label="Loading"></material-loading-indicator>
+          </div>
+          <p class="absolute left-3 top-3 text-xs text-on-surface-variant"><code>default</code> on a surface</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">In a button — async action</h2>
+      <p class="text-on-surface-variant text-sm">
+        Drop the indicator alongside a button label while an action is pending. Toggle <code>paused</code> to freeze for snapshot tests or visual debugging.
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <material-button id="loading-btn" variant="filled">
+          <span style="display:inline-flex;align-items:center;gap:8px">
+            <material-loading-indicator size="20" variant="contained" label="Saving"></material-loading-indicator>
+            Saving…
+          </span>
+        </material-button>
+        <material-button id="toggle-pause" variant="outlined">Toggle paused</material-button>
+        <span id="pause-state" class="text-sm text-on-surface-variant">running</span>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Reduced motion</h2>
+      <p class="text-on-surface-variant text-sm">
+        When the OS reports <code>prefers-reduced-motion: reduce</code>, the morph is held on shape #4 (squircle) and the spin slows to ~12s per turn.
+        Toggle <em>Rendering ▸ Emulate prefers-reduced-motion</em> in DevTools to preview.
+      </p>
+      <div class="flex items-center gap-6">
+        <material-loading-indicator size="64" label="Loading"></material-loading-indicator>
+        <p class="text-on-surface-variant text-sm">Same component — behavior is purely OS/preference-driven.</p>
+      </div>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Default — bare active indicator on a surface --&gt;
+&lt;material-loading-indicator label="Loading news article"&gt;&lt;/material-loading-indicator&gt;
+
+&lt;!-- Contained — disk for placement over content / pull-to-refresh --&gt;
+&lt;material-loading-indicator variant="contained" size="56"
+                            label="Refreshing feed"&gt;&lt;/material-loading-indicator&gt;
+
+&lt;!-- Inside a button while an action is pending --&gt;
+&lt;material-button variant="filled" disabled&gt;
+  &lt;material-loading-indicator size="20" variant="contained" label="Saving"&gt;&lt;/material-loading-indicator&gt;
+  Saving…
+&lt;/material-button&gt;
+
+&lt;!-- Pause both spin + morph (e.g., for visual regression tests) --&gt;
+&lt;material-loading-indicator paused&gt;&lt;/material-loading-indicator&gt;</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    const btn = document.getElementById('toggle-pause');
+    const indicator = document.querySelector('#loading-btn material-loading-indicator');
+    const state = document.getElementById('pause-state');
+    btn.addEventListener('click', () => {
+      const paused = indicator.hasAttribute('paused');
+      if (paused) {
+        indicator.removeAttribute('paused');
+        state.textContent = 'running';
+      } else {
+        indicator.setAttribute('paused', '');
+        state.textContent = 'paused';
+      }
+    });
+  </script>
+</body>
+</html>
