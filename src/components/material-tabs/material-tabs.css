@@ -1,0 +1,12 @@
+:host {
+  display: block;
+}
+
+/* Hide horizontal scrollbar in scrollable mode while preserving scrolling. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

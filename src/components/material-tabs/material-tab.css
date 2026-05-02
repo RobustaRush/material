@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+:host([scrollable-host]) {
+  flex: 0 0 auto;
+}

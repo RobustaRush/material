@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-tabs — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-tabs</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 tabs — primary &amp; secondary variants, fixed or scrollable, optional icons + badges; anchor or button mode.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Primary tabs — icon + label (64dp)</h2>
+      <p class="text-on-surface-variant text-sm">
+        Equal-width fixed tabs. Icons stack above labels. Active indicator is 3dp tall, top-rounded, hugs the label/icon column with a 24dp minimum. Trips carries a count badge; Explore shows a small dot for unread state.
+      </p>
+      <material-tabs id="tabs-primary-icon">
+        <material-tab value="flights" label="Flights" icon="flight" selected></material-tab>
+        <material-tab value="trips" label="Trips" icon="luggage">
+          <material-badge slot="badge" value="3"></material-badge>
+        </material-tab>
+        <material-tab value="explore" label="Explore" icon="explore">
+          <material-badge slot="badge"></material-badge>
+        </material-tab>
+      </material-tabs>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Primary above secondary</h2>
+      <p class="text-on-surface-variant text-sm">
+        Secondary tabs sit below primary tabs to establish hierarchy within a section. Their indicator is 2dp tall and spans the full tab width.
+      </p>
+      <material-tabs id="tabs-section-primary">
+        <material-tab value="library" label="Library" icon="folder" selected></material-tab>
+        <material-tab value="downloads" label="Downloads" icon="download"></material-tab>
+        <material-tab value="shared" label="Shared" icon="group"></material-tab>
+      </material-tabs>
+      <material-tabs id="tabs-section-secondary" variant="secondary">
+        <material-tab value="all" label="All" selected></material-tab>
+        <material-tab value="recent" label="Recent"></material-tab>
+        <material-tab value="favorites" label="Favorites"></material-tab>
+      </material-tabs>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Scrollable</h2>
+      <p class="text-on-surface-variant text-sm">
+        When the set won&apos;t fit on screen, opt in via <code>scrollable</code>. Tabs use intrinsic widths and the first tab is offset by 52dp from the leading edge.
+      </p>
+      <material-tabs id="tabs-scrollable" scrollable>
+        <material-tab value="overview" label="Overview" icon="dashboard" selected></material-tab>
+        <material-tab value="orders" label="Orders" icon="receipt_long"></material-tab>
+        <material-tab value="customers" label="Customers" icon="group"></material-tab>
+        <material-tab value="inventory" label="Inventory" icon="inventory_2"></material-tab>
+        <material-tab value="reports" label="Reports" icon="analytics"></material-tab>
+        <material-tab value="marketing" label="Marketing" icon="campaign"></material-tab>
+        <material-tab value="discounts" label="Discounts" icon="local_offer"></material-tab>
+        <material-tab value="settings" label="Settings" icon="settings"></material-tab>
+      </material-tabs>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Anchor mode — deep links</h2>
+      <p class="text-on-surface-variant text-sm">
+        Pass <code>href</code> to render a tab as <code>&lt;a&gt;</code>. The browser handles navigation; <code>materialTabSelect</code> still fires for SPA routers (React) and server-driven frameworks (Unpoly, HTMX).
+      </p>
+      <material-tabs id="tabs-anchors">
+        <material-tab href="#flights" value="flights" label="Flights" icon="flight" selected></material-tab>
+        <material-tab href="#trips" value="trips" label="Trips" icon="luggage"></material-tab>
+        <material-tab href="#explore" value="explore" label="Explore" icon="explore"></material-tab>
+      </material-tabs>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Disabled state</h2>
+      <p class="text-on-surface-variant text-sm">
+        Disabled tabs are skipped by Arrow / Home / End focus traversal.
+      </p>
+      <material-tabs id="tabs-disabled">
+        <material-tab value="active" label="Active" icon="task_alt" selected></material-tab>
+        <material-tab value="archived" label="Archived" icon="archive"></material-tab>
+        <material-tab value="locked" label="Locked" icon="lock" disabled></material-tab>
+      </material-tabs>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-lg font-semibold">Selection log</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Primary tabs with icons + a count badge --&gt;
+&lt;material-tabs&gt;
+  &lt;material-tab value="flights" label="Flights" icon="flight" selected&gt;&lt;/material-tab&gt;
+  &lt;material-tab value="trips" label="Trips" icon="luggage"&gt;
+    &lt;material-badge slot="badge" value="3"&gt;&lt;/material-badge&gt;
+  &lt;/material-tab&gt;
+  &lt;material-tab value="explore" label="Explore" icon="explore"&gt;&lt;/material-tab&gt;
+&lt;/material-tabs&gt;
+
+&lt;!-- Secondary tabs, label only --&gt;
+&lt;material-tabs variant="secondary"&gt;
+  &lt;material-tab value="all" label="All" selected&gt;&lt;/material-tab&gt;
+  &lt;material-tab value="recent" label="Recent"&gt;&lt;/material-tab&gt;
+&lt;/material-tabs&gt;
+
+&lt;!-- Scrollable --&gt;
+&lt;material-tabs scrollable&gt;…&lt;/material-tabs&gt;
+
+&lt;!-- Anchor mode (browser handles navigation; event still fires) --&gt;
+&lt;material-tabs&gt;
+  &lt;material-tab href="#flights" label="Flights" selected&gt;&lt;/material-tab&gt;
+&lt;/material-tabs&gt;
+
+&lt;script&gt;
+  document.querySelector('material-tabs').addEventListener('materialTabSelect', e =&gt; {
+    console.log(e.detail.value);
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    const log = document.getElementById('log');
+    document.addEventListener('materialTabSelect', (e) => {
+      const tabs = e.target.closest('material-tabs');
+      log.textContent = `[${tabs?.id || 'tabs'}] → ${e.detail.value ?? '(no value)'}`;
+    });
+  </script>
+</body>
+</html>
