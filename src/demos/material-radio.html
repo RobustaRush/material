@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-radio — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-radio</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 radio — 20dp ring, 48dp target, 40dp state-layer.
+          Coordinated by <code>material-radio-group</code> (form-associated, ARIA radiogroup, arrow-key navigation).
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-6">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-6 items-start">
+
+        <code class="text-sm text-on-surface-variant mt-2">vertical group</code>
+        <material-radio-group label="Notifications" value="email">
+          <material-radio value="email" label="Email"></material-radio>
+          <material-radio value="sms" label="SMS"></material-radio>
+          <material-radio value="push" label="Push"></material-radio>
+          <material-radio value="none" label="None"></material-radio>
+        </material-radio-group>
+
+        <code class="text-sm text-on-surface-variant mt-2">horizontal</code>
+        <material-radio-group label="Size" value="m" orientation="horizontal">
+          <material-radio value="s" label="S"></material-radio>
+          <material-radio value="m" label="M"></material-radio>
+          <material-radio value="l" label="L"></material-radio>
+          <material-radio value="xl" label="XL"></material-radio>
+        </material-radio-group>
+
+        <code class="text-sm text-on-surface-variant mt-2">leading label</code>
+        <material-radio-group label="Density" value="cozy">
+          <material-radio value="comfortable" label="Comfortable" label-position="leading"></material-radio>
+          <material-radio value="cozy" label="Cozy" label-position="leading"></material-radio>
+          <material-radio value="compact" label="Compact" label-position="leading"></material-radio>
+        </material-radio-group>
+
+        <code class="text-sm text-on-surface-variant mt-2">disabled item</code>
+        <material-radio-group label="Plan" value="basic">
+          <material-radio value="free" label="Free"></material-radio>
+          <material-radio value="basic" label="Basic"></material-radio>
+          <material-radio value="pro" label="Pro (coming soon)" disabled></material-radio>
+        </material-radio-group>
+
+        <code class="text-sm text-on-surface-variant mt-2">disabled group</code>
+        <material-radio-group label="Locked" value="b" disabled>
+          <material-radio value="a" label="Option A"></material-radio>
+          <material-radio value="b" label="Option B"></material-radio>
+        </material-radio-group>
+
+        <code class="text-sm text-on-surface-variant mt-2">help text</code>
+        <material-radio-group label="Delivery" value="standard"
+                              help-text="Standard arrives in 3–5 business days">
+          <material-radio value="standard" label="Standard"></material-radio>
+          <material-radio value="express" label="Express"></material-radio>
+        </material-radio-group>
+
+        <code class="text-sm text-on-surface-variant mt-2">error</code>
+        <material-radio-group label="Required choice" required error
+                              error-text="Please pick an option">
+          <material-radio value="yes" label="Yes"></material-radio>
+          <material-radio value="no" label="No"></material-radio>
+        </material-radio-group>
+
+        <code class="text-sm text-on-surface-variant mt-2">in a form</code>
+        <form id="radio-demo-form" class="flex flex-col gap-3">
+          <material-radio-group name="contact" value="email" label="Preferred contact" required>
+            <material-radio value="email" label="Email"></material-radio>
+            <material-radio value="phone" label="Phone"></material-radio>
+            <material-radio value="mail" label="Postal mail"></material-radio>
+          </material-radio-group>
+          <div class="flex gap-3 mt-1">
+            <material-button type="submit" variant="filled" size="xs" label="Submit"></material-button>
+            <material-button variant="text" size="xs" type="reset" label="Reset"></material-button>
+          </div>
+          <output id="radio-demo-output" class="text-sm text-on-surface-variant font-mono"></output>
+        </form>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- vertical (default) --&gt;
+&lt;material-radio-group name="contact" value="email" label="Preferred contact"&gt;
+  &lt;material-radio value="email" label="Email"&gt;&lt;/material-radio&gt;
+  &lt;material-radio value="phone" label="Phone"&gt;&lt;/material-radio&gt;
+&lt;/material-radio-group&gt;
+
+&lt;!-- horizontal --&gt;
+&lt;material-radio-group orientation="horizontal" value="m" label="Size"&gt;
+  &lt;material-radio value="s" label="S"&gt;&lt;/material-radio&gt;
+  &lt;material-radio value="m" label="M"&gt;&lt;/material-radio&gt;
+  &lt;material-radio value="l" label="L"&gt;&lt;/material-radio&gt;
+&lt;/material-radio-group&gt;
+
+&lt;!-- error + helper text --&gt;
+&lt;material-radio-group label="Required" required error error-text="Pick one"&gt;
+  &lt;material-radio value="y" label="Yes"&gt;&lt;/material-radio&gt;
+  &lt;material-radio value="n" label="No"&gt;&lt;/material-radio&gt;
+&lt;/material-radio-group&gt;
+
+&lt;!-- listen for changes --&gt;
+&lt;script&gt;
+  document.querySelector('material-radio-group')
+    .addEventListener('valueChange', e =&gt; console.log(e.detail.value));
+&lt;/script&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    serializeFormToOutput('radio-demo-form', 'radio-demo-output');
+  </script>
+</body>
+</html>
