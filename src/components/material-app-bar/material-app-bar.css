@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.bar {
+  display: grid;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  padding-left: 4px;
+  padding-right: 4px;
+  grid-template-areas: "leading headline trailing";
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: 64px;
+  transition:
+    grid-template-rows 200ms ease,
+    background-color 200ms ease;
+}
+
+:host([scrolled]) .bar {
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.leading   { grid-area: leading;  display: flex; align-items: center; }
+.trailing  { grid-area: trailing; display: flex; align-items: center; gap: 8px; }
+.headline-block {
+  grid-area: headline;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* Headline typography — Title Large (small / collapsed). */
+.headline {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--md-sys-color-on-surface);
+  display: block;
+  min-width: 0;
+}
+
+/* Subtitle — Label Medium (small variant). */
+.subtitle {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--md-sys-color-on-surface-variant);
+  display: block;
+  min-width: 0;
+}
+
+/* Hide subtitle wrapper if no content slotted (avoid stray gap). */
+.subtitle:not(:has(::slotted(*))) {
+  display: none;
+}
+
+/* Centered alignment — small variant only. Medium/large always lead-align
+   per MD3 guidelines (text wraps, can be centered too — kept simple here). */
+.bar[data-align="centered"] .headline-block {
+  align-items: center;
+  text-align: center;
+}
+
+/* ---------- Medium flexible (112dp) ---------- */
+.bar[data-variant="medium"]:not([data-collapsed]) {
+  grid-template-areas:
+    "leading .        trailing"
+    "headline headline headline";
+  grid-template-rows: 48px 64px;
+}
+
+.bar[data-variant="medium"]:not([data-collapsed]) .headline-block {
+  justify-content: flex-end;
+  padding-left: 16px;
+  padding-bottom: 12px;
+}
+
+.bar[data-variant="medium"]:not([data-collapsed]) .headline {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 400;
+}
+
+.bar[data-variant="medium"]:not([data-collapsed]) .subtitle {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+/* ---------- Large flexible (120dp) ---------- */
+.bar[data-variant="large"]:not([data-collapsed]) {
+  grid-template-areas:
+    "leading .        trailing"
+    "headline headline headline";
+  grid-template-rows: 48px 72px;
+}
+
+.bar[data-variant="large"]:not([data-collapsed]) .headline-block {
+  justify-content: flex-end;
+  padding-left: 16px;
+  padding-bottom: 12px;
+}
+
+.bar[data-variant="large"]:not([data-collapsed]) .headline {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 400;
+}
+
+.bar[data-variant="large"]:not([data-collapsed]) .subtitle {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+}
+
+/* Trailing icons use on-surface-variant per spec. The slotted icon-buttons
+   own their own color so this is a hint for any plain-text trailing slot
+   content. */
+.trailing {
+  color: var(--md-sys-color-on-surface-variant);
+}

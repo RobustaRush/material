@@ -1,0 +1,107 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 64px;
+  box-sizing: border-box;
+  padding-left: 4px;
+  padding-right: 4px;
+  background-color: var(--md-sys-color-surface);
+  transition: background-color 200ms ease;
+  gap: 4px;
+}
+
+:host([scrolled]) .bar {
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.leading,
+.trailing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.search-container {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 48px;
+  min-width: 0;
+  /* Search container fills available space, capped at 312dp; CSS max-width
+     enforces the cap, the outer flex distribution handles the rest. */
+  max-width: 312px;
+  margin: 0 auto;
+  padding: 0 8px;
+  border-radius: 9999px;
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  transition: background-color 200ms ease;
+}
+
+:host([scrolled]) .search-container {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.search-icon {
+  font-size: 24px;
+  line-height: 1;
+  color: var(--md-sys-color-on-surface-variant);
+  flex-shrink: 0;
+  padding-left: 4px;
+}
+
+.search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  margin: 0;
+  padding: 0 8px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+}
+
+.search-input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 1;
+}
+
+.search-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* Hide the native clear button on type=search; use a custom slot instead. */
+.search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.inside-trailing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inside-trailing:not(:has(::slotted(*))) {
+  display: none;
+}
+
+/* Focus ring on the search container when input is focused. */
+.search-container:focus-within {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
