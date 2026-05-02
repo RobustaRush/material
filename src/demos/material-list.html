@@ -146,6 +146,23 @@
     </section>
 
     <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Section grouping — full-width &amp; inset dividers</h2>
+      <p class="text-on-surface-variant text-sm">
+        Full-width dividers separate unrelated sections; inset dividers (anchored to the leading icon at 16dp) group related items.
+      </p>
+      <material-list class="rounded-xl border border-outline-variant overflow-hidden">
+        <material-list-item label="Account" leading-icon="person" trailing-icon="chevron_right"></material-list-item>
+        <material-list-item label="Sync" leading-icon="sync" trailing-icon="chevron_right"></material-list-item>
+        <material-divider inset="inset"></material-divider>
+        <material-list-item label="Notifications" leading-icon="notifications" trailing-icon="chevron_right"></material-list-item>
+        <material-list-item label="Sounds" leading-icon="volume_up" trailing-icon="chevron_right"></material-list-item>
+        <material-divider></material-divider>
+        <material-list-item label="About" leading-icon="info" trailing-icon="chevron_right"></material-list-item>
+        <material-list-item label="Sign out" leading-icon="logout"></material-list-item>
+      </material-list>
+    </section>
+
+    <section class="space-y-3">
       <h2 class="text-lg font-semibold">Navigation — href + trailing chevron</h2>
       <material-list class="rounded-xl border border-outline-variant overflow-hidden">
         <material-list-item href="#account" label="Account" leading-icon="person" trailing-icon="chevron_right"></material-list-item>
