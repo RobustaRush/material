@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  width: 100%;
+  /* height set inline from the component height calc — see render() */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The rAF loop short-circuits when prefers-reduced-motion is on. */
+}

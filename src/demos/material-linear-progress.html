@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-linear-progress — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-linear-progress</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 linear progress indicator — determinate / indeterminate × flat / wavy.
+          Configurable thickness; stop indicator on determinate. Long waits (5s+).
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Determinate — flat</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>value</code> in 0–100 drives the active fill. Stop indicator (4dp dot at the trailing edge) renders by default in determinate mode.
+        Track height stays at 4dp regardless of active thickness; the active indicator scales with <code>thickness</code>.
+      </p>
+      <div class="space-y-5">
+        <div class="space-y-1">
+          <p class="text-xs text-on-surface-variant">4dp (default) — value 0 / 25 / 50 / 75 / 100</p>
+          <material-linear-progress value="0" label="0%"></material-linear-progress>
+          <material-linear-progress value="25" label="25%"></material-linear-progress>
+          <material-linear-progress value="50" label="50%"></material-linear-progress>
+          <material-linear-progress value="75" label="75%"></material-linear-progress>
+          <material-linear-progress value="100" label="100%"></material-linear-progress>
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs text-on-surface-variant">8dp (sample) — stop indicator squashed to 4×2dp</p>
+          <material-linear-progress value="60" thickness="8" label="60%"></material-linear-progress>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Determinate — wavy</h2>
+      <p class="text-on-surface-variant text-sm">
+        Active indicator is a sine wave (3dp amplitude / 40dp wavelength). The phase animates so the wave appears to flow along the progress.
+        Total component height is <code>thickness + 2 × amplitude</code> = 10dp (4dp wavy) / 14dp (8dp wavy).
+      </p>
+      <div class="space-y-3">
+        <material-linear-progress value="50" wavy label="50% wavy"></material-linear-progress>
+        <material-linear-progress value="75" wavy thickness="8" label="75% wavy 8dp"></material-linear-progress>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Indeterminate</h2>
+      <p class="text-on-surface-variant text-sm">
+        Omit <code>value</code> for indeterminate. Two active bars sweep across the track on a ~1.8s cycle, overlapping in the middle.
+        No stop indicator (per spec).
+      </p>
+      <div class="space-y-3">
+        <p class="text-xs text-on-surface-variant">Flat 4dp / 8dp</p>
+        <material-linear-progress label="Loading"></material-linear-progress>
+        <material-linear-progress thickness="8" label="Loading"></material-linear-progress>
+        <p class="text-xs text-on-surface-variant pt-3">Wavy 4dp / 8dp</p>
+        <material-linear-progress wavy label="Loading"></material-linear-progress>
+        <material-linear-progress wavy thickness="8" label="Loading"></material-linear-progress>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Stop indicator modes</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>stop-indicator</code> = <code>auto</code> (default — determinate only) / <code>always</code> / <code>never</code>.
+        Per accessibility spec, the dot is required when track contrast with the surrounding container is below 3:1.
+      </p>
+      <div class="space-y-3">
+        <div class="space-y-1">
+          <p class="text-xs text-on-surface-variant">auto (default, determinate → on)</p>
+          <material-linear-progress value="60" label="60%"></material-linear-progress>
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs text-on-surface-variant">never</p>
+          <material-linear-progress value="60" stop-indicator="never" label="60%"></material-linear-progress>
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs text-on-surface-variant">always (visible even on indeterminate — non-spec but supported)</p>
+          <material-linear-progress stop-indicator="always" label="Loading"></material-linear-progress>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Live demo — determinate slider</h2>
+      <p class="text-on-surface-variant text-sm">
+        Drag the slider to drive <code>value</code>. Wavy mode keeps phase animation running while the fill snaps to your input.
+      </p>
+      <div class="space-y-3">
+        <input id="val-slider" type="range" min="0" max="100" value="35" class="w-full" />
+        <div class="text-sm font-mono">value = <output id="val-out">35</output></div>
+        <material-linear-progress id="lp-flat" value="35" label="Loading"></material-linear-progress>
+        <material-linear-progress id="lp-wavy" value="35" wavy label="Loading"></material-linear-progress>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">In a card</h2>
+      <p class="text-on-surface-variant text-sm">
+        Linear indicators sit on the leading edge of a loading container.
+      </p>
+      <div class="rounded-xl bg-surface-container border border-outline-variant overflow-hidden">
+        <material-linear-progress label="Loading card content"></material-linear-progress>
+        <div class="p-6 space-y-2">
+          <p class="font-medium">Card title</p>
+          <p class="text-on-surface-variant text-sm">The progress bar above marks the loading edge of this container.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Reduced motion + paused</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>prefers-reduced-motion: reduce</code> (DevTools ▸ Rendering) freezes the animations.
+        <code>paused</code> attribute halts the rAF loop on demand — useful for visual-regression tests.
+      </p>
+      <div class="flex items-center gap-4">
+        <material-linear-progress id="paused-demo" wavy label="Loading" style="flex:1"></material-linear-progress>
+        <material-button id="paused-toggle" variant="outlined">Toggle paused</material-button>
+        <span id="paused-state" class="text-sm text-on-surface-variant">running</span>
+      </div>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Determinate, flat (default) --&gt;
+&lt;material-linear-progress value="60" label="Saving…"&gt;&lt;/material-linear-progress&gt;
+
+&lt;!-- Determinate, wavy, thicker --&gt;
+&lt;material-linear-progress value="60" wavy thickness="8" label="Saving…"&gt;&lt;/material-linear-progress&gt;
+
+&lt;!-- Indeterminate (omit value) --&gt;
+&lt;material-linear-progress label="Loading"&gt;&lt;/material-linear-progress&gt;
+
+&lt;!-- Stop indicator: auto (default) | always | never --&gt;
+&lt;material-linear-progress value="80" stop-indicator="never"&gt;&lt;/material-linear-progress&gt;
+
+&lt;!-- Pause both spin + wave (e.g., snapshot tests) --&gt;
+&lt;material-linear-progress wavy paused&gt;&lt;/material-linear-progress&gt;</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    const slider = document.getElementById('val-slider');
+    const out = document.getElementById('val-out');
+    const lpFlat = document.getElementById('lp-flat');
+    const lpWavy = document.getElementById('lp-wavy');
+    slider.addEventListener('input', () => {
+      const v = slider.value;
+      out.textContent = v;
+      lpFlat.value = v;
+      lpWavy.value = v;
+    });
+
+    const pToggle = document.getElementById('paused-toggle');
+    const pDemo = document.getElementById('paused-demo');
+    const pState = document.getElementById('paused-state');
+    pToggle.addEventListener('click', () => {
+      const paused = pDemo.hasAttribute('paused');
+      if (paused) { pDemo.removeAttribute('paused'); pState.textContent = 'running'; }
+      else { pDemo.setAttribute('paused', ''); pState.textContent = 'paused'; }
+    });
+  </script>
+</body>
+</html>

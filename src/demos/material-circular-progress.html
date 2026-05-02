@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-circular-progress — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-circular-progress</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 circular progress indicator — determinate / indeterminate × flat / wavy.
+          Configurable size + thickness; spec range 24–240dp.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Determinate — flat</h2>
+      <p class="text-on-surface-variant text-sm">
+        Active arc starts at 12 o'clock and sweeps clockwise to <code>value</code>%.
+        Default 40dp diameter / 4dp stroke; the 8dp sample is 44dp diameter.
+      </p>
+      <div class="flex flex-wrap items-end gap-10">
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="25" label="25%"></material-circular-progress>
+          <code>40 / 4dp · 25%</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="60" label="60%"></material-circular-progress>
+          <code>40 / 4dp · 60%</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="60" size="44" thickness="8" label="60%"></material-circular-progress>
+          <code>44 / 8dp · 60%</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="80" size="64" label="80%"></material-circular-progress>
+          <code>64 / 4dp · 80%</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="50" size="120" label="50%"></material-circular-progress>
+          <code>120 / 4dp · 50%</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Determinate — wavy</h2>
+      <p class="text-on-surface-variant text-sm">
+        Active arc oscillates radially with 1.6dp amplitude and ~15dp wavelength along the arc length.
+        Wavy diameters are slightly larger to give the wave room: 48dp (4dp) / 52dp (8dp).
+        The wave's phase animates so it appears to flow along the arc.
+      </p>
+      <div class="flex flex-wrap items-end gap-10">
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="60" wavy size="48" label="60%"></material-circular-progress>
+          <code>48 / 4dp · 60%</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="80" wavy size="52" thickness="8" label="80%"></material-circular-progress>
+          <code>52 / 8dp · 80%</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="40" wavy size="96" label="40%"></material-circular-progress>
+          <code>96 / 4dp · 40%</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress value="65" wavy size="160" label="65%"></material-circular-progress>
+          <code>160 / 4dp · 65%</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Indeterminate</h2>
+      <p class="text-on-surface-variant text-sm">
+        Outer rotation (~2s) plus a sweep that grows and shrinks (~1.3s); the offset cycle keeps the motion lively.
+        For short indeterminate processes (under 5s), prefer <code>material-loading-indicator</code> instead.
+      </p>
+      <div class="flex flex-wrap items-end gap-10">
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress label="Loading"></material-circular-progress>
+          <code>40 / 4dp flat</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress size="64" thickness="8" label="Loading"></material-circular-progress>
+          <code>64 / 8dp flat</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress wavy size="48" label="Loading"></material-circular-progress>
+          <code>48 / 4dp wavy</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress wavy size="96" label="Loading"></material-circular-progress>
+          <code>96 / 4dp wavy</code>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-xs text-on-surface-variant">
+          <material-circular-progress wavy size="160" label="Loading"></material-circular-progress>
+          <code>160 / 4dp wavy</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">In a button</h2>
+      <p class="text-on-surface-variant text-sm">
+        Per spec § In buttons: replace the icon/label with the indicator while an action is pending.
+        At very small sizes (≤24dp), use the flat shape — the wavy detail isn't visible.
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <material-button variant="filled">
+          <span style="display:inline-flex;align-items:center;gap:8px">
+            <material-circular-progress size="20" label="Saving"></material-circular-progress>
+            Saving…
+          </span>
+        </material-button>
+        <material-button variant="tonal">
+          <span style="display:inline-flex;align-items:center;gap:8px">
+            <material-circular-progress size="20" label="Submitting"></material-circular-progress>
+            Submitting
+          </span>
+        </material-button>
+        <material-button variant="outlined">
+          <span style="display:inline-flex;align-items:center;gap:8px">
+            <material-circular-progress size="20" label="Refreshing"></material-circular-progress>
+            Refreshing
+          </span>
+        </material-button>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Live demo — determinate slider</h2>
+      <p class="text-on-surface-variant text-sm">Drag to drive <code>value</code> on flat and wavy variants simultaneously.</p>
+      <div class="space-y-4">
+        <input id="circ-slider" type="range" min="0" max="100" value="35" class="w-full" />
+        <div class="text-sm font-mono">value = <output id="circ-out">35</output></div>
+        <div class="flex items-center gap-10">
+          <material-circular-progress id="cp-flat" size="96" value="35" label="Loading"></material-circular-progress>
+          <material-circular-progress id="cp-wavy" size="96" value="35" wavy label="Loading"></material-circular-progress>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Reduced motion + paused</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>prefers-reduced-motion: reduce</code> freezes the animations. Toggle <em>Rendering ▸ Emulate prefers-reduced-motion</em> in DevTools.
+        <code>paused</code> attribute halts the rAF loop on demand.
+      </p>
+      <div class="flex items-center gap-4">
+        <material-circular-progress id="circ-paused" size="64" wavy label="Loading"></material-circular-progress>
+        <material-button id="circ-paused-toggle" variant="outlined">Toggle paused</material-button>
+        <span id="circ-paused-state" class="text-sm text-on-surface-variant">running</span>
+      </div>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Determinate flat (default 40dp / 4dp stroke) --&gt;
+&lt;material-circular-progress value="60" label="Saving…"&gt;&lt;/material-circular-progress&gt;
+
+&lt;!-- Determinate wavy, larger --&gt;
+&lt;material-circular-progress value="60" wavy size="96" label="Saving…"&gt;&lt;/material-circular-progress&gt;
+
+&lt;!-- Indeterminate (omit value) --&gt;
+&lt;material-circular-progress label="Loading"&gt;&lt;/material-circular-progress&gt;
+
+&lt;!-- In a button (small, flat) --&gt;
+&lt;material-button variant="filled"&gt;
+  &lt;material-circular-progress size="20" label="Saving"&gt;&lt;/material-circular-progress&gt;
+  Saving…
+&lt;/material-button&gt;
+
+&lt;!-- Pause animation --&gt;
+&lt;material-circular-progress wavy paused&gt;&lt;/material-circular-progress&gt;</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    const slider = document.getElementById('circ-slider');
+    const out = document.getElementById('circ-out');
+    const cpFlat = document.getElementById('cp-flat');
+    const cpWavy = document.getElementById('cp-wavy');
+    slider.addEventListener('input', () => {
+      out.textContent = slider.value;
+      cpFlat.value = slider.value;
+      cpWavy.value = slider.value;
+    });
+
+    const pToggle = document.getElementById('circ-paused-toggle');
+    const pDemo = document.getElementById('circ-paused');
+    const pState = document.getElementById('circ-paused-state');
+    pToggle.addEventListener('click', () => {
+      const paused = pDemo.hasAttribute('paused');
+      if (paused) { pDemo.removeAttribute('paused'); pState.textContent = 'running'; }
+      else { pDemo.setAttribute('paused', ''); pState.textContent = 'paused'; }
+    });
+  </script>
+</body>
+</html>
