@@ -1,6 +1,37 @@
+:host,
+:host(:focus),
+:host(:focus-visible) {
+  outline: none;
+}
+
 :host {
   display: block;
-  outline: none;
+  /* MD3 expressive vertical menu: 2dp gap between items. */
+  margin-top: 2px;
+}
+
+:host(:first-child) {
+  margin-top: 0;
+}
+
+/* Each item is its own rounded segment. We round both the row AND the
+   absolutely-positioned state-layer span (the row's first child) so we can
+   skip overflow:hidden — that would clip the focus outline in Firefox/Safari. */
+:host > div {
+  border-radius: 12px;
+}
+:host > div > span:first-child {
+  border-radius: inherit;
+}
+
+/* Top/bottom items hug the container's 16dp outer radius (minus 2dp padding). */
+:host(:first-child) > div {
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+:host(:last-child) > div {
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
 }
 
 :host(:focus-visible) > div {
@@ -8,14 +39,16 @@
   outline-offset: -2px;
 }
 
-/* Divider variants — set divider="top" or divider="bottom" on the host. */
+/* Divider variants — set divider="top" or divider="bottom" on the host.
+   Spec calls for 8dp vertical margin around the divider. */
 :host([divider="top"]) {
   border-top: 1px solid var(--md-sys-color-outline-variant);
   margin-top: 8px;
-  padding-top: 0;
+  padding-top: 8px;
 }
 
 :host([divider="bottom"]) {
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
   margin-bottom: 8px;
+  padding-bottom: 8px;
 }
