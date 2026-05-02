@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-textarea — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-textarea</h1>
+        <p class="text-on-surface-variant text-sm">
+          Multi-line MD3 text area. Fixed-height <code>rows</code>, or <code>auto-resize</code>
+          growing between <code>min-rows</code> and <code>max-rows</code>. Trailing icon sits top-right per spec.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-6">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-6 items-start">
+        <code class="text-sm text-on-surface-variant pt-3">vs textfield</code>
+        <div class="grid sm:grid-cols-2 gap-4 items-start">
+          <material-textfield label="Name"></material-textfield>
+          <material-textarea label="Bio" rows="3"></material-textarea>
+          <material-textfield variant="filled" label="Name"></material-textfield>
+          <material-textarea variant="filled" label="Bio" rows="3"></material-textarea>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">filled</code>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <material-textarea variant="filled" label="Empty"></material-textarea>
+          <material-textarea variant="filled" label="Populated" value="Hello world"></material-textarea>
+          <material-textarea variant="filled" label="Disabled" value="Locked" disabled></material-textarea>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">outlined</code>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <material-textarea label="Empty"></material-textarea>
+          <material-textarea label="Populated" value="Hello world"></material-textarea>
+          <material-textarea label="Disabled" value="Locked" disabled></material-textarea>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">supporting / counter</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textarea label="Bio" help-text="Tell us about yourself" max-length="200"></material-textarea>
+          <material-textarea label="Notes" error error-text="Required field" required></material-textarea>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">rows</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textarea label="rows=2" rows="2"></material-textarea>
+          <material-textarea label="rows=6" rows="6"></material-textarea>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">auto-resize</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textarea label="Grows 2–6" auto-resize min-rows="2" max-rows="6"
+                             help-text="Type lines to see it grow"></material-textarea>
+          <material-textarea variant="filled" label="Grows 1–4" auto-resize min-rows="1" max-rows="4"></material-textarea>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">trailing icon</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-textarea label="With static icon" trailing-icon="edit"></material-textarea>
+          <material-textarea label="With slotted action">
+            <material-icon-button slot="trailing" size="s" variant="standard" icon="content_copy" aria-label="Copy"></material-icon-button>
+          </material-textarea>
+        </div>
+
+        <code class="text-sm text-on-surface-variant pt-3">in &lt;form&gt;</code>
+        <form id="demo-form" class="grid gap-4">
+          <material-textarea name="bio" label="Bio" rows="3" value="default text"></material-textarea>
+          <div class="flex gap-2">
+            <material-button type="submit" variant="filled">Submit</material-button>
+            <material-button type="reset" variant="outlined">Reset</material-button>
+          </div>
+          <pre id="form-output" class="text-xs text-on-surface-variant"></pre>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('demo-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      document.getElementById('form-output').textContent = JSON.stringify(data, null, 2);
+    });
+    const picker = document.getElementById('theme-picker');
+    picker.addEventListener('change', () => {
+      document.documentElement.className = picker.value;
+    });
+  </script>
+</body>
+</html>

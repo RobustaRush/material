@@ -1,0 +1,6 @@
+/* Hide native resize handle — auto-resize and rows are driven by props,
+   so the user-drag handle would conflict with our height management. */
+
+:host textarea {
+  resize: none;
+}
