@@ -69,6 +69,7 @@ Type: `Promise<void>`
 ### Used by
 
  - [material-date-field](../material-date-field)
+ - [material-time-field](../material-time-field)
 
 ### Depends on
 
@@ -79,6 +80,7 @@ Type: `Promise<void>`
 graph TD;
   material-dialog --> material-icon-button
   material-date-field --> material-dialog
+  material-time-field --> material-dialog
   style material-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-time-field — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-time-field</h1>
+        <p class="text-on-surface-variant text-sm">
+          Text-field + trailing schedule trigger. Opens an adaptive
+          <code>material-dialog</code> with a <code>material-time-picker</code> inside.
+          Hidden ISO <code>HH:MM</code> input rides along for form posts.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Default — locale-derived 12/24h</h2>
+      <p class="text-on-surface-variant text-sm">
+        Click the <code>schedule</code> icon to open the picker dialog. Pick a
+        time and press OK; the field updates with the locale-formatted display
+        string and the hidden <code>name="start"</code> input gets ISO
+        <code>HH:MM</code>.
+      </p>
+      <div class="max-w-sm">
+        <material-time-field name="start" label="Start time"></material-time-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">12-hour mode pre-filled</h2>
+      <p class="text-on-surface-variant text-sm">
+        Initial value <code>09:30</code> rendered as <code>09:30 AM</code>.
+      </p>
+      <div class="max-w-sm">
+        <material-time-field
+          name="alarm"
+          label="Alarm"
+          mode="12"
+          value="09:30"
+          required
+          help-text="Required."
+        ></material-time-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">24-hour mode pre-filled</h2>
+      <p class="text-on-surface-variant text-sm">
+        Initial value <code>14:30</code> rendered as <code>14:30</code>.
+      </p>
+      <div class="max-w-sm">
+        <material-time-field
+          name="meeting"
+          label="Meeting"
+          mode="24"
+          value="14:30"
+        ></material-time-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">15-minute steps + bounded</h2>
+      <p class="text-on-surface-variant text-sm">
+        Snap to quarter-hours within business hours. Picker dial only shows
+        valid options; manual entry rejects off-step / out-of-range values.
+      </p>
+      <div class="max-w-sm">
+        <material-time-field
+          name="appt"
+          label="Appointment"
+          mode="24"
+          precision="00:15"
+          minimum="08:00"
+          maximum="17:00"
+          value="09:00"
+          help-text="Quarter-hour slots, 8 AM – 5 PM."
+        ></material-time-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Lenient manual entry</h2>
+      <p class="text-on-surface-variant text-sm">
+        Type into the field directly — separators (<code>:</code> <code>.</code>
+        space comma), 1- or 2-digit hour/minute, AM/PM in any case, and the
+        compact 4-digit <code>HHMM</code> form all parse.
+      </p>
+      <ul class="text-on-surface-variant text-sm list-disc pl-6 space-y-1">
+        <li>24h shapes: <code>9:05</code> / <code>21:30</code> /
+            <code>0905</code> / <code>9 5</code></li>
+        <li>12h shapes: <code>9:05 pm</code> / <code>9:05PM</code> /
+            <code>09:05 a.m.</code></li>
+      </ul>
+      <div class="max-w-sm">
+        <material-time-field
+          name="lenient"
+          label="Time"
+          help-text="Try any shape — see hints above."
+        ></material-time-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Form round-trip</h2>
+      <p class="text-on-surface-variant text-sm">
+        The hidden input always carries 24h ISO. Submit and check the
+        serialized output.
+      </p>
+      <form id="f" class="space-y-4 max-w-sm">
+        <material-time-field name="open"  label="Opens" mode="24"></material-time-field>
+        <material-time-field name="close" label="Closes" mode="24"></material-time-field>
+        <div class="flex gap-2">
+          <material-button type="submit" variant="filled" label="Submit"></material-button>
+          <material-button type="reset"  variant="text"   label="Reset"></material-button>
+        </div>
+      </form>
+      <output id="form-out" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(submit to serialize)</output>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Last valueChange</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-time-field
+  name="start"
+  label="Start time"
+  mode="24"
+  value="14:30"
+  required
+&gt;&lt;/material-time-field&gt;
+
+&lt;script&gt;
+  document.querySelector('material-time-field')
+    .addEventListener('valueChange', e =&gt; console.log(e.detail.value));  // ISO HH:MM
+&lt;/script&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    serializeFormToOutput('f', 'form-out');
+
+    const log = document.getElementById('log');
+    document.addEventListener('valueChange', (e) => {
+      if (e.target?.tagName !== 'MATERIAL-TIME-FIELD') return;
+      const id = e.target?.getAttribute('name') || '?';
+      log.textContent = `[${id}] ${e.detail?.value || '(empty)'}`;
+    });
+  </script>
+</body>
+</html>

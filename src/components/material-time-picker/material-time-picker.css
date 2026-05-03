@@ -1,0 +1,321 @@
+/* MD3 time picker — dial + input variants. */
+
+:host {
+  display: inline-block;
+  font-family: 'Roboto', system-ui, sans-serif;
+  color: var(--md-sys-color-on-surface);
+}
+
+:host([hidden]) { display: none; }
+
+.tp {
+  background: var(--md-sys-color-surface-container-high);
+  border-radius: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  row-gap: 20px;
+  width: 328px;
+}
+
+.tp.is-24h {
+  width: 348px;
+}
+
+/* ---------- Headline ---------- */
+
+.tp__headline {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ---------- Selector row (HH : MM [AM/PM]) ---------- */
+
+.tp__selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tp__tile {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 96px;
+  height: 80px;
+  border-radius: 8px;
+  background: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: 45px;
+  line-height: 52px;
+  letter-spacing: -0.25px;
+  font-weight: 400;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 80ms linear, color 80ms linear;
+}
+
+.tp.is-24h .tp__tile {
+  width: 114px;
+}
+
+.tp__tile:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 4%, var(--md-sys-color-surface-container-highest));
+}
+
+.tp__tile.is-active {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+.tp__tile:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.tp__sep {
+  font-size: 45px;
+  line-height: 52px;
+  color: var(--md-sys-color-on-surface);
+  width: 12px;
+  text-align: center;
+}
+
+/* ---------- AM / PM selector (12h only) ---------- */
+
+.tp__period {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 8px;
+  overflow: hidden;
+  width: 52px;
+  height: 80px;
+}
+
+.tp__period-btn {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  cursor: pointer;
+  transition: background-color 80ms linear, color 80ms linear;
+}
+
+.tp__period-btn + .tp__period-btn {
+  border-top: 1px solid var(--md-sys-color-outline);
+}
+
+.tp__period-btn:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.tp__period-btn.is-selected {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.tp__period-btn:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+/* ---------- Dial ---------- */
+
+.tp__dial {
+  position: relative;
+  width: 256px;
+  height: 256px;
+  border-radius: 50%;
+  background: var(--md-sys-color-surface-container-highest);
+  margin: 0 auto;
+}
+
+.tp__dial-track {
+  position: absolute;
+  height: 2px;
+  background: var(--md-sys-color-primary);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+.tp__dial-handle {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--md-sys-color-primary);
+  pointer-events: none;
+}
+
+.tp__dial-center {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--md-sys-color-primary);
+  pointer-events: none;
+}
+
+.tp__dial-cell {
+  appearance: none;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 50%;
+  font: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 80ms linear;
+  font-variant-numeric: tabular-nums;
+}
+
+.tp__dial-cell:hover:not(.is-selected) {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.tp__dial-cell.is-selected {
+  color: var(--md-sys-color-on-primary);
+  font-weight: 500;
+}
+
+.tp__dial-cell:disabled {
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+  cursor: default;
+}
+
+.tp__dial-cell:disabled:hover {
+  background: transparent;
+}
+
+.tp__period-btn:disabled {
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+  cursor: default;
+}
+
+.tp__period-btn:disabled:hover {
+  background: transparent;
+}
+
+.tp__dial-cell:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.tp__dial-cell--inner {
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ---------- Input view ---------- */
+
+.tp__inputs {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.tp__inputs .tp__period {
+  /* In input view the AM/PM column matches the 72dp input height, not 80dp. */
+  height: 72px;
+  margin-left: 0;
+}
+
+.tp__input-col {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 96px;
+}
+
+.tp__input {
+  width: 96px;
+  height: 72px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 8px;
+  background: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: 45px;
+  line-height: 52px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  /* hide spinner */
+  appearance: textfield;
+  -moz-appearance: textfield;
+  padding: 0;
+}
+
+.tp__input::-webkit-outer-spin-button,
+.tp__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.tp__input:focus {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+  border-color: var(--md-sys-color-primary);
+}
+
+.tp__input-label {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--md-sys-color-on-surface-variant);
+  text-align: center;
+}
+
+.tp__input-sep {
+  font-size: 45px;
+  line-height: 72px;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* ---------- Footer ---------- */
+
+.tp__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tp__footer-spacer {
+  flex: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp__tile,
+  .tp__dial-cell,
+  .tp__period-btn {
+    transition: none;
+  }
+}

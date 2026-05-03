@@ -238,3 +238,45 @@ export function defaultDateInputFormat(locale?: string): string {
   }
   return fmt || '%Y-%m-%d';
 }
+
+/**
+ * `'12'` (AM/PM) or `'24'` for the locale. Django `TIME_INPUT_FORMATS` wins
+ * (any entry containing `%p` → 12). Otherwise asks `Intl.DateTimeFormat`.
+ */
+export function defaultTimeMode(locale?: string): '12' | '24' {
+  const v = getFormat('TIME_INPUT_FORMATS');
+  if (Array.isArray(v) && v.length > 0) {
+    return v.some(f => typeof f === 'string' && f.includes('%p')) ? '12' : '24';
+  }
+  try {
+    const opts = new Intl.DateTimeFormat(pageLocale(locale), { hour: 'numeric' })
+      .resolvedOptions();
+    return opts.hour12 ? '12' : '24';
+  } catch {
+    return '24';
+  }
+}
+
+/** Display strftime for the given mode — `%H:%M` (24h) or `%I:%M %p` (12h). */
+export function defaultTimeFormat(locale?: string, mode?: '12' | '24'): string {
+  const m = mode ?? defaultTimeMode(locale);
+  return m === '12' ? '%I:%M %p' : '%H:%M';
+}
+
+/**
+ * `%`-style time formats accepted on manual entry. Django `TIME_INPUT_FORMATS`
+ * is preferred; fallback synthesises a permissive set covering both 12h and
+ * 24h shapes plus optional seconds.
+ */
+export function timeInputFormats(locale?: string, mode?: '12' | '24'): string[] {
+  const v = getFormat('TIME_INPUT_FORMATS');
+  if (Array.isArray(v) && v.length > 0) {
+    const list = v.filter((f): f is string => typeof f === 'string');
+    if (list.length > 0) return list;
+  }
+  const m = mode ?? defaultTimeMode(locale);
+  if (m === '12') {
+    return ['%I:%M %p', '%I:%M:%S %p', '%H:%M', '%H:%M:%S'];
+  }
+  return ['%H:%M', '%H:%M:%S', '%I:%M %p', '%I:%M:%S %p'];
+}
