@@ -50,6 +50,13 @@ export class MaterialOption {
     }
   };
 
+  // Don't steal focus from whatever opened the menu — the host (e.g.
+  // material-select) manages focus restoration. Letting the click move
+  // focus first makes the textfield's floating label flicker down then up.
+  private handleMouseDown = (e: MouseEvent) => {
+    e.preventDefault();
+  };
+
   render() {
     const twoLine = !!this.supportingText;
     return (
@@ -59,6 +66,7 @@ export class MaterialOption {
         aria-disabled={this.disabled ? 'true' : null}
         aria-selected={this.selected ? 'true' : 'false'}
         onClick={this.activate}
+        onMouseDown={this.handleMouseDown}
         onKeyDown={this.handleKeyDown}
       >
         <div
