@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-calendar — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-calendar</h1>
+        <p class="text-on-surface-variant text-sm">
+          Standalone MD3 calendar — 360×456dp, single-date selection, month/year grids,
+          locale-aware via <code>Intl</code> (or Django <code>jsi18n</code> when present).
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Default — current month, no selection</h2>
+      <p class="text-on-surface-variant text-sm">
+        Today's date carries a primary-color outline. Click any day to select.
+        Click the month or year label in the header to swap into month / year picker views.
+      </p>
+      <material-calendar id="cal-default"></material-calendar>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Pre-selected value + min/max bounds</h2>
+      <p class="text-on-surface-variant text-sm">
+        Locked to a 30-day window around 2026-05-15. Days outside the window are dimmed and
+        non-interactive; the prev/next arrows disable when stepping out of range.
+      </p>
+      <material-calendar
+        id="cal-bounded"
+        value="2026-05-15"
+        min="2026-05-01"
+        max="2026-05-31"
+      ></material-calendar>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Locale override (Intl path)</h2>
+      <p class="text-on-surface-variant text-sm">
+        Set <code>locale</code> to render month/weekday names and first-day-of-week from
+        the chosen locale. Try the picker — the calendar updates without a reload.
+      </p>
+      <label class="flex items-center gap-2 text-sm">
+        <span class="text-on-surface-variant">Locale</span>
+        <select id="locale-picker"
+                class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+          <option value="en-US">en-US (Sunday start)</option>
+          <option value="en-GB">en-GB (Monday start)</option>
+          <option value="de-DE">de-DE (Monday start)</option>
+          <option value="ja-JP">ja-JP (Sunday start)</option>
+          <option value="ru-RU">ru-RU (Monday start)</option>
+          <option value="ar-SA">ar-SA</option>
+        </select>
+      </label>
+      <material-calendar id="cal-locale" locale="en-US"></material-calendar>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-lg font-semibold">Last selection</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-calendar
+  value="2026-05-15"
+  min="2026-01-01"
+  max="2026-12-31"
+  locale="de-DE"
+&gt;&lt;/material-calendar&gt;
+
+&lt;script&gt;
+  document.querySelector('material-calendar')
+    .addEventListener('dateSelect', e =&gt; console.log(e.detail.value));
+&lt;/script&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    const log = document.getElementById('log');
+    document.addEventListener('dateSelect', (e) => {
+      const id = e.target?.id || '?';
+      log.textContent = `[${id}] ${e.detail?.value}`;
+    });
+
+    document.getElementById('locale-picker').addEventListener('change', (e) => {
+      document.getElementById('cal-locale').setAttribute('locale', e.target.value);
+    });
+  </script>
+</body>
+</html>

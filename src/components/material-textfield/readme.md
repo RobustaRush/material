@@ -44,6 +44,7 @@
 
 ### Used by
 
+ - [material-date-field](../material-date-field)
  - [material-file-field](../material-file-field)
 
 ### Depends on
@@ -54,6 +55,7 @@
 ```mermaid
 graph TD;
   material-textfield --> material-icon-button
+  material-date-field --> material-textfield
   material-file-field --> material-textfield
   style material-textfield fill:#f9f,stroke:#333,stroke-width:4px
 ```

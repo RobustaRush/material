@@ -66,6 +66,10 @@ Type: `Promise<void>`
 
 ## Dependencies
 
+### Used by
+
+ - [material-date-field](../material-date-field)
+
 ### Depends on
 
 - [material-icon-button](../material-icon-button)
@@ -74,6 +78,7 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   material-dialog --> material-icon-button
+  material-date-field --> material-dialog
   style material-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

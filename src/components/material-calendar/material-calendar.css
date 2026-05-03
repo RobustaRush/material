@@ -1,0 +1,206 @@
+/* MD3 calendar — 360×456dp container, 7-column day grid, 4×3 month/year grid. */
+
+:host {
+  display: inline-block;
+  font-family: 'Roboto', system-ui, sans-serif;
+  color: var(--md-sys-color-on-surface);
+}
+
+:host([hidden]) { display: none; }
+
+.cal {
+  width: 360px;
+  height: 456px;
+  background: var(--md-sys-color-surface-container-high);
+  border-radius: 16px;
+  padding: 8px 12px 12px 12px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 56px auto 1fr;
+}
+
+/* ---------- Header ---------- */
+
+.cal__header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  height: 56px;
+}
+
+.cal__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cal__title-btn {
+  appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 4px 4px 4px 8px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.cal__title-btn:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
+}
+
+.cal__title-btn:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.cal__title-caret {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.cal__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---------- Weekday header row ---------- */
+
+.cal__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+  height: 32px;
+}
+
+.cal__weekday {
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ---------- Day grid ---------- */
+
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+  align-items: center;
+  justify-items: center;
+}
+
+.cal__day {
+  appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 80ms linear;
+}
+
+.cal__day:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.cal__day:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
+}
+
+.cal__day:disabled {
+  cursor: default;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+
+.cal__day.is-outside {
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+
+.cal__day.is-today {
+  color: var(--md-sys-color-primary);
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-primary);
+}
+
+.cal__day.is-today:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+}
+
+.cal__day.is-selected,
+.cal__day.is-selected.is-today {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  box-shadow: none;
+}
+
+.cal__day.is-selected:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-on-primary) 8%, var(--md-sys-color-primary));
+}
+
+/* ---------- Month / year grids ---------- */
+
+.cal__months,
+.cal__years {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 4px;
+}
+
+.cal__month,
+.cal__year {
+  appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--md-sys-color-on-surface);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 80ms linear;
+}
+
+.cal__month:hover:not(:disabled),
+.cal__year:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.cal__month:focus-visible,
+.cal__year:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+.cal__month:disabled,
+.cal__year:disabled {
+  cursor: default;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+
+.cal__month.is-selected,
+.cal__year.is-selected {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}

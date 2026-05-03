@@ -24,6 +24,19 @@
 | `variant`             | `variant`             |             | `"elevated" \| "filled" \| "outlined" \| "text" \| "tonal"` | `'filled'`  |
 
 
+## Dependencies
+
+### Used by
+
+ - [material-date-field](../material-date-field)
+
+### Graph
+```mermaid
+graph TD;
+  material-date-field --> material-button
+  style material-button fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

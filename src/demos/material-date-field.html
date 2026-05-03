@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-date-field — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-date-field</h1>
+        <p class="text-on-surface-variant text-sm">
+          Text-field + trailing calendar trigger. Opens an adaptive
+          <code>material-dialog</code> with a <code>material-calendar</code> inside.
+          Hidden ISO input rides along for form posts.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Default</h2>
+      <p class="text-on-surface-variant text-sm">
+        Click the <code>calendar_month</code> icon to open the calendar dialog. Pick a day
+        and press OK; the field updates with the locale-formatted display string and the
+        hidden <code>name="due"</code> input gets the ISO date.
+      </p>
+      <div class="max-w-sm">
+        <material-date-field name="due" label="Due date"></material-date-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Pre-filled + bounded</h2>
+      <p class="text-on-surface-variant text-sm">
+        Initial value <code>2026-05-15</code>; calendar restricted to May 2026.
+      </p>
+      <div class="max-w-sm">
+        <material-date-field
+          name="trip"
+          label="Trip date"
+          value="2026-05-15"
+          min="2026-05-01"
+          max="2026-05-31"
+          required
+          help-text="Required — pick a day in May 2026."
+        ></material-date-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Form round-trip</h2>
+      <p class="text-on-surface-variant text-sm">
+        The hidden input always carries ISO. Submit and check the serialized output.
+      </p>
+      <form id="f" class="space-y-4 max-w-sm">
+        <material-date-field name="start" label="Start"></material-date-field>
+        <material-date-field name="end"   label="End"></material-date-field>
+        <div class="flex gap-2">
+          <material-button type="submit" variant="filled" label="Submit"></material-button>
+          <material-button type="reset"  variant="text"   label="Reset"></material-button>
+        </div>
+      </form>
+      <output id="form-out" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(submit to serialize)</output>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Last valueChange</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-date-field
+  name="due"
+  label="Due date"
+  value="2026-05-15"
+  min="2026-01-01"
+  max="2026-12-31"
+  required
+&gt;&lt;/material-date-field&gt;
+
+&lt;script&gt;
+  document.querySelector('material-date-field')
+    .addEventListener('valueChange', e =&gt; console.log(e.detail.value));  // ISO
+&lt;/script&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    serializeFormToOutput('f', 'form-out');
+
+    const log = document.getElementById('log');
+    document.addEventListener('valueChange', (e) => {
+      // valueChange also fires on the inner material-textfield — only surface
+      // events from material-date-field hosts.
+      if (e.target?.tagName !== 'MATERIAL-DATE-FIELD') return;
+      const id = e.target?.getAttribute('name') || '?';
+      log.textContent = `[${id}] ${e.detail?.value || '(empty)'}`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+import {
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  Host,
+  Prop,
+  State,
+  Watch,
+  h,
+} from '@stencil/core';
+import { gettext } from '../../utils/i18n';
+import {
+  defaultDateInputFormat,
+} from '../../utils/i18n';
+import {
+  formatDate,
+  fromISO,
+  parseDateTime,
+  toISO,
+  todayISO,
+} from '../../utils/date-utils';
+
+export type MaterialDateFieldVariant = 'filled' | 'outlined';
+
+interface MaterialCalendarLike extends HTMLElement {
+  value: string;
+}
+
+interface MaterialDialogLike extends HTMLElement {
+  show(): Promise<void> | void;
+  close(returnValue?: string): Promise<void> | void;
+}
+
+// MD3 modal date field — text-field with a trailing calendar icon-button that
+// opens an adaptive material-dialog containing a material-calendar.
+//
+// Light DOM, so a hidden <input name="…" type="hidden" value="ISO"> can ride
+// along with a surrounding <form> the same way material-file-field does.
+
+@Component({
+  tag: 'material-date-field',
+  styleUrl: 'material-date-field.css',
+  shadow: false,
+})
+export class MaterialDateField {
+  @Element() el!: HTMLElement;
+
+  @Prop() variant: MaterialDateFieldVariant = 'outlined';
+  @Prop() name?: string;
+  @Prop() label?: string;
+  /** ISO `YYYY-MM-DD`. Always the canonical form for form posts. */
+  @Prop({ mutable: true, reflect: true }) value = '';
+  @Prop() min = '';
+  @Prop() max = '';
+  /** strftime-style display format. Defaults to Django's
+   *  `DATE_INPUT_FORMATS[0]` or a locale-derived one. */
+  @Prop() format = '';
+  @Prop({ reflect: true }) disabled = false;
+  @Prop({ reflect: true }) required = false;
+  @Prop({ reflect: true, attribute: 'readonly' }) readOnly = false;
+  @Prop() helpText?: string;
+  @Prop() errorText?: string;
+  @Prop({ mutable: true, reflect: true }) error = false;
+  @Prop() placeholder?: string;
+
+  /** Override label for OK action. Defaults to `gettext('OK')`. */
+  @Prop() okLabel = '';
+  /** Override label for Cancel action. Defaults to `gettext('Cancel')`. */
+  @Prop() cancelLabel = '';
+  /** Override dialog headline. Defaults to `gettext('Select date')`. */
+  @Prop() headline = '';
+  /** Override aria-label of the trailing trigger. Defaults to
+   *  `gettext('Open calendar')`. */
+  @Prop() openLabel = '';
+  /** Override the error message shown when manual entry fails to parse.
+   *  Defaults to `gettext('Invalid date')`. */
+  @Prop() invalidLabel = '';
+
+  /** Local copy of the visible (formatted) text shown in the textfield. */
+  @State() display = '';
+  /** Whatever the calendar currently has selected while the dialog is open. */
+  @State() pending = '';
+  /** Last error message, if any (used for textfield supportingText). */
+  @State() liveError = '';
+
+  @Event() valueChange!: EventEmitter<{ value: string }>;
+
+  private dialog?: MaterialDialogLike;
+  private calendar?: MaterialCalendarLike;
+  private hiddenInput?: HTMLInputElement;
+  private effectiveFormat(): string {
+    return this.format || defaultDateInputFormat();
+  }
+
+  componentWillLoad() {
+    this.display = this.formatValue(this.value);
+  }
+
+  @Watch('value')
+  onValueChange(next: string) {
+    this.display = this.formatValue(next);
+    if (this.hiddenInput) this.hiddenInput.value = next;
+  }
+
+  private formatValue(iso: string): string {
+    const d = fromISO(iso);
+    if (!d) return '';
+    try {
+      return formatDate(this.effectiveFormat(), d);
+    } catch {
+      return '';
+    }
+  }
+
+  private openDialog = (e?: Event) => {
+    e?.stopPropagation();
+    if (this.disabled || this.readOnly) return;
+    this.pending = this.value || todayISO();
+    if (this.calendar) this.calendar.value = this.pending;
+    this.dialog?.show();
+  };
+
+  private confirm = () => {
+    if (this.pending) {
+      this.value = this.pending;
+      this.valueChange.emit({ value: this.pending });
+      this.error = false;
+      this.liveError = '';
+    }
+  };
+
+  private setDialogRef = (el?: HTMLElement) => {
+    this.dialog = el as MaterialDialogLike | undefined;
+  };
+
+  private setCalendarRef = (el?: HTMLElement) => {
+    if (!el) return;
+    this.calendar = el as MaterialCalendarLike;
+    this.calendar.value = this.pending || this.value || '';
+  };
+
+  private setHiddenInputRef = (el?: HTMLInputElement) => {
+    this.hiddenInput = el;
+  };
+
+  private handleCalendarSelect = (e: Event) => {
+    const detail = (e as CustomEvent<{ value: string }>).detail;
+    this.pending = detail?.value ?? '';
+  };
+
+  private handleTextChange = (e: Event) => {
+    const detail = (e as CustomEvent<{ value: string }>).detail;
+    const raw = (detail?.value ?? '').trim();
+    if (raw === '') {
+      this.value = '';
+      this.error = false;
+      this.liveError = '';
+      this.valueChange.emit({ value: '' });
+      return;
+    }
+    try {
+      const d = parseDateTime(this.effectiveFormat(), raw);
+      const iso = toISO(d);
+      this.value = iso;
+      this.error = false;
+      this.liveError = '';
+      this.valueChange.emit({ value: iso });
+    } catch {
+      this.error = true;
+      this.liveError = this.invalidLabel || gettext('Invalid date');
+    }
+  };
+
+  render() {
+    const okLabel = this.okLabel || gettext('OK');
+    const cancelLabel = this.cancelLabel || gettext('Cancel');
+    const headline = this.headline || gettext('Select date');
+    const openLabel = this.openLabel || gettext('Open calendar');
+    const subText = this.error ? (this.errorText || this.liveError) : this.helpText;
+
+    return (
+      <Host class="block w-full">
+        <material-textfield
+          variant={this.variant}
+          label={this.label}
+          value={this.display}
+          placeholder={this.placeholder}
+          disabled={this.disabled}
+          required={this.required}
+          readOnly={this.readOnly}
+          helpText={!this.error ? this.helpText : undefined}
+          errorText={subText}
+          error={this.error}
+          onValueChange={this.handleTextChange as unknown as (e: Event) => void}
+        >
+          <material-icon-button
+            slot="trailing"
+            size="s"
+            variant="standard"
+            icon="calendar_month"
+            disabled={this.disabled}
+            aria-label={openLabel}
+            onClick={this.openDialog}
+          />
+        </material-textfield>
+
+        <input
+          ref={this.setHiddenInputRef}
+          type="hidden"
+          name={this.name}
+          value={this.value}
+        />
+
+        <material-dialog
+          ref={this.setDialogRef}
+          variant="adaptive"
+          headline={headline}
+        >
+          <material-calendar
+            ref={this.setCalendarRef}
+            min={this.min}
+            max={this.max}
+            onDateSelect={this.handleCalendarSelect as unknown as (e: Event) => void}
+          />
+          <div slot="actions">
+            <material-button
+              variant="text"
+              label={cancelLabel}
+              data-dialog-close
+            />
+            <material-button
+              variant="filled"
+              label={okLabel}
+              data-dialog-close="ok"
+              onClick={this.confirm}
+            />
+          </div>
+        </material-dialog>
+      </Host>
+    );
+  }
+}
