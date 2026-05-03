@@ -11,11 +11,24 @@
 /* ---------- Inner dialog (shared) ---------- */
 
 .dlg {
+  /* Pin position-fixed explicitly. The UA stylesheet does this only via
+     `:modal`, but during the close transition (held visible by
+     allow-discrete on `overlay`/`display`) the dialog briefly stops
+     matching :modal and falls back to position:absolute, which causes a
+     visible reflow / ghost copy. Forcing fixed here keeps the layout
+     identical from open through close. */
+  position: fixed;
+  inset: 0;
+
   border: none;
   padding: 0;
   background: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
   font-family: 'Roboto', system-ui, sans-serif;
+  width: fit-content;
+  height: fit-content;
+  max-width: 100vw;
+  max-height: 100vh;
 
   /* Animate across the discrete display + top-layer swap (matches menu). */
   opacity: 0;
@@ -80,13 +93,18 @@
   max-width: 560px;
   padding: 24px;
 
-  display: flex;
   flex-direction: column;
   /* Spec: with icon → center-aligned; without → start-aligned. */
   align-items: flex-start;
   text-align: start;
   gap: 16px;
 }
+
+/* `display` is scoped to [open] so that a closed dialog reverts to the UA
+   `display: none`. Otherwise an invisible (opacity: 0) dialog stays in the
+   layout and silently captures pointer events. allow-discrete on `display`
+   keeps it visible through the close transition. */
+.dlg--basic[open] { display: flex; }
 
 /* Center-align everything when an icon is present (spec: alignment with icon). */
 .dlg--basic:has(.dlg__icon:not([hidden])) {
@@ -165,9 +183,10 @@
   margin: 0;
   padding: 0;
 
-  display: grid;
   grid-template-rows: 56px 1fr;
 }
+
+.dlg--full-screen[open] { display: grid; }
 
 .dlg--full-screen .dlg__header {
   height: 56px;
