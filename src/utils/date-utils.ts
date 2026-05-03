@@ -42,51 +42,141 @@ export function formatDate(format: string, value: Date): string {
   return out;
 }
 
-const DATE_SPLIT_RE = /[.\-/:\s]/;
+const VALUE_SPLIT_RE = /[.\-/:\s,]+/;
+const FORMAT_SPEC_RE = /%[a-zA-Z%]/g;
+
+// Natural digit width for a numeric strftime spec — used by the compact
+// "single digit block" shortcut (`15052026` → 15/05/2026).
+const NATURAL_WIDTH: Record<string, number> = {
+  '%d': 2, '%m': 2, '%Y': 4, '%y': 2,
+  '%H': 2, '%I': 2, '%M': 2, '%S': 2,
+};
+
+function pivotTwoDigitYear(yy: number): number {
+  // Python `time.strptime` / Django convention: 00–68 → 20xx, 69–99 → 19xx.
+  return yy < 69 ? 2000 + yy : 1900 + yy;
+}
+
+function lookupMonthName(part: string): number {
+  const target = part.toLowerCase();
+  const tables = [monthNames('short'), monthNames('long')];
+  for (const tbl of tables) {
+    const idx = tbl.findIndex(n => n.toLowerCase() === target);
+    if (idx !== -1) return idx;
+  }
+  return -1;
+}
+
+function assignSpec(
+  spec: string,
+  part: string,
+  out: { day: number; month: number; year: number },
+): void {
+  switch (spec) {
+    case '%d':
+      if (!/^\d{1,2}$/.test(part)) throw new Error(`Invalid day "${part}"`);
+      out.day = parseInt(part, 10);
+      return;
+    case '%m':
+      if (!/^\d{1,2}$/.test(part)) throw new Error(`Invalid month "${part}"`);
+      out.month = parseInt(part, 10) - 1;
+      return;
+    case '%Y':
+      if (!/^\d{4}$/.test(part)) throw new Error(`Invalid year "${part}"`);
+      out.year = parseInt(part, 10);
+      return;
+    case '%y':
+      if (!/^\d{2}$/.test(part)) throw new Error(`Invalid 2-digit year "${part}"`);
+      out.year = pivotTwoDigitYear(parseInt(part, 10));
+      return;
+    case '%b':
+    case '%B': {
+      // Accept either short or long; if the part is purely numeric, fall
+      // back to month-number parsing so a `%b` slot still tolerates `5`.
+      if (/^\d{1,2}$/.test(part)) {
+        out.month = parseInt(part, 10) - 1;
+        return;
+      }
+      const idx = lookupMonthName(part);
+      if (idx === -1) throw new Error(`Invalid month name "${part}"`);
+      out.month = idx;
+      return;
+    }
+    default:
+      // Unknown / unsupported spec — ignore (caller's format may include
+      // time tokens we don't care about for date-only fields).
+      return;
+  }
+}
 
 export function parseDateTime(format: string, value: string): Date {
-  const monthsAbbr = monthNames('short');
-  const fmtParts = format.split(DATE_SPLIT_RE).filter(Boolean);
-  const valParts = value.split(DATE_SPLIT_RE).filter(Boolean);
-  if (fmtParts.length !== valParts.length) {
-    throw new Error(`Date "${value}" does not match format "${format}"`);
+  const specs = (format.match(FORMAT_SPEC_RE) ?? []).filter(s => s !== '%%');
+  if (specs.length === 0) {
+    throw new Error(`Format "${format}" has no recognised specs`);
   }
-  let day = NaN, month = NaN, year = NaN;
-  for (let i = 0; i < fmtParts.length; i++) {
-    const f = fmtParts[i];
-    const v = valParts[i];
-    switch (f) {
-      case '%d':
-        day = parseInt(v, 10);
-        break;
-      case '%m':
-        month = parseInt(v, 10) - 1;
-        break;
-      case '%Y':
-        year = parseInt(v, 10);
-        break;
-      case '%b': {
-        const idx = monthsAbbr.findIndex(
-          (n) => n.toLowerCase() === v.toLowerCase(),
-        );
-        if (idx === -1) throw new Error(`Invalid month abbreviation: ${v}`);
-        month = idx;
-        break;
+
+  const trimmed = value.trim();
+  if (!trimmed) throw new Error('Empty value');
+
+  let parts = trimmed.split(VALUE_SPLIT_RE).filter(Boolean);
+
+  // Compact-digit shortcut: one block whose width matches sum of natural
+  // widths (e.g. `15052026` against `%d %m %Y` → 2+2+4 = 8).
+  if (parts.length === 1 && /^\d+$/.test(parts[0])) {
+    const widths = specs.map(s => NATURAL_WIDTH[s] ?? 0);
+    const totalNatural = widths.reduce((a, b) => a + b, 0);
+    if (totalNatural > 0 && parts[0].length === totalNatural) {
+      const sliced: string[] = [];
+      let cursor = 0;
+      for (const w of widths) {
+        sliced.push(parts[0].slice(cursor, cursor + w));
+        cursor += w;
       }
+      parts = sliced;
     }
   }
-  if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year)) {
+
+  // Year-omitted shortcut: missing exactly one slot and that slot is the year.
+  if (parts.length === specs.length - 1) {
+    const yearIdx = specs.findIndex(s => s === '%Y' || s === '%y');
+    if (yearIdx !== -1) {
+      const yyyy = String(new Date().getFullYear());
+      const filled = [...parts];
+      filled.splice(yearIdx, 0, specs[yearIdx] === '%Y' ? yyyy : yyyy.slice(-2));
+      parts = filled;
+    }
+  }
+
+  if (parts.length !== specs.length) {
+    throw new Error(`Date "${value}" does not match format "${format}"`);
+  }
+
+  const out = { day: NaN, month: NaN, year: NaN };
+  for (let i = 0; i < specs.length; i++) {
+    assignSpec(specs[i], parts[i], out);
+  }
+  if (Number.isNaN(out.day) || Number.isNaN(out.month) || Number.isNaN(out.year)) {
     throw new Error(`Date "${value}" missing components for "${format}"`);
   }
-  const d = new Date(year, month, day, 0, 0, 0);
+
+  const d = new Date(out.year, out.month, out.day, 0, 0, 0);
   if (
-    d.getFullYear() !== year ||
-    d.getMonth() !== month ||
-    d.getDate() !== day
+    d.getFullYear() !== out.year ||
+    d.getMonth() !== out.month ||
+    d.getDate() !== out.day
   ) {
     throw new Error(`Date "${value}" is out of range`);
   }
   return d;
+}
+
+export function parseDateTimeAny(formats: string[], value: string): Date {
+  let lastErr: unknown;
+  for (const f of formats) {
+    try { return parseDateTime(f, value); }
+    catch (e) { lastErr = e; }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error(`No format matched "${value}"`);
 }
 
 export function toISO(d: Date): string {

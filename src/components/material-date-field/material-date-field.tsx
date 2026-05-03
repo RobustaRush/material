@@ -9,14 +9,15 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { gettext } from '../../utils/i18n';
 import {
+  dateInputFormats,
   defaultDateInputFormat,
+  gettext,
 } from '../../utils/i18n';
 import {
   formatDate,
   fromISO,
-  parseDateTime,
+  parseDateTimeAny,
   toISO,
   todayISO,
 } from '../../utils/date-utils';
@@ -53,9 +54,17 @@ export class MaterialDateField {
   @Prop({ mutable: true, reflect: true }) value = '';
   @Prop() min = '';
   @Prop() max = '';
-  /** strftime-style display format. Defaults to Django's
-   *  `DATE_INPUT_FORMATS[0]` or a locale-derived one. */
+  /** strftime-style display format used when rendering `value` back into
+   *  the textfield. Defaults to Django's `DATE_INPUT_FORMATS[0]` or a
+   *  locale-derived one. Manual entry is more permissive — see
+   *  `inputFormats`. */
   @Prop() format = '';
+  /** Override the list of formats accepted on manual entry. Defaults to
+   *  Django's full `DATE_INPUT_FORMATS` list (or `[format]` when Django's
+   *  jsi18n catalog is not loaded). The lenient parser accepts mixed
+   *  separators, 1- or 2-digit day/month, 2-digit years (00–68 → 20xx,
+   *  69–99 → 19xx), and month names regardless. */
+  @Prop() inputFormats?: string[];
   @Prop({ reflect: true }) disabled = false;
   @Prop({ reflect: true }) required = false;
   @Prop({ reflect: true, attribute: 'readonly' }) readOnly = false;
@@ -91,6 +100,13 @@ export class MaterialDateField {
   private hiddenInput?: HTMLInputElement;
   private effectiveFormat(): string {
     return this.format || defaultDateInputFormat();
+  }
+
+  private effectiveInputFormats(): string[] {
+    if (this.inputFormats?.length) return this.inputFormats;
+    const list = dateInputFormats();
+    if (this.format && !list.includes(this.format)) return [this.format, ...list];
+    return list;
   }
 
   componentWillLoad() {
@@ -168,7 +184,7 @@ export class MaterialDateField {
       return;
     }
     try {
-      const d = parseDateTime(this.effectiveFormat(), raw);
+      const d = parseDateTimeAny(this.effectiveInputFormats(), raw);
       const iso = toISO(d);
       this.value = iso;
       this.error = false;

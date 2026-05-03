@@ -186,6 +186,37 @@ export function firstDayOfWeek(locale?: string): number {
 }
 
 /**
+ * Full list of `%`-style date formats accepted on manual entry. Django
+ * supplies a list (`DATE_INPUT_FORMATS`); without it we synthesise a
+ * permissive set built around the locale's display format — adding ISO,
+ * a 2-digit-year sibling, the opposite D/M ordering, and month-name
+ * variants — so the lenient parser has options regardless of how the
+ * user types the date.
+ */
+export function dateInputFormats(locale?: string): string[] {
+  const v = getFormat('DATE_INPUT_FORMATS');
+  if (Array.isArray(v) && v.length > 0) {
+    const list = v.filter((f): f is string => typeof f === 'string');
+    if (list.length > 0) return list;
+  }
+  const display = defaultDateInputFormat(locale);
+  const specs = display.match(/%[YymdbB]/g) ?? [];
+  const list = new Set<string>(['%Y-%m-%d', display]);
+  if (display.includes('%Y')) list.add(display.replace('%Y', '%y'));
+  const first = specs[0];
+  if (first === '%m' || first === '%b' || first === '%B') {
+    list.add('%d.%m.%Y');
+    list.add('%d.%m.%y');
+  } else if (first === '%d') {
+    list.add('%m/%d/%Y');
+    list.add('%m/%d/%y');
+  }
+  list.add('%d %b %Y');
+  list.add('%b %d, %Y');
+  return [...list];
+}
+
+/**
  * Try to get a default `%`-style date input format. Django supplies a list;
  * we take the first entry. Otherwise derive from `Intl.DateTimeFormat` parts.
  */

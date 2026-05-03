@@ -72,6 +72,33 @@
     </section>
 
     <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Lenient manual entry</h2>
+      <p class="text-on-surface-variant text-sm">
+        Type into the field directly — separators (<code>.</code> <code>/</code>
+        <code>-</code> space comma), 1- or 2-digit day/month, 2-digit years
+        (00–68 → 20xx, 69–99 → 19xx), month names, omitted year (current
+        year), and the compact 8-digit form all parse. The display string
+        is rebuilt from the canonical ISO on commit.
+      </p>
+      <ul class="text-on-surface-variant text-sm list-disc pl-6 space-y-1">
+        <li>Default ordering: <code>15.05.2026</code> /
+            <code>15/5/26</code> /
+            <code>15-5-26</code> /
+            <code>15052026</code></li>
+        <li>Year omitted: <code>15.5</code> → today's year</li>
+        <li>Month name (any locale-listed format): <code>15 May 2026</code>,
+            <code>15 may 26</code></li>
+      </ul>
+      <div class="max-w-sm">
+        <material-date-field
+          name="lenient"
+          label="Date"
+          help-text="Try any shape — see hints above."
+        ></material-date-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
       <h2 class="text-lg font-semibold">Form round-trip</h2>
       <p class="text-on-surface-variant text-sm">
         The hidden input always carries ISO. Submit and check the serialized output.
