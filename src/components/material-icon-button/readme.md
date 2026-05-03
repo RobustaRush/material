@@ -39,6 +39,7 @@
 
  - [material-calendar](../material-calendar)
  - [material-date-field](../material-date-field)
+ - [material-datetime-field](../material-datetime-field)
  - [material-dialog](../material-dialog)
  - [material-file-field](../material-file-field)
  - [material-textfield](../material-textfield)
@@ -50,6 +51,7 @@
 graph TD;
   material-calendar --> material-icon-button
   material-date-field --> material-icon-button
+  material-datetime-field --> material-icon-button
   material-dialog --> material-icon-button
   material-file-field --> material-icon-button
   material-textfield --> material-icon-button

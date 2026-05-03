@@ -280,3 +280,33 @@ export function timeInputFormats(locale?: string, mode?: '12' | '24'): string[] 
   }
   return ['%H:%M', '%H:%M:%S', '%I:%M %p', '%I:%M:%S %p'];
 }
+
+/** Display strftime for a datetime value — date-format + time-format joined
+ *  by a space. Django `DATETIME_FORMAT` wins when present. */
+export function defaultDatetimeFormat(locale?: string, mode?: '12' | '24'): string {
+  const v = getFormat('DATETIME_INPUT_FORMATS');
+  if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string') return v[0];
+  return `${defaultDateInputFormat(locale)} ${defaultTimeFormat(locale, mode)}`;
+}
+
+/** `%`-style datetime formats accepted on manual entry. Django
+ *  `DATETIME_INPUT_FORMATS` wins; otherwise we cross the date and time
+ *  format lists so a wide range of `<date><sep><time>` combinations parse. */
+export function datetimeInputFormats(locale?: string, mode?: '12' | '24'): string[] {
+  const v = getFormat('DATETIME_INPUT_FORMATS');
+  if (Array.isArray(v) && v.length > 0) {
+    const list = v.filter((f): f is string => typeof f === 'string');
+    if (list.length > 0) return list;
+  }
+  const dates = dateInputFormats(locale);
+  const times = timeInputFormats(locale, mode);
+  const out = new Set<string>();
+  // ISO-with-T first so `2026-05-03T14:30` parses cleanly.
+  out.add(`${dates[0]}T${times[0]}`);
+  for (const d of dates) {
+    for (const t of times) {
+      out.add(`${d} ${t}`);
+    }
+  }
+  return [...out];
+}

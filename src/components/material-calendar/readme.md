@@ -40,6 +40,7 @@
 ### Used by
 
  - [material-date-field](../material-date-field)
+ - [material-datetime-field](../material-datetime-field)
 
 ### Depends on
 
@@ -50,6 +51,7 @@
 graph TD;
   material-calendar --> material-icon-button
   material-date-field --> material-calendar
+  material-datetime-field --> material-calendar
   style material-calendar fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

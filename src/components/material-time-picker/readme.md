@@ -34,6 +34,7 @@
 
 ### Used by
 
+ - [material-datetime-field](../material-datetime-field)
  - [material-time-field](../material-time-field)
 
 ### Depends on
@@ -46,6 +47,7 @@
 graph TD;
   material-time-picker --> material-icon-button
   material-time-picker --> material-button
+  material-datetime-field --> material-time-picker
   material-time-field --> material-time-picker
   style material-time-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```

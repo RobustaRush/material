@@ -29,6 +29,7 @@
 ### Used by
 
  - [material-date-field](../material-date-field)
+ - [material-datetime-field](../material-datetime-field)
  - [material-time-field](../material-time-field)
  - [material-time-picker](../material-time-picker)
 
@@ -36,6 +37,7 @@
 ```mermaid
 graph TD;
   material-date-field --> material-button
+  material-datetime-field --> material-button
   material-time-field --> material-button
   material-time-picker --> material-button
   style material-button fill:#f9f,stroke:#333,stroke-width:4px

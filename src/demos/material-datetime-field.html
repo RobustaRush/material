@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-datetime-field — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-datetime-field</h1>
+        <p class="text-on-surface-variant text-sm">
+          Text-field + trailing <code>event</code> trigger. Opens an adaptive
+          <code>material-dialog</code> with a <code>material-calendar</code> + <code>material-time-picker</code>;
+          a footer toggle swaps between them. Hidden ISO
+          <code>YYYY-MM-DDTHH:MM</code> input rides along for form posts.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Default — locale-derived 12/24h</h2>
+      <p class="text-on-surface-variant text-sm">
+        Click the <code>event</code> icon to open the dialog on the calendar.
+        The toggle in the bottom-left swaps to the time picker; OK commits
+        both. Click inside the time portion of the field first → dialog
+        opens directly on the time view.
+      </p>
+      <div class="max-w-sm">
+        <material-datetime-field name="when" label="When"></material-datetime-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">24h pre-filled</h2>
+      <p class="text-on-surface-variant text-sm">
+        Initial value <code>2026-05-03T14:30</code>.
+      </p>
+      <div class="max-w-sm">
+        <material-datetime-field
+          name="meeting"
+          label="Meeting"
+          mode="24"
+          value="2026-05-03T14:30"
+          required
+        ></material-datetime-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Business-hours bounded</h2>
+      <p class="text-on-surface-variant text-sm">
+        15-minute slots, dates 2026-05-01 → 2026-05-31, time 08:00 – 17:00
+        applied to <em>every</em> day. Picker disables off-step / out-of-range
+        cells; manual entry rejects invalid values.
+      </p>
+      <div class="max-w-sm">
+        <material-datetime-field
+          name="appt"
+          label="Appointment"
+          mode="24"
+          precision="00:15"
+          min-date="2026-05-01"
+          max-date="2026-05-31"
+          min-time="08:00"
+          max-time="17:00"
+          value="2026-05-04T09:00"
+          help-text="Business hours, quarter-hour slots."
+        ></material-datetime-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Lenient manual entry</h2>
+      <p class="text-on-surface-variant text-sm">
+        Mix date + time separators freely. Try:
+      </p>
+      <ul class="text-on-surface-variant text-sm list-disc pl-6 space-y-1">
+        <li><code>2026-05-03 14:30</code></li>
+        <li><code>2026-05-03T14:30</code> (ISO with T)</li>
+        <li><code>2026-05-03 2:30 pm</code></li>
+        <li><code>05/03/2026 09:05</code></li>
+      </ul>
+      <div class="max-w-sm">
+        <material-datetime-field
+          name="lenient"
+          label="Date and time"
+          help-text="Try any shape — see hints above."
+        ></material-datetime-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Form round-trip</h2>
+      <p class="text-on-surface-variant text-sm">
+        The hidden input always carries ISO <code>YYYY-MM-DDTHH:MM</code>.
+      </p>
+      <form id="f" class="space-y-4 max-w-sm">
+        <material-datetime-field name="starts" label="Starts" mode="24"></material-datetime-field>
+        <material-datetime-field name="ends"   label="Ends"   mode="24"></material-datetime-field>
+        <div class="flex gap-2">
+          <material-button type="submit" variant="filled" label="Submit"></material-button>
+          <material-button type="reset"  variant="text"   label="Reset"></material-button>
+        </div>
+      </form>
+      <output id="form-out" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(submit to serialize)</output>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Last valueChange</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-datetime-field
+  name="when"
+  label="When"
+  mode="24"
+  value="2026-05-03T14:30"
+  required
+&gt;&lt;/material-datetime-field&gt;
+
+&lt;script&gt;
+  document.querySelector('material-datetime-field')
+    .addEventListener('valueChange', e =&gt; console.log(e.detail.value));  // ISO YYYY-MM-DDTHH:MM
+&lt;/script&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    serializeFormToOutput('f', 'form-out');
+
+    const log = document.getElementById('log');
+    document.addEventListener('valueChange', (e) => {
+      if (e.target?.tagName !== 'MATERIAL-DATETIME-FIELD') return;
+      const id = e.target?.getAttribute('name') || '?';
+      log.textContent = `[${id}] ${e.detail?.value || '(empty)'}`;
+    });
+  </script>
+</body>
+</html>

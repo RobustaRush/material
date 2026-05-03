@@ -1,0 +1,22 @@
+/* Light-DOM container — visual look comes from material-textfield. */
+
+material-datetime-field { display: block; }
+material-datetime-field[hidden] { display: none; }
+
+/* Dialog body wrapper — equal height across calendar/time-picker swap.
+ * 440dp ≈ time-picker dial natural height; calendar (~360dp) sits centered. */
+material-datetime-field .dtf__body {
+  min-height: var(--dtf-body-h, 440px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+material-datetime-field .dtf__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+material-datetime-field .dtf__actions-spacer { flex: 1; }

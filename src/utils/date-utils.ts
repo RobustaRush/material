@@ -152,7 +152,9 @@ export function parseDateTime(format: string, value: string): Date {
   const pre = trimmed
     .replace(/a\.m\./gi, 'am')
     .replace(/p\.m\./gi, 'pm')
-    .replace(/(\d)(am|pm)\b/gi, '$1 $2');
+    .replace(/(\d)(am|pm)\b/gi, '$1 $2')
+    // ISO 8601 `YYYY-MM-DDTHH:MM` — split the T between digits.
+    .replace(/(\d)T(\d)/g, '$1 $2');
   let parts = pre.split(VALUE_SPLIT_RE).filter(Boolean);
 
   // Compact-digit shortcut: one block whose width matches sum of natural
@@ -283,6 +285,26 @@ export function fromISOTime(s: string): Date | null {
 
 export function nowISOTime(): string {
   return toISOTime(new Date());
+}
+
+/** ISO `YYYY-MM-DDTHH:MM` (HTML `datetime-local` shape, no seconds, no zone). */
+export function toISODateTime(d: Date): string {
+  return `${toISO(d)}T${toISOTime(d)}`;
+}
+
+/** Parse `YYYY-MM-DDTHH:MM`. Strict — returns null for malformed input. */
+export function fromISODateTime(s: string): Date | null {
+  if (!s) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):([0-5]\d)$/.exec(s);
+  if (!m) return null;
+  const y = parseInt(m[1], 10);
+  const mo = parseInt(m[2], 10) - 1;
+  const day = parseInt(m[3], 10);
+  const h = parseInt(m[4], 10);
+  const mi = parseInt(m[5], 10);
+  const dt = new Date(y, mo, day, h, mi, 0);
+  if (dt.getFullYear() !== y || dt.getMonth() !== mo || dt.getDate() !== day) return null;
+  return dt;
 }
 
 /** Add `n` months to an ISO date (clamping day to the new month's length). */
