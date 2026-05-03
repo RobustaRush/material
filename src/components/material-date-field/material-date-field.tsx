@@ -121,6 +121,14 @@ export class MaterialDateField {
     this.dialog?.show();
   };
 
+  // Prevent the trigger from taking focus on mouse press. Without this the
+  // textfield's :focus-within fires for a few ms before showModal() pulls
+  // focus into the dialog, which makes the label float up then snap back.
+  // Keyboard users (Tab + Enter) are unaffected — they still focus the button.
+  private suppressTriggerFocus = (e: MouseEvent) => {
+    e.preventDefault();
+  };
+
   private confirm = () => {
     if (this.pending) {
       this.value = this.pending;
@@ -202,6 +210,7 @@ export class MaterialDateField {
             disabled={this.disabled}
             aria-label={openLabel}
             onClick={this.openDialog}
+            onMouseDown={this.suppressTriggerFocus}
           />
         </material-textfield>
 

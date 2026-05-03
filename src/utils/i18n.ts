@@ -82,6 +82,17 @@ function pageLocale(override?: string): string {
   return 'en';
 }
 
+// Locales like ru-RU return standalone month/weekday names in lowercase
+// (correct grammar — but in calendar headers they're conventionally capitalised).
+// Uppercase the first display character without disturbing later letters.
+function capitalize(s: string): string {
+  if (!s) return s;
+  // Use Array.from to handle surrogate pairs / combining marks safely.
+  const chars = Array.from(s);
+  chars[0] = chars[0].toLocaleUpperCase();
+  return chars.join('');
+}
+
 export function monthNames(
   style: 'long' | 'short' | 'narrow' = 'long',
   locale?: string,
@@ -113,7 +124,7 @@ export function monthNames(
     ];
   }
   const fmt = new Intl.DateTimeFormat(pageLocale(locale), { month: style });
-  return Array.from({ length: 12 }, (_, i) => fmt.format(new Date(2000, i, 15)));
+  return Array.from({ length: 12 }, (_, i) => capitalize(fmt.format(new Date(2000, i, 15))));
 }
 
 export function weekdayNames(
@@ -146,7 +157,7 @@ export function weekdayNames(
   }
   const fmt = new Intl.DateTimeFormat(pageLocale(locale), { weekday: style });
   // 2000-01-02 was a Sunday → walk 7 days starting there.
-  return Array.from({ length: 7 }, (_, i) => fmt.format(new Date(2000, 0, 2 + i)));
+  return Array.from({ length: 7 }, (_, i) => capitalize(fmt.format(new Date(2000, 0, 2 + i))));
 }
 
 export function firstDayOfWeek(locale?: string): number {

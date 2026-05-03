@@ -7,14 +7,17 @@
 
 ## Properties
 
-| Property         | Attribute           | Description                                                                               | Type                  | Default     |
-| ---------------- | ------------------- | ----------------------------------------------------------------------------------------- | --------------------- | ----------- |
-| `displayMonth`   | `display-month`     | Currently displayed month as `YYYY-MM`. Defaults to month-of(value) or current month.     | `string`              | `''`        |
-| `firstDayOfWeek` | `first-day-of-week` | First day of the week (0=Sun..6=Sat). Defaults via i18n helper.                           | `number \| undefined` | `undefined` |
-| `locale`         | `locale`            | Override locale for month/weekday names. Defaults to <html lang> or `navigator.language`. | `string`              | `''`        |
-| `max`            | `max`               | Max selectable date (ISO).                                                                | `string`              | `''`        |
-| `min`            | `min`               | Min selectable date (ISO).                                                                | `string`              | `''`        |
-| `value`          | `value`             | Selected date as ISO `YYYY-MM-DD`. Empty string = no selection.                           | `string`              | `''`        |
+| Property         | Attribute           | Description                                                                                                                                                                                  | Type                  | Default     |
+| ---------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
+| `dense`          | `dense`             | Render the day grid with tight row heights instead of stretching the rows to fill the 360×456dp container. Useful when the calendar is embedded in a denser surface (e.g. inline in a form). | `boolean`             | `false`     |
+| `displayMonth`   | `display-month`     | Currently displayed month as `YYYY-MM`. Defaults to month-of(value) or current month.                                                                                                        | `string`              | `''`        |
+| `firstDayOfWeek` | `first-day-of-week` | First day of the week (0=Sun..6=Sat). Defaults via i18n helper.                                                                                                                              | `number \| undefined` | `undefined` |
+| `locale`         | `locale`            | Override locale for month/weekday names. Defaults to <html lang> or `navigator.language`.                                                                                                    | `string`              | `''`        |
+| `max`            | `max`               | Max selectable date (ISO).                                                                                                                                                                   | `string`              | `''`        |
+| `maxYear`        | `max-year`          | Latest year shown in the year picker. Falls back to year-of-`max` when `max` is set, otherwise 2100.                                                                                         | `number \| undefined` | `undefined` |
+| `min`            | `min`               | Min selectable date (ISO).                                                                                                                                                                   | `string`              | `''`        |
+| `minYear`        | `min-year`          | Earliest year shown in the year picker. Falls back to year-of-`min` when `min` is set, otherwise 1900.                                                                                       | `number \| undefined` | `undefined` |
+| `value`          | `value`             | Selected date as ISO `YYYY-MM-DD`. Empty string = no selection.                                                                                                                              | `string`              | `''`        |
 
 
 ## Events

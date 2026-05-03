@@ -64,6 +64,16 @@
     </section>
 
     <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Dense — tight day rows</h2>
+      <p class="text-on-surface-variant text-sm">
+        Add the <code>dense</code> attribute to compress the day grid rows to
+        their natural 40dp height instead of stretching to fill 456dp. Useful
+        when embedding inline in a denser surface.
+      </p>
+      <material-calendar id="cal-dense" dense></material-calendar>
+    </section>
+
+    <section class="space-y-4">
       <h2 class="text-lg font-semibold">Locale override (Intl path)</h2>
       <p class="text-on-surface-variant text-sm">
         Set <code>locale</code> to render month/weekday names and first-day-of-week from

@@ -98,6 +98,14 @@ export class MaterialTextfield {
   @Watch('disabled')
   syncFormValue() {
     this.internals.setFormValue(this.disabled ? null : (this.value ?? ''));
+    // Safari (and some older WebKit builds) don't re-evaluate
+    // :placeholder-shown when the input's value is changed via the JSX
+    // value= prop alone — which leaves the floating label stuck "down"
+    // after a programmatic value update. Sync the property explicitly.
+    const next = this.value ?? '';
+    if (this.inputEl && this.inputEl.value !== next) {
+      this.inputEl.value = next;
+    }
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -229,9 +237,17 @@ export class MaterialTextfield {
       </div>
     );
 
+    // Treat any non-empty `value` prop as "filled" — explicit class on the
+    // group wrapper, in addition to :placeholder-shown. Safari's :has() +
+    // :placeholder-shown doesn't reliably re-evaluate after a programmatic
+    // value assignment, leaving the label stuck "down".
+    const hasValue = (this.value ?? '') !== '';
+    const groupCls = `group${hasValue ? ' is-filled' : ''}`;
+
     if (variant === 'filled') {
       const labelShrunk =
         'group-focus-within:top-2 group-focus-within:translate-y-0 group-focus-within:text-xs ' +
+        'group-[.is-filled]:top-2 group-[.is-filled]:translate-y-0 group-[.is-filled]:text-xs ' +
         'group-has-[input:not(:placeholder-shown)]:top-2 ' +
         'group-has-[input:not(:placeholder-shown)]:translate-y-0 ' +
         'group-has-[input:not(:placeholder-shown)]:text-xs';
@@ -250,7 +266,7 @@ export class MaterialTextfield {
 
       return (
         <div class="block w-full">
-          <div class="group relative w-full h-14 rounded-t bg-surface-container-highest hover:bg-surface-container-high transition-colors">
+          <div class={`${groupCls} relative w-full h-14 rounded-t bg-surface-container-highest hover:bg-surface-container-high transition-colors`}>
             {showStaticLeading && renderIcon('left', leadingIcon)}
             {renderLeadingSlot()}
             {showStaticTrailing && renderIcon('right', trailingIcon)}
@@ -281,10 +297,11 @@ export class MaterialTextfield {
     // aligns with the notch, regardless of leading-icon presence.
     const labelShrunkOutlined =
       'group-focus-within:top-0 group-focus-within:text-xs ' +
+      'group-[.is-filled]:top-0 group-[.is-filled]:text-xs ' +
       'group-has-[input:not(:placeholder-shown)]:top-0 ' +
       'group-has-[input:not(:placeholder-shown)]:text-xs' +
       (hasLeading
-        ? ' group-focus-within:left-4 group-has-[input:not(:placeholder-shown)]:left-4'
+        ? ' group-focus-within:left-4 group-[.is-filled]:left-4 group-has-[input:not(:placeholder-shown)]:left-4'
         : '');
 
     const fieldsetTone = error
@@ -305,7 +322,7 @@ export class MaterialTextfield {
 
     return (
       <div class="block w-full">
-        <div class="group relative w-full h-14">
+        <div class={`${groupCls} relative w-full h-14`}>
           {showStaticLeading && renderIcon('left', leadingIcon)}
           {renderLeadingSlot()}
           {showStaticTrailing && renderIcon('right', trailingIcon)}
@@ -329,7 +346,7 @@ export class MaterialTextfield {
             class={`absolute inset-0 m-0 px-3 pt-0 pointer-events-none rounded text-left ${fieldsetTone}`}>
             {label && (
               <legend class={`invisible block h-0 overflow-visible p-0 text-xs leading-none ${legendOffset}`}>
-                <span class="inline-block overflow-hidden whitespace-nowrap max-w-[0.01px] transition-[max-width,padding] duration-150 group-focus-within:max-w-full group-focus-within:px-1 group-has-[input:not(:placeholder-shown)]:max-w-full group-has-[input:not(:placeholder-shown)]:px-1">
+                <span class="inline-block overflow-hidden whitespace-nowrap max-w-[0.01px] transition-[max-width,padding] duration-150 group-focus-within:max-w-full group-focus-within:px-1 group-[.is-filled]:max-w-full group-[.is-filled]:px-1 group-has-[input:not(:placeholder-shown)]:max-w-full group-has-[input:not(:placeholder-shown)]:px-1">
                   {label}{this.required ? ' *' : ''}
                 </span>
               </legend>
