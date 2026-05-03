@@ -12,6 +12,7 @@
 | `disabled`       | `disabled`        |             | `boolean`             | `false`     |
 | `label`          | `label`           |             | `string \| undefined` | `undefined` |
 | `leadingIcon`    | `leading-icon`    |             | `string \| undefined` | `undefined` |
+| `multi`          | `multi`           |             | `boolean`             | `false`     |
 | `selected`       | `selected`        |             | `boolean`             | `false`     |
 | `supportingText` | `supporting-text` |             | `string \| undefined` | `undefined` |
 | `trailingIcon`   | `trailing-icon`   |             | `string \| undefined` | `undefined` |
@@ -20,9 +21,10 @@
 
 ## Events
 
-| Event                  | Description | Type                              |
-| ---------------------- | ----------- | --------------------------------- |
-| `materialOptionSelect` |             | `CustomEvent<{ value: string; }>` |
+| Event                  | Description | Type                                                 |
+| ---------------------- | ----------- | ---------------------------------------------------- |
+| `materialOptionSelect` |             | `CustomEvent<{ value: string; }>`                    |
+| `materialOptionToggle` |             | `CustomEvent<{ value: string; selected: boolean; }>` |
 
 
 ----------------------------------------------

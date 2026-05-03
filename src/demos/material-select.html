@@ -155,6 +155,69 @@
       </div>
     </section>
 
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Multi-select — chips inside the field</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>multiple</code> branches the trigger to a chip shell that grows as
+        chips wrap. Menu items show a checkbox glyph; click toggles selection
+        and keeps the menu open. Close with Esc, click-away, or the chevron.
+      </p>
+      <div class="max-w-md">
+        <material-select multiple name="tags" label="Tags" placeholder="Pick a few"
+                         help-text="Multiple selections allowed.">
+          <material-option value="frontend">Frontend</material-option>
+          <material-option value="backend">Backend</material-option>
+          <material-option value="design" leading-icon="palette">Design</material-option>
+          <material-option value="devops" leading-icon="settings">DevOps</material-option>
+          <material-option value="data" supporting-text="ETL, analytics, ML">Data</material-option>
+          <material-option value="mobile">Mobile</material-option>
+          <material-option value="security">Security</material-option>
+        </material-select>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Multi — recipients (filled, pre-filled, growing)</h2>
+      <p class="text-on-surface-variant text-sm">
+        Filled variant. Pre-loaded with two values; add more to see the field grow.
+        Backspace on the focused field removes the last chip.
+      </p>
+      <div class="max-w-md">
+        <material-select id="recipients" multiple variant="filled"
+                         name="to" label="To" leading-icon="alternate_email" clearable>
+          <material-option value="ada@example.com" supporting-text="Ada Lovelace">ada@example.com</material-option>
+          <material-option value="alan@example.com" supporting-text="Alan Turing">alan@example.com</material-option>
+          <material-option value="grace@example.com" supporting-text="Grace Hopper">grace@example.com</material-option>
+          <material-option value="linus@example.com" supporting-text="Linus Torvalds">linus@example.com</material-option>
+          <material-option value="margaret@example.com" supporting-text="Margaret Hamilton">margaret@example.com</material-option>
+          <material-option value="dennis@example.com" supporting-text="Dennis Ritchie">dennis@example.com</material-option>
+          <material-option value="brian@example.com" supporting-text="Brian Kernighan">brian@example.com</material-option>
+        </material-select>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Multi — required + form post (Django <code>getlist</code> parity)</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>FormData</code> contains one entry per selected value, just like
+        a native <code>&lt;select multiple&gt;</code> — submit and check the
+        echo below.
+      </p>
+      <form id="fm" class="space-y-4 max-w-md">
+        <material-select multiple required name="perms" label="Permissions">
+          <material-option value="read">Read</material-option>
+          <material-option value="write">Write</material-option>
+          <material-option value="admin">Admin</material-option>
+          <material-option value="delete">Delete</material-option>
+        </material-select>
+        <div class="flex gap-2">
+          <material-button type="submit" variant="filled" label="Submit"></material-button>
+          <material-button type="reset"  variant="text"   label="Reset"></material-button>
+        </div>
+      </form>
+      <output id="form-out-multi" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(submit to serialize)</output>
+    </section>
+
     <section class="space-y-2">
       <h2 class="text-lg font-semibold">Last valueChange</h2>
       <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
@@ -182,6 +245,24 @@
   <script src="/demos/_shared.js"></script>
   <script>
     serializeFormToOutput('f', 'form-out');
+
+    // Pre-fill the recipients multi-select once it upgrades.
+    customElements.whenDefined('material-select').then(() => {
+      const r = document.getElementById('recipients');
+      if (r) r.values = ['ada@example.com', 'grace@example.com'];
+    });
+
+    // Multi form: render `getlist`-style result.
+    document.getElementById('fm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const perms = fd.getAll('perms');
+      document.getElementById('form-out-multi').textContent =
+        `perms = [${perms.map(JSON.stringify).join(', ')}]`;
+    });
+    document.getElementById('fm').addEventListener('reset', () => {
+      document.getElementById('form-out-multi').textContent = '(submit to serialize)';
+    });
 
     // Populate long-list select.
     const countries = ['Argentina','Australia','Austria','Belgium','Brazil','Canada','Chile','China','Colombia','Czechia','Denmark','Egypt','Estonia','Finland','France','Germany','Greece','Hungary','Iceland','India','Indonesia','Ireland','Israel','Italy','Japan','Kenya','Latvia','Lithuania','Mexico','Morocco','Netherlands','New Zealand','Nigeria','Norway','Pakistan','Peru','Philippines','Poland','Portugal','Romania','Saudi Arabia','Singapore','Slovakia','South Africa','South Korea','Spain','Sweden','Switzerland','Thailand','Turkey','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Vietnam'];

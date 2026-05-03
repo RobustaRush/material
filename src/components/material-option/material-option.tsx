@@ -29,9 +29,16 @@ export class MaterialOption {
   @Prop() supportingText?: string;
   @Prop({ reflect: true }) disabled = false;
   @Prop({ mutable: true, reflect: true }) selected = false;
+  // Set by parent material-select (not declared as attribute). When true,
+  // renders a checkbox glyph and emits `materialOptionToggle` instead of
+  // `materialOptionSelect`, and Enter/Space don't close the menu.
+  @Prop({ mutable: true }) multi = false;
 
   @Event({ bubbles: true, composed: true })
   materialOptionSelect!: EventEmitter<{ value: string }>;
+
+  @Event({ bubbles: true, composed: true })
+  materialOptionToggle!: EventEmitter<{ value: string; selected: boolean }>;
 
   componentWillLoad() {
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
@@ -40,7 +47,11 @@ export class MaterialOption {
   private activate = (e?: Event) => {
     if (this.disabled) return;
     e?.stopPropagation();
-    this.materialOptionSelect.emit({ value: this.value });
+    if (this.multi) {
+      this.materialOptionToggle.emit({ value: this.value, selected: !this.selected });
+    } else {
+      this.materialOptionSelect.emit({ value: this.value });
+    }
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
@@ -59,12 +70,22 @@ export class MaterialOption {
 
   render() {
     const twoLine = !!this.supportingText;
+    // In multi mode, render a 20dp checkbox glyph. If a leading-icon is
+    // already set, place the checkbox at the trailing edge to avoid
+    // overlap; otherwise place it leading.
+    const checkGlyph = this.multi && (
+      <span class="material-symbols text-[20px] text-on-surface-variant" aria-hidden="true">
+        {this.selected ? 'check_box' : 'check_box_outline_blank'}
+      </span>
+    );
+    const checkAtTrailing = this.multi && !!this.leadingIcon;
     return (
       <Host
         role="option"
         tabindex={this.disabled ? -1 : 0}
         aria-disabled={this.disabled ? 'true' : null}
         aria-selected={this.selected ? 'true' : 'false'}
+        aria-checked={this.multi ? (this.selected ? 'true' : 'false') : null}
         onClick={this.activate}
         onMouseDown={this.handleMouseDown}
         onKeyDown={this.handleKeyDown}
@@ -86,11 +107,11 @@ export class MaterialOption {
 
           <span class="flex items-center justify-center w-9 shrink-0">
             <slot name="leading">
-              {this.leadingIcon && (
+              {this.leadingIcon ? (
                 <span class="material-symbols text-[24px]" aria-hidden="true">
                   {this.leadingIcon}
                 </span>
-              )}
+              ) : (this.multi ? checkGlyph : null)}
             </slot>
           </span>
 
@@ -113,6 +134,7 @@ export class MaterialOption {
                 </span>
               )}
             </slot>
+            {checkAtTrailing && checkGlyph}
           </span>
         </div>
       </Host>

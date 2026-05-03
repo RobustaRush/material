@@ -8,6 +8,12 @@
    in/out across the popover open/closed `display` swap. */
 
 :host {
+  /* Hidden until the popover opens. Belt-and-suspenders for the brief
+     window before connectedCallback adds the [popover] attribute (without
+     it, the UA's `[popover]:not(:popover-open) { display:none }` rule
+     can't apply yet, so the menu would render visible at static
+     position for one frame on page load). */
+  display: none;
   position: fixed;
   inset: auto;
   margin: 0;
@@ -40,6 +46,7 @@
 :host([data-placed-side="top"][data-placed-align="end"])      { transform-origin: bottom right; }
 
 :host(:popover-open) {
+  display: block;
   opacity: 1;
   transform: scale(1);
   transition:
