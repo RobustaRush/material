@@ -1,0 +1,26 @@
+:host,
+:host(:focus),
+:host(:focus-visible) {
+  outline: none;
+}
+
+:host {
+  display: block;
+  margin-top: 2px;
+}
+
+:host(:first-of-type) {
+  margin-top: 0;
+}
+
+:host > div {
+  border-radius: 12px;
+}
+:host > div > span:first-child {
+  border-radius: inherit;
+}
+
+:host(:focus-visible) > div {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: -2px;
+}

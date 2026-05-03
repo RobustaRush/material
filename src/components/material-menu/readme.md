@@ -53,6 +53,19 @@ Type: `Promise<void>`
 
 
 
+## Dependencies
+
+### Used by
+
+ - [material-select](../material-select)
+
+### Graph
+```mermaid
+graph TD;
+  material-select --> material-menu
+  style material-menu fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

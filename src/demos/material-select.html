@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-select — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-select</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 single-select — textfield + chevron trigger that opens a popover-anchored
+          <code>material-menu</code> of <code>material-option</code> children.
+          Form-associated; type-ahead on open and inline (closed); optional clear button.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Basic — leading icons + groups</h2>
+      <p class="text-on-surface-variant text-sm">
+        Click the field or the chevron to open. Arrow keys / Home / End navigate; Enter
+        commits; Esc / click-away closes. Type a letter while open to jump.
+      </p>
+      <div class="max-w-sm">
+        <material-select name="country" label="Country" required help-text="Where do you live?">
+          <material-optgroup label="Americas">
+            <material-option value="us" leading-icon="flag">United States</material-option>
+            <material-option value="ca" leading-icon="flag">Canada</material-option>
+            <material-option value="br" leading-icon="flag">Brazil</material-option>
+          </material-optgroup>
+          <material-optgroup label="Europe">
+            <material-option value="de" supporting-text="Deutschland" leading-icon="flag">Germany</material-option>
+            <material-option value="fr" leading-icon="flag">France</material-option>
+            <material-option value="gb" leading-icon="flag">United Kingdom</material-option>
+            <material-option value="ua" leading-icon="flag" disabled>Ukraine (coming soon)</material-option>
+          </material-optgroup>
+          <material-optgroup label="Asia">
+            <material-option value="jp" leading-icon="flag">Japan</material-option>
+            <material-option value="kr" leading-icon="flag">South Korea</material-option>
+          </material-optgroup>
+        </material-select>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Pre-filled + clearable + filled variant</h2>
+      <p class="text-on-surface-variant text-sm">
+        Initial <code>value="medium"</code>. Clearable — an <code>x</code> button appears
+        next to the chevron once a value is set.
+      </p>
+      <div class="max-w-sm">
+        <material-select
+          variant="filled"
+          name="size"
+          label="Size"
+          value="medium"
+          clearable
+        >
+          <material-option value="small" leading-icon="straighten">Small</material-option>
+          <material-option value="medium" leading-icon="straighten">Medium</material-option>
+          <material-option value="large" leading-icon="straighten">Large</material-option>
+          <material-option value="xl" leading-icon="straighten" supporting-text="Extra large">XL</material-option>
+        </material-select>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Two-line items — supporting text + trailing icon</h2>
+      <div class="max-w-sm">
+        <material-select name="account" label="Send from" leading-icon="alternate_email">
+          <material-option value="personal" supporting-text="me@personal.com" leading-icon="person" trailing-icon="check_circle">Personal</material-option>
+          <material-option value="work"     supporting-text="me@work.com"     leading-icon="business" trailing-icon="check_circle">Work</material-option>
+          <material-option value="alias"    supporting-text="hi@alias.com"    leading-icon="alternate_email">Alias</material-option>
+        </material-select>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Disabled / error</h2>
+      <div class="grid sm:grid-cols-2 gap-4 max-w-2xl">
+        <material-select name="d1" label="Disabled" value="medium" disabled>
+          <material-option value="small">Small</material-option>
+          <material-option value="medium">Medium</material-option>
+          <material-option value="large">Large</material-option>
+        </material-select>
+        <material-select name="d2" label="With error" error error-text="Pick one to continue" required>
+          <material-option value="a">Option A</material-option>
+          <material-option value="b">Option B</material-option>
+          <material-option value="c">Option C</material-option>
+        </material-select>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Form round-trip</h2>
+      <p class="text-on-surface-variant text-sm">
+        The selected option's <code>value</code> is what gets posted. Reset restores the
+        attribute default.
+      </p>
+      <form id="f" class="space-y-4 max-w-sm">
+        <material-select name="role" label="Role" required value="dev">
+          <material-option value="dev">Developer</material-option>
+          <material-option value="design">Designer</material-option>
+          <material-option value="pm">Product manager</material-option>
+          <material-option value="ops">Operations</material-option>
+        </material-select>
+        <material-select name="region" label="Region" clearable>
+          <material-option value="us-east">US East</material-option>
+          <material-option value="us-west">US West</material-option>
+          <material-option value="eu-central">EU Central</material-option>
+          <material-option value="ap-south">AP South</material-option>
+        </material-select>
+        <div class="flex gap-2">
+          <material-button type="submit" variant="filled" label="Submit"></material-button>
+          <material-button type="reset"  variant="text"   label="Reset"></material-button>
+        </div>
+      </form>
+      <output id="form-out" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(submit to serialize)</output>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Long list — scrolls inside the popover</h2>
+      <p class="text-on-surface-variant text-sm">
+        Type letters while open or closed to jump (closed = native <code>&lt;select&gt;</code>
+        parity, fires <code>valueChange</code>).
+      </p>
+      <div class="max-w-sm">
+        <material-select id="long" name="country2" label="Country" placeholder="Pick a country"></material-select>
+      </div>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-lg font-semibold">Last valueChange</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-select name="country" label="Country" required&gt;
+  &lt;material-optgroup label="Europe"&gt;
+    &lt;material-option value="de" supporting-text="Deutschland"&gt;Germany&lt;/material-option&gt;
+    &lt;material-option value="fr"&gt;France&lt;/material-option&gt;
+  &lt;/material-optgroup&gt;
+  &lt;material-option value="us" leading-icon="flag"&gt;United States&lt;/material-option&gt;
+&lt;/material-select&gt;
+
+&lt;script&gt;
+  document.querySelector('material-select')
+    .addEventListener('valueChange', e =&gt; console.log(e.detail.value));
+&lt;/script&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    serializeFormToOutput('f', 'form-out');
+
+    // Populate long-list select.
+    const countries = ['Argentina','Australia','Austria','Belgium','Brazil','Canada','Chile','China','Colombia','Czechia','Denmark','Egypt','Estonia','Finland','France','Germany','Greece','Hungary','Iceland','India','Indonesia','Ireland','Israel','Italy','Japan','Kenya','Latvia','Lithuania','Mexico','Morocco','Netherlands','New Zealand','Nigeria','Norway','Pakistan','Peru','Philippines','Poland','Portugal','Romania','Saudi Arabia','Singapore','Slovakia','South Africa','South Korea','Spain','Sweden','Switzerland','Thailand','Turkey','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Vietnam'];
+    const longSel = document.getElementById('long');
+    for (const name of countries) {
+      const o = document.createElement('material-option');
+      o.setAttribute('value', name.toLowerCase().replace(/\s+/g, '-'));
+      o.textContent = name;
+      longSel.appendChild(o);
+    }
+
+    const log = document.getElementById('log');
+    document.addEventListener('valueChange', (e) => {
+      if (e.target?.tagName !== 'MATERIAL-SELECT') return;
+      const id = e.target?.getAttribute('name') || '?';
+      log.textContent = `[${id}] ${e.detail?.value || '(empty)'}`;
+    });
+  </script>
+</body>
+</html>
