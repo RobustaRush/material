@@ -37,12 +37,14 @@
 
 ### Used by
 
+ - [material-dialog](../material-dialog)
  - [material-file-field](../material-file-field)
  - [material-textfield](../material-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
+  material-dialog --> material-icon-button
   material-file-field --> material-icon-button
   material-textfield --> material-icon-button
   style material-icon-button fill:#f9f,stroke:#333,stroke-width:4px

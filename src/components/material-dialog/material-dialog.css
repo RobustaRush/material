@@ -1,0 +1,213 @@
+/* MD3 Dialog. The host is invisible; layout lives on the inner <dialog>
+   element, which gets the native top-layer + ::backdrop scrim + focus trap
+   + Esc handling for free via showModal(). */
+
+:host {
+  display: contents;
+}
+
+:host([hidden]) { display: none; }
+
+/* ---------- Inner dialog (shared) ---------- */
+
+.dlg {
+  border: none;
+  padding: 0;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-family: 'Roboto', system-ui, sans-serif;
+
+  /* Animate across the discrete display + top-layer swap (matches menu). */
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 100ms cubic-bezier(0.4, 0, 1, 1),
+    transform 100ms cubic-bezier(0.4, 0, 1, 1),
+    overlay 100ms allow-discrete,
+    display 100ms allow-discrete;
+}
+
+.dlg[open] {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 150ms cubic-bezier(0.05, 0.7, 0.1, 1),
+    transform 150ms cubic-bezier(0.05, 0.7, 0.1, 1),
+    overlay 150ms allow-discrete,
+    display 150ms allow-discrete;
+}
+
+@starting-style {
+  .dlg[open] {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+.dlg::backdrop {
+  background: rgb(0 0 0 / 0);
+  transition:
+    background 100ms cubic-bezier(0.4, 0, 1, 1),
+    overlay 100ms allow-discrete,
+    display 100ms allow-discrete;
+}
+
+.dlg[open]::backdrop {
+  background: rgb(0 0 0 / 0.32);
+  transition:
+    background 150ms cubic-bezier(0.05, 0.7, 0.1, 1),
+    overlay 150ms allow-discrete,
+    display 150ms allow-discrete;
+}
+
+@starting-style {
+  .dlg[open]::backdrop { background: rgb(0 0 0 / 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dlg, .dlg[open] {
+    transition: none;
+    transform: none;
+  }
+  .dlg::backdrop, .dlg[open]::backdrop { transition: none; }
+}
+
+/* ---------- Basic variant ---------- */
+
+.dlg--basic {
+  border-radius: 28px;
+  min-width: 280px;
+  max-width: 560px;
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  /* Spec: with icon → center-aligned; without → start-aligned. */
+  align-items: flex-start;
+  text-align: start;
+  gap: 16px;
+}
+
+/* Center-align everything when an icon is present (spec: alignment with icon). */
+.dlg--basic:has(.dlg__icon:not([hidden])) {
+  align-items: center;
+  text-align: center;
+}
+
+.dlg__icon {
+  font-size: 24px;
+  line-height: 1;
+  color: var(--md-sys-color-secondary);
+}
+
+.dlg__icon[hidden] { display: none; }
+
+.dlg__icon .material-symbols {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.dlg__headline {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--md-sys-color-on-surface);
+  width: 100%;
+}
+
+.dlg__headline[hidden] { display: none; }
+
+.dlg--basic .dlg__body {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.25px;
+  color: var(--md-sys-color-on-surface-variant);
+  width: 100%;
+}
+
+.dlg--basic .dlg__actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;     /* 24dp body→actions = 16dp gap + 8dp here */
+  width: 100%;
+}
+
+/* Spec: confirmation button closest to trailing edge — already by source order
+   when the consumer puts confirm last. We don't reorder. */
+
+/* ---------- Basic positioning (56dp margin from edges) ---------- */
+
+.dlg--basic { margin: auto; }
+
+:host([position="top"])         .dlg--basic { margin: 56px auto auto auto; }
+:host([position="top-start"])   .dlg--basic { margin: 56px auto auto 56px; }
+:host([position="top-end"])     .dlg--basic { margin: 56px 56px auto auto; }
+:host([position="bottom"])      .dlg--basic { margin: auto auto 56px auto; }
+:host([position="bottom-start"]) .dlg--basic { margin: auto auto 56px 56px; }
+:host([position="bottom-end"])   .dlg--basic { margin: auto 56px 56px auto; }
+
+/* ---------- Full-screen variant ---------- */
+
+.dlg--full-screen {
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+
+  display: grid;
+  grid-template-rows: 56px 1fr;
+}
+
+.dlg--full-screen .dlg__header {
+  height: 56px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 16px 24px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.dlg--full-screen .dlg__leading {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dlg--full-screen .dlg__headline {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 500;
+  text-align: start;
+}
+
+.dlg--full-screen .dlg__actions--header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: end;
+}
+
+.dlg--full-screen .dlg__body {
+  padding: 24px;
+  overflow: auto;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* No scrim under a full-screen dialog — it covers everything anyway. */
+.dlg--full-screen::backdrop,
+.dlg--full-screen[open]::backdrop {
+  background: var(--md-sys-color-surface-container-high);
+}

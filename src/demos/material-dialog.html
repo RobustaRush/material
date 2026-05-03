@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-dialog — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-dialog</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 modal dialog. Wraps a native <code>&lt;dialog&gt;</code> for top-layer + scrim + focus-trap + Esc; opens via
+          <code>data-dialog-target</code>, native <code>command</code>/<code>commandfor</code>, or
+          <code>.show()</code>.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <!-- ─────────────────────────── Basic ─────────────────────────── -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Basic — confirm action via <code>data-dialog-target</code></h2>
+      <p class="text-on-surface-variant text-sm">
+        Click the trigger; the dialog opens with a scrim, traps focus, and returns focus to the trigger on close.
+        Action buttons close the dialog with a return value via <code>data-dialog-close</code>.
+      </p>
+      <div>
+        <material-button variant="filled" label="Delete file…" data-dialog-target="d-confirm"></material-button>
+      </div>
+
+      <material-dialog id="d-confirm" alert headline="Delete file?" icon="delete">
+        Are you sure you want to delete <strong>report-2026.pdf</strong>?
+        This action cannot be undone.
+        <div slot="actions">
+          <material-button variant="text" label="Cancel" data-dialog-close></material-button>
+          <material-button variant="filled" label="Delete" data-dialog-close="confirm"></material-button>
+        </div>
+      </material-dialog>
+    </section>
+
+    <!-- ─────────────── Native command / commandfor ─────────────── -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Basic — opened via native <code>command</code>/<code>commandfor</code></h2>
+      <p class="text-on-surface-variant text-sm">
+        Modern browsers (Chrome 130+, Safari 18.4+) dispatch a <code>CommandEvent</code> on the target.
+        On older browsers, fall back to <code>data-dialog-target</code>.
+      </p>
+      <div class="flex gap-3">
+        <button class="px-4 py-2 rounded-full bg-primary text-on-primary text-sm"
+                command="show-modal" commandfor="d-info">
+          Open via command="show-modal"
+        </button>
+      </div>
+
+      <material-dialog id="d-info" headline="Set up traffic updates?">
+        Get instant alerts on traffic incidents along your saved routes. You can turn this off any time in Settings.
+        <div slot="actions">
+          <material-button variant="text" label="No thanks" data-dialog-close></material-button>
+          <material-button variant="filled" label="Turn on" data-dialog-close="on"></material-button>
+        </div>
+      </material-dialog>
+    </section>
+
+    <!-- ─────────────────────── Programmatic ─────────────────────── -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Basic — programmatic <code>.show()</code> / <code>.close()</code></h2>
+      <p class="text-on-surface-variant text-sm">
+        Drives the dialog from JS. Works equally well with Alpine
+        <code>@click="$refs.d.show()"</code>, HTMX <code>hx-on:click</code>, and React/Vue refs.
+      </p>
+      <div class="flex gap-3">
+        <material-button variant="tonal" label="Open" id="btn-prog"></material-button>
+        <material-button variant="text" label="Open without scrim dismiss" id="btn-prog-locked"></material-button>
+      </div>
+
+      <material-dialog id="d-prog" headline="Programmatic dialog">
+        Opened from JavaScript. Try Esc, click on the scrim, or one of the buttons.
+        <div slot="actions">
+          <material-button variant="filled" label="OK" data-dialog-close="ok"></material-button>
+        </div>
+      </material-dialog>
+
+      <material-dialog id="d-locked" headline="Locked dialog" dismissible="false">
+        This dialog has <code>dismissible="false"</code>. Esc and backdrop clicks are ignored —
+        only the action button closes it.
+        <div slot="actions">
+          <material-button variant="filled" label="Got it" data-dialog-close="ok"></material-button>
+        </div>
+      </material-dialog>
+    </section>
+
+    <!-- ────────────────────── Position grid ────────────────────── -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Basic — custom position (56dp from edges)</h2>
+      <p class="text-on-surface-variant text-sm">
+        Spec allows custom placement on expanded screens. Each chip opens the same dialog at a different corner.
+      </p>
+      <div class="grid grid-cols-3 gap-2 max-w-md">
+        <material-button size="s" variant="outlined" label="top-start"   data-dialog-target="d-pos" onclick="setPos('top-start')"></material-button>
+        <material-button size="s" variant="outlined" label="top"         data-dialog-target="d-pos" onclick="setPos('top')"></material-button>
+        <material-button size="s" variant="outlined" label="top-end"     data-dialog-target="d-pos" onclick="setPos('top-end')"></material-button>
+        <material-button size="s" variant="outlined" label="center"      data-dialog-target="d-pos" onclick="setPos('center')"></material-button>
+        <span></span>
+        <material-button size="s" variant="outlined" label="bottom-end"  data-dialog-target="d-pos" onclick="setPos('bottom-end')"></material-button>
+        <material-button size="s" variant="outlined" label="bottom-start" data-dialog-target="d-pos" onclick="setPos('bottom-start')"></material-button>
+        <material-button size="s" variant="outlined" label="bottom"      data-dialog-target="d-pos" onclick="setPos('bottom')"></material-button>
+        <span></span>
+      </div>
+
+      <material-dialog id="d-pos" position="center" headline="Positioned dialog">
+        56dp margin from the chosen edge. The current position is reflected on the host as
+        <code>position="…"</code>.
+        <div slot="actions">
+          <material-button variant="filled" label="Close" data-dialog-close></material-button>
+        </div>
+      </material-dialog>
+    </section>
+
+    <!-- ────────────────────── Full-screen ────────────────────── -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Full-screen — header (close + Save) + content</h2>
+      <p class="text-on-surface-variant text-sm">
+        Compact-only per spec. Default close icon-button is in the leading slot; Save sits in actions.
+      </p>
+      <div>
+        <material-button variant="filled" label="New event…" data-dialog-target="d-fs"></material-button>
+      </div>
+
+      <material-dialog id="d-fs" variant="full-screen" headline="New event">
+        <div slot="actions">
+          <material-button variant="filled" label="Save" data-dialog-close="save"></material-button>
+        </div>
+
+        <div class="space-y-4 max-w-xl">
+          <material-textfield label="Title" required></material-textfield>
+          <material-textfield label="Location"></material-textfield>
+          <material-textarea label="Description" rows="4"></material-textarea>
+        </div>
+      </material-dialog>
+    </section>
+
+    <!-- ────────────────────── Adaptive ────────────────────── -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Adaptive — basic on medium+, full-screen on compact</h2>
+      <p class="text-on-surface-variant text-sm">
+        Resize the window across the 600px breakpoint and reopen — the layout swaps between basic and full-screen.
+      </p>
+      <div>
+        <material-button variant="tonal" label="Open adaptive" data-dialog-target="d-adapt"></material-button>
+      </div>
+
+      <material-dialog id="d-adapt" variant="adaptive" headline="Compose message">
+        <div slot="actions">
+          <material-button variant="filled" label="Send" data-dialog-close="send"></material-button>
+        </div>
+
+        <div class="space-y-4 max-w-xl">
+          <material-textfield label="To"></material-textfield>
+          <material-textfield label="Subject"></material-textfield>
+          <material-textarea label="Body" rows="6"></material-textarea>
+        </div>
+      </material-dialog>
+    </section>
+
+    <!-- ─────────────────── Result log ─────────────────── -->
+    <section class="space-y-2">
+      <h2 class="text-lg font-semibold">Last result</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Trigger via data-dialog-target (any framework, any browser) --&gt;
+&lt;material-button label="Delete…" data-dialog-target="confirm"&gt;&lt;/material-button&gt;
+
+&lt;material-dialog id="confirm" alert headline="Delete file?" icon="delete"&gt;
+  This cannot be undone.
+  &lt;div slot="actions"&gt;
+    &lt;material-button variant="text"   label="Cancel" data-dialog-close&gt;&lt;/material-button&gt;
+    &lt;material-button variant="filled" label="Delete" data-dialog-close="confirm"&gt;&lt;/material-button&gt;
+  &lt;/div&gt;
+&lt;/material-dialog&gt;
+
+&lt;!-- Or via the native HTML invoker (Chrome 130+, Safari 18.4+) --&gt;
+&lt;button command="show-modal" commandfor="confirm"&gt;Delete…&lt;/button&gt;
+
+&lt;!-- Or programmatically --&gt;
+&lt;script&gt;
+  const dlg = document.getElementById('confirm');
+  dlg.show();                       // or: dlg.open = true
+  dlg.close('confirm');             // or: dlg.open = false; dlg.returnValue = 'confirm'
+  dlg.addEventListener('materialDialogClose', e =&gt; {
+    if (e.detail.returnValue === 'confirm') doDelete();
+  });
+&lt;/script&gt;
+
+&lt;!-- Full-screen variant: leading slot defaults to a close button --&gt;
+&lt;material-dialog variant="full-screen" headline="New event"&gt;
+  &lt;div slot="actions"&gt;&lt;material-button label="Save" data-dialog-close="save"&gt;&lt;/material-button&gt;&lt;/div&gt;
+  &lt;form&gt;…&lt;/form&gt;
+&lt;/material-dialog&gt;
+
+&lt;!-- Adaptive: full-screen below 600px, basic above --&gt;
+&lt;material-dialog variant="adaptive" headline="Compose"&gt;…&lt;/material-dialog&gt;
+
+&lt;!-- Custom position (basic only). All edge positions keep 56dp margin. --&gt;
+&lt;material-dialog position="top-end" headline="Inbox"&gt;…&lt;/material-dialog&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    // Wire programmatic openers.
+    document.getElementById('btn-prog').addEventListener('click', () => {
+      document.getElementById('d-prog').show();
+    });
+    document.getElementById('btn-prog-locked').addEventListener('click', () => {
+      document.getElementById('d-locked').show();
+    });
+
+    // Position picker — sets the attribute before the document-delegation
+    // click handler opens the dialog (both fire on the same click; setPos
+    // runs first because it's an inline onclick attribute).
+    window.setPos = (p) => {
+      document.getElementById('d-pos').setAttribute('position', p);
+    };
+
+    // Log every dialog close on the page.
+    const log = document.getElementById('log');
+    document.addEventListener('materialDialogClose', (e) => {
+      const id = e.target?.id || '?';
+      const v = e.detail?.returnValue || '(no value)';
+      log.textContent = `[${id}] returnValue → ${v}`;
+    });
+  </script>
+</body>
+</html>
