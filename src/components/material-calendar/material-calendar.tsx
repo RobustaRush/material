@@ -62,6 +62,16 @@ export class MaterialCalendar {
   @State() mode: CalendarMode = 'days';
   @State() focusedDate = '';
 
+  // Auto-scroll the currently-selected item into view when switching from
+  // days → months/years so users land near their current selection.
+  componentDidUpdate() {
+    if (this.mode === 'days' || !this.el.shadowRoot) return;
+    const selected = this.el.shadowRoot.querySelector<HTMLElement>(
+      '.cal__list-item.is-selected, .cal__year.is-selected',
+    );
+    selected?.scrollIntoView({ block: 'center' });
+  }
+
   @Event() dateSelect!: EventEmitter<{ value: string }>;
   @Event() displayMonthChange!: EventEmitter<{ value: string }>;
 
@@ -248,6 +258,13 @@ export class MaterialCalendar {
     const { year, month } = this.parseDisplay();
     const months = monthNames('long', this.locale || undefined);
     const monthLabel = months[month] ?? '';
+    // The longest month name in the current locale sizes the month-button
+    // text slot — keeps the year button from shifting when navigating from
+    // a short month (May) to a long one (September) and back.
+    const longestMonth = months.reduce(
+      (best, n) => (n.length > best.length ? n : best),
+      '',
+    );
     const showMonthBtn = this.mode === 'days' || this.mode === 'months';
     const showYearBtn = this.mode === 'days' || this.mode === 'years';
     const navHidden = this.mode !== 'days';
@@ -261,7 +278,10 @@ export class MaterialCalendar {
             onClick={this.toggleMonths}
             hidden={!showMonthBtn}
           >
-            <span>{monthLabel}</span>
+            <span class="cal__title-text">
+              <span class="cal__title-text-sizer" aria-hidden="true">{longestMonth}</span>
+              <span class="cal__title-text-label">{monthLabel}</span>
+            </span>
             <span class="material-symbols cal__title-caret" aria-hidden="true">
               {this.mode === 'months' ? 'arrow_drop_up' : 'arrow_drop_down'}
             </span>
@@ -377,13 +397,9 @@ export class MaterialCalendar {
     const { year, month } = this.parseDisplay();
     const months = monthNames('long', this.locale || undefined);
     return (
-      <div class="cal__months" role="grid">
+      <div class="cal__list" role="listbox" aria-label={gettext('Select month')}>
         {months.map((name, i) => {
-          const cls = [
-            'cal__month',
-            i === month ? 'is-selected' : '',
-          ].filter(Boolean).join(' ');
-          // Disable months entirely outside [min, max].
+          const selected = i === month;
           const monthStart = toISO(new Date(year, i, 1));
           const monthEnd = toISO(new Date(year, i, daysInMonth(year, i)));
           const disabled = (this.min && monthEnd < this.min)
@@ -391,11 +407,16 @@ export class MaterialCalendar {
           return (
             <button
               type="button"
-              class={cls}
+              role="option"
+              aria-selected={selected ? 'true' : 'false'}
+              class={`cal__list-item ${selected ? 'is-selected' : ''}`}
               disabled={!!disabled}
               onClick={() => this.pickMonth(i)}
             >
-              {name}
+              <span class="cal__list-check material-symbols" aria-hidden="true">
+                {selected ? 'check' : ''}
+              </span>
+              <span class="cal__list-label">{name}</span>
             </button>
           );
         })}
@@ -405,15 +426,14 @@ export class MaterialCalendar {
 
   private renderYears() {
     const { year } = this.parseDisplay();
-    const start = year - (year % 12);
-    const items = Array.from({ length: 12 }, (_, i) => start + i);
+    // Center the window so the displayed year sits roughly mid-grid; the
+    // picker scrolls vertically when more years don't fit.
+    const start = year - 10;
+    const items = Array.from({ length: 24 }, (_, i) => start + i);
     return (
-      <div class="cal__years" role="grid">
+      <div class="cal__years" role="listbox" aria-label={gettext('Select year')}>
         {items.map((y) => {
-          const cls = [
-            'cal__year',
-            y === year ? 'is-selected' : '',
-          ].filter(Boolean).join(' ');
+          const selected = y === year;
           const yearStart = `${y}-01-01`;
           const yearEnd = `${y}-12-31`;
           const disabled = (this.min && yearEnd < this.min)
@@ -421,7 +441,9 @@ export class MaterialCalendar {
           return (
             <button
               type="button"
-              class={cls}
+              role="option"
+              aria-selected={selected ? 'true' : 'false'}
+              class={`cal__year ${selected ? 'is-selected' : ''}`}
               disabled={!!disabled}
               onClick={() => this.pickYear(y)}
             >

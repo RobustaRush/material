@@ -67,6 +67,24 @@
   line-height: 1;
 }
 
+/* Sizer pattern: the hidden longest-month label reserves the column width;
+   the visible label overlays it. Stops the year button from shifting when
+   the displayed month name changes width (May → September → May). */
+.cal__title-text {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  text-align: start;
+}
+.cal__title-text-sizer {
+  visibility: hidden;
+}
+.cal__title-text-label {
+  position: absolute;
+  inset: 0;
+  white-space: nowrap;
+}
+
 .cal__nav {
   display: inline-flex;
   align-items: center;
@@ -156,23 +174,88 @@
   background: color-mix(in srgb, var(--md-sys-color-on-primary) 8%, var(--md-sys-color-primary));
 }
 
-/* ---------- Month / year grids ---------- */
+/* ---------- Month / year list (docked variant per spec) ----------
+   Vertical list, 48dp rows, leading 24dp slot for a check icon on the
+   currently-selected item. Scrolls within the calendar's body region. */
 
-.cal__months,
+.cal__list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  /* Bleed to the calendar's container edges so the selected highlight
+     reaches all the way across (matches spec image). */
+  margin: 0 -12px;
+}
+
+.cal__list-item {
+  appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0 24px 0 16px;
+  height: 48px;
+  flex: 0 0 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--md-sys-color-on-surface);
+  text-align: start;
+  cursor: pointer;
+  transition: background-color 80ms linear;
+}
+
+.cal__list-item:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.cal__list-item:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
+}
+
+.cal__list-item:disabled {
+  cursor: default;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+
+.cal__list-item.is-selected {
+  background: var(--md-sys-color-surface-variant);
+}
+
+.cal__list-check {
+  width: 24px;
+  font-size: 24px;
+  line-height: 1;
+  flex: 0 0 24px;
+  text-align: center;
+  color: var(--md-sys-color-on-surface);
+}
+
+.cal__list-label {
+  flex: 1;
+}
+
+/* ---------- Year grid (3-column pills, modal-spec style) ---------- */
+
 .cal__years {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 1fr;
-  gap: 4px;
+  align-content: start;
+  gap: 8px;
+  padding: 8px 4px;
+  overflow-y: auto;
 }
 
-.cal__month,
 .cal__year {
   appearance: none;
   background: none;
   border: 0;
   margin: 0;
   padding: 0;
+  height: 36px;
   font: inherit;
   font-size: 14px;
   line-height: 20px;
@@ -182,24 +265,20 @@
   transition: background-color 80ms linear;
 }
 
-.cal__month:hover:not(:disabled),
 .cal__year:hover:not(:disabled) {
   background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
 }
 
-.cal__month:focus-visible,
 .cal__year:focus-visible {
   outline: 2px solid var(--md-sys-color-primary);
   outline-offset: -2px;
 }
 
-.cal__month:disabled,
 .cal__year:disabled {
   cursor: default;
   color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
 }
 
-.cal__month.is-selected,
 .cal__year.is-selected {
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
