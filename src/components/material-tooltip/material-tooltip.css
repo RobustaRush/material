@@ -1,0 +1,68 @@
+/* Measurements per m3.material.io/components/tooltips/specs. */
+
+:host { display: contents; }
+
+[part="surface"] {
+  position: fixed;
+  inset: auto;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  transition: opacity 120ms linear;
+}
+
+:host([open]) [part="surface"] { opacity: 1; }
+:host([variant="rich"][open]) [part="surface"] { pointer-events: auto; }
+
+:host([variant="plain"]) [part="surface"] {
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  background: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  display: inline-flex;
+  align-items: center;
+  max-width: 280px;
+}
+
+:host([variant="rich"]) [part="surface"] {
+  padding: 12px 16px 8px;
+  border-radius: 12px;
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  max-width: 320px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / .15);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+:host([variant="rich"]) [part="subhead"] {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+}
+
+:host([variant="rich"]) [part="subhead"][hidden],
+:host([variant="rich"]) [part="actions"][hidden] {
+  display: none;
+}
+
+:host([variant="rich"]) [part="actions"] {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}

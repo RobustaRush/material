@@ -7,13 +7,13 @@
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                                                                                       | Type                                                         | Default          |
-| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------- |
-| `anchor`    | `anchor`     | CSS selector or element id (without #) of the anchor. If omitted, the popover invoker (set by the browser when opened via popovertarget) is used. | `string \| undefined`                                        | `undefined`      |
-| `maxHeight` | `max-height` | Hard cap on menu height in px; viewport room is the other ceiling.                                                                                | `number \| undefined`                                        | `undefined`      |
-| `offset`    | `offset`     |                                                                                                                                                   | `number`                                                     | `4`              |
-| `open`      | `open`       | Reflects open state. Toggling this prop drives the popover.                                                                                       | `boolean`                                                    | `false`          |
-| `placement` | `placement`  |                                                                                                                                                   | `"bottom-end" \| "bottom-start" \| "top-end" \| "top-start"` | `'bottom-start'` |
+| Property    | Attribute    | Description                                                                                                                                       | Type                                                                                            | Default          |
+| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------- |
+| `anchor`    | `anchor`     | CSS selector or element id (without #) of the anchor. If omitted, the popover invoker (set by the browser when opened via popovertarget) is used. | `string \| undefined`                                                                           | `undefined`      |
+| `maxHeight` | `max-height` | Hard cap on menu height in px; viewport room is the other ceiling.                                                                                | `number \| undefined`                                                                           | `undefined`      |
+| `offset`    | `offset`     |                                                                                                                                                   | `number`                                                                                        | `4`              |
+| `open`      | `open`       | Reflects open state. Toggling this prop drives the popover.                                                                                       | `boolean`                                                                                       | `false`          |
+| `placement` | `placement`  |                                                                                                                                                   | `"bottom-center" \| "bottom-end" \| "bottom-start" \| "top-center" \| "top-end" \| "top-start"` | `'bottom-start'` |
 
 
 ## Events

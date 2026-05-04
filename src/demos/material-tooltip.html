@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-tooltip — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-tooltip</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 plain &amp; rich tooltips. Hover, focus, or long-press the trigger;
+          rich variant supports persistent click-to-open with subhead and actions.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-6">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+
+        <code class="text-sm text-on-surface-variant">plain (wrapper)</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-tooltip text="Edit">
+            <material-icon-button variant="standard" icon="edit" aria-label="Edit"></material-icon-button>
+          </material-tooltip>
+          <material-tooltip text="Like">
+            <material-icon-button variant="standard" icon="favorite" aria-label="Like"></material-icon-button>
+          </material-tooltip>
+          <material-tooltip text="Settings">
+            <material-icon-button variant="standard" icon="settings" aria-label="Settings"></material-icon-button>
+          </material-tooltip>
+          <material-tooltip text="Tooltip on a regular button">
+            <material-button variant="outlined" label="Hover me"></material-button>
+          </material-tooltip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">plain (for=id)</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button id="tt-search" variant="standard" icon="search" aria-label="Search"></material-icon-button>
+          <material-tooltip for="tt-search" text="Search"></material-tooltip>
+
+          <material-icon-button id="tt-share" variant="standard" icon="share" aria-label="Share"></material-icon-button>
+          <material-tooltip for="tt-share" text="Share"></material-tooltip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">placement</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-tooltip text="Above the button" placement="top">
+            <material-button variant="outlined" label="Top"></material-button>
+          </material-tooltip>
+          <material-tooltip text="Below the button" placement="bottom">
+            <material-button variant="outlined" label="Bottom"></material-button>
+          </material-tooltip>
+          <material-tooltip text="Below, end-aligned" placement="bottom-end">
+            <material-button variant="outlined" label="Bottom end"></material-button>
+          </material-tooltip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">rich</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-tooltip variant="rich">
+            <material-icon-button variant="standard" icon="info" aria-label="Info"></material-icon-button>
+            <span slot="subhead">Add people</span>
+            <span slot="body">Invite up to 10 collaborators to edit this document with you in real time.</span>
+          </material-tooltip>
+
+          <material-tooltip variant="rich">
+            <material-button variant="tonal" icon="campaign" label="What's new"></material-button>
+            <span slot="subhead">New feature</span>
+            <span slot="body">
+              We added inline comments — highlight any selection and press <kbd>⌘E</kbd>
+              to start a thread. Mention teammates with <code>@name</code> to notify them,
+              and resolve threads from the sidebar when discussions wrap up.
+            </span>
+            <material-button slot="actions" variant="text" label="Got it"></material-button>
+            <material-button slot="actions" variant="text" label="Learn more"></material-button>
+          </material-tooltip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">persistent rich</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-tooltip variant="rich" persistent>
+            <material-button variant="filled" icon="lightbulb" label="Show tip"></material-button>
+            <span slot="subhead">Pro tip</span>
+            <span slot="body">Press <kbd>⌘K</kbd> anywhere to open the command palette.</span>
+            <material-button slot="actions" variant="text" label="Dismiss"></material-button>
+          </material-tooltip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">edge (flip)</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-tooltip text="Flips below when no room above" placement="top">
+            <material-button variant="outlined" label="Near top — scroll page up"></material-button>
+          </material-tooltip>
+        </div>
+
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- plain (wrapper): first child is the trigger --&gt;
+&lt;material-tooltip text="Edit"&gt;
+  &lt;material-icon-button icon="edit" aria-label="Edit"&gt;&lt;/material-icon-button&gt;
+&lt;/material-tooltip&gt;
+
+&lt;!-- plain (for=id): tooltip references trigger by id --&gt;
+&lt;material-icon-button id="search-btn" icon="search" aria-label="Search"&gt;&lt;/material-icon-button&gt;
+&lt;material-tooltip for="search-btn" text="Search"&gt;&lt;/material-tooltip&gt;
+
+&lt;!-- placement: top (default) | bottom | bottom-end --&gt;
+&lt;material-tooltip text="Below" placement="bottom"&gt;...&lt;/material-tooltip&gt;
+
+&lt;!-- rich: subhead + body + up to 2 actions; clicking an action closes --&gt;
+&lt;material-tooltip variant="rich"&gt;
+  &lt;material-icon-button icon="info" aria-label="Info"&gt;&lt;/material-icon-button&gt;
+  &lt;span slot="subhead"&gt;Add people&lt;/span&gt;
+  &lt;span slot="body"&gt;Invite up to 10 collaborators.&lt;/span&gt;
+  &lt;material-button slot="actions" variant="text" label="Got it"&gt;&lt;/material-button&gt;
+  &lt;material-button slot="actions" variant="text" label="Learn more"&gt;&lt;/material-button&gt;
+&lt;/material-tooltip&gt;
+
+&lt;!-- persistent: click to open, click outside to dismiss --&gt;
+&lt;material-tooltip variant="rich" persistent&gt;...&lt;/material-tooltip&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

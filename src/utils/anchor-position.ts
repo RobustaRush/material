@@ -13,8 +13,8 @@
  */
 
 export type AnchorPlacement =
-  | 'bottom-start' | 'bottom-end'
-  | 'top-start' | 'top-end';
+  | 'bottom-start' | 'bottom-end' | 'bottom-center'
+  | 'top-start' | 'top-end' | 'top-center';
 
 export interface AnchorPositionOptions {
   placement?: AnchorPlacement;
@@ -58,6 +58,7 @@ export function positionAnchored(
 
   const wantsBottom = placement.startsWith('bottom');
   const wantsEnd = placement.endsWith('end');
+  const wantsCenter = placement.endsWith('center');
 
   // Vertical: try requested side, flip if it doesn't fit and the other side has more room.
   const roomBelow = vh - a.bottom - viewportPadding;
@@ -74,8 +75,12 @@ export function positionAnchored(
     ? a.bottom + offset
     : a.top - offset - Math.min(f.height, cappedHeight);
 
-  // Horizontal: align to start or end of anchor, then clamp to viewport.
-  let left = wantsEnd ? a.right - f.width : a.left;
+  // Horizontal: align to start, end, or center of anchor, then clamp to viewport.
+  let left = wantsCenter
+    ? a.left + (a.width - f.width) / 2
+    : wantsEnd
+      ? a.right - f.width
+      : a.left;
   const minLeft = viewportPadding;
   const maxLeft = vw - f.width - viewportPadding;
   if (left < minLeft) left = minLeft;
@@ -85,7 +90,7 @@ export function positionAnchored(
   floater.style.left = `${Math.round(left)}px`;
   // Reflect actual placement so consumers (e.g. CSS transform-origin) can key off it.
   floater.dataset.placedSide = placeBottom ? 'bottom' : 'top';
-  floater.dataset.placedAlign = wantsEnd ? 'end' : 'start';
+  floater.dataset.placedAlign = wantsCenter ? 'center' : wantsEnd ? 'end' : 'start';
 }
 
 /**

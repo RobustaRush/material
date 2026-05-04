@@ -21,11 +21,18 @@
 | `rel`                 | `rel`                 |             | `string \| undefined`                                       | `undefined` |
 | `shapeMorph`          | `shape-morph`         |             | `boolean`                                                   | `false`     |
 | `size`                | `size`                |             | `"l" \| "m" \| "s" \| "xl" \| "xs"`                         | `'s'`       |
-| `target`              | `target`              |             | `string \| undefined`                                       | `undefined` |
+| `target`              | `target`              |             | `"_blank" \| "_parent" \| "_self" \| "_top" \| undefined`   | `undefined` |
 | `trailingIcon`        | `trailing-icon`       |             | `string \| undefined`                                       | `undefined` |
 | `type`                | `type`                |             | `"button" \| "reset" \| "submit"`                           | `'button'`  |
 | `value`               | `value`               |             | `string \| undefined`                                       | `undefined` |
 | `variant`             | `variant`             |             | `"elevated" \| "filled" \| "outlined" \| "text" \| "tonal"` | `'filled'`  |
+
+
+## Shadow Parts
+
+| Part       | Description |
+| ---------- | ----------- |
+| `"button"` |             |
 
 
 ## Dependencies
