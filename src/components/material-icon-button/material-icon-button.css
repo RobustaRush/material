@@ -1,4 +1,161 @@
+/* Measurements per m3.material.io/components/icon-buttons/specs. */
+
 :host {
   display: inline-flex;
   vertical-align: middle;
+}
+
+[part="button"] {
+  display: inline-grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+[part="button"]:focus { outline: none; }
+
+[part="button"]:disabled,
+[part="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: .4;
+  pointer-events: none;
+}
+
+/* XS/S need a 48dp interactive target for accessibility. */
+:host([size="xs"]) [part="button"],
+:host([size="s"])  [part="button"] { width: 48px; height: 48px; }
+
+[part="visual"] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  transition:
+    border-radius 180ms cubic-bezier(.2, 0, 0, 1),
+    background-color 120ms linear,
+    color 120ms linear;
+}
+
+[part="button"]:focus-visible [part="visual"] {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
+
+/* Sizes — visual height + icon font-size. */
+:host([size="xs"]) [part="visual"] { height: 32px;  --icon: 20px; min-width: 32px; }
+:host([size="s"])  [part="visual"] { height: 40px;  --icon: 24px; min-width: 40px; }
+:host([size="m"])  [part="visual"] { height: 56px;  --icon: 24px; min-width: 56px; }
+:host([size="l"])  [part="visual"] { height: 96px;  --icon: 32px; min-width: 96px; }
+:host([size="xl"]) [part="visual"] { height: 136px; --icon: 40px; min-width: 136px; }
+
+/* Width modifiers. */
+:host([size="xs"][width="narrow"]) [part="visual"] { min-width: 28px;  }
+:host([size="xs"][width="wide"])   [part="visual"] { min-width: 40px;  }
+:host([size="s"][width="narrow"])  [part="visual"] { min-width: 32px;  }
+:host([size="s"][width="wide"])    [part="visual"] { min-width: 52px;  }
+:host([size="m"][width="narrow"])  [part="visual"] { min-width: 48px;  }
+:host([size="m"][width="wide"])    [part="visual"] { min-width: 72px;  }
+:host([size="l"][width="narrow"])  [part="visual"] { min-width: 64px;  }
+:host([size="l"][width="wide"])    [part="visual"] { min-width: 128px; }
+:host([size="xl"][width="narrow"]) [part="visual"] { min-width: 104px; }
+:host([size="xl"][width="wide"])   [part="visual"] { min-width: 184px; }
+
+/* Resting square radius — also used as toggle morph for shape="round" + selected. */
+:host([shape="square"][size="xs"]) [part="visual"],
+:host([shape="square"][size="s"])  [part="visual"],
+:host([toggle][selected][shape="round"][size="xs"]) [part="visual"],
+:host([toggle][selected][shape="round"][size="s"])  [part="visual"] { border-radius: 12px; }
+
+:host([shape="square"][size="m"]) [part="visual"],
+:host([toggle][selected][shape="round"][size="m"]) [part="visual"] { border-radius: 16px; }
+
+:host([shape="square"][size="l"])  [part="visual"],
+:host([shape="square"][size="xl"]) [part="visual"],
+:host([toggle][selected][shape="round"][size="l"])  [part="visual"],
+:host([toggle][selected][shape="round"][size="xl"]) [part="visual"] { border-radius: 28px; }
+
+/* Toggle morph for shape="square" + selected → swap to round. */
+:host([toggle][selected][shape="square"]) [part="visual"] { border-radius: 9999px; }
+
+/* Pressed-state morph (radius shrinks toward square). */
+:host([size="xs"]) [part="button"]:active [part="visual"],
+:host([size="s"])  [part="button"]:active [part="visual"] { border-radius: 8px; }
+:host([size="m"])  [part="button"]:active [part="visual"] { border-radius: 12px; }
+:host([size="l"])  [part="button"]:active [part="visual"],
+:host([size="xl"]) [part="button"]:active [part="visual"] { border-radius: 16px; }
+
+/* Variants — non-toggle and toggle-unselected share the resting row. */
+:host([variant="filled"]) [part="visual"] {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+:host([variant="filled"][toggle]:not([selected])) [part="visual"] {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+:host([variant="tonal"]) [part="visual"] {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+:host([variant="tonal"][toggle][selected]) [part="visual"] {
+  background: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-on-secondary);
+}
+
+:host([variant="outlined"]) [part="visual"] {
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+:host([variant="outlined"][toggle][selected]) [part="visual"] {
+  background: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  border-color: transparent;
+}
+
+:host([variant="standard"]) [part="visual"] {
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+}
+:host([variant="standard"][toggle][selected]) [part="visual"] {
+  color: var(--md-sys-color-primary);
+}
+
+[part="state-layer"] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity 120ms linear;
+}
+[part="button"]:not(:disabled):not([aria-disabled="true"]):hover         [part="state-layer"] { opacity: .08; }
+[part="button"]:not(:disabled):not([aria-disabled="true"]):focus-visible [part="state-layer"] { opacity: .10; }
+[part="button"]:not(:disabled):not([aria-disabled="true"]):active        [part="state-layer"] { opacity: .10; }
+
+.icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  line-height: 1;
+  font-size: var(--icon, 24px);
+}
+
+.icon-wrap { position: relative; display: inline-flex; }
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  pointer-events: none;
+  z-index: 10;
 }

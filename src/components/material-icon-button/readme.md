@@ -11,14 +11,18 @@
 | --------------------- | --------------------- | ----------- | ------------------------------------------------- | ----------- |
 | `ariaLabel`           | `aria-label`          |             | `string \| undefined`                             | `undefined` |
 | `disabled`            | `disabled`            |             | `boolean`                                         | `false`     |
+| `download`            | `download`            |             | `string \| undefined`                             | `undefined` |
+| `href`                | `href`                |             | `string \| undefined`                             | `undefined` |
 | `icon` _(required)_   | `icon`                |             | `string`                                          | `undefined` |
 | `name`                | `name`                |             | `string \| undefined`                             | `undefined` |
 | `popoverTarget`       | `popovertarget`       |             | `string \| undefined`                             | `undefined` |
 | `popoverTargetAction` | `popovertargetaction` |             | `"hide" \| "show" \| "toggle" \| undefined`       | `undefined` |
+| `rel`                 | `rel`                 |             | `string \| undefined`                             | `undefined` |
 | `selected`            | `selected`            |             | `boolean`                                         | `false`     |
 | `selectedIcon`        | `selected-icon`       |             | `string \| undefined`                             | `undefined` |
 | `shape`               | `shape`               |             | `"round" \| "square"`                             | `'round'`   |
 | `size`                | `size`                |             | `"l" \| "m" \| "s" \| "xl" \| "xs"`               | `'s'`       |
+| `target`              | `target`              |             | `string \| undefined`                             | `undefined` |
 | `toggle`              | `toggle`              |             | `boolean`                                         | `false`     |
 | `type`                | `type`                |             | `"button" \| "reset" \| "submit"`                 | `'button'`  |
 | `value`               | `value`               |             | `string`                                          | `'on'`      |

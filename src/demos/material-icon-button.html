@@ -117,6 +117,14 @@
             <material-badge slot="badge" value="8"></material-badge>
           </material-icon-button>
         </div>
+
+        <code class="text-sm text-on-surface-variant">link</code>
+        <div class="flex gap-3 flex-wrap items-center">
+          <material-icon-button variant="filled" icon="home" href="#anchor" aria-label="Home (same tab)"></material-icon-button>
+          <material-icon-button variant="tonal" icon="open_in_new" href="https://m3.material.io/components/icon-buttons" target="_blank" aria-label="Spec (new tab)"></material-icon-button>
+          <material-icon-button variant="outlined" icon="download" href="/static/material/material.css" download="material.css" aria-label="Download stylesheet"></material-icon-button>
+          <material-icon-button variant="standard" icon="block" href="#nope" disabled aria-label="Disabled link"></material-icon-button>
+        </div>
       </div>
 
       <details class="rounded-lg bg-surface-container-low border border-outline-variant">
@@ -142,7 +150,12 @@
 &lt;form&gt;
   &lt;material-icon-button toggle name="pin" value="on" icon="push_pin"
                          aria-label="Pin"&gt;&lt;/material-icon-button&gt;
-&lt;/form&gt;</code></pre>
+&lt;/form&gt;
+
+&lt;!-- link: renders as &lt;a href&gt; instead of &lt;button&gt; --&gt;
+&lt;material-icon-button icon="home" href="/docs" aria-label="Home"&gt;&lt;/material-icon-button&gt;
+&lt;material-icon-button icon="open_in_new" href="https://example.com" target="_blank"
+                       aria-label="External"&gt;&lt;/material-icon-button&gt;</code></pre>
       </details>
     </section>
   </main>
