@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-switch — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-switch</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 switch — 52×32 track; handle grows on selection (16→24) and press (→28);
+          optional handle icon; form-associated with label, help, error, required, readonly.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-8">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-8 items-center">
+
+        <code class="text-sm text-on-surface-variant">default</code>
+        <div class="flex gap-6 items-center">
+          <material-switch></material-switch>
+          <material-switch checked></material-switch>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">with icon</code>
+        <div class="flex gap-6 items-center">
+          <material-switch icon="check"></material-switch>
+          <material-switch icon="check" checked></material-switch>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">icon both states</code>
+        <div class="flex gap-6 items-center">
+          <material-switch icon="check" icon-unchecked="close"></material-switch>
+          <material-switch icon="check" icon-unchecked="close" checked></material-switch>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">label / help / error</code>
+        <div class="flex flex-col gap-3 max-w-md">
+          <material-switch label="Notifications" help-text="Get email when something changes."></material-switch>
+          <material-switch label="Newsletter" checked help-text="Weekly digest, unsubscribe anytime."></material-switch>
+          <material-switch label="Sync" error error-text="Sync failed — switch off to retry."></material-switch>
+        </div>
+
+        <code class="text-sm text-on-surface-variant block max-w-[14ch] whitespace-normal leading-snug">compare in a row</code>
+        <div class="flex gap-6 items-center">
+          <material-textfield class="flex-1" variant="outlined" label="Server URL" value="https://api.example.com" help-text="Endpoint for sync requests."></material-textfield>
+          <material-switch class="flex-1" label="Auto-update" checked help-text="Apply security patches automatically."></material-switch>
+          <material-checkbox class="flex-1" label="Auto-update" checked help-text="Apply security patches automatically."></material-checkbox>
+        </div>
+
+        <code class="text-sm text-on-surface-variant block max-w-[10ch] whitespace-normal leading-snug">required<br>readonly<br>disabled</code>
+        <div class="flex flex-col gap-3 max-w-md">
+          <material-switch label="Accept terms" required help-text="Required to continue."></material-switch>
+          <material-switch label="Auto-update" readonly checked help-text="Read-only: value submits but cannot be changed."></material-switch>
+          <material-switch label="Disabled (off)" disabled help-text="Disabled state."></material-switch>
+          <material-switch label="Disabled (on)" disabled checked help-text="Disabled state."></material-switch>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">form</code>
+        <div>
+          <form id="switch-form" class="flex flex-col gap-3 max-w-md"
+                onsubmit="event.preventDefault();
+                          document.getElementById('form-output').textContent =
+                            new URLSearchParams(new FormData(event.target)).toString() || '(empty)';">
+            <material-switch name="notifications" value="on" checked label="Email notifications" help-text="Account activity and security alerts."></material-switch>
+            <material-switch name="newsletter" value="weekly" label="Newsletter" help-text="Weekly digest of new posts."></material-switch>
+            <material-switch name="beta" value="opted-in" icon="check" icon-unchecked="close" label="Beta features" help-text="See features before they ship."></material-switch>
+            <div class="flex gap-3 items-center">
+              <material-button variant="filled" type="submit" label="Submit"></material-button>
+              <material-button variant="text" type="reset" label="Reset"></material-button>
+              <pre class="text-xs text-on-surface-variant flex-1 m-0" id="form-output">submit to see FormData</pre>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- basic on/off --&gt;
+&lt;material-switch&gt;&lt;/material-switch&gt;
+&lt;material-switch checked&gt;&lt;/material-switch&gt;
+
+&lt;!-- icon shown only when on --&gt;
+&lt;material-switch icon="check" checked&gt;&lt;/material-switch&gt;
+
+&lt;!-- icon in both states (handle stays 24dp) --&gt;
+&lt;material-switch icon="check" icon-unchecked="close"&gt;&lt;/material-switch&gt;
+
+&lt;!-- form-associated, with label / help / error --&gt;
+&lt;material-switch
+  name="notifications" value="on" checked
+  label="Notifications" help-text="Get email when something changes."
+&gt;&lt;/material-switch&gt;
+
+&lt;!-- required: setValidity blocks submit when off --&gt;
+&lt;material-switch label="Accept terms" required&gt;&lt;/material-switch&gt;
+
+&lt;!-- error state --&gt;
+&lt;material-switch label="Sync" error error-text="Sync failed."&gt;&lt;/material-switch&gt;
+
+&lt;!-- events --&gt;
+&lt;!-- checkedChange: { checked: boolean } on toggle --&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

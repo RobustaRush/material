@@ -1,0 +1,210 @@
+/* Measurements per m3.material.io/components/switch/specs. */
+
+:host {
+  display: inline-block;
+  vertical-align: middle;
+  /* default off, no icon */
+  --handle-size: 16px;
+  --handle-x: 4px;
+  --track-bg: var(--md-sys-color-surface-container-highest);
+  --track-border: var(--md-sys-color-outline);
+  --handle-bg: var(--md-sys-color-outline);
+  --icon-color: var(--md-sys-color-surface-container-highest);
+  --layer-color: var(--md-sys-color-on-surface);
+}
+
+/* When an unchecked icon is supplied, off-handle grows to 24dp per spec. */
+:host([icon-unchecked]) {
+  --handle-size: 24px;
+}
+
+:host([checked]) {
+  --handle-size: 24px;
+  --handle-x: 24px;
+  --track-bg: var(--md-sys-color-primary);
+  --track-border: transparent;
+  --handle-bg: var(--md-sys-color-on-primary);
+  --icon-color: var(--md-sys-color-on-primary-container);
+  --layer-color: var(--md-sys-color-primary);
+}
+
+.root {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* When the switch has a label / help text, the text column sits to the LEFT
+   of the control (mirror of material-checkbox, which puts text on the right).
+   Common settings-row pattern. */
+.root.has-text {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+[part="switch"] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 52px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--layer-color);
+  /* Keep the button itself a 52×32 hit area; the 40dp state-layer extends
+     visually past it but isn't load-bearing for hit-testing. */
+}
+
+[part="switch"]:focus { outline: none; }
+[part="switch"]:focus-visible {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--track-bg);
+  border: 2px solid var(--track-border);
+  box-sizing: border-box;
+  transition:
+    background-color 120ms linear,
+    border-color 120ms linear;
+}
+
+.handle {
+  position: absolute;
+  top: 50%;
+  left: var(--handle-x);
+  width: var(--handle-size);
+  height: var(--handle-size);
+  border-radius: 50%;
+  background: var(--handle-bg);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    width 180ms cubic-bezier(.2, 0, 0, 1),
+    height 180ms cubic-bezier(.2, 0, 0, 1),
+    left 180ms cubic-bezier(.2, 0, 0, 1),
+    background-color 120ms linear;
+}
+
+/* Pressed: handle grows to 28dp; track edge offset shrinks to 2dp. */
+[part="switch"]:not(:disabled):active {
+  --handle-size: 28px;
+  --handle-x: 2px;
+}
+:host([checked]) [part="switch"]:not(:disabled):active {
+  --handle-x: 22px;
+}
+
+.icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  line-height: 1;
+  font-size: 16px;
+  color: var(--icon-color);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* State layer — 40dp circle that follows the handle, tinted by the active
+   palette. currentColor is set on the host button. */
+.state-layer {
+  position: absolute;
+  top: 50%;
+  /* center on handle */
+  left: calc(var(--handle-x) + var(--handle-size) / 2);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  pointer-events: none;
+  transition:
+    background-color 120ms linear,
+    left 180ms cubic-bezier(.2, 0, 0, 1);
+}
+
+[part="switch"]:not(:disabled):hover .state-layer {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+[part="switch"]:not(:disabled):focus-visible .state-layer,
+[part="switch"]:not(:disabled):active .state-layer {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+/* Disabled — spec opacity tokens 0.12 (track) / 0.38 (handle, icon). */
+:host([disabled]) [part="switch"] { cursor: not-allowed; }
+:host([disabled]) .track {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+  border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+}
+:host([disabled]) .handle {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+:host([disabled]) .icon {
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+:host([disabled]) .state-layer { background: transparent; }
+
+/* Readonly — visually identical to enabled, but no toggling. */
+:host([readonly]) [part="switch"] { cursor: default; }
+
+/* Error — track + handle take on error palette. */
+:host([error][checked]) {
+  --track-bg: var(--md-sys-color-error);
+  --layer-color: var(--md-sys-color-error);
+  --icon-color: var(--md-sys-color-on-error-container);
+}
+:host([error]:not([checked])) {
+  --track-border: var(--md-sys-color-error);
+  --handle-bg: var(--md-sys-color-error);
+  --layer-color: var(--md-sys-color-error);
+}
+
+/* Label / help text — typography matches material-checkbox: 16px on-surface
+   primary label, 12px on-surface-variant supporting text. Settings-row pattern. */
+.label {
+  display: block;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0.5px;
+  color: var(--md-sys-color-on-surface);
+  user-select: none;
+  -webkit-user-select: none;
+}
+:host([error]) .label { color: var(--md-sys-color-error); }
+.required-mark {
+  margin-left: 2px;
+  color: var(--md-sys-color-error);
+}
+
+.subtext {
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+.subtext.error { color: var(--md-sys-color-error); }
