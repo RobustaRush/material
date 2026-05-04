@@ -1,0 +1,45 @@
+/* Measurements per m3.material.io/components/toolbars/specs. */
+
+:host {
+  display: block;
+  box-sizing: border-box;
+  font-family: Roboto, system-ui, sans-serif;
+}
+
+:host([variant="floating"]) { display: inline-block; }
+
+[part="container"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 64px;
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+:host([variant="docked"]) [part="container"] {
+  width: 100%;
+  padding: 0 16px;
+  border-radius: 0;
+}
+
+:host([variant="floating"]) [part="container"] {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / .15);
+  width: max-content;
+}
+
+:host([variant="floating"][orientation="vertical"]) [part="container"] {
+  flex-direction: column;
+  padding: 16px 8px;
+  min-height: 0;
+  width: max-content;
+  height: max-content;
+}
+
+:host([color="vibrant"]) [part="container"] {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}

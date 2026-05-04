@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-toolbar — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-toolbar</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 Expressive docked &amp; floating toolbars. Layout-only container —
+          caller handles positioning. Standard / vibrant color; horizontal /
+          vertical orientation (floating).
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-8">
+
+      <div class="space-y-2">
+        <code class="text-sm text-on-surface-variant">docked / standard</code>
+        <material-toolbar variant="docked" color="standard" aria-label="Document actions">
+          <material-icon-button variant="standard" icon="format_bold" aria-label="Bold"></material-icon-button>
+          <material-icon-button variant="standard" icon="format_italic" aria-label="Italic"></material-icon-button>
+          <material-icon-button variant="standard" icon="format_underlined" aria-label="Underline"></material-icon-button>
+          <material-divider orientation="vertical"></material-divider>
+          <material-icon-button variant="standard" icon="format_align_left" aria-label="Align left"></material-icon-button>
+          <material-icon-button variant="standard" icon="format_align_center" aria-label="Align center"></material-icon-button>
+          <material-icon-button variant="standard" icon="format_align_right" aria-label="Align right"></material-icon-button>
+          <span class="flex-1"></span>
+          <material-button variant="filled" icon="check" label="Done"></material-button>
+        </material-toolbar>
+      </div>
+
+      <div class="space-y-2">
+        <code class="text-sm text-on-surface-variant">docked / vibrant</code>
+        <material-toolbar variant="docked" color="vibrant" aria-label="Edit mode">
+          <material-icon-button variant="standard" icon="undo" aria-label="Undo"></material-icon-button>
+          <material-icon-button variant="standard" icon="redo" aria-label="Redo"></material-icon-button>
+          <material-divider orientation="vertical"></material-divider>
+          <material-icon-button variant="standard" icon="content_cut" aria-label="Cut"></material-icon-button>
+          <material-icon-button variant="standard" icon="content_copy" aria-label="Copy"></material-icon-button>
+          <material-icon-button variant="standard" icon="content_paste" aria-label="Paste"></material-icon-button>
+          <span class="flex-1"></span>
+          <material-icon-button variant="filled" icon="save" aria-label="Save"></material-icon-button>
+        </material-toolbar>
+      </div>
+
+      <div class="space-y-2">
+        <code class="text-sm text-on-surface-variant">floating / horizontal / standard</code>
+        <div class="flex justify-center">
+          <material-toolbar variant="floating" color="standard" aria-label="Page actions">
+            <material-icon-button variant="standard" icon="reply" aria-label="Reply"></material-icon-button>
+            <material-icon-button variant="standard" icon="forward" aria-label="Forward"></material-icon-button>
+            <material-icon-button variant="standard" icon="archive" aria-label="Archive"></material-icon-button>
+            <material-icon-button variant="standard" icon="delete" aria-label="Delete"></material-icon-button>
+            <material-icon-button variant="standard" icon="more_vert" aria-label="More"></material-icon-button>
+          </material-toolbar>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <code class="text-sm text-on-surface-variant">floating / horizontal / vibrant</code>
+        <div class="flex justify-center">
+          <material-toolbar variant="floating" color="vibrant" aria-label="Selection actions">
+            <material-icon-button variant="standard" icon="add" aria-label="Add"></material-icon-button>
+            <material-icon-button variant="standard" icon="edit" aria-label="Edit"></material-icon-button>
+            <material-icon-button variant="standard" icon="share" aria-label="Share"></material-icon-button>
+            <material-icon-button variant="filled" icon="favorite" aria-label="Favorite"></material-icon-button>
+          </material-toolbar>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <code class="text-sm text-on-surface-variant">floating / vertical</code>
+        <div class="flex">
+          <material-toolbar variant="floating" orientation="vertical" aria-label="Tools">
+            <material-icon-button variant="standard" icon="brush" aria-label="Brush"></material-icon-button>
+            <material-icon-button variant="standard" icon="format_paint" aria-label="Fill"></material-icon-button>
+            <material-icon-button variant="standard" icon="ink_eraser" aria-label="Eraser"></material-icon-button>
+            <material-icon-button variant="standard" icon="palette" aria-label="Palette"></material-icon-button>
+          </material-toolbar>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <code class="text-sm text-on-surface-variant">floating + FAB</code>
+        <div class="flex justify-center items-center gap-3">
+          <material-toolbar variant="floating" aria-label="Compose actions">
+            <material-icon-button variant="standard" icon="image" aria-label="Insert image"></material-icon-button>
+            <material-icon-button variant="standard" icon="link" aria-label="Insert link"></material-icon-button>
+            <material-icon-button variant="standard" icon="format_list_bulleted" aria-label="List"></material-icon-button>
+            <material-icon-button variant="standard" icon="code" aria-label="Code"></material-icon-button>
+          </material-toolbar>
+          <material-icon-button variant="filled" size="l" icon="edit" aria-label="Compose"></material-icon-button>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <code class="text-sm text-on-surface-variant">with textfield</code>
+        <material-toolbar variant="docked" aria-label="Search bar">
+          <material-icon-button variant="standard" icon="menu" aria-label="Menu"></material-icon-button>
+          <material-textfield class="flex-1" placeholder="Search…"></material-textfield>
+          <material-icon-button variant="standard" icon="filter_list" aria-label="Filter"></material-icon-button>
+          <material-icon-button variant="filled" icon="search" aria-label="Search"></material-icon-button>
+        </material-toolbar>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- docked: full width, square corners; caller positions it (e.g. fixed bottom) --&gt;
+&lt;material-toolbar variant="docked" aria-label="Document actions"&gt;
+  &lt;material-icon-button icon="format_bold" aria-label="Bold"&gt;&lt;/material-icon-button&gt;
+  &lt;material-icon-button icon="format_italic" aria-label="Italic"&gt;&lt;/material-icon-button&gt;
+  &lt;span style="flex:1"&gt;&lt;/span&gt;
+  &lt;material-button variant="filled" icon="check" label="Done"&gt;&lt;/material-button&gt;
+&lt;/material-toolbar&gt;
+
+&lt;!-- floating: pill, contextual --&gt;
+&lt;material-toolbar variant="floating" color="vibrant"&gt;
+  &lt;material-icon-button icon="reply" aria-label="Reply"&gt;&lt;/material-icon-button&gt;
+  &lt;material-icon-button icon="archive" aria-label="Archive"&gt;&lt;/material-icon-button&gt;
+  &lt;material-icon-button icon="delete" aria-label="Delete"&gt;&lt;/material-icon-button&gt;
+&lt;/material-toolbar&gt;
+
+&lt;!-- vertical floating --&gt;
+&lt;material-toolbar variant="floating" orientation="vertical"&gt;...&lt;/material-toolbar&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>
