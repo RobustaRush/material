@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-chip — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-chip</h1>
+        <p class="text-on-surface-variant text-sm">
+          Four MD3 variants: <code>assist</code>, <code>filter</code>, <code>input</code>, <code>suggestion</code>. Toggle <code>elevated</code> for surface container low + shadow.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-6">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4 items-center">
+
+        <code class="text-sm text-on-surface-variant">assist</code>
+        <div class="flex gap-2 flex-wrap items-center">
+          <material-chip variant="assist" label="Take a break"></material-chip>
+          <material-chip variant="assist" icon="event" label="Add to calendar"></material-chip>
+          <material-chip variant="assist" elevated icon="directions" label="Get directions"></material-chip>
+          <material-chip variant="assist" icon="link" label="Disabled" disabled></material-chip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">filter</code>
+        <div class="flex gap-2 flex-wrap items-center">
+          <material-chip variant="filter" label="All"></material-chip>
+          <material-chip variant="filter" label="Unread" selected></material-chip>
+          <material-chip variant="filter" icon="star" label="Starred"></material-chip>
+          <material-chip variant="filter" elevated label="Elevated"></material-chip>
+          <material-chip variant="filter" label="Disabled" disabled></material-chip>
+          <material-chip variant="filter" label="Disabled on" selected disabled></material-chip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">input</code>
+        <div class="flex gap-2 flex-wrap items-center" id="input-chip-row">
+          <material-chip variant="input" label="alex@example.com" selected></material-chip>
+          <material-chip variant="input" icon="person" label="Jamie"></material-chip>
+          <material-chip variant="input" label="Disabled" disabled></material-chip>
+          <material-chip variant="input" label="With avatar" selected>
+            <img slot="avatar" src="https://i.pravatar.cc/48?img=12" alt="" />
+          </material-chip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">suggestion</code>
+        <div class="flex gap-2 flex-wrap items-center">
+          <material-chip variant="suggestion" label="Tell me a joke"></material-chip>
+          <material-chip variant="suggestion" label="Summarize this"></material-chip>
+          <material-chip variant="suggestion" elevated label="Elevated"></material-chip>
+          <material-chip variant="suggestion" label="Disabled" disabled></material-chip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">link</code>
+        <div class="flex gap-2 flex-wrap items-center">
+          <material-chip variant="assist" href="https://m3.material.io/components/chips" target="_blank" trailing-icon="open_in_new" label="MD3 docs"></material-chip>
+          <material-chip variant="suggestion" href="#anchor" label="Same tab"></material-chip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">form</code>
+        <div class="flex gap-2 flex-wrap items-center">
+          <form id="chip-form" class="flex gap-2 flex-wrap items-center" onsubmit="event.preventDefault(); document.getElementById('form-output').textContent = new URLSearchParams(new FormData(event.target)).toString() || '(empty)';">
+            <material-chip variant="filter" name="tags" value="news"  label="News"></material-chip>
+            <material-chip variant="filter" name="tags" value="docs"  label="Docs" selected></material-chip>
+            <material-chip variant="filter" name="tags" value="blog"  label="Blog"></material-chip>
+            <material-chip variant="input"  name="who"  value="kim"   label="Kim" selected></material-chip>
+            <material-button variant="filled" type="submit" label="Submit"></material-button>
+            <material-button variant="text" type="reset" label="Reset"></material-button>
+          </form>
+        </div>
+        <code class="text-sm text-on-surface-variant"></code>
+        <pre class="text-xs text-on-surface-variant" id="form-output">submit to see FormData</pre>
+
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- variants --&gt;
+&lt;material-chip variant="assist" icon="event" label="Add to calendar"&gt;&lt;/material-chip&gt;
+&lt;material-chip variant="filter" label="Unread" selected&gt;&lt;/material-chip&gt;
+&lt;material-chip variant="input"  label="alex@example.com" selected&gt;&lt;/material-chip&gt;
+&lt;material-chip variant="suggestion" label="Tell me a joke"&gt;&lt;/material-chip&gt;
+
+&lt;!-- elevated style is orthogonal to variant --&gt;
+&lt;material-chip variant="filter" elevated label="Elevated"&gt;&lt;/material-chip&gt;
+
+&lt;!-- avatar slot for input chips --&gt;
+&lt;material-chip variant="input" label="Kim" selected&gt;
+  &lt;img slot="avatar" src="/avatars/kim.jpg" alt="" /&gt;
+&lt;/material-chip&gt;
+
+&lt;!-- form-associated: filter & input chips contribute name=value when selected --&gt;
+&lt;form&gt;
+  &lt;material-chip variant="filter" name="tags" value="news" label="News"&gt;&lt;/material-chip&gt;
+  &lt;material-chip variant="filter" name="tags" value="docs" label="Docs" selected&gt;&lt;/material-chip&gt;
+&lt;/form&gt;
+
+&lt;!-- events --&gt;
+&lt;!-- selectedChange: { selected: boolean } on filter/input toggle --&gt;
+&lt;!-- remove: emitted from input chip's trailing close button --&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    // Demo: input chip 'remove' actually drops the chip from the DOM.
+    document.getElementById('input-chip-row').addEventListener('remove', e => {
+      e.target.remove();
+    });
+  </script>
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>
