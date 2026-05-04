@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-slider — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-slider</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 expressive slider — <code>min</code>/<code>max</code>/<code>step</code>;
+          discrete stops, centered origin, two-thumb range; five sizes; vertical
+          orientation; value indicator with formatter; form-associated.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-8">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-8 items-center">
+
+        <code class="text-sm text-on-surface-variant">default</code>
+        <div class="flex gap-6 items-center w-full">
+          <material-slider value="0" class="flex-1"></material-slider>
+          <material-slider value="50" class="flex-1"></material-slider>
+          <material-slider value="100" class="flex-1"></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">sizes</code>
+        <div class="flex flex-col gap-6">
+          <material-slider size="xs" value="40"></material-slider>
+          <material-slider size="s"  value="40"></material-slider>
+          <material-slider size="m"  value="40"></material-slider>
+          <material-slider size="l"  value="40"></material-slider>
+          <material-slider size="xl" value="40"></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">discrete</code>
+        <div class="flex flex-col gap-8">
+          <material-slider discrete step="10" value="40"></material-slider>
+          <material-slider id="pct-slider" discrete step="25" value="50"></material-slider>
+          <material-slider discrete tick-labels step="20" value="60"></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">centered</code>
+        <div class="flex flex-col gap-6">
+          <material-slider min="-50" max="50" origin="0" value="-20"></material-slider>
+          <material-slider min="-50" max="50" origin="0" value="30"></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">range</code>
+        <div class="flex flex-col gap-6">
+          <material-slider value-low="20" value-high="70"></material-slider>
+          <material-slider discrete step="10" value-low="20" value-high="60"></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">vertical</code>
+        <div class="flex gap-12 h-48">
+          <material-slider orientation="vertical" value="30"></material-slider>
+          <material-slider orientation="vertical" discrete step="10" value="60"></material-slider>
+          <material-slider orientation="vertical" discrete tick-labels step="20" value="40"></material-slider>
+          <material-slider orientation="vertical" value-low="20" value-high="80"></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">with icon</code>
+        <div class="flex flex-col gap-6">
+          <material-slider size="m" icon="volume_up" value="35"></material-slider>
+          <material-slider size="l" icon="brightness_5" value="60"></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">label / help / error</code>
+        <div class="flex flex-col gap-6">
+          <material-slider value="40" label="Quality" help-text="Higher values use more bandwidth."></material-slider>
+          <material-slider value="80" label="Threshold" error error-text="Threshold cannot exceed the upper limit."></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant block max-w-[10ch] whitespace-normal leading-snug">required<br>readonly<br>disabled</code>
+        <div class="flex flex-col gap-6">
+          <material-slider value="50" required label="Volume" help-text="Required field"></material-slider>
+          <div class="flex gap-6 items-start">
+            <material-slider class="flex-1" size="xs" value="40" readonly label="Bitrate" help-text="Read-only: value submits but cannot be changed."></material-slider>
+            <material-textfield class="flex-1" variant="outlined" label="Bitrate" value="40" help-text="Comparison: outlined text field"></material-textfield>
+          </div>
+          <material-slider value="40" disabled></material-slider>
+          <material-slider discrete step="10" value="40" disabled></material-slider>
+          <material-slider value-low="20" value-high="70" disabled></material-slider>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">form</code>
+        <div>
+          <form id="slider-form" class="flex flex-col gap-6"
+                onsubmit="event.preventDefault();
+                          document.getElementById('form-output').textContent =
+                            new URLSearchParams(new FormData(event.target)).toString() || '(empty)';">
+            <label class="flex flex-col gap-1">
+              <span class="text-sm text-on-surface-variant">volume (single)</span>
+              <material-slider name="volume" min="0" max="100" value="75"></material-slider>
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-sm text-on-surface-variant">price (range)</span>
+              <material-slider name="price" min="0" max="500" step="50"
+                               value-low="100" value-high="350" discrete></material-slider>
+            </label>
+            <div class="flex gap-3 items-center">
+              <material-button variant="filled" type="submit" label="Submit"></material-button>
+              <material-button variant="text" type="reset" label="Reset"></material-button>
+              <pre class="text-xs text-on-surface-variant flex-1 m-0" id="form-output">submit to see FormData</pre>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- single thumb --&gt;
+&lt;material-slider min="0" max="100" value="50"&gt;&lt;/material-slider&gt;
+
+&lt;!-- discrete with stops + custom label --&gt;
+&lt;material-slider discrete step="25" value="50" id="vol"&gt;&lt;/material-slider&gt;
+&lt;script&gt;
+  document.getElementById('vol').valueFormatter = v =&gt; v + '%';
+&lt;/script&gt;
+
+&lt;!-- centered (active grows from origin, not from min) --&gt;
+&lt;material-slider min="-50" max="50" origin="0" value="-20"&gt;&lt;/material-slider&gt;
+
+&lt;!-- two-thumb range --&gt;
+&lt;material-slider value-low="20" value-high="70"&gt;&lt;/material-slider&gt;
+
+&lt;!-- five sizes: xs | s (default) | m | l | xl --&gt;
+&lt;material-slider size="xl" value="80"&gt;&lt;/material-slider&gt;
+
+&lt;!-- vertical orientation --&gt;
+&lt;material-slider orientation="vertical" value="30"&gt;&lt;/material-slider&gt;
+
+&lt;!-- inset icon (M / L / XL only) --&gt;
+&lt;material-slider size="m" icon="volume_up" value="35"&gt;&lt;/material-slider&gt;
+
+&lt;!-- form-associated; range submits the same name twice --&gt;
+&lt;form&gt;
+  &lt;material-slider name="volume" value="75"&gt;&lt;/material-slider&gt;
+  &lt;material-slider name="price"  value-low="100" value-high="350"&gt;&lt;/material-slider&gt;
+&lt;/form&gt;
+
+&lt;!-- events --&gt;
+&lt;!-- valueChange:  fires continuously while pointer drags / keys repeat --&gt;
+&lt;!-- valueCommit: fires once on pointer release / each keystroke --&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    // Hook formatter onto the percent slider.
+    document.getElementById('pct-slider').valueFormatter = v => v + '%';
+  </script>
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+/* Measurements per m3.material.io/components/sliders/specs. */
+
+:host {
+  display: inline-block;
+  vertical-align: middle;
+  width: 100%;
+  /* track / handle / radius / icon for the current size */
+  --track-h: 24px;
+  --handle-h: 44px;
+  --track-r: 8px;
+  --icon-size: 24px;
+  /* gap between each segment and the handle (spec: 6dp). */
+  --seg-gap: 6px;
+  --seg-r-flat: 2px;
+  /* color tokens */
+  --slider-active: var(--md-sys-color-primary);
+  --slider-inactive: color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+  --slider-handle: var(--md-sys-color-primary);
+  --slider-stop-on: var(--md-sys-color-on-primary);
+  --slider-stop-off: var(--md-sys-color-on-secondary-container);
+  --slider-icon-on: var(--md-sys-color-on-primary);
+  --slider-icon-off: var(--md-sys-color-on-secondary-container);
+  --slider-indicator-bg: var(--md-sys-color-inverse-surface);
+  --slider-indicator-fg: var(--md-sys-color-inverse-on-surface);
+}
+
+:host([size="xs"]) { --track-h: 16px; --handle-h: 44px;  --track-r: 8px;  --icon-size: 0; }
+:host([size="s"])  { --track-h: 24px; --handle-h: 44px;  --track-r: 8px;  --icon-size: 0; }
+:host([size="m"])  { --track-h: 40px; --handle-h: 52px;  --track-r: 12px; --icon-size: 24px; }
+:host([size="l"])  { --track-h: 56px; --handle-h: 68px;  --track-r: 16px; --icon-size: 24px; }
+:host([size="xl"]) { --track-h: 96px; --handle-h: 108px; --track-r: 28px; --icon-size: 32px; }
+
+:host([orientation="vertical"]) {
+  display: inline-flex;
+  width: auto;
+  min-width: var(--handle-h);
+  height: 200px;
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  /* Pulls the label up so it lands at the same y-level as a sibling
+     outlined textfield's floated label when both sit in the same row. */
+  margin-top: -8px;
+}
+
+[part="container"] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--handle-h);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+:host([orientation="vertical"]) [part="container"] {
+  flex-direction: column;
+  width: var(--handle-h);
+  height: 100%;
+}
+
+:host([disabled]) [part="container"],
+:host([readonly]) [part="container"] { cursor: default; }
+:host([disabled]) [part="container"] { cursor: not-allowed; }
+
+[part="track"] {
+  position: relative;
+  width: 100%;
+  height: var(--track-h);
+}
+
+:host([orientation="vertical"]) [part="track"] {
+  width: var(--track-h);
+  height: 100%;
+}
+
+/* Three segments: leading inactive, active, trailing inactive.
+   --vl = position of left split (active start), --vr = right split. */
+.seg {
+  position: absolute;
+  inset-block: 0;
+  background: var(--slider-inactive);
+  border-radius: var(--seg-r-flat);
+}
+
+.seg.leading {
+  left: 0;
+  width: max(0px, calc(var(--vl, 0%) - var(--seg-gap)));
+  border-top-left-radius: var(--track-r);
+  border-bottom-left-radius: var(--track-r);
+}
+
+.seg.active {
+  left: calc(var(--vl, 0%) + var(--seg-gap));
+  right: calc(100% - var(--vr, 0%) + var(--seg-gap));
+  background: var(--slider-active);
+}
+.seg.active.round-l {
+  /* Standard slider: active touches the track start, round that side. */
+  left: 0;
+  border-top-left-radius: var(--track-r);
+  border-bottom-left-radius: var(--track-r);
+}
+
+.seg.trailing {
+  left: calc(var(--vr, 0%) + var(--seg-gap));
+  right: 0;
+  border-top-right-radius: var(--track-r);
+  border-bottom-right-radius: var(--track-r);
+}
+
+/* Vertical mapping. In vertical, max is at the top. */
+:host([orientation="vertical"]) .seg {
+  inset-block: auto;
+  inset-inline: 0;
+  width: auto;
+}
+:host([orientation="vertical"]) .seg.leading {
+  /* "leading" = lower value side = bottom */
+  bottom: 0;
+  top: auto;
+  height: max(0px, calc(var(--vl, 0%) - var(--seg-gap)));
+  border-radius: 0 0 var(--track-r) var(--track-r);
+}
+:host([orientation="vertical"]) .seg.active {
+  bottom: calc(var(--vl, 0%) + var(--seg-gap));
+  top: calc(100% - var(--vr, 0%) + var(--seg-gap));
+  left: 0; right: 0;
+  border-radius: var(--seg-r-flat);
+}
+:host([orientation="vertical"]) .seg.active.round-l {
+  bottom: 0;
+  border-bottom-left-radius: var(--track-r);
+  border-bottom-right-radius: var(--track-r);
+}
+:host([orientation="vertical"]) .seg.trailing {
+  top: 0;
+  bottom: calc(var(--vr, 0%) + var(--seg-gap));
+  height: auto;
+  border-radius: var(--track-r) var(--track-r) 0 0;
+}
+
+/* Inset icon — rendered twice to color-flip across the thumb position.
+   The flip line is the active-track end (var(--vr)). */
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  line-height: 1;
+  font-size: var(--icon-size);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.icon.active   { color: var(--slider-icon-on);  clip-path: inset(0 calc(100% - var(--vr, 0%)) 0 0); }
+.icon.inactive { color: var(--slider-icon-off); clip-path: inset(0 0 0 var(--vr, 0%)); }
+
+:host([orientation="vertical"]) .icon {
+  top: auto;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+}
+:host([orientation="vertical"]) .icon.active {
+  clip-path: inset(calc(100% - var(--vr, 0%)) 0 0 0);
+}
+:host([orientation="vertical"]) .icon.inactive {
+  clip-path: inset(0 0 var(--vr, 0%) 0);
+}
+
+/* Stop indicators (discrete). */
+.stop {
+  position: absolute;
+  top: 50%;
+  left: var(--p, 0%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--slider-stop-off);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.stop.active { background: var(--slider-stop-on); }
+
+:host([orientation="vertical"]) .stop {
+  left: 50%;
+  top: auto;
+  bottom: var(--p, 0%);
+  transform: translate(-50%, 50%);
+}
+
+/* Tick labels (opt-in via `tick-labels` attr).
+   Horizontal: below the track. Vertical: to the right. */
+.tick-label {
+  position: absolute;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+  /* Horizontal: label sits below the track, clearing the handle that
+     extends past the track edges by (handle-h - track-h) / 2. */
+  top: calc(100% + (var(--handle-h) - var(--track-h)) / 2 + 6px);
+  left: var(--p, 0%);
+  transform: translateX(-50%);
+}
+:host([orientation="vertical"]) .tick-label {
+  top: auto;
+  bottom: var(--p, 0%);
+  /* Track is narrower than the container; the handle extends past the track
+     edges. Push the label past the handle, not just past the track. */
+  left: calc(100% + (var(--handle-h) - var(--track-h)) / 2 + 8px);
+  transform: translateY(50%);
+}
+/* Reserve space below the track (horizontal) or to the right (vertical). */
+:host([tick-labels]) [part="container"] { margin-bottom: 22px; }
+:host([tick-labels][orientation="vertical"]) [part="container"] {
+  margin-bottom: 0;
+  margin-right: calc((var(--handle-h) - var(--track-h)) / 2 + 32px);
+}
+
+
+/* Thumb — 4dp × handle-h vertical pill, rides centered on the track. */
+.thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--p, 0%);
+  width: 4px;
+  height: var(--handle-h);
+  border-radius: 9999px;
+  background: var(--slider-handle);
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  outline: none;
+  transition:
+    width 180ms cubic-bezier(.2, 0, 0, 1),
+    background-color 120ms linear,
+    box-shadow 120ms linear;
+}
+
+:host([orientation="vertical"]) .thumb {
+  top: calc(100% - var(--p, 0%));
+  left: 50%;
+  width: var(--handle-h);
+  height: 4px;
+}
+
+.thumb:active { cursor: grabbing; }
+.thumb:focus-visible {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: 4px;
+}
+
+/* Spec: handle narrows from 4dp → 2dp on focus / press. */
+.thumb:is(:focus-visible, :active) { width: 2px; }
+:host([orientation="vertical"]) .thumb:is(:focus-visible, :active) {
+  width: var(--handle-h);
+  height: 2px;
+}
+
+/* Value indicator bubble — appears on hover/focus/drag, hidden otherwise. */
+.indicator {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 48px;
+  height: 44px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--slider-indicator-bg);
+  color: var(--slider-indicator-fg);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms linear;
+}
+
+:host([orientation="vertical"]) .indicator {
+  bottom: 50%;
+  left: auto;
+  right: calc(100% + 12px);
+  transform: translateY(50%);
+}
+
+:host(:not([disabled])) [part="container"].dragging .thumb .indicator,
+:host(:not([disabled])) .thumb:focus-visible .indicator,
+:host(:not([disabled])) .thumb:hover .indicator { opacity: 1; }
+
+/* Label above the slider. Sized + indented to harmonize with an
+   outlined textfield's floated label when placed in the same row. */
+.label {
+  display: block;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: var(--md-sys-color-on-surface-variant);
+  padding: 0 16px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+:host([error]) .label { color: var(--md-sys-color-error); }
+.required-mark {
+  margin-left: 2px;
+  color: var(--md-sys-color-error);
+}
+
+/* Help / error text below the slider. */
+.subtext {
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: var(--md-sys-color-on-surface-variant);
+  padding: 0 16px;
+}
+.subtext.error { color: var(--md-sys-color-error); }
+
+/* Required indicator color hint via error-style outline on thumb when invalid. */
+:host([error]) {
+  --slider-active: var(--md-sys-color-error);
+  --slider-handle: var(--md-sys-color-error);
+}
+
+/* Disabled state — spec opacity tokens 0.38 / 0.12. */
+:host([disabled]) {
+  --slider-active: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+  --slider-inactive: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+  --slider-handle: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+:host([disabled]) .thumb { cursor: not-allowed; }
+:host([disabled]) .indicator { display: none; }
+
+/* Readonly: visually identical to enabled, but no cursor or interactions. */
+:host([readonly]) .thumb { cursor: default; }
