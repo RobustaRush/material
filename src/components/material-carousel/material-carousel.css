@@ -1,0 +1,40 @@
+/* MD3 carousel — measurements/colors per m3.material.io/components/carousel/specs.
+   Layouts implemented: uncontained, uncontained-multi-aspect. */
+
+:host {
+  display: block;
+  --carousel-gap: 8px;
+  --carousel-pad-x: 16px;
+  --carousel-pad-y: 8px;
+  --carousel-large-width: 300px;
+  --carousel-row-height: 220px;
+}
+
+:host([layout="uncontained-multi-aspect"]) { --carousel-row-height: 240px; }
+
+[part="scroller"] {
+  display: flex;
+  gap: var(--carousel-gap);
+  padding: var(--carousel-pad-y) var(--carousel-pad-x);
+  padding-inline-end: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+[part="scroller"]::-webkit-scrollbar { display: none; }
+
+:host([snap="none"]) [part="scroller"] { scroll-snap-type: none; }
+:host([snap="proximity"]) [part="scroller"] { scroll-snap-type: x proximity; }
+:host([snap="mandatory"]) [part="scroller"] { scroll-snap-type: x mandatory; }
+
+::slotted(material-carousel-item) {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part="scroller"] { scroll-behavior: auto; }
+}

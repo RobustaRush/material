@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-carousel — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-carousel</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 carousel — uncontained / uncontained-multi-aspect layouts with
+          parallax, scroll-snap, and keyboard arrow navigation. Items are
+          actionable via <code>href</code> or <code>clickable</code>.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-8 py-10">
+    <section class="space-y-12">
+
+      <div class="space-y-3">
+        <code class="text-sm text-on-surface-variant">layout="uncontained" — same-size items, trailing bleed, proximity snap</code>
+        <material-carousel layout="uncontained" large-width="220" aria-label="Uncontained gallery">
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u1/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u2/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u3/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u4/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u5/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u6/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u7/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u8/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u9/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u10/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u11/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item><img slot="media" src="https://picsum.photos/seed/u12/440/440" alt="" /></material-carousel-item>
+        </material-carousel>
+      </div>
+
+      <div class="space-y-3">
+        <code class="text-sm text-on-surface-variant">layout="uncontained-multi-aspect" — items with mixed aspect ratios</code>
+        <material-carousel layout="uncontained-multi-aspect" large-width="240" aria-label="Mixed aspect ratios">
+          <material-carousel-item aspect="16:9"><img slot="media" src="https://picsum.photos/seed/m1/640/360" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="1:1"><img slot="media" src="https://picsum.photos/seed/m2/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="9:16"><img slot="media" src="https://picsum.photos/seed/m3/360/640" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="3:4"><img slot="media" src="https://picsum.photos/seed/m4/420/560" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="16:9"><img slot="media" src="https://picsum.photos/seed/m5/640/360" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="1:1"><img slot="media" src="https://picsum.photos/seed/m6/440/440" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="3:4"><img slot="media" src="https://picsum.photos/seed/m7/420/560" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="9:16"><img slot="media" src="https://picsum.photos/seed/m8/360/640" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="16:9"><img slot="media" src="https://picsum.photos/seed/m9/640/360" alt="" /></material-carousel-item>
+          <material-carousel-item aspect="1:1"><img slot="media" src="https://picsum.photos/seed/m10/440/440" alt="" /></material-carousel-item>
+        </material-carousel>
+      </div>
+
+      <div class="space-y-3">
+        <code class="text-sm text-on-surface-variant">actionable items — link / disabled, with headline + supporting overlay</code>
+        <material-carousel layout="uncontained" large-width="260" aria-label="Trips">
+          <material-carousel-item href="#"><img slot="media" src="https://picsum.photos/seed/t1/520/520" alt="" /><h3 slot="headline">Reykjavík</h3><span slot="supporting">Sept · 5 min read</span></material-carousel-item>
+          <material-carousel-item href="#"><img slot="media" src="https://picsum.photos/seed/t2/520/520" alt="" /><h3 slot="headline">Akureyri</h3><span slot="supporting">Sept · 4 min read</span></material-carousel-item>
+          <material-carousel-item clickable onclick="console.log('clicked')"><img slot="media" src="https://picsum.photos/seed/t3/520/520" alt="" /><h3 slot="headline">Vík</h3><span slot="supporting">Click me · check console</span></material-carousel-item>
+          <material-carousel-item disabled clickable><img slot="media" src="https://picsum.photos/seed/t4/520/520" alt="" /><h3 slot="headline">Höfn</h3><span slot="supporting">Disabled</span></material-carousel-item>
+          <material-carousel-item href="#"><img slot="media" src="https://picsum.photos/seed/t5/520/520" alt="" /><h3 slot="headline">Selfoss</h3><span slot="supporting">Sept · 5 min read</span></material-carousel-item>
+          <material-carousel-item href="#"><img slot="media" src="https://picsum.photos/seed/t6/520/520" alt="" /><h3 slot="headline">Húsavík</h3><span slot="supporting">Sept · 8 min read</span></material-carousel-item>
+          <material-carousel-item href="#"><img slot="media" src="https://picsum.photos/seed/t7/520/520" alt="" /><h3 slot="headline">Egilsstaðir</h3><span slot="supporting">Sept · 6 min read</span></material-carousel-item>
+          <material-carousel-item href="#"><img slot="media" src="https://picsum.photos/seed/t8/520/520" alt="" /><h3 slot="headline">Ísafjörður</h3><span slot="supporting">Sept · 4 min read</span></material-carousel-item>
+          <material-carousel-item href="#"><img slot="media" src="https://picsum.photos/seed/t9/520/520" alt="" /><h3 slot="headline">Borgarnes</h3><span slot="supporting">Sept · 3 min read</span></material-carousel-item>
+          <material-carousel-item href="#"><img slot="media" src="https://picsum.photos/seed/t10/520/520" alt="" /><h3 slot="headline">Stykkishólmur</h3><span slot="supporting">Sept · 7 min read</span></material-carousel-item>
+        </material-carousel>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- uncontained — same-size items, trailing bleed, proximity snap --&gt;
+&lt;material-carousel layout="uncontained" large-width="220"&gt;
+  &lt;material-carousel-item&gt;&lt;img slot="media" src="..." alt="" /&gt;&lt;/material-carousel-item&gt;
+  &lt;material-carousel-item&gt;&lt;img slot="media" src="..." alt="" /&gt;&lt;/material-carousel-item&gt;
+&lt;/material-carousel&gt;
+
+&lt;!-- uncontained-multi-aspect — items with mixed aspect ratios --&gt;
+&lt;material-carousel layout="uncontained-multi-aspect"&gt;
+  &lt;material-carousel-item aspect="16:9"&gt;&lt;img slot="media" src="..." alt="" /&gt;&lt;/material-carousel-item&gt;
+  &lt;material-carousel-item aspect="9:16"&gt;&lt;img slot="media" src="..." alt="" /&gt;&lt;/material-carousel-item&gt;
+&lt;/material-carousel&gt;
+
+&lt;!-- actionable items with overlay text --&gt;
+&lt;material-carousel layout="uncontained" large-width="260"&gt;
+  &lt;material-carousel-item href="/photo/1"&gt;
+    &lt;img slot="media" src="..." alt="" /&gt;
+    &lt;h3 slot="headline"&gt;Title&lt;/h3&gt;
+    &lt;span slot="supporting"&gt;Caption&lt;/span&gt;
+  &lt;/material-carousel-item&gt;
+&lt;/material-carousel&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

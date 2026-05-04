@@ -1,0 +1,134 @@
+/* MD3 carousel item — measurements/colors per m3.material.io/components/carousel/specs. */
+
+:host {
+  display: block;
+  width: var(--carousel-large-width, 300px);
+  height: var(--carousel-row-height, 220px);
+  outline: none;
+}
+
+[part="surface"] {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: Roboto, system-ui, sans-serif;
+  text-decoration: none;
+  text-align: inherit;
+  border: 0;
+  padding: 0;
+  cursor: default;
+  transition: box-shadow 120ms linear;
+}
+
+button[part="surface"] {
+  font: inherit;
+  color: inherit;
+}
+
+::slotted([slot="media"]),
+::slotted(img),
+::slotted(video),
+::slotted(picture) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateX(var(--parallax, 0)) scale(1.15);
+  will-change: transform;
+}
+
+[part="text"] {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 12px 16px;
+  z-index: 1;
+  background: linear-gradient(transparent, rgb(0 0 0 / .55));
+  color: #fff;
+  pointer-events: none;
+}
+[part="text"][hidden] { display: none; }
+
+::slotted([slot="headline"]) {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  margin: 0;
+}
+
+::slotted([slot="supporting"]) {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  margin: 4px 0 0 0;
+  opacity: .9;
+}
+
+/* Aspect ratios (uncontained-multi-aspect) — width derived from row-height */
+:host([aspect="16:9"]) { width: calc(var(--carousel-row-height, 220px) * 16 / 9); }
+:host([aspect="9:16"]) { width: calc(var(--carousel-row-height, 220px) * 9 / 16); }
+:host([aspect="1:1"])  { width: var(--carousel-row-height, 220px); }
+:host([aspect="3:4"])  { width: calc(var(--carousel-row-height, 220px) * 3 / 4); }
+
+/* State layer (actionable only) */
+[part="state-layer"] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--md-sys-color-on-surface);
+  opacity: 0;
+  transition: opacity 120ms linear;
+  z-index: 2;
+}
+
+:host([href]) [part="surface"],
+:host([clickable]) [part="surface"] {
+  cursor: pointer;
+}
+
+:host([href]) [part="surface"]:hover [part="state-layer"],
+:host([clickable]) [part="surface"]:hover [part="state-layer"] { opacity: .08; }
+
+:host([href]) [part="surface"]:focus-visible [part="state-layer"],
+:host([clickable]) [part="surface"]:focus-visible [part="state-layer"],
+:host(:focus-visible) [part="state-layer"] { opacity: .10; }
+
+:host([href]) [part="surface"]:active [part="state-layer"],
+:host([clickable]) [part="surface"]:active [part="state-layer"] { opacity: .10; }
+
+/* Hover elevation — actionable only */
+:host([href]) [part="surface"]:hover,
+:host([clickable]) [part="surface"]:hover {
+  box-shadow:
+    0 2px 1px -1px rgb(0 0 0 / .2),
+    0 1px 1px 0 rgb(0 0 0 / .14),
+    0 1px 3px 0 rgb(0 0 0 / .12);
+}
+
+/* Focus ring */
+:host([href]) [part="surface"]:focus-visible,
+:host([clickable]) [part="surface"]:focus-visible,
+:host(:focus-visible) [part="surface"] {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
+
+/* Disabled */
+:host([disabled]) [part="surface"] {
+  opacity: 0.38;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::slotted([slot="media"]),
+  ::slotted(img),
+  ::slotted(video),
+  ::slotted(picture) { transform: scale(1.15); }
+}
