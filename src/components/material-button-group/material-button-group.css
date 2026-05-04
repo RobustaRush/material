@@ -1,0 +1,60 @@
+/* Measurements per m3.material.io/components/button-groups/specs. */
+
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+  /* Inner padding (gap) — overridden per variant + size. */
+  --bg-gap: 12px;
+  /* Inner corner radius for connected groups — overridden per size. */
+  --bg-inner: 8px;
+}
+
+/* Standard group inner padding by size. */
+:host([variant="standard"][size="xs"]) { --bg-gap: 18px; }
+:host([variant="standard"][size="s"])  { --bg-gap: 12px; }
+:host([variant="standard"][size="m"])  { --bg-gap: 8px; }
+:host([variant="standard"][size="l"])  { --bg-gap: 8px; }
+:host([variant="standard"][size="xl"]) { --bg-gap: 8px; }
+
+/* Connected groups: 2dp gap at every size; inner corner per size. */
+:host([variant="connected"]) { --bg-gap: 2px; }
+:host([variant="connected"][size="xs"]) { --bg-inner: 4px;  }
+:host([variant="connected"][size="s"])  { --bg-inner: 8px;  }
+:host([variant="connected"][size="m"])  { --bg-inner: 8px;  }
+:host([variant="connected"][size="l"])  { --bg-inner: 16px; }
+:host([variant="connected"][size="xl"]) { --bg-inner: 20px; }
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bg-gap);
+}
+
+/* Connected: middle children get small radii on both sides;
+   first/last keep the outer side rounded (or square per `shape`). */
+:host([variant="connected"]) ::slotted(material-button:not(:first-child):not(:last-child)),
+:host([variant="connected"]) ::slotted(material-icon-button:not(:first-child):not(:last-child)) {
+  --btn-r-start: var(--bg-inner);
+  --btn-r-end:   var(--bg-inner);
+}
+
+:host([variant="connected"]) ::slotted(material-button:first-child:not(:last-child)),
+:host([variant="connected"]) ::slotted(material-icon-button:first-child:not(:last-child)) {
+  --btn-r-end: var(--bg-inner);
+}
+
+:host([variant="connected"]) ::slotted(material-button:last-child:not(:first-child)),
+:host([variant="connected"]) ::slotted(material-icon-button:last-child:not(:first-child)) {
+  --btn-r-start: var(--bg-inner);
+}
+
+/* Square shape: outer corners also use the small radius. */
+:host([variant="connected"][shape="square"]) ::slotted(material-button:first-child),
+:host([variant="connected"][shape="square"]) ::slotted(material-icon-button:first-child) {
+  --btn-r-start: var(--bg-inner);
+}
+
+:host([variant="connected"][shape="square"]) ::slotted(material-button:last-child),
+:host([variant="connected"][shape="square"]) ::slotted(material-icon-button:last-child) {
+  --btn-r-end: var(--bg-inner);
+}

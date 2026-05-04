@@ -13,7 +13,10 @@
   justify-content: center;
   box-sizing: border-box;
   border: 0;
-  border-radius: 9999px;
+  border-start-start-radius: var(--btn-r-start, var(--btn-r, 9999px));
+  border-end-start-radius:   var(--btn-r-start, var(--btn-r, 9999px));
+  border-start-end-radius:   var(--btn-r-end,   var(--btn-r, 9999px));
+  border-end-end-radius:     var(--btn-r-end,   var(--btn-r, 9999px));
   font-family: inherit;
   font-weight: 500;
   text-decoration: none;
@@ -82,10 +85,10 @@
 [part="button"]:not(:disabled):not([aria-disabled="true"]):active { background-color: color-mix(in srgb, currentColor 12%, var(--btn-bg)); }
 
 :host([shape-morph][size="xs"]) [part="button"]:active,
-:host([shape-morph][size="s"])  [part="button"]:active { border-radius: 8px;  }
-:host([shape-morph][size="m"])  [part="button"]:active { border-radius: 12px; }
+:host([shape-morph][size="s"])  [part="button"]:active { --btn-r: 8px;  }
+:host([shape-morph][size="m"])  [part="button"]:active { --btn-r: 12px; }
 :host([shape-morph][size="l"])  [part="button"]:active,
-:host([shape-morph][size="xl"]) [part="button"]:active { border-radius: 16px; }
+:host([shape-morph][size="xl"]) [part="button"]:active { --btn-r: 16px; }
 
 [part="button"]:not(:disabled):not([aria-disabled="true"]):active::after {
   content: "";

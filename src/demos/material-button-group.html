@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-button-group — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-button-group</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 Expressive button group — <code>standard</code> (gap container) +
+          <code>connected</code> (2dp gap, fused inner corners). Five sizes;
+          single / multi select with toggle icon buttons.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-8">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-8 items-center">
+
+        <code class="text-sm text-on-surface-variant">standard</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <material-button-group>
+            <material-button variant="filled" label="Save"></material-button>
+            <material-button variant="tonal" label="Cancel"></material-button>
+          </material-button-group>
+
+          <material-button-group>
+            <material-icon-button variant="filled" icon="format_bold" aria-label="Bold"></material-icon-button>
+            <material-icon-button variant="tonal"  icon="format_italic" aria-label="Italic"></material-icon-button>
+            <material-icon-button variant="tonal"  icon="format_underlined" aria-label="Underline"></material-icon-button>
+          </material-button-group>
+
+          <material-button-group>
+            <material-icon-button variant="filled" icon="skip_previous" aria-label="Previous"></material-icon-button>
+            <material-button variant="tonal" label="Play" icon="play_arrow"></material-button>
+            <material-icon-button variant="filled" icon="skip_next" aria-label="Next"></material-icon-button>
+          </material-button-group>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">standard sizes</code>
+        <div class="flex flex-col gap-4">
+          <material-button-group size="xs">
+            <material-icon-button size="xs" variant="filled" icon="add" aria-label="Add"></material-icon-button>
+            <material-icon-button size="xs" variant="tonal"  icon="remove" aria-label="Remove"></material-icon-button>
+            <material-icon-button size="xs" variant="tonal"  icon="refresh" aria-label="Refresh"></material-icon-button>
+          </material-button-group>
+          <material-button-group size="s">
+            <material-button size="s" variant="filled" label="Save"></material-button>
+            <material-button size="s" variant="tonal" label="Discard"></material-button>
+          </material-button-group>
+          <material-button-group size="m">
+            <material-button size="m" variant="filled" label="Save"></material-button>
+            <material-button size="m" variant="tonal" label="Discard"></material-button>
+          </material-button-group>
+          <material-button-group size="l">
+            <material-button size="l" variant="filled" label="Save"></material-button>
+            <material-button size="l" variant="tonal" label="Discard"></material-button>
+          </material-button-group>
+          <material-button-group size="xl">
+            <material-button size="xl" variant="filled" label="Save"></material-button>
+            <material-button size="xl" variant="tonal" label="Discard"></material-button>
+          </material-button-group>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">connected</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <material-button-group variant="connected">
+            <material-button variant="tonal" label="Day"></material-button>
+            <material-button variant="tonal" label="Week"></material-button>
+            <material-button variant="tonal" label="Month"></material-button>
+            <material-button variant="tonal" label="Year"></material-button>
+          </material-button-group>
+
+          <material-button-group variant="connected">
+            <material-icon-button variant="tonal" icon="format_align_left" aria-label="Align left"></material-icon-button>
+            <material-icon-button variant="tonal" icon="format_align_center" aria-label="Align center"></material-icon-button>
+            <material-icon-button variant="tonal" icon="format_align_right" aria-label="Align right"></material-icon-button>
+            <material-icon-button variant="tonal" icon="format_align_justify" aria-label="Justify"></material-icon-button>
+          </material-button-group>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">connected sizes</code>
+        <div class="flex flex-col gap-4 items-start">
+          <material-button-group variant="connected" size="xs">
+            <material-icon-button toggle size="xs" variant="tonal" icon="grid_view" aria-label="Grid"></material-icon-button>
+            <material-icon-button toggle size="xs" variant="tonal" icon="view_list" aria-label="List"></material-icon-button>
+            <material-icon-button toggle size="xs" variant="tonal" selected icon="view_module" aria-label="Module"></material-icon-button>
+          </material-button-group>
+          <material-button-group variant="connected" size="s">
+            <material-icon-button toggle size="s" variant="tonal" icon="grid_view" aria-label="Grid"></material-icon-button>
+            <material-icon-button toggle size="s" variant="tonal" selected icon="view_list" aria-label="List"></material-icon-button>
+            <material-icon-button toggle size="s" variant="tonal" icon="view_module" aria-label="Module"></material-icon-button>
+          </material-button-group>
+          <material-button-group variant="connected" size="m">
+            <material-icon-button toggle size="m" variant="tonal" selected icon="grid_view" aria-label="Grid"></material-icon-button>
+            <material-icon-button toggle size="m" variant="tonal" icon="view_list" aria-label="List"></material-icon-button>
+            <material-icon-button toggle size="m" variant="tonal" icon="view_module" aria-label="Module"></material-icon-button>
+          </material-button-group>
+          <material-button-group variant="connected" size="l">
+            <material-icon-button toggle size="l" variant="tonal" icon="grid_view" aria-label="Grid"></material-icon-button>
+            <material-icon-button toggle size="l" variant="tonal" selected icon="view_list" aria-label="List"></material-icon-button>
+            <material-icon-button toggle size="l" variant="tonal" icon="view_module" aria-label="Module"></material-icon-button>
+          </material-button-group>
+          <material-button-group variant="connected" size="xl">
+            <material-icon-button toggle size="xl" variant="tonal" selected icon="grid_view" aria-label="Grid"></material-icon-button>
+            <material-icon-button toggle size="xl" variant="tonal" icon="view_list" aria-label="List"></material-icon-button>
+            <material-icon-button toggle size="xl" variant="tonal" icon="view_module" aria-label="Module"></material-icon-button>
+          </material-button-group>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">connected square</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <material-button-group variant="connected" shape="square">
+            <material-icon-button toggle shape="square" variant="tonal" icon="format_align_left" aria-label="Align left"></material-icon-button>
+            <material-icon-button toggle shape="square" variant="tonal" selected icon="format_align_center" aria-label="Align center"></material-icon-button>
+            <material-icon-button toggle shape="square" variant="tonal" icon="format_align_right" aria-label="Align right"></material-icon-button>
+            <material-icon-button toggle shape="square" variant="tonal" icon="format_align_justify" aria-label="Justify"></material-icon-button>
+          </material-button-group>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">single-select</code>
+        <div class="flex items-center gap-4">
+          <material-button-group id="single-grp" variant="connected" selection-mode="single" required aria-label="View density">
+            <material-icon-button toggle variant="tonal" value="compact" icon="density_small" aria-label="Compact"></material-icon-button>
+            <material-icon-button toggle variant="tonal" selected value="comfortable" icon="density_medium" aria-label="Comfortable"></material-icon-button>
+            <material-icon-button toggle variant="tonal" value="spacious" icon="density_large" aria-label="Spacious"></material-icon-button>
+          </material-button-group>
+          <pre class="text-xs text-on-surface-variant m-0" id="single-out">comfortable</pre>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">multi-select</code>
+        <div class="flex items-center gap-4">
+          <material-button-group id="multi-grp" variant="connected" selection-mode="multi" aria-label="Text style">
+            <material-icon-button toggle variant="tonal" value="bold" icon="format_bold" aria-label="Bold"></material-icon-button>
+            <material-icon-button toggle variant="tonal" selected value="italic" icon="format_italic" aria-label="Italic"></material-icon-button>
+            <material-icon-button toggle variant="tonal" selected value="underline" icon="format_underlined" aria-label="Underline"></material-icon-button>
+            <material-icon-button toggle variant="tonal" value="strike" icon="format_strikethrough" aria-label="Strikethrough"></material-icon-button>
+          </material-button-group>
+          <pre class="text-xs text-on-surface-variant m-0" id="multi-out">italic, underline</pre>
+        </div>
+
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- standard: invisible container, gap by size, mixes buttons + icon buttons --&gt;
+&lt;material-button-group&gt;
+  &lt;material-icon-button variant="filled" icon="skip_previous" aria-label="Previous"&gt;&lt;/material-icon-button&gt;
+  &lt;material-button variant="tonal" label="Play" icon="play_arrow"&gt;&lt;/material-button&gt;
+  &lt;material-icon-button variant="filled" icon="skip_next" aria-label="Next"&gt;&lt;/material-icon-button&gt;
+&lt;/material-button-group&gt;
+
+&lt;!-- connected: 2dp gap, inner corners fused --&gt;
+&lt;material-button-group variant="connected"&gt;
+  &lt;material-button variant="tonal" label="Day"&gt;&lt;/material-button&gt;
+  &lt;material-button variant="tonal" label="Week"&gt;&lt;/material-button&gt;
+  &lt;material-button variant="tonal" label="Month"&gt;&lt;/material-button&gt;
+&lt;/material-button-group&gt;
+
+&lt;!-- single-select with required (one stays selected) --&gt;
+&lt;material-button-group variant="connected" selection-mode="single" required&gt;
+  &lt;material-icon-button toggle variant="tonal" value="compact"     icon="density_small"  aria-label="Compact"&gt;&lt;/material-icon-button&gt;
+  &lt;material-icon-button toggle variant="tonal" value="comfortable" icon="density_medium" aria-label="Comfortable" selected&gt;&lt;/material-icon-button&gt;
+  &lt;material-icon-button toggle variant="tonal" value="spacious"    icon="density_large"  aria-label="Spacious"&gt;&lt;/material-icon-button&gt;
+&lt;/material-button-group&gt;
+
+&lt;!-- listen for selection --&gt;
+&lt;script&gt;
+  document.querySelector('material-button-group')
+    .addEventListener('materialSelectionChange', e =&gt; console.log(e.detail.values));
+&lt;/script&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    const fmt = (vals) => vals.length ? vals.join(', ') : '(none)';
+    document.getElementById('single-grp').addEventListener('materialSelectionChange', e => {
+      document.getElementById('single-out').textContent = fmt(e.detail.values);
+    });
+    document.getElementById('multi-grp').addEventListener('materialSelectionChange', e => {
+      document.getElementById('multi-out').textContent = fmt(e.detail.values);
+    });
+  </script>
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

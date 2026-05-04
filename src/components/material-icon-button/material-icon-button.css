@@ -36,9 +36,15 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  border-radius: 9999px;
+  border-start-start-radius: var(--btn-r-start, var(--btn-r, 9999px));
+  border-end-start-radius:   var(--btn-r-start, var(--btn-r, 9999px));
+  border-start-end-radius:   var(--btn-r-end,   var(--btn-r, 9999px));
+  border-end-end-radius:     var(--btn-r-end,   var(--btn-r, 9999px));
   transition:
-    border-radius 180ms cubic-bezier(.2, 0, 0, 1),
+    border-start-start-radius 180ms cubic-bezier(.2, 0, 0, 1),
+    border-end-start-radius   180ms cubic-bezier(.2, 0, 0, 1),
+    border-start-end-radius   180ms cubic-bezier(.2, 0, 0, 1),
+    border-end-end-radius     180ms cubic-bezier(.2, 0, 0, 1),
     background-color 120ms linear,
     color 120ms linear;
 }
@@ -68,28 +74,28 @@
 :host([size="xl"][width="wide"])   [part="visual"] { min-width: 184px; }
 
 /* Resting square radius — also used as toggle morph for shape="round" + selected. */
-:host([shape="square"][size="xs"]) [part="visual"],
-:host([shape="square"][size="s"])  [part="visual"],
-:host([toggle][selected][shape="round"][size="xs"]) [part="visual"],
-:host([toggle][selected][shape="round"][size="s"])  [part="visual"] { border-radius: 12px; }
+:host([shape="square"][size="xs"]),
+:host([shape="square"][size="s"]),
+:host([toggle][selected][shape="round"][size="xs"]),
+:host([toggle][selected][shape="round"][size="s"])  { --btn-r: 12px; }
 
-:host([shape="square"][size="m"]) [part="visual"],
-:host([toggle][selected][shape="round"][size="m"]) [part="visual"] { border-radius: 16px; }
+:host([shape="square"][size="m"]),
+:host([toggle][selected][shape="round"][size="m"])  { --btn-r: 16px; }
 
-:host([shape="square"][size="l"])  [part="visual"],
-:host([shape="square"][size="xl"]) [part="visual"],
-:host([toggle][selected][shape="round"][size="l"])  [part="visual"],
-:host([toggle][selected][shape="round"][size="xl"]) [part="visual"] { border-radius: 28px; }
+:host([shape="square"][size="l"]),
+:host([shape="square"][size="xl"]),
+:host([toggle][selected][shape="round"][size="l"]),
+:host([toggle][selected][shape="round"][size="xl"]) { --btn-r: 28px; }
 
 /* Toggle morph for shape="square" + selected → swap to round. */
-:host([toggle][selected][shape="square"]) [part="visual"] { border-radius: 9999px; }
+:host([toggle][selected][shape="square"]) { --btn-r: 9999px; }
 
 /* Pressed-state morph (radius shrinks toward square). */
 :host([size="xs"]) [part="button"]:active [part="visual"],
-:host([size="s"])  [part="button"]:active [part="visual"] { border-radius: 8px; }
-:host([size="m"])  [part="button"]:active [part="visual"] { border-radius: 12px; }
+:host([size="s"])  [part="button"]:active [part="visual"] { --btn-r: 8px; }
+:host([size="m"])  [part="button"]:active [part="visual"] { --btn-r: 12px; }
 :host([size="l"])  [part="button"]:active [part="visual"],
-:host([size="xl"]) [part="button"]:active [part="visual"] { border-radius: 16px; }
+:host([size="xl"]) [part="button"]:active [part="visual"] { --btn-r: 16px; }
 
 /* Variants — non-toggle and toggle-unselected share the resting row. */
 :host([variant="filled"]) [part="visual"] {
