@@ -1,32 +1,99 @@
-import { Component, Element, Prop, h } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
+import { Component, Host, Prop, State, h } from '@stencil/core';
 
 export type MaterialCardVariant = 'elevated' | 'filled' | 'outlined';
 
-const VARIANT_CLASSES: Record<MaterialCardVariant, string> = {
-  elevated: 'bg-surface-container-low shadow',
-  filled: 'bg-surface-container-highest',
-  outlined: 'bg-surface border border-outline-variant',
-};
-
 @Component({
   tag: 'material-card',
+  styleUrl: 'material-card.css',
   shadow: true,
 })
 export class MaterialCard {
-  @Element() el!: HTMLElement;
+  @Prop({ reflect: true }) variant: MaterialCardVariant = 'elevated';
+  @Prop() href?: string;
+  @Prop() target?: '_self' | '_blank' | '_parent' | '_top';
+  @Prop() rel?: string;
+  @Prop() download?: string;
+  @Prop({ reflect: true }) clickable = false;
+  @Prop({ reflect: true }) disabled = false;
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
-  @Prop() variant: MaterialCardVariant = 'elevated';
+  @State() private hasActions = false;
 
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
+  private onActionsSlotChange = (e: Event) => {
+    const slot = e.target as HTMLSlotElement;
+    this.hasActions = slot.assignedNodes({ flatten: true }).some(
+      (n) =>
+        n.nodeType === Node.ELEMENT_NODE ||
+        (n.nodeType === Node.TEXT_NODE && (n.textContent ?? '').trim() !== ''),
+    );
+  };
+
+  private onBlockedClick = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
 
   render() {
-    return (
-      <div class={`rounded-xl p-6 text-on-surface ${VARIANT_CLASSES[this.variant]}`}>
+    const isLink = !!this.href;
+    const isButton = !isLink && this.clickable;
+    const rel =
+      this.rel ?? (this.target === '_blank' ? 'noopener noreferrer' : undefined);
+
+    const inner = [
+      <slot name="media" />,
+      <div part="content">
+        <slot name="headline" />
+        <slot name="subhead" />
+        <slot name="supporting" />
         <slot />
-      </div>
+      </div>,
+      <div part="actions" hidden={!this.hasActions}>
+        <slot name="actions" onSlotchange={this.onActionsSlotChange} />
+      </div>,
+      <span part="state-layer" aria-hidden="true" />,
+    ];
+
+    if (isLink) {
+      return (
+        <Host>
+          <a
+            part="surface"
+            href={this.disabled ? undefined : this.href}
+            target={this.target}
+            rel={rel}
+            download={this.download}
+            aria-label={this.ariaLabel}
+            aria-disabled={this.disabled ? 'true' : undefined}
+            tabindex={this.disabled ? -1 : undefined}
+            onClick={this.disabled ? this.onBlockedClick : undefined}
+          >
+            {inner}
+          </a>
+        </Host>
+      );
+    }
+
+    if (isButton) {
+      return (
+        <Host>
+          <button
+            part="surface"
+            type="button"
+            disabled={this.disabled}
+            aria-label={this.ariaLabel}
+          >
+            {inner}
+          </button>
+        </Host>
+      );
+    }
+
+    return (
+      <Host>
+        <div part="surface" aria-label={this.ariaLabel}>
+          {inner}
+        </div>
+      </Host>
     );
   }
 }

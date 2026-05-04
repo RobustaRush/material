@@ -19,7 +19,10 @@
       <div>
         <h1 class="text-xl font-bold">material-card</h1>
         <p class="text-on-surface-variant text-sm">
-          Slotted container in three MD3 surface styles via <code>variant</code>.
+          MD3 cards — elevated / filled / outlined. Anatomy slots
+          (<code>media</code>, <code>headline</code>, <code>subhead</code>,
+          <code>supporting</code>, <code>actions</code>); actionable via
+          <code>href</code> or <code>clickable</code>; <code>disabled</code>.
         </p>
       </div>
     </div>
@@ -38,36 +41,141 @@
   </header>
 
   <main class="max-w-5xl mx-auto px-8 py-10">
-    <section class="space-y-6">
-      <div class="grid sm:grid-cols-3 gap-4">
-        <material-card variant="elevated">
-          <h3 class="font-semibold">Elevated</h3>
-          <p class="text-on-surface-variant text-sm mt-2">
-            Sits on a low container surface with a soft shadow.
-          </p>
-        </material-card>
+    <section class="space-y-10">
 
-        <material-card variant="filled">
-          <h3 class="font-semibold">Filled</h3>
-          <p class="text-on-surface-variant text-sm mt-2">
-            Highest container tone — useful for emphasized inline regions.
-          </p>
-        </material-card>
+      <div class="space-y-3">
+        <code class="text-sm text-on-surface-variant">variants — full anatomy (non-actionable)</code>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <material-card variant="elevated">
+            <img slot="media" src="https://picsum.photos/seed/elevated/400/220" alt="" />
+            <h3 slot="headline">Elevated</h3>
+            <span slot="subhead">Sept 14 · 5 min read</span>
+            <p slot="supporting">
+              Soft shadow over a low-tone surface. Good for grouping content
+              with moderate emphasis against the page background.
+            </p>
+            <material-button slot="actions" variant="text" label="Read more"></material-button>
+            <material-button slot="actions" variant="text" label="Share"></material-button>
+          </material-card>
 
-        <material-card variant="outlined">
-          <h3 class="font-semibold">Outlined</h3>
-          <p class="text-on-surface-variant text-sm mt-2">
-            Plain surface with an outline-variant border. Lowest visual weight.
-          </p>
-        </material-card>
+          <material-card variant="filled">
+            <img slot="media" src="https://picsum.photos/seed/filled/400/220" alt="" />
+            <h3 slot="headline">Filled</h3>
+            <span slot="subhead">Highest container tone</span>
+            <p slot="supporting">
+              Subtle separation from the background. Lower emphasis than
+              elevated or outlined; useful for inline regions.
+            </p>
+            <material-button slot="actions" variant="text" label="Read more"></material-button>
+          </material-card>
+
+          <material-card variant="outlined">
+            <img slot="media" src="https://picsum.photos/seed/outlined/400/220" alt="" />
+            <h3 slot="headline">Outlined</h3>
+            <span slot="subhead">Plain surface + border</span>
+            <p slot="supporting">
+              Highest emphasis of the three; the border draws a crisp visual
+              boundary around the container.
+            </p>
+            <material-button slot="actions" variant="text" label="Read more"></material-button>
+          </material-card>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <code class="text-sm text-on-surface-variant">actionable — link (<code>href</code>)</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-card variant="elevated" href="https://example.com" target="_blank" aria-label="Open destination article">
+            <img slot="media" src="https://picsum.photos/seed/link/600/220" alt="" />
+            <h3 slot="headline">Trip to Iceland</h3>
+            <span slot="subhead">Hover or focus this card</span>
+            <p slot="supporting">
+              The whole surface is the click target. Notice the state-layer
+              and the L1 → L2 elevation bump on hover.
+            </p>
+          </material-card>
+
+          <material-card variant="outlined" href="https://example.com" aria-label="Open recipe">
+            <h3 slot="headline">Sourdough recipe</h3>
+            <span slot="subhead">No media, just text</span>
+            <p slot="supporting">
+              Outlined actionable card. The outline stays; hover adds a
+              subtle elevation L0 → L1 plus the on-surface state layer.
+            </p>
+          </material-card>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <code class="text-sm text-on-surface-variant">actionable — button (<code>clickable</code>)</code>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <material-card variant="filled" clickable
+                         onclick="console.log('card clicked')"
+                         aria-label="Open project">
+            <h3 slot="headline">Q3 roadmap</h3>
+            <span slot="subhead">Click to open · check console</span>
+            <p slot="supporting">
+              No <code>href</code> — renders as a <code>&lt;button&gt;</code>
+              inside the shadow root. Tab to focus, Space/Enter to activate.
+            </p>
+          </material-card>
+
+          <material-card variant="elevated" clickable disabled aria-label="Disabled card">
+            <h3 slot="headline">Disabled</h3>
+            <span slot="subhead">0.38 opacity, no pointer effects</span>
+            <p slot="supporting">
+              <code>disabled</code> attribute. Hover, focus and click are
+              all suppressed.
+            </p>
+          </material-card>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <code class="text-sm text-on-surface-variant">minimal layouts</code>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <material-card variant="outlined">
+            <h3 slot="headline">Headline only</h3>
+          </material-card>
+
+          <material-card variant="filled">
+            <h3 slot="headline">Headline + actions</h3>
+            <material-button slot="actions" variant="text" label="OK"></material-button>
+            <material-button slot="actions" variant="filled" label="Apply"></material-button>
+          </material-card>
+
+          <material-card variant="elevated">
+            <h3 slot="headline">No subhead</h3>
+            <p slot="supporting">
+              Just headline plus supporting text — subhead slot is
+              empty and contributes no extra spacing.
+            </p>
+          </material-card>
+        </div>
       </div>
 
       <details class="rounded-lg bg-surface-container-low border border-outline-variant">
         <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
-<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-card variant="elevated"&gt;
-  &lt;h3&gt;Title&lt;/h3&gt;
-  &lt;p&gt;Body content via slot&lt;/p&gt;
-&lt;/material-card&gt;</code></pre>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- non-actionable container with full anatomy --&gt;
+&lt;material-card variant="elevated"&gt;
+  &lt;img slot="media" src="cover.jpg" alt="" /&gt;
+  &lt;h3 slot="headline"&gt;Title&lt;/h3&gt;
+  &lt;span slot="subhead"&gt;Sept 14 · 5 min&lt;/span&gt;
+  &lt;p slot="supporting"&gt;Body text describing the card.&lt;/p&gt;
+  &lt;material-button slot="actions" variant="text" label="Read more"&gt;&lt;/material-button&gt;
+&lt;/material-card&gt;
+
+&lt;!-- actionable as a link --&gt;
+&lt;material-card variant="outlined" href="/article/42" aria-label="Open article"&gt;
+  &lt;h3 slot="headline"&gt;Article title&lt;/h3&gt;
+  &lt;p slot="supporting"&gt;Excerpt&hellip;&lt;/p&gt;
+&lt;/material-card&gt;
+
+&lt;!-- actionable as a button --&gt;
+&lt;material-card variant="filled" clickable onclick="open(item)"&gt;...&lt;/material-card&gt;
+
+&lt;!-- disabled --&gt;
+&lt;material-card variant="elevated" clickable disabled&gt;...&lt;/material-card&gt;</code></pre>
       </details>
     </section>
   </main>
