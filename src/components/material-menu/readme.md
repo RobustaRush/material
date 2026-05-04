@@ -58,11 +58,13 @@ Type: `Promise<void>`
 ### Used by
 
  - [material-select](../material-select)
+ - [material-split-button](../material-split-button)
 
 ### Graph
 ```mermaid
 graph TD;
   material-select --> material-menu
+  material-split-button --> material-menu
   style material-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

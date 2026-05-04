@@ -1,0 +1,264 @@
+/* Measurements per m3.material.io/components/split-button/specs. */
+
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+  /* Per-size geometry — overridden in size blocks below. */
+  --sb-height: 40px;
+  --sb-font-size: 14px;
+  --sb-icon: 20px;
+  --sb-leading-pad-l: 16px;
+  --sb-leading-pad-r: 12px;
+  --sb-leading-gap: 8px;
+  --sb-trailing-w: 52px;
+  --sb-trailing-icon: 24px;
+  --sb-inner: 4px;
+  --sb-inner-active: 8px;
+  --sb-outer: 9999px;
+  --sb-gap: 2px;
+}
+
+:host([size="xs"]) {
+  --sb-height: 32px;
+  --sb-font-size: 14px;
+  --sb-line-height: 20px;
+  --sb-icon: 20px;
+  --sb-leading-pad-l: 12px;
+  --sb-leading-pad-r: 10px;
+  --sb-leading-gap: 8px;
+  --sb-trailing-w: 48px;
+  --sb-trailing-icon: 22px;
+  --sb-inner: 4px;
+  --sb-inner-active: 8px;
+}
+
+:host([size="s"]) {
+  --sb-height: 40px;
+  --sb-font-size: 14px;
+  --sb-icon: 20px;
+  --sb-leading-pad-l: 16px;
+  --sb-leading-pad-r: 12px;
+  --sb-leading-gap: 8px;
+  --sb-trailing-w: 52px;
+  --sb-trailing-icon: 24px;
+  --sb-inner: 4px;
+  --sb-inner-active: 8px;
+}
+
+:host([size="m"]) {
+  --sb-height: 56px;
+  --sb-font-size: 16px;
+  --sb-icon: 24px;
+  --sb-leading-pad-l: 24px;
+  --sb-leading-pad-r: 16px;
+  --sb-leading-gap: 8px;
+  --sb-trailing-w: 56px;
+  --sb-trailing-icon: 26px;
+  --sb-inner: 4px;
+  --sb-inner-active: 8px;
+}
+
+:host([size="l"]) {
+  --sb-height: 96px;
+  --sb-font-size: 24px;
+  --sb-icon: 32px;
+  --sb-leading-pad-l: 48px;
+  --sb-leading-pad-r: 32px;
+  --sb-leading-gap: 12px;
+  --sb-trailing-w: 96px;
+  --sb-trailing-icon: 38px;
+  --sb-inner: 8px;
+  --sb-inner-active: 12px;
+}
+
+:host([size="xl"]) {
+  --sb-height: 136px;
+  --sb-font-size: 28px;
+  --sb-icon: 40px;
+  --sb-leading-pad-l: 64px;
+  --sb-leading-pad-r: 48px;
+  --sb-leading-gap: 16px;
+  --sb-trailing-w: 136px;
+  --sb-trailing-icon: 50px;
+  --sb-inner: 12px;
+  --sb-inner-active: 16px;
+}
+
+.root {
+  display: inline-flex;
+  gap: var(--sb-gap);
+}
+
+.leading,
+.trailing {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--sb-height);
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--sb-bg, transparent);
+  color: var(--sb-fg, inherit);
+  transition:
+    background-color 120ms linear,
+    color 120ms linear,
+    border-radius 180ms cubic-bezier(.2, 0, 0, 1),
+    box-shadow 120ms linear;
+}
+
+.leading {
+  padding-inline: var(--sb-leading-pad-l) var(--sb-leading-pad-r);
+  gap: var(--sb-leading-gap);
+  font-size: var(--sb-font-size);
+  line-height: var(--sb-line-height, 20px);
+  letter-spacing: 0.1px;
+  border-start-start-radius: var(--sb-outer);
+  border-end-start-radius: var(--sb-outer);
+  border-start-end-radius: var(--sb-inner);
+  border-end-end-radius: var(--sb-inner);
+}
+
+.trailing {
+  width: var(--sb-trailing-w);
+  border-start-end-radius: var(--sb-outer);
+  border-end-end-radius: var(--sb-outer);
+  border-start-start-radius: var(--sb-inner);
+  border-end-start-radius: var(--sb-inner);
+}
+
+/* Inner-corner morph on hover / focus / press. */
+.leading:not(:disabled):not([aria-disabled="true"]):is(:hover, :focus-visible, :active) {
+  border-start-end-radius: var(--sb-inner-active);
+  border-end-end-radius: var(--sb-inner-active);
+}
+.trailing:not(:disabled):is(:hover, :focus-visible, :active) {
+  border-start-start-radius: var(--sb-inner-active);
+  border-end-start-radius: var(--sb-inner-active);
+}
+
+/* Selected state (menu open) — trailing inner side becomes fully circular. */
+.trailing[aria-expanded="true"] {
+  border-start-start-radius: 9999px;
+  border-end-start-radius: 9999px;
+}
+
+.icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  line-height: 1;
+  font-size: var(--sb-icon);
+}
+
+.label {
+  white-space: nowrap;
+}
+
+.chevron {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  line-height: 1;
+  font-size: var(--sb-trailing-icon);
+  transition: transform 250ms cubic-bezier(.2, 0, 0, 1);
+}
+
+.trailing[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+/* Optical centering — when the menu is closed, the chevron sits slightly
+   off-center toward the inner edge per spec. */
+:host([size="xs"]) .trailing:not([aria-expanded="true"]) .chevron,
+:host([size="s"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-1px); }
+:host([size="m"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-2px); }
+:host([size="l"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-3px); }
+:host([size="xl"]) .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-6px); }
+
+.leading:focus-visible,
+.trailing:focus-visible {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.leading:disabled,
+.leading[aria-disabled="true"],
+.trailing:disabled {
+  opacity: .4;
+  pointer-events: none;
+}
+
+/* State layer — fills the button on hover / focus / press. */
+.state-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity 120ms linear;
+}
+.leading:not(:disabled):not([aria-disabled="true"]):hover         .state-layer,
+.trailing:not(:disabled):hover                                    .state-layer { opacity: .08; }
+.leading:not(:disabled):not([aria-disabled="true"]):focus-visible .state-layer,
+.trailing:not(:disabled):focus-visible                            .state-layer { opacity: .10; }
+.leading:not(:disabled):not([aria-disabled="true"]):active        .state-layer,
+.trailing:not(:disabled):active                                   .state-layer { opacity: .12; }
+
+/* Ripple on press — matches material-button. */
+.leading:not(:disabled):not([aria-disabled="true"]):active::after,
+.trailing:not(:disabled):active::after {
+  content: "";
+  position: absolute;
+  left: var(--ripple-x, 50%);
+  top: var(--ripple-y, 50%);
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  opacity: .25;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  animation: material-split-ripple 1.2s linear;
+  pointer-events: none;
+}
+
+@keyframes material-split-ripple {
+  to { transform: translate(-50%, -50%) scale(50); opacity: 0; }
+}
+
+/* Variants — same color tokens as material-button. */
+:host([variant="filled"]) {
+  --sb-bg: var(--md-sys-color-primary);
+  --sb-fg: var(--md-sys-color-on-primary);
+}
+:host([variant="tonal"]) {
+  --sb-bg: var(--md-sys-color-secondary-container);
+  --sb-fg: var(--md-sys-color-on-secondary-container);
+}
+:host([variant="elevated"]) {
+  --sb-bg: var(--md-sys-color-surface-container-low);
+  --sb-fg: var(--md-sys-color-primary);
+}
+:host([variant="elevated"]) .leading,
+:host([variant="elevated"]) .trailing {
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / .3),
+    0 1px 3px 1px rgb(0 0 0 / .15);
+}
+:host([variant="elevated"]) .leading:disabled,
+:host([variant="elevated"]) .trailing:disabled { box-shadow: none; }
+:host([variant="outlined"]) {
+  --sb-bg: transparent;
+  --sb-fg: var(--md-sys-color-on-surface-variant);
+}
+:host([variant="outlined"]) .leading,
+:host([variant="outlined"]) .trailing {
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
