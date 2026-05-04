@@ -1,32 +1,8 @@
 import { Component, Element, Prop, AttachInternals, h } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 export type MaterialButtonVariant = 'filled' | 'tonal' | 'elevated' | 'outlined' | 'text';
 export type MaterialButtonType = 'submit' | 'reset' | 'button';
 export type MaterialButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
-
-const VARIANTS: Record<MaterialButtonVariant, string> = {
-  filled: 'bg-primary text-on-primary',
-  tonal: 'bg-secondary-container text-on-secondary-container',
-  elevated: 'bg-surface-container-low text-primary shadow disabled:shadow-none',
-  outlined: 'border border-outline-variant text-on-surface-variant',
-  text: 'text-primary',
-};
-
-// MD3 Expressive sizes — height/padding/label/icon per spec.
-// Pressed radius per spec: xs/s 8dp, m 12dp, l/xl 16dp.
-const SIZES: Record<MaterialButtonSize, { btn: string; icon: string; pressed: string }> = {
-  xs: { btn: 'h-8 px-3 text-xs gap-1',           icon: 'text-[20px]', pressed: 'active:rounded-[8px]'  },
-  s:  { btn: 'h-10 px-6 text-sm gap-2',          icon: 'text-[24px]', pressed: 'active:rounded-[8px]'  },
-  m:  { btn: 'h-14 px-6 text-base gap-2',        icon: 'text-[24px]', pressed: 'active:rounded-[12px]' },
-  l:  { btn: 'h-24 px-12 text-2xl gap-3',        icon: 'text-[32px]', pressed: 'active:rounded-[16px]' },
-  xl: { btn: 'h-[136px] px-16 text-3xl gap-4',   icon: 'text-[40px]', pressed: 'active:rounded-[16px]' },
-};
-
-const BASE =
-  'inline-flex items-center justify-center rounded-full font-medium transition ' +
-  'focus-visible:outline-2 focus-visible:outline-secondary focus-visible:outline-offset-2 ' +
-  'disabled:opacity-40 disabled:pointer-events-none';
 
 @Component({
   tag: 'material-button',
@@ -38,32 +14,34 @@ export class MaterialButton {
   @Element() el!: HTMLElement;
   @AttachInternals() internals!: ElementInternals;
 
-  @Prop() variant: MaterialButtonVariant = 'filled';
-  @Prop() size: MaterialButtonSize = 's';
+  @Prop({ reflect: true }) variant: MaterialButtonVariant = 'filled';
+  @Prop({ reflect: true }) size: MaterialButtonSize = 's';
   @Prop() type: MaterialButtonType = 'button';
   @Prop({ reflect: true }) disabled = false;
-  @Prop() shapeMorph = false;
+  @Prop({ reflect: true, attribute: 'shape-morph' }) shapeMorph = false;
   @Prop() label?: string;
   @Prop() icon?: string;
   @Prop() trailingIcon?: string;
   @Prop() name?: string;
   @Prop() value?: string;
+  @Prop() href?: string;
+  @Prop() target?: '_self' | '_blank' | '_parent' | '_top';
+  @Prop() rel?: string;
+  @Prop() download?: string;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
   @Prop({ attribute: 'popovertarget' }) popoverTarget?: string;
   @Prop({ attribute: 'popovertargetaction' }) popoverTargetAction?: 'toggle' | 'show' | 'hide';
-
-  componentWillLoad() {
-    // Block first render until the shared Tailwind sheet is adopted, so the
-    // component never paints in its un-styled (light-DOM) state.
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   formDisabledCallback(disabled: boolean) {
     this.disabled = disabled;
   }
 
-  private handleClick = () => {
-    if (this.disabled) return;
+  private handleClick = (e: MouseEvent) => {
+    if (this.disabled) {
+      e.preventDefault();
+      return;
+    }
+    if (this.href) return;
     if (this.popoverTarget) {
       const root = this.el.getRootNode() as Document | ShadowRoot;
       const target = (root as Document).getElementById?.(this.popoverTarget);
@@ -94,28 +72,47 @@ export class MaterialButton {
   };
 
   render() {
-    const size = SIZES[this.size];
+    const inner = [
+      this.icon && (
+        <span class="icon" aria-hidden="true">{this.icon}</span>
+      ),
+      <slot>{this.label}</slot>,
+      this.trailingIcon && (
+        <span class="icon" aria-hidden="true">{this.trailingIcon}</span>
+      ),
+    ];
+
+    if (this.href) {
+      const rel =
+        this.rel ?? (this.target === '_blank' ? 'noopener noreferrer' : undefined);
+      return (
+        <a
+          href={this.disabled ? undefined : this.href}
+          target={this.target}
+          rel={rel}
+          download={this.download}
+          aria-label={this.ariaLabel}
+          aria-disabled={this.disabled ? 'true' : undefined}
+          tabindex={this.disabled ? -1 : undefined}
+          part="button"
+          onClick={this.handleClick}
+          onPointerDown={this.handlePointerDown}
+        >
+          {inner}
+        </a>
+      );
+    }
+
     return (
       <button
         type={this.type}
         disabled={this.disabled}
         aria-label={this.ariaLabel}
-        data-variant={this.variant}
-        class={`${BASE} ${size.btn} ${VARIANTS[this.variant]} ${this.shapeMorph ? size.pressed : ''}`}
+        part="button"
         onClick={this.handleClick}
         onPointerDown={this.handlePointerDown}
       >
-        {this.icon && (
-          <span class={`material-symbols ${size.icon}`} aria-hidden="true">
-            {this.icon}
-          </span>
-        )}
-        <slot>{this.label}</slot>
-        {this.trailingIcon && (
-          <span class={`material-symbols ${size.icon}`} aria-hidden="true">
-            {this.trailingIcon}
-          </span>
-        )}
+        {inner}
       </button>
     );
   }

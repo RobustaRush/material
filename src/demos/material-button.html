@@ -87,6 +87,14 @@
           <material-button variant="filled" size="l"  label="Large"></material-button>
           <material-button variant="filled" size="xl" label="X-Large"></material-button>
         </div>
+
+        <code class="text-sm text-on-surface-variant">link</code>
+        <div class="flex gap-3 flex-wrap">
+          <material-button variant="filled" href="#anchor" icon="link" label="Same tab"></material-button>
+          <material-button variant="tonal" href="https://m3.material.io/components/buttons" target="_blank" trailing-icon="open_in_new" label="External"></material-button>
+          <material-button variant="outlined" href="/static/material/material.css" download="material.css" icon="download" label="Download"></material-button>
+          <material-button variant="text" href="#nope" disabled label="Disabled link"></material-button>
+        </div>
       </div>
 
       <details class="rounded-lg bg-surface-container-low border border-outline-variant">
@@ -112,6 +120,11 @@
   &lt;material-button label="Save" type="submit"&gt;&lt;/material-button&gt;
   &lt;material-button label="Reset" variant="text" type="reset"&gt;&lt;/material-button&gt;
 &lt;/form&gt;
+
+&lt;!-- link: renders as &lt;a href&gt; instead of &lt;button&gt; --&gt;
+&lt;material-button href="/docs" label="Same tab"&gt;&lt;/material-button&gt;
+&lt;material-button href="https://example.com" target="_blank" label="External"&gt;&lt;/material-button&gt;
+&lt;material-button href="/file.css" download="file.css" label="Download"&gt;&lt;/material-button&gt;
 
 &lt;!-- options --&gt;
 &lt;material-button label="Press me" shape-morph&gt;&lt;/material-button&gt;

@@ -1,35 +1,93 @@
-/* MD3 state layer + ripple for material-button.
-   Scoped to this component's shadow root via Stencil styleUrl, so it never
-   leaks onto buttons in other components (e.g. material-icon-button's 48dp
-   target wrapper, which would otherwise pick up a square hover overlay).
-
-   Variant background is parameterised via --btn-bg; hover/active mix
-   currentColor (= on-color of the variant) against it at MD3 8% / 12%. */
+/* Measurements per m3.material.io/components/buttons/specs. */
 
 :host {
   display: inline-flex;
   vertical-align: middle;
 }
 
-:host button[data-variant] {
+[part="button"] {
   position: relative;
   overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 120ms linear,
+    color 120ms linear,
+    border-radius 180ms cubic-bezier(.2, 0, 0, 1),
+    box-shadow 120ms linear;
+  background: var(--btn-bg, transparent);
+  color: var(--btn-fg, inherit);
 }
 
-:host button[data-variant="filled"]   { --btn-bg: var(--md-sys-color-primary); }
-:host button[data-variant="tonal"]    { --btn-bg: var(--md-sys-color-secondary-container); }
-:host button[data-variant="elevated"] { --btn-bg: var(--md-sys-color-surface-container-low); }
-:host button[data-variant="outlined"],
-:host button[data-variant="text"]     { --btn-bg: transparent; }
-
-:host button[data-variant]:not(:disabled):hover {
-  background-color: color-mix(in srgb, currentColor 8%, var(--btn-bg));
-}
-:host button[data-variant]:not(:disabled):active {
-  background-color: color-mix(in srgb, currentColor 12%, var(--btn-bg));
+[part="button"]:focus-visible {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
 }
 
-:host button[data-variant]:enabled:active::after {
+[part="button"]:disabled,
+[part="button"][aria-disabled="true"] {
+  opacity: .4;
+  pointer-events: none;
+}
+
+.icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  line-height: 1;
+  font-size: var(--btn-icon, 20px);
+}
+
+:host([size="xs"]) [part="button"] { height: 32px;  padding: 0 12px; gap: 4px;  font-size: 14px; --btn-icon: 20px; }
+:host([size="s"])  [part="button"] { height: 40px;  padding: 0 16px; gap: 8px;  font-size: 14px; --btn-icon: 20px; }
+:host([size="m"])  [part="button"] { height: 56px;  padding: 0 24px; gap: 8px;  font-size: 16px; --btn-icon: 24px; }
+:host([size="l"])  [part="button"] { height: 96px;  padding: 0 48px; gap: 12px; font-size: 24px; --btn-icon: 32px; }
+:host([size="xl"]) [part="button"] { height: 136px; padding: 0 64px; gap: 16px; font-size: 28px; --btn-icon: 40px; }
+
+:host([variant="filled"]) [part="button"] {
+  --btn-bg: var(--md-sys-color-primary);
+  --btn-fg: var(--md-sys-color-on-primary);
+}
+:host([variant="tonal"]) [part="button"] {
+  --btn-bg: var(--md-sys-color-secondary-container);
+  --btn-fg: var(--md-sys-color-on-secondary-container);
+}
+:host([variant="elevated"]) [part="button"] {
+  --btn-bg: var(--md-sys-color-surface-container-low);
+  --btn-fg: var(--md-sys-color-primary);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / .3),
+    0 1px 3px 1px rgb(0 0 0 / .15);
+}
+:host([variant="elevated"]) [part="button"]:disabled,
+:host([variant="elevated"]) [part="button"][aria-disabled="true"] { box-shadow: none; }
+:host([variant="outlined"]) [part="button"] {
+  --btn-bg: transparent;
+  --btn-fg: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+:host([variant="text"]) [part="button"] {
+  --btn-bg: transparent;
+  --btn-fg: var(--md-sys-color-primary);
+}
+
+[part="button"]:not(:disabled):not([aria-disabled="true"]):hover  { background-color: color-mix(in srgb, currentColor 8%,  var(--btn-bg)); }
+[part="button"]:not(:disabled):not([aria-disabled="true"]):active { background-color: color-mix(in srgb, currentColor 12%, var(--btn-bg)); }
+
+:host([shape-morph][size="xs"]) [part="button"]:active,
+:host([shape-morph][size="s"])  [part="button"]:active { border-radius: 8px;  }
+:host([shape-morph][size="m"])  [part="button"]:active { border-radius: 12px; }
+:host([shape-morph][size="l"])  [part="button"]:active,
+:host([shape-morph][size="xl"]) [part="button"]:active { border-radius: 16px; }
+
+[part="button"]:not(:disabled):not([aria-disabled="true"]):active::after {
   content: "";
   position: absolute;
   left: var(--ripple-x, 50%);
@@ -37,7 +95,7 @@
   width: 20px;
   height: 20px;
   background: currentColor;
-  opacity: 0.25;
+  opacity: .25;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(1);
   animation: material-ripple 1.2s linear;

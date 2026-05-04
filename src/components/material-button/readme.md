@@ -11,13 +11,17 @@
 | --------------------- | --------------------- | ----------- | ----------------------------------------------------------- | ----------- |
 | `ariaLabel`           | `aria-label`          |             | `string \| undefined`                                       | `undefined` |
 | `disabled`            | `disabled`            |             | `boolean`                                                   | `false`     |
+| `download`            | `download`            |             | `string \| undefined`                                       | `undefined` |
+| `href`                | `href`                |             | `string \| undefined`                                       | `undefined` |
 | `icon`                | `icon`                |             | `string \| undefined`                                       | `undefined` |
 | `label`               | `label`               |             | `string \| undefined`                                       | `undefined` |
 | `name`                | `name`                |             | `string \| undefined`                                       | `undefined` |
 | `popoverTarget`       | `popovertarget`       |             | `string \| undefined`                                       | `undefined` |
 | `popoverTargetAction` | `popovertargetaction` |             | `"hide" \| "show" \| "toggle" \| undefined`                 | `undefined` |
+| `rel`                 | `rel`                 |             | `string \| undefined`                                       | `undefined` |
 | `shapeMorph`          | `shape-morph`         |             | `boolean`                                                   | `false`     |
 | `size`                | `size`                |             | `"l" \| "m" \| "s" \| "xl" \| "xs"`                         | `'s'`       |
+| `target`              | `target`              |             | `string \| undefined`                                       | `undefined` |
 | `trailingIcon`        | `trailing-icon`       |             | `string \| undefined`                                       | `undefined` |
 | `type`                | `type`                |             | `"button" \| "reset" \| "submit"`                           | `'button'`  |
 | `value`               | `value`               |             | `string \| undefined`                                       | `undefined` |
