@@ -17,15 +17,15 @@
 
   <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
     <div>
-      <h1 class="text-2xl font-bold">@robustarush/material</h1>
-      <p class="text-on-surface-variant text-sm">
+      <h1 class="text-headline-medium font-bold">@robustarush/material</h1>
+      <p class="text-on-surface-variant text-body-medium">
         Material 3 web components — Stencil + Tailwind v4
       </p>
     </div>
-    <label class="flex items-center gap-2 text-sm">
+    <label class="flex items-center gap-2 text-body-medium">
       <span class="text-on-surface-variant">Theme</span>
       <select id="theme-picker"
-              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-body-medium">
         <option value="light">Light</option>
         <option value="dark">Dark</option>
         <option value="light-medium-contrast">Light · medium contrast</option>
@@ -36,339 +36,364 @@
     </label>
   </header>
 
-  <main class="max-w-5xl mx-auto px-8 py-10">
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <a href="/demos/typography.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">typography</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 typescale tokens bridged into Tailwind v4 — re-mapped
-          <code>text-xs</code>…<code>text-6xl</code> defaults plus
-          <code>text-display-large</code>, <code>text-body-medium</code>,
-          <code>text-label-small</code>, … Live font-family swap.
-        </p>
-      </a>
+  <main class="max-w-6xl mx-auto px-8 py-10 space-y-12">
 
-      <a href="/demos/material-button.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-button</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          Five MD3 styles via <code>variant</code>; sizes XS–XL; form-associated.
-        </p>
-      </a>
+    <a href="/demos/typography.html"
+       class="group inline-flex items-center gap-3 rounded-full bg-primary-container text-on-primary-container px-4 py-2 no-underline text-body-medium hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+      <span class="material-symbols text-xl" aria-hidden="true">text_fields</span>
+      <span>MD3 typescale → Tailwind utilities</span>
+      <span class="material-symbols text-base transition-transform group-hover:translate-x-0.5" aria-hidden="true">arrow_forward</span>
+    </a>
 
-      <a href="/demos/material-icon-button.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-icon-button</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive icon buttons — variants × sizes × shape × width, toggle.
+    <!-- Buttons & Actions -->
+    <section>
+      <header class="mb-4 pb-2 border-b border-outline-variant">
+        <h2 class="text-title-large font-medium">Buttons &amp; Actions</h2>
+        <p class="text-on-surface-variant text-body-small">
+          Triggers for primary, secondary, and contextual actions.
         </p>
-      </a>
+      </header>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-      <a href="/demos/material-split-button.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-split-button</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive split button — leading action + trailing menu;
-          four variants, five sizes, rotating chevron.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-button.html" aria-label="material-button demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">smart_button</span><span>material-button</span></h3>
+          <p slot="supporting">
+            Five MD3 styles via <code>variant</code>; sizes XS–XL; form-associated.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-button-group.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-button-group</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive button group — standard (gap container) and connected
-          (fused inner corners). Single / multi select with toggle icon buttons.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-button-group.html" aria-label="material-button-group demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">splitscreen</span><span>material-button-group</span></h3>
+          <p slot="supporting">
+            MD3 Expressive group — standard (gap container) and connected
+            (fused inner corners). Single / multi select with toggle icon buttons.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-fab.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-fab</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 floating action button — three sizes (small / medium / large)
-          and six color sets. Form-associated; works as a popover trigger.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-fab.html" aria-label="material-fab demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">add_circle</span><span>material-fab</span></h3>
+          <p slot="supporting">
+            MD3 floating action button — three sizes (small / medium / large)
+            and six color sets. Form-associated; works as a popover trigger.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-fab-menu.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-fab-menu</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive FAB menu — opens 2–6 related actions above the FAB,
-          with a contrasting close button. Three color sets.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-fab-menu.html" aria-label="material-fab-menu demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">more_vert</span><span>material-fab-menu</span></h3>
+          <p slot="supporting">
+            MD3 Expressive FAB menu — opens 2–6 related actions above the FAB,
+            with a contrasting close button. Three color sets.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-card.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-card</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          Elevated / filled / outlined cards with full MD3 anatomy
-          (media, headline, subhead, supporting, actions). Actionable via
-          <code>href</code> or <code>clickable</code>; supports
-          <code>disabled</code>.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-icon-button.html" aria-label="material-icon-button demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">circle</span><span>material-icon-button</span></h3>
+          <p slot="supporting">
+            MD3 Expressive icon buttons — variants × sizes × shape × width, toggle.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-carousel.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-carousel</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 carousel — uncontained / uncontained-multi-aspect layouts with
-          parallax, scroll-snap, and keyboard arrow navigation. Items are
-          actionable via <code>href</code> or <code>clickable</code>.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-split-button.html" aria-label="material-split-button demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">arrow_drop_down_circle</span><span>material-split-button</span></h3>
+          <p slot="supporting">
+            MD3 Expressive split button — leading action + trailing menu;
+            four variants, five sizes, rotating chevron.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-slider.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-slider</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 expressive slider — single, range, centered, discrete; five sizes;
-          horizontal &amp; vertical; value indicator with formatter; form-associated.
-        </p>
-      </a>
+      </div>
+    </section>
 
-      <a href="/demos/material-chip.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-chip</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          Assist / filter / input / suggestion chips. 32dp height, 8dp corner;
-          <code>elevated</code>, <code>selected</code>, <code>disabled</code>;
-          input chips emit <code>remove</code>; form-associated.
+    <!-- Form fields -->
+    <section>
+      <header class="mb-4 pb-2 border-b border-outline-variant">
+        <h2 class="text-title-large font-medium">Form fields</h2>
+        <p class="text-on-surface-variant text-body-small">
+          Form-associated input controls. All bind to native <code>FormData</code>.
         </p>
-      </a>
+      </header>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-      <a href="/demos/material-checkbox.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-checkbox</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          18dp box, 48dp target; states, error, help text; form-associated.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-calendar.html" aria-label="material-calendar demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">calendar_month</span><span>material-calendar</span></h3>
+          <p slot="supporting">
+            MD3 standalone calendar — 360×456dp grid, single-date selection,
+            month/year picker views, locale-aware via <code>Intl</code> or Django <code>jsi18n</code>.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-switch.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-switch</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          52×32 track; handle grows on selection / press; optional handle icons;
-          form-associated with label, help, error, required, readonly.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-checkbox.html" aria-label="material-checkbox demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">check_box</span><span>material-checkbox</span></h3>
+          <p slot="supporting">
+            18dp box, 48dp target; states, error, help text; form-associated.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-radio.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-radio</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          20dp ring, 48dp target; <code>material-radio-group</code> coordinates value, ARIA, arrow keys; form-associated.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-chip.html" aria-label="material-chip demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">label</span><span>material-chip</span></h3>
+          <p slot="supporting">
+            Assist / filter / input / suggestion chips. 32dp height, 8dp corner;
+            <code>elevated</code>, <code>selected</code>, <code>disabled</code>;
+            input chips emit <code>remove</code>; form-associated.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-textfield.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-textfield · file-field</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 text field — floating label, supporting/error text, icons, file field.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-date-field.html" aria-label="material-date-field demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">event</span><span>material-date-field</span></h3>
+          <p slot="supporting">
+            Text-field + calendar trigger. Opens an adaptive
+            <code>material-dialog</code> with a <code>material-calendar</code>;
+            hidden ISO input for form posts.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-textarea.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-textarea</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          Multi-line MD3 text area — fixed <code>rows</code> or <code>auto-resize</code> between min/max; form-associated.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-datetime-field.html" aria-label="material-datetime-field demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">event_available</span><span>material-datetime-field</span></h3>
+          <p slot="supporting">
+            Text-field + event trigger. Opens an adaptive
+            <code>material-dialog</code> hosting <code>material-calendar</code>
+            and <code>material-time-picker</code>; hidden ISO
+            <code>YYYY-MM-DDTHH:MM</code> input for form posts.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-select.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-select</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 single-select — textfield + chevron trigger that opens a popover
-          menu of <code>material-option</code> children; supports
-          <code>material-optgroup</code>, type-ahead, clearable, form-associated.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-radio.html" aria-label="material-radio demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">radio_button_checked</span><span>material-radio</span></h3>
+          <p slot="supporting">
+            20dp ring, 48dp target; <code>material-radio-group</code> coordinates value, ARIA, arrow keys; form-associated.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-menu.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-menu</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 vertical menu with leading/trailing slots; popover-anchored, viewport-aware.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-select.html" aria-label="material-select demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">arrow_drop_down</span><span>material-select</span></h3>
+          <p slot="supporting">
+            MD3 single-select — textfield + chevron trigger that opens a popover
+            menu of <code>material-option</code> children; supports
+            <code>material-optgroup</code>, type-ahead, clearable, form-associated.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-dialog.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-dialog</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 modal — basic / full-screen / adaptive. Native <code>&lt;dialog&gt;</code> + scrim;
-          opens via <code>data-dialog-target</code>, native <code>command</code>, or <code>.show()</code>.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-slider.html" aria-label="material-slider demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">tune</span><span>material-slider</span></h3>
+          <p slot="supporting">
+            MD3 expressive slider — single, range, centered, discrete; five sizes;
+            horizontal &amp; vertical; value indicator with formatter; form-associated.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-snackbar.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-snackbar</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 transient bottom message + queue host. One visible at a time;
-          replace-by-id; Django <code>messages</code>-friendly imperative API.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-switch.html" aria-label="material-switch demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">toggle_on</span><span>material-switch</span></h3>
+          <p slot="supporting">
+            52×32 track; handle grows on selection / press; optional handle icons;
+            form-associated with label, help, error, required, readonly.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-list.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-list</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 list — 1/2/3-line items, leading/trailing slots, single & multi selection.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-textarea.html" aria-label="material-textarea demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">notes</span><span>material-textarea</span></h3>
+          <p slot="supporting">
+            Multi-line MD3 text area — fixed <code>rows</code> or <code>auto-resize</code> between min/max; form-associated.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-navigation-rail.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-navigation-rail</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive nav rail — collapsed (96dp) / expanded (220–360dp), with
-          shared <code>material-navigation-item</code>.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-textfield.html" aria-label="material-textfield demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">text_fields</span><span>material-textfield · file-field</span></h3>
+          <p slot="supporting">
+            MD3 text field — floating label, supporting/error text, icons, file field.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-app-bar.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-app-bar</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive top app bar — small / medium-flexible / large-flexible;
-          collapses to small on scroll.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-time-field.html" aria-label="material-time-field demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">schedule</span><span>material-time-field</span></h3>
+          <p slot="supporting">
+            Text-field + schedule trigger. Opens an adaptive
+            <code>material-dialog</code> with a <code>material-time-picker</code>;
+            hidden ISO <code>HH:MM</code> input for form posts.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-search-app-bar.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-search-app-bar</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive search variant — embedded search container, form-associated,
-          inside/outside icon slots.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-time-picker.html" aria-label="material-time-picker demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">access_time</span><span>material-time-picker</span></h3>
+          <p slot="supporting">
+            MD3 standalone time picker — dial + input variants, 12/24h,
+            locale-aware via <code>Intl</code> or Django <code>jsi18n</code>.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-badge.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-badge</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 badge — small dot or large pill (up to 4 chars). Slots into
-          <code>material-icon-button</code>, <code>material-navigation-item</code>, and any trailing slot.
-        </p>
-      </a>
+      </div>
+    </section>
 
-      <a href="/demos/material-tabs.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-tabs</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 tabs — primary / secondary variants, fixed or scrollable, optional
-          icons + badges, anchor or button mode.
+    <!-- Containment -->
+    <section>
+      <header class="mb-4 pb-2 border-b border-outline-variant">
+        <h2 class="text-title-large font-medium">Containment</h2>
+        <p class="text-on-surface-variant text-body-small">
+          Surfaces that group related content — cards, dialogs, lists, overlays.
         </p>
-      </a>
+      </header>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-      <a href="/demos/material-loading-indicator.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-loading-indicator</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive — spins while morphing through 7 shapes;
-          <code>default</code> / <code>contained</code> variants, 24–240dp.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-card.html" aria-label="material-card demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">dashboard</span><span>material-card</span></h3>
+          <p slot="supporting">
+            Elevated / filled / outlined cards with full MD3 anatomy
+            (media, headline, subhead, supporting, actions). Actionable via
+            <code>href</code> or <code>clickable</code>; supports <code>disabled</code>.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-linear-progress.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-linear-progress</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 linear — determinate / indeterminate × flat / wavy,
-          configurable thickness, stop indicator. For long waits (5s+).
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-carousel.html" aria-label="material-carousel demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">view_carousel</span><span>material-carousel</span></h3>
+          <p slot="supporting">
+            MD3 carousel — uncontained / uncontained-multi-aspect layouts with
+            parallax, scroll-snap, and keyboard arrow navigation. Items are
+            actionable via <code>href</code> or <code>clickable</code>.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-circular-progress.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-circular-progress</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 circular — determinate / indeterminate × flat / wavy, 24–240dp.
-          For long waits (5s+); use <code>material-loading-indicator</code> for short.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-dialog.html" aria-label="material-dialog demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">web_asset</span><span>material-dialog</span></h3>
+          <p slot="supporting">
+            MD3 modal — basic / full-screen / adaptive. Native <code>&lt;dialog&gt;</code> + scrim;
+            opens via <code>data-dialog-target</code>, native <code>command</code>, or <code>.show()</code>.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-calendar.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-calendar</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 standalone calendar — 360×456dp grid, single-date selection,
-          month/year picker views, locale-aware via <code>Intl</code> or Django <code>jsi18n</code>.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-list.html" aria-label="material-list demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">list</span><span>material-list</span></h3>
+          <p slot="supporting">
+            MD3 list — 1/2/3-line items, leading/trailing slots, single &amp; multi selection.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-date-field.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-date-field</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          Text-field + calendar trigger. Opens an adaptive
-          <code>material-dialog</code> with a <code>material-calendar</code>; hidden
-          ISO input for form posts.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-menu.html" aria-label="material-menu demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">menu</span><span>material-menu</span></h3>
+          <p slot="supporting">
+            MD3 vertical menu with leading/trailing slots; popover-anchored, viewport-aware.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-time-picker.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-time-picker</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 standalone time picker — dial + input variants, 12/24h,
-          locale-aware via <code>Intl</code> or Django <code>jsi18n</code>.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-tooltip.html" aria-label="material-tooltip demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">info</span><span>material-tooltip</span></h3>
+          <p slot="supporting">
+            Plain &amp; rich MD3 tooltips. Hover, focus, or long-press;
+            rich variant supports persistent click-to-open with subhead and actions.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-time-field.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-time-field</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          Text-field + schedule trigger. Opens an adaptive
-          <code>material-dialog</code> with a <code>material-time-picker</code>;
-          hidden ISO <code>HH:MM</code> input for form posts.
-        </p>
-      </a>
+      </div>
+    </section>
 
-      <a href="/demos/material-toolbar.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-toolbar</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          MD3 Expressive docked &amp; floating toolbars. Standard / vibrant
-          color schemes; horizontal / vertical orientation. Layout-only
-          container — caller handles positioning.
+    <!-- Navigation & Layout -->
+    <section>
+      <header class="mb-4 pb-2 border-b border-outline-variant">
+        <h2 class="text-title-large font-medium">Navigation &amp; Layout</h2>
+        <p class="text-on-surface-variant text-body-small">
+          Top-level structure — app bars, rails, tab bars, toolbars.
         </p>
-      </a>
+      </header>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-      <a href="/demos/material-tooltip.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-tooltip</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          Plain &amp; rich MD3 tooltips. Hover, focus, or long-press;
-          rich variant supports persistent click-to-open with subhead and actions.
-        </p>
-      </a>
+        <material-card variant="outlined" href="/demos/material-app-bar.html" aria-label="material-app-bar demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">web_stories</span><span>material-app-bar</span></h3>
+          <p slot="supporting">
+            MD3 Expressive top app bar — small / medium-flexible / large-flexible;
+            collapses to small on scroll.
+          </p>
+        </material-card>
 
-      <a href="/demos/material-datetime-field.html"
-         class="block rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant p-6 transition-colors no-underline">
-        <h2 class="text-lg font-semibold text-on-surface">material-datetime-field</h2>
-        <p class="text-on-surface-variant text-sm mt-2">
-          Text-field + event trigger. Opens an adaptive
-          <code>material-dialog</code> hosting <code>material-calendar</code>
-          and <code>material-time-picker</code> with a footer toggle; hidden
-          ISO <code>YYYY-MM-DDTHH:MM</code> input for form posts.
+        <material-card variant="outlined" href="/demos/material-navigation-rail.html" aria-label="material-navigation-rail demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">view_sidebar</span><span>material-navigation-rail</span></h3>
+          <p slot="supporting">
+            MD3 Expressive nav rail — collapsed (96dp) / expanded (220–360dp), with
+            shared <code>material-navigation-item</code>.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-search-app-bar.html" aria-label="material-search-app-bar demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">search</span><span>material-search-app-bar</span></h3>
+          <p slot="supporting">
+            MD3 Expressive search variant — embedded search container, form-associated,
+            inside/outside icon slots.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-tabs.html" aria-label="material-tabs demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">tab</span><span>material-tabs</span></h3>
+          <p slot="supporting">
+            MD3 tabs — primary / secondary variants, fixed or scrollable, optional
+            icons + badges, anchor or button mode.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-toolbar.html" aria-label="material-toolbar demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">build</span><span>material-toolbar</span></h3>
+          <p slot="supporting">
+            MD3 Expressive docked &amp; floating toolbars. Standard / vibrant
+            color schemes; horizontal / vertical orientation. Layout-only
+            container — caller handles positioning.
+          </p>
+        </material-card>
+
+      </div>
+    </section>
+
+    <!-- Feedback & Status -->
+    <section>
+      <header class="mb-4 pb-2 border-b border-outline-variant">
+        <h2 class="text-title-large font-medium">Feedback &amp; Status</h2>
+        <p class="text-on-surface-variant text-body-small">
+          Notifications, badges, and progress indicators.
         </p>
-      </a>
-    </div>
+      </header>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <material-card variant="outlined" href="/demos/material-badge.html" aria-label="material-badge demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">notifications_active</span><span>material-badge</span></h3>
+          <p slot="supporting">
+            MD3 badge — small dot or large pill (up to 4 chars). Slots into
+            <code>material-icon-button</code>, <code>material-navigation-item</code>, and any trailing slot.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-circular-progress.html" aria-label="material-circular-progress demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">progress_activity</span><span>material-circular-progress</span></h3>
+          <p slot="supporting">
+            MD3 circular — determinate / indeterminate × flat / wavy, 24–240dp.
+            For long waits (5s+); use <code>material-loading-indicator</code> for short.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-linear-progress.html" aria-label="material-linear-progress demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">linear_scale</span><span>material-linear-progress</span></h3>
+          <p slot="supporting">
+            MD3 linear — determinate / indeterminate × flat / wavy,
+            configurable thickness, stop indicator. For long waits (5s+).
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-loading-indicator.html" aria-label="material-loading-indicator demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">pending</span><span>material-loading-indicator</span></h3>
+          <p slot="supporting">
+            MD3 Expressive — spins while morphing through 7 shapes;
+            <code>default</code> / <code>contained</code> variants, 24–240dp.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-snackbar.html" aria-label="material-snackbar demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">notification_important</span><span>material-snackbar</span></h3>
+          <p slot="supporting">
+            MD3 transient bottom message + queue host. One visible at a time;
+            replace-by-id; Django <code>messages</code>-friendly imperative API.
+          </p>
+        </material-card>
+
+      </div>
+    </section>
+
   </main>
 
-  <footer class="border-t border-outline-variant px-8 py-6 text-center text-sm text-on-surface-variant">
+  <footer class="border-t border-outline-variant px-8 py-6 text-center text-body-small text-on-surface-variant">
     Override the stylesheet path with
     <code>&lt;meta name="material-stylesheet" content="..." /&gt;</code> — see README.
   </footer>
