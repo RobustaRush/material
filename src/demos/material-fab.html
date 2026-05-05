@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-fab — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-fab</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 floating action button — three sizes (small / medium / large)
+          and six color sets. Form-associated; supports anchor and popover trigger.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-8">
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-8 items-center">
+
+        <code class="text-sm text-on-surface-variant">sizes</code>
+        <div class="flex flex-wrap gap-6 items-end">
+          <material-fab size="small" icon="add" aria-label="Add"></material-fab>
+          <material-fab size="medium" icon="edit" aria-label="Edit"></material-fab>
+          <material-fab size="large" icon="navigation" aria-label="Navigate"></material-fab>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">color sets · container</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <material-fab variant="primary-container"   icon="add"     aria-label="Add"></material-fab>
+          <material-fab variant="secondary-container" icon="edit"    aria-label="Edit"></material-fab>
+          <material-fab variant="tertiary-container"  icon="palette" aria-label="Palette"></material-fab>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">color sets · vivid</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <material-fab variant="primary"   icon="add"     aria-label="Add"></material-fab>
+          <material-fab variant="secondary" icon="edit"    aria-label="Edit"></material-fab>
+          <material-fab variant="tertiary"  icon="palette" aria-label="Palette"></material-fab>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">disabled</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <material-fab disabled size="small"  icon="add"  aria-label="Add"></material-fab>
+          <material-fab disabled size="medium" icon="edit" aria-label="Edit"></material-fab>
+          <material-fab disabled size="large"  icon="navigation" aria-label="Navigate"></material-fab>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">link</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <material-fab href="https://m3.material.io/components/floating-action-button/specs"
+                        target="_blank" icon="open_in_new" aria-label="Open spec"></material-fab>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">click event</code>
+        <div class="flex items-center gap-6">
+          <material-fab id="click-fab" icon="favorite" aria-label="Like"></material-fab>
+          <pre class="text-xs text-on-surface-variant m-0" id="click-out">(not clicked)</pre>
+        </div>
+
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- default: medium primary-container --&gt;
+&lt;material-fab icon="add" aria-label="Add"&gt;&lt;/material-fab&gt;
+
+&lt;!-- explicit size + color set --&gt;
+&lt;material-fab size="large" variant="tertiary" icon="palette" aria-label="Palette"&gt;&lt;/material-fab&gt;
+
+&lt;!-- as a link --&gt;
+&lt;material-fab href="/new" icon="add" aria-label="New"&gt;&lt;/material-fab&gt;
+
+&lt;!-- as a popover trigger (e.g. for material-menu) --&gt;
+&lt;material-fab popovertarget="my-menu" icon="more_vert" aria-label="More"&gt;&lt;/material-fab&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('click-fab').addEventListener('click', () => {
+      const out = document.getElementById('click-out');
+      const n = (parseInt(out.dataset.n || '0', 10) || 0) + 1;
+      out.dataset.n = String(n);
+      out.textContent = `clicked ×${n}`;
+    });
+  </script>
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

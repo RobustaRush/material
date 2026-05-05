@@ -1,0 +1,133 @@
+/* Measurements per m3.material.io/components/fab-menu/specs. */
+
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+  position: relative;
+}
+
+/* Color sets — close button uses container tone, items use vivid tone. */
+:host([color-set="primary"]) {
+  --fab-menu-close-bg: var(--md-sys-color-primary-container);
+  --fab-menu-close-fg: var(--md-sys-color-on-primary-container);
+  --fab-menu-item-bg: var(--md-sys-color-primary);
+  --fab-menu-item-fg: var(--md-sys-color-on-primary);
+}
+:host([color-set="secondary"]) {
+  --fab-menu-close-bg: var(--md-sys-color-secondary-container);
+  --fab-menu-close-fg: var(--md-sys-color-on-secondary-container);
+  --fab-menu-item-bg: var(--md-sys-color-secondary);
+  --fab-menu-item-fg: var(--md-sys-color-on-secondary);
+}
+:host([color-set="tertiary"]) {
+  --fab-menu-close-bg: var(--md-sys-color-tertiary-container);
+  --fab-menu-close-fg: var(--md-sys-color-on-tertiary-container);
+  --fab-menu-item-bg: var(--md-sys-color-tertiary);
+  --fab-menu-item-fg: var(--md-sys-color-on-tertiary);
+}
+
+/* FAB / close-button trigger.
+   Closed → uses size-driven dimensions and corner radius.
+   Open   → morphs to 56dp regardless of size, with full-pill corners (close button). */
+.fab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--fab-size);
+  height: var(--fab-size);
+  border-radius: var(--fab-r);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: var(--fab-menu-close-bg);
+  color: var(--fab-menu-close-fg);
+  cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / .3),
+    0 4px 8px 3px rgb(0 0 0 / .15);
+  transition:
+    width 220ms cubic-bezier(.2, 0, 0, 1),
+    height 220ms cubic-bezier(.2, 0, 0, 1),
+    border-radius 220ms cubic-bezier(.2, 0, 0, 1),
+    box-shadow 120ms linear,
+    background-color 120ms linear;
+}
+.fab:focus { outline: none; }
+.fab:focus-visible {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
+
+.fab:hover {
+  box-shadow:
+    0 2px 3px rgb(0 0 0 / .3),
+    0 6px 10px 4px rgb(0 0 0 / .15);
+}
+
+:host([size="small"])  { --fab-size: 56px; --fab-r: 16px; --fab-icon: 24px; }
+:host([size="medium"]) { --fab-size: 80px; --fab-r: 20px; --fab-icon: 28px; }
+:host([size="large"])  { --fab-size: 96px; --fab-r: 28px; --fab-icon: 36px; }
+
+/* Open state — close button is 56dp pill with vivid bg + container tones swapped not needed,
+   spec keeps close button on container tone. Just morph size + radius. */
+:host([open]) .fab {
+  --fab-size: 56px;
+  --fab-r: 9999px;
+  --fab-icon: 24px;
+}
+
+.icon {
+  position: relative;
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  line-height: 1;
+  font-size: var(--fab-icon);
+}
+
+.state-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity 120ms linear;
+}
+.fab:hover         .state-layer { opacity: .08; }
+.fab:focus-visible .state-layer { opacity: .10; }
+.fab:active        .state-layer { opacity: .10; }
+
+/* Items panel — popover, anchored above the FAB by trackAnchored.
+   Items are slotted children (material-fab-menu-item). */
+.panel {
+  position: fixed;
+  inset: unset;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  /* 8dp gap from last item to close button is added via padding-bottom. */
+  padding-bottom: 4px;
+}
+.panel:not(:popover-open) { display: none; }
+
+/* Animation. */
+.panel {
+  opacity: 0;
+  transform: translateY(8px) scale(.96);
+  transform-origin: bottom right;
+  transition: opacity 160ms linear, transform 200ms cubic-bezier(.2, 0, 0, 1);
+}
+.panel:popover-open {
+  opacity: 1;
+  transform: none;
+}
