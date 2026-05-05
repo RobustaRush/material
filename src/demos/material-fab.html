@@ -82,7 +82,35 @@
           <pre class="text-xs text-on-surface-variant m-0" id="click-out">(not clicked)</pre>
         </div>
 
+        <code class="text-sm text-on-surface-variant">hide-near-end</code>
+        <div class="text-sm text-on-surface-variant max-w-prose">
+          <p class="mb-2">
+            Scroll the page — the floating FAB at the bottom-right fades out
+            once the page is within <code>hide-offset</code> px of the bottom,
+            so the last rows of content stay accessible.
+          </p>
+          <p class="text-xs">
+            Below is filler so the page actually scrolls; the FAB is fixed-positioned.
+          </p>
+        </div>
+
       </div>
+
+      <ul class="space-y-3 text-sm">
+        <li class="bg-surface-container-low p-4 rounded">Filler row 1 — scroll down to reach the bottom.</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 2</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 3</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 4</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 5</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 6</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 7</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 8</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 9</li>
+        <li class="bg-surface-container-low p-4 rounded">Filler row 10 — last one. The FAB should be hidden by now.</li>
+      </ul>
+
+      <material-fab hide-near-end hide-offset="120" icon="add" aria-label="Add"
+                    style="position: fixed; right: 16px; bottom: 16px; z-index: 50;"></material-fab>
 
       <details class="rounded-lg bg-surface-container-low border border-outline-variant">
         <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>

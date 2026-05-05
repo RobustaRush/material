@@ -32,6 +32,10 @@ export class MaterialFabMenu {
   @Prop() closeIcon = 'close';
   @Prop({ mutable: true, reflect: true }) open = false;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  /** When true, the FAB fades out as the page scrolls near its bottom edge. */
+  @Prop({ reflect: true, attribute: 'hide-near-end' }) hideNearEnd = false;
+  /** Distance from the document bottom (in px) at which the FAB starts to hide. */
+  @Prop({ attribute: 'hide-offset' }) hideOffset = 80;
 
   @Event() materialFabMenuOpen!: EventEmitter<void>;
   @Event() materialFabMenuClose!: EventEmitter<void>;
@@ -45,11 +49,41 @@ export class MaterialFabMenu {
 
   connectedCallback() {
     this.rendered = true;
+    if (this.hideNearEnd) this.attachScrollListener();
   }
 
   disconnectedCallback() {
     this.cleanupTrack?.();
+    this.detachScrollListener();
   }
+
+  @Watch('hideNearEnd')
+  onHideNearEndChange(v: boolean) {
+    if (v) this.attachScrollListener();
+    else {
+      this.detachScrollListener();
+      this.el.removeAttribute('near-end');
+    }
+  }
+
+  private attachScrollListener() {
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    window.addEventListener('resize', this.onScroll);
+    this.onScroll();
+  }
+
+  private detachScrollListener() {
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onScroll);
+  }
+
+  private onScroll = () => {
+    const doc = document.documentElement;
+    const remaining = doc.scrollHeight - (window.scrollY + window.innerHeight);
+    const nearEnd = remaining <= this.hideOffset;
+    if (nearEnd) this.el.setAttribute('near-end', '');
+    else this.el.removeAttribute('near-end');
+  };
 
   @Watch('open')
   syncOpen(open: boolean) {

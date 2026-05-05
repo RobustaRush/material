@@ -7,14 +7,16 @@
 
 ## Properties
 
-| Property    | Attribute    | Description | Type                                     | Default     |
-| ----------- | ------------ | ----------- | ---------------------------------------- | ----------- |
-| `ariaLabel` | `aria-label` |             | `string \| undefined`                    | `undefined` |
-| `closeIcon` | `close-icon` |             | `string`                                 | `'close'`   |
-| `colorSet`  | `color-set`  |             | `"primary" \| "secondary" \| "tertiary"` | `'primary'` |
-| `icon`      | `icon`       |             | `string`                                 | `'add'`     |
-| `open`      | `open`       |             | `boolean`                                | `false`     |
-| `size`      | `size`       |             | `"large" \| "medium" \| "small"`         | `'medium'`  |
+| Property      | Attribute       | Description                                                                | Type                                     | Default     |
+| ------------- | --------------- | -------------------------------------------------------------------------- | ---------------------------------------- | ----------- |
+| `ariaLabel`   | `aria-label`    |                                                                            | `string \| undefined`                    | `undefined` |
+| `closeIcon`   | `close-icon`    |                                                                            | `string`                                 | `'close'`   |
+| `colorSet`    | `color-set`     |                                                                            | `"primary" \| "secondary" \| "tertiary"` | `'primary'` |
+| `hideNearEnd` | `hide-near-end` | When true, the FAB fades out as the page scrolls near its bottom edge.     | `boolean`                                | `false`     |
+| `hideOffset`  | `hide-offset`   | Distance from the document bottom (in px) at which the FAB starts to hide. | `number`                                 | `80`        |
+| `icon`        | `icon`          |                                                                            | `string`                                 | `'add'`     |
+| `open`        | `open`          |                                                                            | `boolean`                                | `false`     |
+| `size`        | `size`          |                                                                            | `"large" \| "medium" \| "small"`         | `'medium'`  |
 
 
 ## Events

@@ -1,4 +1,4 @@
-import { Component, Element, Prop, AttachInternals, h } from '@stencil/core';
+import { Component, Element, Prop, Watch, AttachInternals, h } from '@stencil/core';
 
 export type MaterialFabSize = 'small' | 'medium' | 'large';
 export type MaterialFabVariant =
@@ -34,10 +34,51 @@ export class MaterialFab {
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
   @Prop({ attribute: 'popovertarget' }) popoverTarget?: string;
   @Prop({ attribute: 'popovertargetaction' }) popoverTargetAction?: 'toggle' | 'show' | 'hide';
+  /** When true, the FAB fades out as the page scrolls near its bottom edge,
+   *  so it stops covering the last rows of content. */
+  @Prop({ reflect: true, attribute: 'hide-near-end' }) hideNearEnd = false;
+  /** Distance from the document bottom (in px) at which the FAB starts to hide. */
+  @Prop({ attribute: 'hide-offset' }) hideOffset = 80;
 
   formDisabledCallback(disabled: boolean) {
     this.disabled = disabled;
   }
+
+  connectedCallback() {
+    if (this.hideNearEnd) this.attachScrollListener();
+  }
+
+  disconnectedCallback() {
+    this.detachScrollListener();
+  }
+
+  @Watch('hideNearEnd')
+  onHideNearEndChange(v: boolean) {
+    if (v) this.attachScrollListener();
+    else {
+      this.detachScrollListener();
+      this.el.removeAttribute('near-end');
+    }
+  }
+
+  private attachScrollListener() {
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    window.addEventListener('resize', this.onScroll);
+    this.onScroll();
+  }
+
+  private detachScrollListener() {
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onScroll);
+  }
+
+  private onScroll = () => {
+    const doc = document.documentElement;
+    const remaining = doc.scrollHeight - (window.scrollY + window.innerHeight);
+    const nearEnd = remaining <= this.hideOffset;
+    if (nearEnd) this.el.setAttribute('near-end', '');
+    else this.el.removeAttribute('near-end');
+  };
 
   private handleClick = (e: MouseEvent) => {
     if (this.disabled) {

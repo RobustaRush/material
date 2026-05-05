@@ -43,7 +43,17 @@
   transition:
     box-shadow 120ms linear,
     background-color 120ms linear,
-    border-radius 180ms cubic-bezier(.2, 0, 0, 1);
+    border-radius 180ms cubic-bezier(.2, 0, 0, 1),
+    opacity 200ms cubic-bezier(.2, 0, 0, 1),
+    transform 200ms cubic-bezier(.2, 0, 0, 1);
+}
+
+/* Hide-near-end: fade + slide down as the page bottom approaches. */
+:host([near-end]) [part="visual"] {
+  opacity: 0;
+  transform: translateY(16px) scale(.85);
+  pointer-events: none;
+  box-shadow: none;
 }
 
 [part="button"]:focus-visible [part="visual"] {
