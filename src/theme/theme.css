@@ -21,6 +21,8 @@
  * ...) bridged in material.css automatically follow the active theme.
  */
 
+@import "./typography.css";
+
 @import "./light.css";
 @import "./dark.css";
 @import "./light-mc.css";

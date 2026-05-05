@@ -2,7 +2,7 @@
 
 :host {
   display: inline-block;
-  font-family: 'Roboto', system-ui, sans-serif;
+  font-family: inherit;
   color: var(--md-sys-color-on-surface);
 }
 

@@ -24,7 +24,7 @@
   padding: 0;
   background: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
-  font-family: 'Roboto', system-ui, sans-serif;
+  font-family: inherit;
   width: fit-content;
   height: fit-content;
   max-width: 100vw;

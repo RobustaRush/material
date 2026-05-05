@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>typography — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Roboto+Flex:wght@400;500&family=Inter:wght@400;500&display=swap" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">typography</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 typescale tokens bridged into Tailwind v4 — re-mapped
+          <code>text-xs</code>…<code>text-6xl</code> defaults plus
+          named utilities (<code>text-display-large</code>,
+          <code>text-body-medium</code>, …). Font family swaps live via
+          <code>--md-sys-typescale-plain-font</code>.
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <label class="flex items-center gap-2 text-sm shrink-0">
+        <span class="text-on-surface-variant">Font</span>
+        <select id="font-picker"
+                class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+          <option value="default">Default (Roboto)</option>
+          <option value="roboto-flex">Roboto Flex</option>
+          <option value="inter">Inter</option>
+          <option value="system">System UI</option>
+          <option value="serif">Georgia (serif)</option>
+        </select>
+      </label>
+      <label class="flex items-center gap-2 text-sm shrink-0">
+        <span class="text-on-surface-variant">Theme</span>
+        <select id="theme-picker"
+                class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="light-medium-contrast">Light · medium contrast</option>
+          <option value="dark-medium-contrast">Dark · medium contrast</option>
+          <option value="light-high-contrast">Light · high contrast</option>
+          <option value="dark-high-contrast">Dark · high contrast</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-8 py-10 space-y-12">
+
+    <!-- 1. MD3 typescale — named utilities -->
+    <section>
+      <header class="mb-6">
+        <h2 class="text-headline-small font-medium">MD3 typescale</h2>
+        <p class="text-body-medium text-on-surface-variant">
+          Each row uses the matching <code>text-&lt;role&gt;-&lt;size&gt;</code>
+          utility. Computed metrics on the right are read live from
+          <code>getComputedStyle</code>.
+        </p>
+      </header>
+
+      <div id="typescale-table"
+           class="grid grid-cols-[max-content_1fr_max-content] gap-x-8 gap-y-4 items-baseline">
+        <!-- rows injected by script -->
+      </div>
+    </section>
+
+    <!-- 2. Tailwind text-* → MD3 mapping -->
+    <section>
+      <header class="mb-6">
+        <h2 class="text-headline-small font-medium">Tailwind size scale → MD3 mapping</h2>
+        <p class="text-body-medium text-on-surface-variant">
+          Tailwind defaults are re-mapped to the closest MD3 typescale
+          role, so existing markup picks up Material-correct
+          size + line-height + tracking without changes.
+        </p>
+      </header>
+
+      <div id="tailwind-table"
+           class="grid grid-cols-[max-content_1fr_max-content_max-content] gap-x-8 gap-y-4 items-baseline">
+        <!-- rows injected by script -->
+      </div>
+    </section>
+
+    <!-- 3. Sample usage -->
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Named MD3 utilities --&gt;
+&lt;h1 class="text-display-large"&gt;Hero headline&lt;/h1&gt;
+&lt;h2 class="text-headline-medium"&gt;Section title&lt;/h2&gt;
+&lt;p  class="text-body-medium"&gt;Body copy&lt;/p&gt;
+&lt;span class="text-label-small uppercase"&gt;Caption&lt;/span&gt;
+
+&lt;!-- Tailwind defaults — already aligned to MD3 metrics --&gt;
+&lt;p class="text-sm"&gt;14/20, tracking 0.25 (body-medium)&lt;/p&gt;
+&lt;p class="text-base"&gt;16/24, tracking 0.5 (body-large)&lt;/p&gt;
+&lt;p class="text-2xl"&gt;28/36 (headline-medium)&lt;/p&gt;
+
+&lt;!-- Re-skin globally — swap one var on :root --&gt;
+&lt;style&gt;
+  :root { --md-sys-typescale-plain-font: 'Inter', system-ui, sans-serif; }
+&lt;/style&gt;</code></pre>
+    </details>
+  </main>
+
+  <script>
+    // MD3 typescale roles
+    const ROLES = [
+      ['display-large',  'Display Large',   'Aa Material display'],
+      ['display-medium', 'Display Medium',  'Aa Material display'],
+      ['display-small',  'Display Small',   'Aa Material display'],
+      ['headline-large', 'Headline Large',  'Aa Material headline'],
+      ['headline-medium','Headline Medium', 'Aa Material headline'],
+      ['headline-small', 'Headline Small',  'Aa Material headline'],
+      ['title-large',    'Title Large',     'Material title text'],
+      ['title-medium',   'Title Medium',    'Material title text'],
+      ['title-small',    'Title Small',     'Material title text'],
+      ['body-large',     'Body Large',      'Body copy — the quick brown fox jumps over the lazy dog.'],
+      ['body-medium',    'Body Medium',     'Body copy — the quick brown fox jumps over the lazy dog.'],
+      ['body-small',     'Body Small',      'Body copy — the quick brown fox jumps over the lazy dog.'],
+      ['label-large',    'Label Large',     'BUTTON LABEL'],
+      ['label-medium',   'Label Medium',    'BUTTON LABEL'],
+      ['label-small',    'Label Small',     'BUTTON LABEL'],
+    ];
+
+    const TAILWIND = [
+      ['xs',   'label-small'],
+      ['sm',   'body-medium'],
+      ['base', 'body-large'],
+      ['lg',   'title-large'],
+      ['xl',   'headline-small'],
+      ['2xl',  'headline-medium'],
+      ['3xl',  'headline-large'],
+      ['4xl',  'display-small'],
+      ['5xl',  'display-medium'],
+      ['6xl',  'display-large'],
+    ];
+
+    function metrics(el) {
+      const cs = getComputedStyle(el);
+      const px = (v) => parseFloat(v).toFixed(0);
+      const tracking = parseFloat(cs.letterSpacing) || 0;
+      return `${px(cs.fontSize)}/${px(cs.lineHeight)} · ${tracking.toFixed(2)}px · w${cs.fontWeight}`;
+    }
+
+    // Build typescale table
+    const tsTable = document.getElementById('typescale-table');
+    ROLES.forEach(([role, label, sample]) => {
+      const name = document.createElement('code');
+      name.className = 'text-body-small text-on-surface-variant whitespace-nowrap';
+      name.textContent = `text-${role}`;
+      tsTable.append(name);
+
+      const s = document.createElement('span');
+      s.className = `text-${role} text-on-surface`;
+      s.textContent = sample;
+      tsTable.append(s);
+
+      const m = document.createElement('span');
+      m.className = 'text-body-small text-on-surface-variant whitespace-nowrap font-mono';
+      tsTable.append(m);
+      // Defer metric read until layout settles
+      requestAnimationFrame(() => { m.textContent = metrics(s); });
+    });
+
+    // Build Tailwind mapping table
+    const twTable = document.getElementById('tailwind-table');
+    TAILWIND.forEach(([size, role]) => {
+      const name = document.createElement('code');
+      name.className = 'text-body-small text-on-surface-variant whitespace-nowrap';
+      name.textContent = `text-${size}`;
+      twTable.append(name);
+
+      const s = document.createElement('span');
+      s.className = `text-${size} text-on-surface`;
+      s.textContent = 'The quick brown fox';
+      twTable.append(s);
+
+      const m = document.createElement('span');
+      m.className = 'text-body-small text-on-surface-variant whitespace-nowrap font-mono';
+      twTable.append(m);
+
+      const r = document.createElement('code');
+      r.className = 'text-body-small text-on-surface-variant whitespace-nowrap';
+      r.textContent = `→ ${role}`;
+      twTable.append(r);
+
+      requestAnimationFrame(() => { m.textContent = metrics(s); });
+    });
+
+    // Live font-family swap — overrides plain + brand at :root
+    const FONT_STACKS = {
+      'default':     null,
+      'roboto-flex': "'Roboto Flex', system-ui, sans-serif",
+      'inter':       "'Inter', system-ui, sans-serif",
+      'system':      "system-ui, -apple-system, sans-serif",
+      'serif':       "Georgia, 'Times New Roman', serif",
+    };
+    const fontPicker = document.getElementById('font-picker');
+    fontPicker.addEventListener('change', (e) => {
+      const stack = FONT_STACKS[e.target.value];
+      if (stack) {
+        document.documentElement.style.setProperty('--md-sys-typescale-plain-font', stack);
+        document.documentElement.style.setProperty('--md-sys-typescale-brand-font', stack);
+      } else {
+        document.documentElement.style.removeProperty('--md-sys-typescale-plain-font');
+        document.documentElement.style.removeProperty('--md-sys-typescale-brand-font');
+      }
+    });
+  </script>
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

@@ -45,7 +45,7 @@
   box-shadow:
     0 1px 3px 0 rgb(0 0 0 / 0.30),
     0 4px 8px 3px rgb(0 0 0 / 0.15);
-  font-family: 'Roboto', system-ui, sans-serif;
+  font-family: inherit;
 }
 
 /* When there is no action and no close, keep symmetric 16dp inline padding. */

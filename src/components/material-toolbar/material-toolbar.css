@@ -3,7 +3,7 @@
 :host {
   display: block;
   box-sizing: border-box;
-  font-family: Roboto, system-ui, sans-serif;
+  font-family: inherit;
 }
 
 :host([variant="floating"]) { display: inline-block; }
