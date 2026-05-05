@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM pipeline — showcase — @robustarush/material</title>
+
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+
+<!--
+  CRM pipeline showcase — Kanban-style deals board with a horizontal
+  funnel widget on top. Static, no backend; ~24 sample deals across 5
+  stages. Targets expanded windows ≥1280dp; columns scroll horizontally
+  if narrower. Click a deal card to open detail in a dialog.
+
+  Components exercised: search-app-bar, navigation-rail, card (heavy —
+  every deal is a card), chip (filter + priority + tags), fab,
+  dialog (deal detail + add deal), button-group (view switcher),
+  menu (per-card actions), snackbar, tooltip.
+-->
+
+<body class="bg-background text-on-background min-h-screen flex">
+
+  <!-- Navigation rail — sticks to the leading edge on both axes so it stays
+       visible during vertical AND horizontal page scroll (when the kanban
+       board overflows the viewport width). -->
+  <material-navigation-rail id="rail" class="shrink-0 sticky top-0 left-0 self-start h-screen z-20">
+    <material-icon-button slot="menu" variant="standard" icon="menu"
+                          aria-label="Toggle navigation"></material-icon-button>
+
+    <material-navigation-item icon="dashboard" label="Dashboard"></material-navigation-item>
+    <material-navigation-item icon="trending_up" label="Pipeline" active aria-label="Pipeline, current">
+      <material-badge slot="badge" value="95"></material-badge>
+    </material-navigation-item>
+    <material-navigation-item icon="contacts" label="Contacts"></material-navigation-item>
+    <material-navigation-item icon="business" label="Companies"></material-navigation-item>
+    <material-navigation-item icon="event" label="Activities" aria-label="Activities, 3 due">
+      <material-badge slot="badge" value="3"></material-badge>
+    </material-navigation-item>
+    <material-divider inset="middle"></material-divider>
+    <material-navigation-item icon="bar_chart" label="Reports"></material-navigation-item>
+    <material-navigation-item icon="settings" slot="bottom" label="Settings"></material-navigation-item>
+  </material-navigation-rail>
+
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- Search app bar — sticks to the top of the viewport while the page scrolls -->
+    <material-search-app-bar id="search" placeholder="Search deals, contacts, companies" class="shrink-0 sticky top-0 z-10">
+      <select id="theme-picker" slot="trailing"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-2 py-1 text-xs mr-1"
+              aria-label="Theme">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+      <span slot="trailing"
+            class="w-9 h-9 mr-2 rounded-full bg-tertiary text-on-tertiary inline-flex items-center justify-center text-sm font-medium"
+            title="Mikhail Podgurskiy"
+            aria-label="Account">MP</span>
+    </material-search-app-bar>
+
+    <!-- Toolbar: title, view switcher, filters, period -->
+    <header class="shrink-0 px-6 pt-4 pb-3 flex items-center gap-4 flex-wrap">
+      <h1 class="text-headline-small font-semibold m-0 mr-auto">Sales pipeline</h1>
+
+      <material-button-group selection="single" class="shrink-0">
+        <material-icon-button selected variant="standard" icon="view_kanban" aria-label="Kanban view" value="kanban"></material-icon-button>
+        <material-icon-button variant="standard" icon="view_list" aria-label="List view" value="list"></material-icon-button>
+        <material-icon-button variant="standard" icon="show_chart" aria-label="Forecast view" value="forecast"></material-icon-button>
+      </material-button-group>
+
+      <select class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-2 text-sm">
+        <option>This quarter (Q2 2026)</option>
+        <option>This month</option>
+        <option>This year</option>
+        <option>Custom…</option>
+      </select>
+    </header>
+
+    <!-- Filter chip rail -->
+    <div class="shrink-0 px-6 pb-3 flex items-center gap-2 flex-wrap">
+      <span class="text-on-surface-variant text-body-small mr-1">Filter:</span>
+      <material-chip variant="filter" label="My deals" id="f-mine"></material-chip>
+      <material-chip variant="filter" label="High priority" icon="priority_high" id="f-high"></material-chip>
+      <material-chip variant="filter" label="Closing soon" icon="schedule" id="f-soon"></material-chip>
+      <material-chip variant="filter" label="Stale (>30d)" icon="warning" id="f-stale"></material-chip>
+      <material-chip variant="filter" label="Enterprise" id="f-ent"></material-chip>
+      <material-chip variant="filter" label="SMB" id="f-smb"></material-chip>
+    </div>
+
+    <!-- Funnel widget -->
+    <section class="shrink-0 px-6 pb-3">
+      <material-card variant="filled" class="block">
+        <div slot="headline" class="flex items-center justify-between gap-3">
+          <span class="text-title-medium font-medium">Funnel · Q2 2026</span>
+          <span class="text-body-small text-on-surface-variant" id="funnel-totals">95 deals · $2.3M open · $312k won</span>
+        </div>
+        <div slot="supporting" class="mt-2">
+          <div id="funnel" class="space-y-2"></div>
+        </div>
+      </material-card>
+    </section>
+
+    <!-- Kanban board — grows to fit its tallest column. The page itself is
+         the only scroll container so column headers can use position:sticky
+         relative to the document; an `overflow-x: auto` here would create a
+         nested scroll container and break that. On narrow viewports the
+         page gets horizontal scroll instead. -->
+    <main class="px-6 pb-6">
+      <div id="board" class="grid grid-flow-col auto-cols-[300px] gap-4 items-start"></div>
+    </main>
+  </div>
+
+  <!-- Deal detail dialog (populated when a card is clicked) -->
+  <material-dialog id="deal-dialog" headline="Deal detail">
+    <div id="deal-body" class="w-[min(680px,80vw)]"></div>
+    <div slot="actions">
+      <material-button variant="text" label="Close" data-dialog-close></material-button>
+      <material-button variant="filled" label="Open full view" data-dialog-close="open"></material-button>
+    </div>
+  </material-dialog>
+
+  <!-- Add deal dialog -->
+  <material-dialog id="add-dialog" headline="New deal">
+    <form id="add-form" class="grid gap-4 w-[min(640px,80vw)]">
+      <material-textfield label="Deal title" name="title" required class="w-full"></material-textfield>
+      <div class="grid grid-cols-2 gap-4">
+        <material-textfield label="Company" name="company" required class="w-full"></material-textfield>
+        <material-textfield label="Value (USD)" name="value" type="number" class="w-full"></material-textfield>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <material-select label="Stage" name="stage" class="w-full">
+          <material-option value="lead" selected>Lead</material-option>
+          <material-option value="qualified">Qualified</material-option>
+          <material-option value="proposal">Proposal</material-option>
+          <material-option value="negotiation">Negotiation</material-option>
+          <material-option value="won">Won</material-option>
+        </material-select>
+        <material-select label="Priority" name="priority" class="w-full">
+          <material-option value="high">High</material-option>
+          <material-option value="medium" selected>Medium</material-option>
+          <material-option value="low">Low</material-option>
+        </material-select>
+      </div>
+      <material-textarea label="Notes" name="notes" rows="4" class="w-full"></material-textarea>
+    </form>
+    <div slot="actions">
+      <material-button variant="text" label="Discard" data-dialog-close></material-button>
+      <material-button variant="filled" label="Create deal" data-dialog-close="create"></material-button>
+    </div>
+  </material-dialog>
+
+  <!-- Per-card "more" menu — anchors to whichever invoker opens it -->
+  <material-menu id="card-menu" placement="bottom-end">
+    <material-menu-item value="advance" label="Move to next stage" leading-icon="arrow_forward"></material-menu-item>
+    <material-menu-item value="reassign" label="Reassign owner" leading-icon="person"></material-menu-item>
+    <material-menu-item value="duplicate" label="Duplicate" leading-icon="content_copy"></material-menu-item>
+    <material-menu-item value="archive" label="Archive" leading-icon="archive" divider="top"></material-menu-item>
+    <material-menu-item value="delete" label="Delete" leading-icon="delete"></material-menu-item>
+  </material-menu>
+
+  <!-- Compose FAB — fixed in lower-trailing corner -->
+  <material-fab class="fixed bottom-6 right-6 z-10"
+                size="medium" variant="primary-container"
+                icon="add" aria-label="New deal"
+                onclick="document.getElementById('add-dialog').show()"></material-fab>
+
+  <material-snackbar-host placement="bottom"></material-snackbar-host>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    // ─── Stages and sample data ─────────────────────────────────────────
+    // Stage tones: bullet/dot in column header (small) and the funnel bar
+    // (large). For the funnel we lean on primary-opacity steps so the
+    // gradient itself signals progression — even on light themes the
+    // earliest stage stays clearly visible above the card surface.
+    const STAGES = [
+      { id: 'lead',        label: 'Lead',        dot: 'tertiary-container', barAlpha: 0.20 },
+      { id: 'qualified',   label: 'Qualified',   dot: 'tertiary',           barAlpha: 0.40 },
+      { id: 'proposal',    label: 'Proposal',    dot: 'secondary',          barAlpha: 0.60 },
+      { id: 'negotiation', label: 'Negotiation', dot: 'primary-container',  barAlpha: 0.80 },
+      { id: 'won',         label: 'Won',         dot: 'primary',            barAlpha: 1.00 },
+    ];
+
+    const PRIORITY = {
+      high:   { label: 'High',   icon: 'priority_high', cls: 'bg-error-container text-on-error-container' },
+      medium: { label: 'Medium', icon: 'remove',        cls: 'bg-tertiary-container text-on-tertiary-container' },
+      low:    { label: 'Low',    icon: 'south',         cls: 'bg-surface-container-highest text-on-surface-variant' },
+    };
+
+    const OWNERS = [
+      { initials: 'AC', avatar: 'primary' },
+      { initials: 'BO', avatar: 'secondary' },
+      { initials: 'CD', avatar: 'tertiary' },
+      { initials: 'DV', avatar: 'primary-container' },
+      { initials: 'EM', avatar: 'secondary-container' },
+    ];
+    const ON = {
+      'primary': 'on-primary', 'secondary': 'on-secondary', 'tertiary': 'on-tertiary',
+      'primary-container': 'on-primary-container',
+      'secondary-container': 'on-secondary-container',
+      'tertiary-container': 'on-tertiary-container',
+    };
+
+    const DEALS = [
+      // Lead — 8
+      { id: 'd-001', title: 'Cloud migration assessment', company: 'Acme Corp',     value: 42000, stage: 'lead', priority: 'high',   owner: 0, age: 5,  tags: ['Enterprise'] },
+      { id: 'd-002', title: 'Annual support renewal',     company: 'Globex Ltd',    value: 18500, stage: 'lead', priority: 'medium', owner: 1, age: 12, tags: ['SMB'] },
+      { id: 'd-003', title: 'Custom integration build',   company: 'Initech',       value: 36000, stage: 'lead', priority: 'medium', owner: 2, age: 3,  tags: ['Enterprise'] },
+      { id: 'd-004', title: 'Pilot project — analytics',  company: 'Umbrella Inc',  value: 12000, stage: 'lead', priority: 'low',    owner: 0, age: 22, tags: ['SMB'] },
+      { id: 'd-005', title: 'Discovery workshop',         company: 'Stark Industr.',value:  8500, stage: 'lead', priority: 'medium', owner: 3, age: 1,  tags: ['Enterprise'] },
+      { id: 'd-006', title: 'Onboarding automation',      company: 'Wayne Enter.',  value: 24000, stage: 'lead', priority: 'low',    owner: 4, age: 35, tags: ['SMB'] },
+      { id: 'd-007', title: 'Reporting overhaul',         company: 'Hooli',         value: 56000, stage: 'lead', priority: 'high',   owner: 1, age: 7,  tags: ['Enterprise'] },
+      { id: 'd-008', title: 'Compliance audit prep',      company: 'Tyrell Corp',   value: 14000, stage: 'lead', priority: 'medium', owner: 2, age: 18, tags: ['Enterprise'] },
+
+      // Qualified — 6
+      { id: 'd-101', title: 'Self-serve seat expansion',  company: 'Pied Piper',    value: 31000, stage: 'qualified', priority: 'high',   owner: 3, age: 4,  tags: ['SMB'] },
+      { id: 'd-102', title: 'Multi-region deployment',    company: 'Soylent Corp',  value: 78000, stage: 'qualified', priority: 'high',   owner: 0, age: 9,  tags: ['Enterprise'] },
+      { id: 'd-103', title: 'API platform license',       company: 'Cyberdyne',     value: 22000, stage: 'qualified', priority: 'medium', owner: 4, age: 14, tags: ['Enterprise'] },
+      { id: 'd-104', title: 'Workflow consulting',        company: 'Aperture Sci.', value: 15000, stage: 'qualified', priority: 'medium', owner: 2, age: 6,  tags: ['SMB'] },
+      { id: 'd-105', title: 'Disaster recovery setup',    company: 'Massive Dyn.',  value: 48000, stage: 'qualified', priority: 'high',   owner: 1, age: 11, tags: ['Enterprise'] },
+      { id: 'd-106', title: 'Training package — Q3',      company: 'Vandelay Ind.', value:  9500, stage: 'qualified', priority: 'low',    owner: 3, age: 28, tags: ['SMB'] },
+
+      // Proposal — 5
+      { id: 'd-201', title: 'Enterprise tier upgrade',    company: 'Oscorp',        value: 92000, stage: 'proposal', priority: 'high',   owner: 0, age: 8,  tags: ['Enterprise'] },
+      { id: 'd-202', title: 'Custom dashboard suite',     company: 'LexCorp',       value: 41000, stage: 'proposal', priority: 'medium', owner: 4, age: 13, tags: ['Enterprise'] },
+      { id: 'd-203', title: 'Single sign-on integration', company: 'Buy n Large',   value: 18000, stage: 'proposal', priority: 'medium', owner: 2, age: 5,  tags: ['SMB'] },
+      { id: 'd-204', title: 'Data warehouse connector',   company: 'Yoyodyne',      value: 33000, stage: 'proposal', priority: 'high',   owner: 1, age: 19, tags: ['Enterprise'] },
+      { id: 'd-205', title: 'Legacy system migration',    company: 'Weyland-Yutani',value: 67000, stage: 'proposal', priority: 'high',   owner: 3, age: 24, tags: ['Enterprise'] },
+
+      // Negotiation — 3
+      { id: 'd-301', title: 'Three-year contract',        company: 'Initech',       value:108000, stage: 'negotiation', priority: 'high',   owner: 0, age: 16, tags: ['Enterprise'] },
+      { id: 'd-302', title: 'Volume discount — 200 seats',company: 'Hooli',         value: 84000, stage: 'negotiation', priority: 'high',   owner: 2, age: 10, tags: ['Enterprise'] },
+      { id: 'd-303', title: 'Renewal + upsell',           company: 'Pied Piper',    value: 27000, stage: 'negotiation', priority: 'medium', owner: 4, age: 21, tags: ['SMB'] },
+
+      // Won — 2
+      { id: 'd-401', title: 'Q1 expansion — closed',      company: 'Globex Ltd',    value: 64000, stage: 'won', priority: 'medium', owner: 1, age: 0, tags: ['Enterprise'] },
+      { id: 'd-402', title: 'Pilot graduated to prod',    company: 'Stark Industr.',value: 39000, stage: 'won', priority: 'low',    owner: 3, age: 0, tags: ['Enterprise'] },
+    ];
+
+    // ─── Render funnel widget ───────────────────────────────────────────
+    function renderFunnel() {
+      const counts = STAGES.map(s => DEALS.filter(d => d.stage === s.id).length);
+      const sums   = STAGES.map(s => DEALS.filter(d => d.stage === s.id).reduce((a, d) => a + d.value, 0));
+      const max = Math.max(...counts, 1);
+      const fmt = (n) => n >= 1000 ? `$${(n/1000).toFixed(0)}k` : `$${n}`;
+
+      const funnel = document.getElementById('funnel');
+      funnel.innerHTML = STAGES.map((s, i) => {
+        const w = (counts[i] / max) * 100;
+        const conv = i > 0 && counts[i - 1] > 0
+          ? `${Math.round((counts[i] / counts[i - 1]) * 100)}%`
+          : '';
+        return `
+          <div class="flex items-center gap-3">
+            <div class="w-28 text-body-small text-on-surface-variant shrink-0">${s.label}</div>
+            <div class="flex-1 h-6 bg-surface-container-high rounded relative overflow-hidden">
+              <div class="absolute inset-y-0 left-0 bg-primary"
+                   style="width: ${w}%; opacity: ${s.barAlpha}; transition: width .4s ease"></div>
+              <div class="absolute inset-0 flex items-center justify-between px-3 text-body-small font-medium">
+                <span>${counts[i]} deals</span>
+                <span class="text-on-surface-variant">${fmt(sums[i])}</span>
+              </div>
+            </div>
+            <div class="w-14 text-body-small text-on-surface-variant shrink-0 text-right">${conv}</div>
+          </div>`;
+      }).join('');
+    }
+
+    // ─── Render Kanban board ────────────────────────────────────────────
+    const board = document.getElementById('board');
+
+    function dealCardHTML(d) {
+      const o = OWNERS[d.owner];
+      const p = PRIORITY[d.priority];
+      const stale = d.age > 30;
+      // Compact card: 4 lines max — title, company, value+priority, owner+age.
+      // Tags only appear in the detail dialog so the board reads at a glance.
+      return `
+        <material-card variant="elevated" data-deal="${d.id}"
+                       class="block cursor-pointer hover:shadow-sm transition-shadow [&::part(content)]:!p-3">
+          <div slot="headline" class="flex items-start gap-1 mb-0">
+            <span class="text-body-medium font-medium leading-tight flex-1 min-w-0 line-clamp-2">${d.title}</span>
+            <material-icon-button icon="more_vert" variant="standard" size="s"
+                                  class="shrink-0 -mr-1 -mt-1"
+                                  aria-label="More" data-card-menu="${d.id}"
+                                  popovertarget="card-menu"></material-icon-button>
+          </div>
+          <div slot="supporting" class="text-body-small text-on-surface-variant truncate -mt-1">${d.company}</div>
+          <div slot="supporting" class="flex items-center gap-2 mt-1.5">
+            <span class="text-title-small font-semibold text-on-surface">$${d.value.toLocaleString()}</span>
+            <span class="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0 text-[10px] font-medium ${p.cls}" title="${p.label} priority">
+              <span class="material-symbols text-[12px]" aria-hidden="true">${p.icon}</span>
+              ${p.label}
+            </span>
+            ${stale ? `<span class="inline-flex items-center text-[10px] text-error ml-auto" title="${d.age}d since last activity"><span class="material-symbols text-[12px]" aria-hidden="true">warning</span></span>` : ''}
+          </div>
+          <div slot="supporting" class="flex items-center justify-between mt-1.5">
+            <span class="w-6 h-6 rounded-full bg-${o.avatar} text-${ON[o.avatar]} inline-flex items-center justify-center text-[10px] font-medium">${o.initials}</span>
+            <span class="text-[10px] text-on-surface-variant">${d.age === 0 ? 'today' : `${d.age}d ago`}</span>
+          </div>
+        </material-card>`;
+    }
+
+    function renderBoard() {
+      board.innerHTML = STAGES.map(s => {
+        const stageDeals = DEALS.filter(d => d.stage === s.id);
+        const sum = stageDeals.reduce((a, d) => a + d.value, 0);
+        return `
+          <section class="rounded-2xl bg-surface-container-low border border-outline-variant">
+            <header class="px-4 py-3 border-b border-outline-variant sticky top-16 bg-surface-container-low z-[5]">
+              <div class="flex items-center justify-between">
+                <h2 class="text-title-small font-semibold m-0 flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-${s.dot}"></span>
+                  ${s.label}
+                </h2>
+                <span class="text-body-small text-on-surface-variant">${stageDeals.length}</span>
+              </div>
+              <div class="text-body-small text-on-surface-variant mt-0.5">$${sum.toLocaleString()}</div>
+            </header>
+            <div class="p-2 space-y-2" data-stage="${s.id}">
+              ${stageDeals.map(dealCardHTML).join('')}
+            </div>
+          </section>`;
+      }).join('');
+    }
+
+    renderFunnel();
+    renderBoard();
+
+    // ─── Card click → open deal detail dialog ───────────────────────────
+    const dealDialog = document.getElementById('deal-dialog');
+    const dealBody   = document.getElementById('deal-body');
+    const host       = document.querySelector('material-snackbar-host');
+
+    function dealDetailHTML(d) {
+      const o = OWNERS[d.owner];
+      const p = PRIORITY[d.priority];
+      return `
+        <div class="space-y-5">
+          <div>
+            <div class="text-body-small text-on-surface-variant uppercase tracking-wide">${d.company}</div>
+            <h2 class="text-headline-small font-semibold mt-0.5 mb-2">${d.title}</h2>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="text-display-small font-semibold">$${d.value.toLocaleString()}</span>
+              <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-body-small font-medium ${p.cls}">
+                <span class="material-symbols text-[16px]" aria-hidden="true">${p.icon}</span>
+                ${p.label}
+              </span>
+              <material-chip variant="assist" label="Stage: ${STAGES.find(s => s.id === d.stage).label}" icon="timeline"></material-chip>
+            </div>
+          </div>
+
+          <material-divider></material-divider>
+
+          <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-body-medium">
+            <div><span class="text-on-surface-variant text-body-small">Owner</span><div class="flex items-center gap-2 mt-1"><span class="w-7 h-7 rounded-full bg-${o.avatar} text-${ON[o.avatar]} inline-flex items-center justify-center text-xs font-medium">${o.initials}</span> ${o.initials} (you)</div></div>
+            <div><span class="text-on-surface-variant text-body-small">Probability</span><div class="mt-1">${({lead:'15%', qualified:'35%', proposal:'55%', negotiation:'75%', won:'100%'})[d.stage]}</div></div>
+            <div><span class="text-on-surface-variant text-body-small">Expected close</span><div class="mt-1">June 30, 2026</div></div>
+            <div><span class="text-on-surface-variant text-body-small">Last activity</span><div class="mt-1">${d.age === 0 ? 'Today' : `${d.age} days ago`}</div></div>
+            <div class="col-span-2"><span class="text-on-surface-variant text-body-small">Tags</span><div class="flex gap-2 mt-1 flex-wrap">${d.tags.map(t => `<material-chip variant="suggestion" label="${t}"></material-chip>`).join('')}</div></div>
+          </div>
+
+          <material-divider></material-divider>
+
+          <div>
+            <div class="text-on-surface-variant text-body-small mb-2">Recent activity</div>
+            <material-list class="rounded-xl bg-surface-container-low overflow-hidden">
+              <material-list-item label="Sent proposal v2"
+                                  supporting-text="${o.initials} attached pricing-q2.pdf"
+                                  leading-icon="mail"
+                                  trailing-text="2d ago"></material-list-item>
+              <material-list-item label="Discovery call"
+                                  supporting-text="60-minute call with the technical team"
+                                  leading-icon="call"
+                                  trailing-text="5d ago"
+                                  divider="top"></material-list-item>
+              <material-list-item label="Note added"
+                                  supporting-text="Champion confirmed budget approval"
+                                  leading-icon="note"
+                                  trailing-text="${d.age}d ago"
+                                  divider="top"></material-list-item>
+            </material-list>
+          </div>
+        </div>`;
+    }
+
+    board.addEventListener('click', (e) => {
+      // ignore the more-menu button itself — popovertarget handles it
+      if (e.target.closest('[data-card-menu]')) return;
+      const card = e.target.closest('[data-deal]');
+      if (!card) return;
+      const deal = DEALS.find(d => d.id === card.getAttribute('data-deal'));
+      if (!deal) return;
+      dealBody.innerHTML = dealDetailHTML(deal);
+      dealDialog.show();
+    });
+
+    // ─── Per-card menu ──────────────────────────────────────────────────
+    document.getElementById('card-menu').addEventListener('materialMenuSelect', (e) => {
+      host.enqueue({ message: `Action: ${e.detail.value}`, actionLabel: 'Undo' });
+    });
+
+    // ─── Filter chips — toggle visibility (demo only, doesn't compose) ──
+    const FILTERS = {
+      'f-mine':  d => d.owner === 0,
+      'f-high':  d => d.priority === 'high',
+      'f-soon':  d => d.age < 7 && (d.stage === 'negotiation' || d.stage === 'proposal'),
+      'f-stale': d => d.age > 30,
+      'f-ent':   d => d.tags.includes('Enterprise'),
+      'f-smb':   d => d.tags.includes('SMB'),
+    };
+    const activeFilters = new Set();
+
+    function applyFilters() {
+      const cards = board.querySelectorAll('[data-deal]');
+      cards.forEach(card => {
+        const id = card.getAttribute('data-deal');
+        const deal = DEALS.find(d => d.id === id);
+        if (!deal) return;
+        const visible = activeFilters.size === 0 ||
+          [...activeFilters].every(f => FILTERS[f](deal));
+        card.style.display = visible ? '' : 'none';
+      });
+    }
+
+    document.querySelectorAll('material-chip[variant="filter"]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const id = chip.id;
+        if (chip.selected) activeFilters.add(id);
+        else activeFilters.delete(id);
+        applyFilters();
+      });
+    });
+
+    // ─── Add deal dialog ────────────────────────────────────────────────
+    document.getElementById('add-dialog').addEventListener('materialDialogClose', (e) => {
+      if (e.detail.returnValue === 'create') {
+        host.enqueue({ message: 'Deal created.', actionLabel: 'View' });
+      }
+      document.getElementById('add-form').reset();
+    });
+
+    // ─── Deal dialog actions ────────────────────────────────────────────
+    dealDialog.addEventListener('materialDialogClose', (e) => {
+      if (e.detail.returnValue === 'open') {
+        host.enqueue({ message: 'Opening full deal view…' });
+      }
+    });
+  </script>
+</body>
+</html>
