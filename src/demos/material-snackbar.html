@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-snackbar — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-snackbar</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 transient message at the bottom of the UI. <code>material-snackbar-host</code>
+          owns positioning + queue; one visible at a time per spec.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <!-- Single line, auto-dismiss -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Single line — auto-dismiss after 5 s</h2>
+      <p class="text-on-surface-variant text-sm">
+        Default behavior. Per MD3 a11y, prefer also surfacing the same
+        information inline near the action that triggered the snackbar.
+      </p>
+      <material-button variant="filled" label="Save" id="btn-plain"></material-button>
+    </section>
+
+    <!-- With action -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">With action — stays until acted on</h2>
+      <p class="text-on-surface-variant text-sm">
+        Action-bearing snackbars do not auto-dismiss. Click <em>Undo</em> or
+        wait — it will not vanish on its own.
+      </p>
+      <material-button variant="tonal" label="Archive conversation" id="btn-action"></material-button>
+    </section>
+
+    <!-- Two-line / long text -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Two-line message</h2>
+      <p class="text-on-surface-variant text-sm">
+        Long supporting text wraps to a second line on compact widths.
+      </p>
+      <material-button variant="outlined" label="Show long message" id="btn-long"></material-button>
+    </section>
+
+    <!-- Closable, sticky -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Closable + sticky</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>duration="0"</code> + <code>closable</code>. Useful for
+        important messages that must be acknowledged.
+      </p>
+      <material-button variant="outlined" label="Show error" id="btn-error"></material-button>
+    </section>
+
+    <!-- Queue burst -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Queue burst — four messages at once</h2>
+      <p class="text-on-surface-variant text-sm">
+        MD3 forbids stacking. The host shows the first message, waits for it
+        to dismiss (timeout, action, or close), then shows the next.
+      </p>
+      <material-button variant="filled" label="Enqueue 4" id="btn-burst"></material-button>
+    </section>
+
+    <!-- Replace by id -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Replace by id — progressive feedback</h2>
+      <p class="text-on-surface-variant text-sm">
+        Re-enqueueing with the same <code>id</code> updates the visible
+        snackbar in place instead of waiting in line.
+      </p>
+      <material-button variant="filled" label="Save (with progress)" id="btn-replace"></material-button>
+    </section>
+
+    <!-- Django-messages simulation -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Django messages simulation</h2>
+      <p class="text-on-surface-variant text-sm">
+        Treats a payload like <code>django.contrib.messages</code> output.
+        <code>error</code>/<code>warning</code> become sticky + closable;
+        the rest auto-dismiss.
+      </p>
+      <material-button variant="tonal" label="Replay request messages" id="btn-django"></material-button>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-lg font-semibold">Last close reason</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Place once near the body root, or use ensureSnackbarHost() to auto-create --&gt;
+&lt;material-snackbar-host placement="bottom"&gt;&lt;/material-snackbar-host&gt;
+
+&lt;script&gt;
+  const host = document.querySelector('material-snackbar-host');
+
+  host.enqueue({ message: 'Saved.' });                         // transient
+  host.enqueue({ message: 'Archived.', actionLabel: 'Undo',
+                 onAction: () =&gt; restore() });                 // sticky w/ action
+  host.enqueue({ message: 'Save failed.', closable: true,
+                 duration: 0, assertive: true });              // sticky error
+
+  // Replace in place
+  host.enqueue({ id: 'save', message: 'Saving…', duration: 0 });
+  setTimeout(() =&gt; host.enqueue({ id: 'save', message: 'Saved.' }), 800);
+
+  // Map django.contrib.messages → snackbars
+  for (const m of django_messages) {
+    host.enqueue({
+      message: m.text,
+      closable: m.level === 'error' || m.level === 'warning',
+      duration: (m.level === 'error' || m.level === 'warning') ? 0 : 5000,
+      assertive: m.level === 'error',
+    });
+  }
+&lt;/script&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <!-- The host. Render once per page, near the body root. -->
+  <material-snackbar-host placement="bottom"></material-snackbar-host>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    const host = document.querySelector('material-snackbar-host');
+    const log  = document.getElementById('log');
+
+    function record(p) {
+      p.then(({ reason }) => {
+        log.textContent = `closed → ${reason}`;
+      });
+    }
+
+    document.getElementById('btn-plain').addEventListener('click', () => {
+      record(host.enqueue({ message: 'Saved.' }));
+    });
+
+    document.getElementById('btn-action').addEventListener('click', () => {
+      record(host.enqueue({
+        message: 'Conversation archived.',
+        actionLabel: 'Undo',
+        onAction: () => { log.textContent = 'undo clicked'; },
+      }));
+    });
+
+    document.getElementById('btn-long').addEventListener('click', () => {
+      record(host.enqueue({
+        message: 'Your offline changes have been synced and will appear on other devices in a moment.',
+      }));
+    });
+
+    document.getElementById('btn-error').addEventListener('click', () => {
+      record(host.enqueue({
+        message: 'Could not save. Check your connection and try again.',
+        closable: true,
+        duration: 0,
+        assertive: true,
+      }));
+    });
+
+    document.getElementById('btn-burst').addEventListener('click', () => {
+      ['Item 1 added.', 'Item 2 added.', 'Item 3 added.', 'Item 4 added.']
+        .forEach(m => host.enqueue({ message: m, duration: 2000 }));
+    });
+
+    document.getElementById('btn-replace').addEventListener('click', () => {
+      host.enqueue({ id: 'save', message: 'Saving…', duration: 0 });
+      setTimeout(() => host.enqueue({ id: 'save', message: 'Saved.', duration: 2500 }), 900);
+    });
+
+    document.getElementById('btn-django').addEventListener('click', () => {
+      const messages = [
+        { level: 'success', text: 'Profile updated.' },
+        { level: 'info',    text: 'Cache cleared.' },
+        { level: 'warning', text: 'Your trial expires in 3 days.' },
+        { level: 'error',   text: 'Failed to upload avatar.' },
+      ];
+      for (const m of messages) {
+        const sticky = m.level === 'error' || m.level === 'warning';
+        host.enqueue({
+          message: m.text,
+          closable: sticky,
+          duration: sticky ? 0 : 5000,
+          assertive: m.level === 'error',
+        });
+      }
+    });
+  </script>
+</body>
+</html>

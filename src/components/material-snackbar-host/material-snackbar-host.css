@@ -1,0 +1,34 @@
+/* Page-level snackbar viewport. Fixed at the bottom; placement attribute
+   shifts the inline alignment. z-index sits above FAB (per MD3 guideline).
+   Uses safe-area-inset-bottom so iOS home indicator doesn't overlap. */
+
+:host {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* let clicks pass through the gutter */
+  padding-inline: 16px;
+  z-index: 1000;
+}
+
+:host([placement="bottom-start"]) { justify-content: flex-start; }
+:host([placement="bottom-end"])   { justify-content: flex-end; }
+
+.slot {
+  display: contents;
+}
+
+.live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
