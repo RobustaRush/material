@@ -3,6 +3,7 @@ import {
   Element,
   Event,
   EventEmitter,
+  Method,
   Prop,
   Watch,
   AttachInternals,
@@ -99,7 +100,13 @@ export class MaterialCheckbox {
     this.indeterminate = false;
   }
 
-  private toggle = () => {
+  /** Programmatically toggle the checkbox as if a user clicked it.
+   *  Mirrors a real interaction: respects `disabled`, clears `indeterminate`
+   *  on first toggle, and emits `checkedChange`. Use this when another
+   *  component (e.g. a list-item handling Space) needs to drive the
+   *  checkbox without faking shadow-DOM clicks. */
+  @Method()
+  async toggle(): Promise<void> {
     if (this.disabled) return;
     if (this.indeterminate) {
       this.indeterminate = false;
@@ -108,7 +115,7 @@ export class MaterialCheckbox {
       this.checked = !this.checked;
     }
     this.checkedChange.emit({ checked: this.checked, indeterminate: this.indeterminate });
-  };
+  }
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === ' ' || e.key === 'Enter') {
@@ -152,7 +159,7 @@ export class MaterialCheckbox {
         aria-required={this.required ? 'true' : null}
         aria-invalid={inError ? 'true' : null}
         aria-describedby={subText ? descId : null}
-        onClick={this.toggle}
+        onClick={() => this.toggle()}
         onKeyDown={this.handleKeyDown}
       >
         <span
