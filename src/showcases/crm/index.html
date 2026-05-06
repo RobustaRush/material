@@ -26,11 +26,9 @@
   menu (per-card actions), snackbar, tooltip.
 -->
 
-<body class="bg-background text-on-background min-h-screen flex">
+<body class="bg-surface-container-low text-on-surface min-h-screen flex">
 
-  <!-- Navigation rail — sticks to the leading edge on both axes so it stays
-       visible during vertical AND horizontal page scroll (when the kanban
-       board overflows the viewport width). -->
+  <!-- Navigation rail -->
   <material-navigation-rail id="rail" class="shrink-0 sticky top-0 left-0 self-start h-screen z-20">
     <material-icon-button slot="menu" variant="standard" icon="menu"
                           aria-label="Toggle navigation"></material-icon-button>
@@ -51,10 +49,25 @@
 
   <div class="flex-1 flex flex-col min-w-0">
 
-    <!-- Search app bar — sticks to the top of the viewport while the page scrolls -->
-    <material-search-app-bar id="search" placeholder="Search deals, contacts, companies" class="shrink-0 sticky top-0 z-10">
-      <select id="theme-picker" slot="trailing"
-              class="bg-surface-container text-on-surface border border-outline-variant rounded px-2 py-1 text-xs mr-1"
+    <!-- Toolbar: title, view switcher, period, theme picker, avatar -->
+    <header class="shrink-0 px-6 pt-5 pb-3 flex items-center gap-4 flex-wrap">
+      <h1 class="text-headline-small m-0 mr-auto">Sales pipeline</h1>
+
+      <material-button-group selection="single" class="shrink-0">
+        <material-icon-button selected variant="standard" icon="view_kanban" aria-label="Kanban view" value="kanban"></material-icon-button>
+        <material-icon-button variant="standard" icon="view_list" aria-label="List view" value="list"></material-icon-button>
+        <material-icon-button variant="standard" icon="show_chart" aria-label="Forecast view" value="forecast"></material-icon-button>
+      </material-button-group>
+
+      <select class="bg-surface-container-low text-on-surface border border-outline-variant rounded px-3 py-2 text-sm">
+        <option>This quarter (Q2 2026)</option>
+        <option>This month</option>
+        <option>This year</option>
+        <option>Custom…</option>
+      </select>
+
+      <select id="theme-picker"
+              class="bg-surface-container-low text-on-surface border border-outline-variant rounded px-2 py-1 text-xs"
               aria-label="Theme">
         <option value="light">Light</option>
         <option value="dark">Dark</option>
@@ -63,28 +76,10 @@
         <option value="light-high-contrast">Light · high contrast</option>
         <option value="dark-high-contrast">Dark · high contrast</option>
       </select>
-      <span slot="trailing"
-            class="w-9 h-9 mr-2 rounded-full bg-tertiary text-on-tertiary inline-flex items-center justify-center text-sm font-medium"
+
+      <span class="w-9 h-9 rounded-full bg-tertiary text-on-tertiary inline-flex items-center justify-center text-label-large"
             title="Mikhail Podgurskiy"
             aria-label="Account">MP</span>
-    </material-search-app-bar>
-
-    <!-- Toolbar: title, view switcher, filters, period -->
-    <header class="shrink-0 px-6 pt-4 pb-3 flex items-center gap-4 flex-wrap">
-      <h1 class="text-headline-small font-semibold m-0 mr-auto">Sales pipeline</h1>
-
-      <material-button-group selection="single" class="shrink-0">
-        <material-icon-button selected variant="standard" icon="view_kanban" aria-label="Kanban view" value="kanban"></material-icon-button>
-        <material-icon-button variant="standard" icon="view_list" aria-label="List view" value="list"></material-icon-button>
-        <material-icon-button variant="standard" icon="show_chart" aria-label="Forecast view" value="forecast"></material-icon-button>
-      </material-button-group>
-
-      <select class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-2 text-sm">
-        <option>This quarter (Q2 2026)</option>
-        <option>This month</option>
-        <option>This year</option>
-        <option>Custom…</option>
-      </select>
     </header>
 
     <!-- Filter chip rail -->
@@ -98,24 +93,7 @@
       <material-chip variant="filter" label="SMB" id="f-smb"></material-chip>
     </div>
 
-    <!-- Funnel widget -->
-    <section class="shrink-0 px-6 pb-3">
-      <material-card variant="filled" class="block">
-        <div slot="headline" class="flex items-center justify-between gap-3">
-          <span class="text-title-medium font-medium">Funnel · Q2 2026</span>
-          <span class="text-body-small text-on-surface-variant" id="funnel-totals">95 deals · $2.3M open · $312k won</span>
-        </div>
-        <div slot="supporting" class="mt-2">
-          <div id="funnel" class="space-y-2"></div>
-        </div>
-      </material-card>
-    </section>
-
-    <!-- Kanban board — grows to fit its tallest column. The page itself is
-         the only scroll container so column headers can use position:sticky
-         relative to the document; an `overflow-x: auto` here would create a
-         nested scroll container and break that. On narrow viewports the
-         page gets horizontal scroll instead. -->
+    <!-- Kanban board -->
     <main class="px-6 pb-6">
       <div id="board" class="grid grid-flow-col auto-cols-[300px] gap-4 items-start"></div>
     </main>
@@ -180,16 +158,12 @@
   <script src="/demos/_shared.js"></script>
   <script>
     // ─── Stages and sample data ─────────────────────────────────────────
-    // Stage tones: bullet/dot in column header (small) and the funnel bar
-    // (large). For the funnel we lean on primary-opacity steps so the
-    // gradient itself signals progression — even on light themes the
-    // earliest stage stays clearly visible above the card surface.
     const STAGES = [
-      { id: 'lead',        label: 'Lead',        dot: 'tertiary-container', barAlpha: 0.20 },
-      { id: 'qualified',   label: 'Qualified',   dot: 'tertiary',           barAlpha: 0.40 },
-      { id: 'proposal',    label: 'Proposal',    dot: 'secondary',          barAlpha: 0.60 },
-      { id: 'negotiation', label: 'Negotiation', dot: 'primary-container',  barAlpha: 0.80 },
-      { id: 'won',         label: 'Won',         dot: 'primary',            barAlpha: 1.00 },
+      { id: 'lead',        label: 'Lead',        tone: 'tertiary-container',  prob: 15 },
+      { id: 'qualified',   label: 'Qualified',   tone: 'tertiary',            prob: 35 },
+      { id: 'proposal',    label: 'Proposal',    tone: 'secondary',           prob: 55 },
+      { id: 'negotiation', label: 'Negotiation', tone: 'primary-container',   prob: 75 },
+      { id: 'won',         label: 'Won',         tone: 'primary',             prob: 100 },
     ];
 
     const PRIORITY = {
@@ -248,34 +222,10 @@
       { id: 'd-402', title: 'Pilot graduated to prod',    company: 'Stark Industr.',value: 39000, stage: 'won', priority: 'low',    owner: 3, age: 0, tags: ['Enterprise'] },
     ];
 
-    // ─── Render funnel widget ───────────────────────────────────────────
-    function renderFunnel() {
-      const counts = STAGES.map(s => DEALS.filter(d => d.stage === s.id).length);
-      const sums   = STAGES.map(s => DEALS.filter(d => d.stage === s.id).reduce((a, d) => a + d.value, 0));
-      const max = Math.max(...counts, 1);
-      const fmt = (n) => n >= 1000 ? `$${(n/1000).toFixed(0)}k` : `$${n}`;
-
-      const funnel = document.getElementById('funnel');
-      funnel.innerHTML = STAGES.map((s, i) => {
-        const w = (counts[i] / max) * 100;
-        const conv = i > 0 && counts[i - 1] > 0
-          ? `${Math.round((counts[i] / counts[i - 1]) * 100)}%`
-          : '';
-        return `
-          <div class="flex items-center gap-3">
-            <div class="w-28 text-body-small text-on-surface-variant shrink-0">${s.label}</div>
-            <div class="flex-1 h-6 bg-surface-container-high rounded relative overflow-hidden">
-              <div class="absolute inset-y-0 left-0 bg-primary"
-                   style="width: ${w}%; opacity: ${s.barAlpha}; transition: width .4s ease"></div>
-              <div class="absolute inset-0 flex items-center justify-between px-3 text-body-small font-medium">
-                <span>${counts[i]} deals</span>
-                <span class="text-on-surface-variant">${fmt(sums[i])}</span>
-              </div>
-            </div>
-            <div class="w-14 text-body-small text-on-surface-variant shrink-0 text-right">${conv}</div>
-          </div>`;
-      }).join('');
-    }
+    const fmtMoney = (n) =>
+      n >= 1_000_000 ? `$${(n/1_000_000).toFixed(1)}M`
+      : n >= 1000    ? `$${(n/1000).toFixed(0)}k`
+      :                `$${n}`;
 
     // ─── Render Kanban board ────────────────────────────────────────────
     const board = document.getElementById('board');
@@ -284,30 +234,30 @@
       const o = OWNERS[d.owner];
       const p = PRIORITY[d.priority];
       const stale = d.age > 30;
-      // Compact card: 4 lines max — title, company, value+priority, owner+age.
-      // Tags only appear in the detail dialog so the board reads at a glance.
+      const pill = 'inline-flex items-center h-5 px-2 rounded-full text-label-small leading-none';
       return `
-        <material-card variant="elevated" data-deal="${d.id}"
-                       class="block cursor-pointer hover:shadow-sm transition-shadow [&::part(content)]:!p-3">
-          <div slot="headline" class="flex items-start gap-1 mb-0">
-            <span class="text-body-medium font-medium leading-tight flex-1 min-w-0 line-clamp-2">${d.title}</span>
+        <material-card variant="outlined" data-deal="${d.id}"
+                       class="block cursor-pointer">
+          <div slot="headline" class="flex items-start gap-2 min-h-10">
+            <span class="text-title-medium leading-snug line-clamp-2 flex-1 min-w-0 self-center">${d.title}</span>
             <material-icon-button icon="more_vert" variant="standard" size="s"
-                                  class="shrink-0 -mr-1 -mt-1"
+                                  class="shrink-0 -mr-2 self-start"
                                   aria-label="More" data-card-menu="${d.id}"
                                   popovertarget="card-menu"></material-icon-button>
           </div>
-          <div slot="supporting" class="text-body-small text-on-surface-variant truncate -mt-1">${d.company}</div>
-          <div slot="supporting" class="flex items-center gap-2 mt-1.5">
-            <span class="text-title-small font-semibold text-on-surface">$${d.value.toLocaleString()}</span>
-            <span class="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0 text-[10px] font-medium ${p.cls}" title="${p.label} priority">
-              <span class="material-symbols text-[12px]" aria-hidden="true">${p.icon}</span>
+          <div slot="supporting" class="text-body-small text-on-surface-variant truncate mt-1">${d.company}</div>
+          <div slot="supporting" class="text-title-medium text-on-surface tabular-nums leading-none mt-3">$${d.value.toLocaleString()}</div>
+          <div slot="supporting" class="flex items-center gap-1.5 mt-2 flex-wrap">
+            <span class="${pill} gap-0.5 ${p.cls}" title="${p.label} priority">
+              <span class="material-symbols text-[14px] -ml-0.5" aria-hidden="true">${p.icon}</span>
               ${p.label}
             </span>
-            ${stale ? `<span class="inline-flex items-center text-[10px] text-error ml-auto" title="${d.age}d since last activity"><span class="material-symbols text-[12px]" aria-hidden="true">warning</span></span>` : ''}
+            ${d.tags.map(t => `<span class="${pill} bg-surface-container-high text-on-surface-variant">${t}</span>`).join('')}
+            ${stale ? `<span class="${pill} gap-0.5 bg-error-container text-on-error-container" title="${d.age}d since last activity"><span class="material-symbols text-[14px] -ml-0.5" aria-hidden="true">schedule</span>Stale</span>` : ''}
           </div>
-          <div slot="supporting" class="flex items-center justify-between mt-1.5">
-            <span class="w-6 h-6 rounded-full bg-${o.avatar} text-${ON[o.avatar]} inline-flex items-center justify-center text-[10px] font-medium">${o.initials}</span>
-            <span class="text-[10px] text-on-surface-variant">${d.age === 0 ? 'today' : `${d.age}d ago`}</span>
+          <div slot="supporting" class="flex items-center justify-between mt-3 pt-3 border-t border-outline-variant">
+            <span class="w-7 h-7 rounded-full bg-${o.avatar} text-${ON[o.avatar]} inline-flex items-center justify-center text-label-small" title="${o.initials}">${o.initials}</span>
+            <span class="text-label-small text-on-surface-variant">${d.age === 0 ? 'Today' : `${d.age}d ago`}</span>
           </div>
         </material-card>`;
     }
@@ -317,25 +267,21 @@
         const stageDeals = DEALS.filter(d => d.stage === s.id);
         const sum = stageDeals.reduce((a, d) => a + d.value, 0);
         return `
-          <section class="rounded-2xl bg-surface-container-low border border-outline-variant">
-            <header class="px-4 py-3 border-b border-outline-variant sticky top-16 bg-surface-container-low z-[5]">
-              <div class="flex items-center justify-between">
-                <h2 class="text-title-small font-semibold m-0 flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-${s.dot}"></span>
-                  ${s.label}
-                </h2>
-                <span class="text-body-small text-on-surface-variant">${stageDeals.length}</span>
+          <section class="flex flex-col">
+            <header class="sticky top-0 z-[5] py-2 bg-surface-container-low">
+              <div class="flex items-center gap-3 h-10 px-4 rounded-full bg-surface-container-high">
+                <h2 class="text-title-small m-0">${s.label}</h2>
+                <span class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-surface-container-low text-on-surface-variant text-label-small">${stageDeals.length}</span>
+                <span class="ml-auto text-label-large text-on-surface-variant tabular-nums">${fmtMoney(sum)}</span>
               </div>
-              <div class="text-body-small text-on-surface-variant mt-0.5">$${sum.toLocaleString()}</div>
             </header>
-            <div class="p-2 space-y-2" data-stage="${s.id}">
+            <div class="space-y-3 mt-1" data-stage="${s.id}">
               ${stageDeals.map(dealCardHTML).join('')}
             </div>
           </section>`;
       }).join('');
     }
 
-    renderFunnel();
     renderBoard();
 
     // ─── Card click → open deal detail dialog ───────────────────────────
@@ -365,7 +311,7 @@
 
           <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-body-medium">
             <div><span class="text-on-surface-variant text-body-small">Owner</span><div class="flex items-center gap-2 mt-1"><span class="w-7 h-7 rounded-full bg-${o.avatar} text-${ON[o.avatar]} inline-flex items-center justify-center text-xs font-medium">${o.initials}</span> ${o.initials} (you)</div></div>
-            <div><span class="text-on-surface-variant text-body-small">Probability</span><div class="mt-1">${({lead:'15%', qualified:'35%', proposal:'55%', negotiation:'75%', won:'100%'})[d.stage]}</div></div>
+            <div><span class="text-on-surface-variant text-body-small">Probability</span><div class="mt-1">${STAGES.find(s => s.id === d.stage).prob}%</div></div>
             <div><span class="text-on-surface-variant text-body-small">Expected close</span><div class="mt-1">June 30, 2026</div></div>
             <div><span class="text-on-surface-variant text-body-small">Last activity</span><div class="mt-1">${d.age === 0 ? 'Today' : `${d.age} days ago`}</div></div>
             <div class="col-span-2"><span class="text-on-surface-variant text-body-small">Tags</span><div class="flex gap-2 mt-1 flex-wrap">${d.tags.map(t => `<material-chip variant="suggestion" label="${t}"></material-chip>`).join('')}</div></div>
