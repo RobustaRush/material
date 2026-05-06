@@ -28,7 +28,7 @@
 
 /* XS/S need a 48dp interactive target for accessibility. */
 :host([size="xs"]) [part="button"],
-:host([size="s"])  [part="button"] { width: 48px; height: 48px; }
+:host([size="s"])  [part="button"] { width: 3rem; height: 3rem; }
 
 [part="visual"] {
   position: relative;
@@ -51,51 +51,51 @@
 
 [part="button"]:focus-visible [part="visual"] {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }
 
 /* Sizes — visual height + icon font-size. */
-:host([size="xs"]) [part="visual"] { height: 32px;  --icon: 20px; min-width: 32px; }
-:host([size="s"])  [part="visual"] { height: 40px;  --icon: 24px; min-width: 40px; }
-:host([size="m"])  [part="visual"] { height: 56px;  --icon: 24px; min-width: 56px; }
-:host([size="l"])  [part="visual"] { height: 96px;  --icon: 32px; min-width: 96px; }
-:host([size="xl"]) [part="visual"] { height: 136px; --icon: 40px; min-width: 136px; }
+:host([size="xs"]) [part="visual"] { height: 2rem;  --icon: 20px; min-width: 2rem; }
+:host([size="s"])  [part="visual"] { height: 2.5rem;  --icon: 24px; min-width: 2.5rem; }
+:host([size="m"])  [part="visual"] { height: 3.5rem;  --icon: 24px; min-width: 3.5rem; }
+:host([size="l"])  [part="visual"] { height: 6rem;  --icon: 32px; min-width: 6rem; }
+:host([size="xl"]) [part="visual"] { height: 8.5rem; --icon: 40px; min-width: 8.5rem; }
 
 /* Width modifiers. */
-:host([size="xs"][width="narrow"]) [part="visual"] { min-width: 28px;  }
-:host([size="xs"][width="wide"])   [part="visual"] { min-width: 40px;  }
-:host([size="s"][width="narrow"])  [part="visual"] { min-width: 32px;  }
-:host([size="s"][width="wide"])    [part="visual"] { min-width: 52px;  }
-:host([size="m"][width="narrow"])  [part="visual"] { min-width: 48px;  }
-:host([size="m"][width="wide"])    [part="visual"] { min-width: 72px;  }
-:host([size="l"][width="narrow"])  [part="visual"] { min-width: 64px;  }
-:host([size="l"][width="wide"])    [part="visual"] { min-width: 128px; }
-:host([size="xl"][width="narrow"]) [part="visual"] { min-width: 104px; }
-:host([size="xl"][width="wide"])   [part="visual"] { min-width: 184px; }
+:host([size="xs"][width="narrow"]) [part="visual"] { min-width: 1.75rem;  }
+:host([size="xs"][width="wide"])   [part="visual"] { min-width: 2.5rem;  }
+:host([size="s"][width="narrow"])  [part="visual"] { min-width: 2rem;  }
+:host([size="s"][width="wide"])    [part="visual"] { min-width: 3.25rem;  }
+:host([size="m"][width="narrow"])  [part="visual"] { min-width: 3rem;  }
+:host([size="m"][width="wide"])    [part="visual"] { min-width: 4.5rem;  }
+:host([size="l"][width="narrow"])  [part="visual"] { min-width: 4rem;  }
+:host([size="l"][width="wide"])    [part="visual"] { min-width: 8rem; }
+:host([size="xl"][width="narrow"]) [part="visual"] { min-width: 6.5rem; }
+:host([size="xl"][width="wide"])   [part="visual"] { min-width: 11.5rem; }
 
 /* Resting square radius — also used as toggle morph for shape="round" + selected. */
 :host([shape="square"][size="xs"]),
 :host([shape="square"][size="s"]),
 :host([toggle][selected][shape="round"][size="xs"]),
-:host([toggle][selected][shape="round"][size="s"])  { --btn-r: 12px; }
+:host([toggle][selected][shape="round"][size="s"])  { --btn-r: 0.75rem; }
 
 :host([shape="square"][size="m"]),
-:host([toggle][selected][shape="round"][size="m"])  { --btn-r: 16px; }
+:host([toggle][selected][shape="round"][size="m"])  { --btn-r: 1rem; }
 
 :host([shape="square"][size="l"]),
 :host([shape="square"][size="xl"]),
 :host([toggle][selected][shape="round"][size="l"]),
-:host([toggle][selected][shape="round"][size="xl"]) { --btn-r: 28px; }
+:host([toggle][selected][shape="round"][size="xl"]) { --btn-r: 1.75rem; }
 
 /* Toggle morph for shape="square" + selected → swap to round. */
 :host([toggle][selected][shape="square"]) { --btn-r: 9999px; }
 
 /* Pressed-state morph (radius shrinks toward square). */
 :host([size="xs"]) [part="button"]:active [part="visual"],
-:host([size="s"])  [part="button"]:active [part="visual"] { --btn-r: 8px; }
-:host([size="m"])  [part="button"]:active [part="visual"] { --btn-r: 12px; }
+:host([size="s"])  [part="button"]:active [part="visual"] { --btn-r: 0.5rem; }
+:host([size="m"])  [part="button"]:active [part="visual"] { --btn-r: 0.75rem; }
 :host([size="l"])  [part="button"]:active [part="visual"],
-:host([size="xl"]) [part="button"]:active [part="visual"] { --btn-r: 16px; }
+:host([size="xl"]) [part="button"]:active [part="visual"] { --btn-r: 1rem; }
 
 /* Variants — non-toggle and toggle-unselected share the resting row. */
 :host([variant="filled"]) [part="visual"] {
@@ -152,7 +152,7 @@
   font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
   font-weight: normal;
   line-height: 1;
-  font-size: var(--icon, 24px);
+  font-size: var(--icon, 1.5rem);
 }
 
 .icon-wrap { position: relative; display: inline-flex; }

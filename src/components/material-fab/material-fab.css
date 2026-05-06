@@ -51,14 +51,14 @@
 /* Hide-near-end: fade + slide down as the page bottom approaches. */
 :host([near-end]) [part="visual"] {
   opacity: 0;
-  transform: translateY(16px) scale(.85);
+  transform: translateY(1rem) scale(.85);
   pointer-events: none;
   box-shadow: none;
 }
 
 [part="button"]:focus-visible [part="visual"] {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }
 
 :host([disabled]) [part="visual"] {
@@ -103,7 +103,7 @@
   font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
   font-weight: normal;
   line-height: 1;
-  font-size: var(--fab-icon, 24px);
+  font-size: var(--fab-icon, 1.5rem);
   position: relative;
 }
 
@@ -113,8 +113,8 @@
   position: absolute;
   left: var(--ripple-x, 50%);
   top: var(--ripple-y, 50%);
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   background: currentColor;
   opacity: .25;
   border-radius: 50%;

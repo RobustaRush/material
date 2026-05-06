@@ -6,7 +6,7 @@ material-datetime-field[hidden] { display: none; }
 /* Dialog body wrapper — equal height across calendar/time-picker swap.
  * 440dp ≈ time-picker dial natural height; calendar (~360dp) sits centered. */
 material-datetime-field .dtf__body {
-  min-height: var(--dtf-body-h, 440px);
+  min-height: var(--dtf-body-h, 27.5rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,7 +15,7 @@ material-datetime-field .dtf__body {
 material-datetime-field .dtf__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   width: 100%;
 }
 

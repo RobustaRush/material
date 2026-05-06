@@ -34,18 +34,18 @@
   display: inline-flex;
   width: auto;
   min-width: var(--handle-h);
-  height: 200px;
+  height: 12.5rem;
 }
 
 .root {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
   width: 100%;
   height: 100%;
   /* Pulls the label up so it lands at the same y-level as a sibling
      outlined textfield's floated label when both sit in the same row. */
-  margin-top: -8px;
+  margin-top: -0.5rem;
 }
 
 [part="container"] {
@@ -91,7 +91,7 @@
 
 .seg.leading {
   left: 0;
-  width: max(0px, calc(var(--vl, 0%) - var(--seg-gap)));
+  width: max(0, calc(var(--vl, 0%) - var(--seg-gap)));
   border-top-left-radius: var(--track-r);
   border-bottom-left-radius: var(--track-r);
 }
@@ -125,7 +125,7 @@
   /* "leading" = lower value side = bottom */
   bottom: 0;
   top: auto;
-  height: max(0px, calc(var(--vl, 0%) - var(--seg-gap)));
+  height: max(0, calc(var(--vl, 0%) - var(--seg-gap)));
   border-radius: 0 0 var(--track-r) var(--track-r);
 }
 :host([orientation="vertical"]) .seg.active {
@@ -151,7 +151,7 @@
 .icon {
   position: absolute;
   top: 50%;
-  left: 16px;
+  left: 1rem;
   transform: translateY(-50%);
   font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
   font-weight: normal;
@@ -167,7 +167,7 @@
 :host([orientation="vertical"]) .icon {
   top: auto;
   left: 50%;
-  bottom: 16px;
+  bottom: 1rem;
   transform: translateX(-50%);
 }
 :host([orientation="vertical"]) .icon.active {
@@ -182,8 +182,8 @@
   position: absolute;
   top: 50%;
   left: var(--p, 0%);
-  width: 4px;
-  height: 4px;
+  width: 0.25rem;
+  height: 0.25rem;
   border-radius: 50%;
   background: var(--slider-stop-off);
   transform: translate(-50%, -50%);
@@ -203,8 +203,8 @@
 .tick-label {
   position: absolute;
   font-family: inherit;
-  font-size: 11px;
-  line-height: 16px;
+  font-size: 0.6875rem;
+  line-height: 1rem;
   color: var(--md-sys-color-on-surface-variant);
   pointer-events: none;
   user-select: none;
@@ -221,14 +221,14 @@
   bottom: var(--p, 0%);
   /* Track is narrower than the container; the handle extends past the track
      edges. Push the label past the handle, not just past the track. */
-  left: calc(100% + (var(--handle-h) - var(--track-h)) / 2 + 8px);
+  left: calc(100% + (var(--handle-h) - var(--track-h)) / 2 + 0.5rem);
   transform: translateY(50%);
 }
 /* Reserve space below the track (horizontal) or to the right (vertical). */
-:host([tick-labels]) [part="container"] { margin-bottom: 22px; }
+:host([tick-labels]) [part="container"] { margin-bottom: 1.375rem; }
 :host([tick-labels][orientation="vertical"]) [part="container"] {
   margin-bottom: 0;
-  margin-right: calc((var(--handle-h) - var(--track-h)) / 2 + 32px);
+  margin-right: calc((var(--handle-h) - var(--track-h)) / 2 + 2rem);
 }
 
 
@@ -237,7 +237,7 @@
   position: absolute;
   top: 50%;
   left: var(--p, 0%);
-  width: 4px;
+  width: 0.25rem;
   height: var(--handle-h);
   border-radius: 9999px;
   background: var(--slider-handle);
@@ -254,42 +254,42 @@
   top: calc(100% - var(--p, 0%));
   left: 50%;
   width: var(--handle-h);
-  height: 4px;
+  height: 0.25rem;
 }
 
 .thumb:active { cursor: grabbing; }
 .thumb:focus-visible {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 4px;
+  outline-offset: 0.25rem;
 }
 
 /* Spec: handle narrows from 4dp → 2dp on focus / press. */
-.thumb:is(:focus-visible, :active) { width: 2px; }
+.thumb:is(:focus-visible, :active) { width: 0.125rem; }
 :host([orientation="vertical"]) .thumb:is(:focus-visible, :active) {
   width: var(--handle-h);
-  height: 2px;
+  height: 0.125rem;
 }
 
 /* Value indicator bubble — appears on hover/focus/drag, hidden otherwise. */
 .indicator {
   position: absolute;
-  bottom: calc(100% + 12px);
+  bottom: calc(100% + 0.75rem);
   left: 50%;
   transform: translateX(-50%);
-  min-width: 48px;
-  height: 44px;
-  padding: 0 12px;
+  min-width: 3rem;
+  height: 2.75rem;
+  padding: 0 0.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   background: var(--slider-indicator-bg);
   color: var(--slider-indicator-fg);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   line-height: 1;
-  letter-spacing: 0.1px;
+  letter-spacing: 0.00625rem;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
@@ -299,7 +299,7 @@
 :host([orientation="vertical"]) .indicator {
   bottom: 50%;
   left: auto;
-  right: calc(100% + 12px);
+  right: calc(100% + 0.75rem);
   transform: translateY(50%);
 }
 
@@ -312,29 +312,29 @@
 .label {
   display: block;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
-  line-height: 16px;
-  letter-spacing: 0.4px;
+  line-height: 1rem;
+  letter-spacing: 0.025rem;
   color: var(--md-sys-color-on-surface-variant);
-  padding: 0 16px;
+  padding: 0 1rem;
   user-select: none;
   -webkit-user-select: none;
 }
 :host([error]) .label { color: var(--md-sys-color-error); }
 .required-mark {
-  margin-left: 2px;
+  margin-left: 0.125rem;
   color: var(--md-sys-color-error);
 }
 
 /* Help / error text below the slider. */
 .subtext {
   font-family: inherit;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.4px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.025rem;
   color: var(--md-sys-color-on-surface-variant);
-  padding: 0 16px;
+  padding: 0 1rem;
 }
 .subtext.error { color: var(--md-sys-color-error); }
 

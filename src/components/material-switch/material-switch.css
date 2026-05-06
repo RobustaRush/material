@@ -39,14 +39,14 @@
 .root.has-text {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
   width: 100%;
 }
 
 .text-col {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
   flex: 1;
   min-width: 0;
 }
@@ -55,8 +55,8 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  width: 52px;
-  height: 32px;
+  width: 3.25rem;
+  height: 2rem;
   padding: 0;
   margin: 0;
   border: 0;
@@ -70,7 +70,7 @@
 [part="switch"]:focus { outline: none; }
 [part="switch"]:focus-visible {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
   border-radius: 9999px;
 }
 
@@ -119,7 +119,7 @@
   font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
   font-weight: normal;
   line-height: 1;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--icon-color);
   pointer-events: none;
   user-select: none;
@@ -133,8 +133,8 @@
   top: 50%;
   /* center on handle */
   left: calc(var(--handle-x) + var(--handle-size) / 2);
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   background: transparent;
@@ -186,25 +186,25 @@
 .label {
   display: block;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 400;
-  line-height: 24px;
-  letter-spacing: 0.5px;
+  line-height: 1.5rem;
+  letter-spacing: 0.03125rem;
   color: var(--md-sys-color-on-surface);
   user-select: none;
   -webkit-user-select: none;
 }
 :host([error]) .label { color: var(--md-sys-color-error); }
 .required-mark {
-  margin-left: 2px;
+  margin-left: 0.125rem;
   color: var(--md-sys-color-error);
 }
 
 .subtext {
   font-family: inherit;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.4px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.025rem;
   color: var(--md-sys-color-on-surface-variant);
 }
 .subtext.error { color: var(--md-sys-color-error); }

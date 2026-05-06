@@ -18,40 +18,40 @@
 :host([variant="rich"][open]) [part="surface"] { pointer-events: auto; }
 
 :host([variant="plain"]) [part="surface"] {
-  min-height: 24px;
-  padding: 4px 8px;
+  min-height: 1.5rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 9999px;
   background: var(--md-sys-color-inverse-surface);
   color: var(--md-sys-color-inverse-on-surface);
   font-family: inherit;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 0.75rem;
+  line-height: 1rem;
   font-weight: 400;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.025rem;
   display: inline-flex;
   align-items: center;
-  max-width: 280px;
+  max-width: 17.5rem;
 }
 
 :host([variant="rich"]) [part="surface"] {
-  padding: 12px 16px 8px;
-  border-radius: 12px;
+  padding: 0.75rem 1rem 0.5rem;
+  border-radius: 0.75rem;
   background: var(--md-sys-color-surface-container);
   color: var(--md-sys-color-on-surface-variant);
   font-family: inherit;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 400;
-  max-width: 320px;
+  max-width: 20rem;
   box-shadow: 0 2px 6px rgb(0 0 0 / .15);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 :host([variant="rich"]) [part="subhead"] {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 500;
   color: var(--md-sys-color-on-surface);
 }
@@ -63,6 +63,6 @@
 
 :host([variant="rich"]) [part="actions"] {
   display: flex;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
 }

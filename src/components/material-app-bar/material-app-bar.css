@@ -9,8 +9,8 @@
   box-sizing: border-box;
   background-color: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
   grid-template-areas: "leading headline trailing";
   grid-template-columns: auto 1fr auto;
   grid-template-rows: 64px;
@@ -24,21 +24,21 @@
 }
 
 .leading   { grid-area: leading;  display: flex; align-items: center; }
-.trailing  { grid-area: trailing; display: flex; align-items: center; gap: 8px; }
+.trailing  { grid-area: trailing; display: flex; align-items: center; gap: 0.5rem; }
 .headline-block {
   grid-area: headline;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-width: 0;
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 
 /* Headline typography — Title Large (small / collapsed). */
 .headline {
-  font-size: 22px;
-  line-height: 28px;
+  font-size: 1.375rem;
+  line-height: 1.75rem;
   font-weight: 400;
   letter-spacing: 0;
   color: var(--md-sys-color-on-surface);
@@ -48,10 +48,10 @@
 
 /* Subtitle — Label Medium (small variant). */
 .subtitle {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 0.75rem;
+  line-height: 1rem;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125rem;
   color: var(--md-sys-color-on-surface-variant);
   display: block;
   min-width: 0;
@@ -79,21 +79,21 @@
 
 .bar[data-variant="medium"]:not([data-collapsed]) .headline-block {
   justify-content: flex-end;
-  padding-left: 16px;
-  padding-bottom: 12px;
+  padding-left: 1rem;
+  padding-bottom: 0.75rem;
 }
 
 .bar[data-variant="medium"]:not([data-collapsed]) .headline {
-  font-size: 28px;
-  line-height: 36px;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
   font-weight: 400;
 }
 
 .bar[data-variant="medium"]:not([data-collapsed]) .subtitle {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 500;
-  letter-spacing: 0.1px;
+  letter-spacing: 0.00625rem;
 }
 
 /* ---------- Large flexible (120dp) ---------- */
@@ -106,21 +106,21 @@
 
 .bar[data-variant="large"]:not([data-collapsed]) .headline-block {
   justify-content: flex-end;
-  padding-left: 16px;
-  padding-bottom: 12px;
+  padding-left: 1rem;
+  padding-bottom: 0.75rem;
 }
 
 .bar[data-variant="large"]:not([data-collapsed]) .headline {
-  font-size: 36px;
-  line-height: 44px;
+  font-size: 2.25rem;
+  line-height: 2.75rem;
   font-weight: 400;
 }
 
 .bar[data-variant="large"]:not([data-collapsed]) .subtitle {
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   font-weight: 500;
-  letter-spacing: 0.15px;
+  letter-spacing: 0.009375rem;
 }
 
 /* Trailing icons use on-surface-variant per spec. The slotted icon-buttons

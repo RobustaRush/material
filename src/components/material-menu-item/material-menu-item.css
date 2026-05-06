@@ -18,7 +18,7 @@
    absolutely-positioned state-layer span (the row's first child) so we can
    skip overflow:hidden — that would clip the focus outline in Firefox/Safari. */
 :host > div {
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 :host > div > span:first-child {
   border-radius: inherit;
@@ -26,29 +26,29 @@
 
 /* Top/bottom items hug the container's 16dp outer radius (minus 2dp padding). */
 :host(:first-child) > div {
-  border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
+  border-top-left-radius: 0.875rem;
+  border-top-right-radius: 0.875rem;
 }
 :host(:last-child) > div {
-  border-bottom-left-radius: 14px;
-  border-bottom-right-radius: 14px;
+  border-bottom-left-radius: 0.875rem;
+  border-bottom-right-radius: 0.875rem;
 }
 
 :host(:focus-visible) > div {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: -2px;
+  outline-offset: -0.125rem;
 }
 
 /* Divider variants — set divider="top" or divider="bottom" on the host.
    Spec calls for 8dp vertical margin around the divider. */
 :host([divider="top"]) {
   border-top: 1px solid var(--md-sys-color-outline-variant);
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
 }
 
 :host([divider="bottom"]) {
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  margin-bottom: 8px;
-  padding-bottom: 8px;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
 }

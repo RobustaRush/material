@@ -7,13 +7,13 @@
   display: flex;
   align-items: center;
   width: 100%;
-  height: 64px;
+  height: 4rem;
   box-sizing: border-box;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
   background-color: var(--md-sys-color-surface);
   transition: background-color 200ms ease;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 :host([scrolled]) .bar {
@@ -24,7 +24,7 @@
 .trailing {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
   flex-shrink: 0;
 }
 
@@ -32,14 +32,14 @@
   flex: 1 1 auto;
   display: flex;
   align-items: center;
-  gap: 4px;
-  height: 48px;
+  gap: 0.25rem;
+  height: 3rem;
   min-width: 0;
   /* Search container fills available space, capped at 312dp; CSS max-width
      enforces the cap, the outer flex distribution handles the rest. */
-  max-width: 312px;
+  max-width: 19.5rem;
   margin: 0 auto;
-  padding: 0 8px;
+  padding: 0 0.5rem;
   border-radius: 9999px;
   background-color: var(--md-sys-color-surface-container);
   color: var(--md-sys-color-on-surface-variant);
@@ -51,11 +51,11 @@
 }
 
 .search-icon {
-  font-size: 24px;
+  font-size: 1.5rem;
   line-height: 1;
   color: var(--md-sys-color-on-surface-variant);
   flex-shrink: 0;
-  padding-left: 4px;
+  padding-left: 0.25rem;
 }
 
 .search-input {
@@ -66,11 +66,11 @@
   border: 0;
   outline: 0;
   margin: 0;
-  padding: 0 8px;
-  font-size: 16px;
-  line-height: 24px;
+  padding: 0 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
   font-weight: 400;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125rem;
   color: var(--md-sys-color-on-surface);
   font-family: inherit;
 }
@@ -93,7 +93,7 @@
 .inside-trailing {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 .inside-trailing:not(:has(::slotted(*))) {
@@ -103,5 +103,5 @@
 /* Focus ring on the search container when input is focused. */
 .search-container:focus-within {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }

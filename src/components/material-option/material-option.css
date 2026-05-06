@@ -6,7 +6,7 @@
 
 :host {
   display: block;
-  margin-top: 2px;
+  margin-top: 0.125rem;
 }
 
 :host(:first-of-type) {
@@ -14,7 +14,7 @@
 }
 
 :host > div {
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 :host > div > span:first-child {
   border-radius: inherit;
@@ -22,5 +22,5 @@
 
 :host(:focus-visible) > div {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: -2px;
+  outline-offset: -0.125rem;
 }

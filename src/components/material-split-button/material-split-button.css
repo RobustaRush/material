@@ -118,8 +118,8 @@
   padding-inline: var(--sb-leading-pad-l) var(--sb-leading-pad-r);
   gap: var(--sb-leading-gap);
   font-size: var(--sb-font-size);
-  line-height: var(--sb-line-height, 20px);
-  letter-spacing: 0.1px;
+  line-height: var(--sb-line-height, 1.25rem);
+  letter-spacing: 0.00625rem;
   border-start-start-radius: var(--sb-outer);
   border-end-start-radius: var(--sb-outer);
   border-start-end-radius: var(--sb-inner);
@@ -176,15 +176,15 @@
 /* Optical centering — when the menu is closed, the chevron sits slightly
    off-center toward the inner edge per spec. */
 :host([size="xs"]) .trailing:not([aria-expanded="true"]) .chevron,
-:host([size="s"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-1px); }
-:host([size="m"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-2px); }
-:host([size="l"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-3px); }
-:host([size="xl"]) .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-6px); }
+:host([size="s"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-0.0625rem); }
+:host([size="m"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-0.125rem); }
+:host([size="l"])  .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-0.1875rem); }
+:host([size="xl"]) .trailing:not([aria-expanded="true"]) .chevron { transform: translateX(-0.375rem); }
 
 .leading:focus-visible,
 .trailing:focus-visible {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
   z-index: 1;
 }
 
@@ -219,8 +219,8 @@
   position: absolute;
   left: var(--ripple-x, 50%);
   top: var(--ripple-y, 50%);
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   background: currentColor;
   opacity: .25;
   border-radius: 50%;

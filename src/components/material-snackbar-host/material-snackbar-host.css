@@ -6,11 +6,11 @@
   position: fixed;
   left: 0;
   right: 0;
-  bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0));
   display: flex;
   justify-content: center;
   pointer-events: none; /* let clicks pass through the gutter */
-  padding-inline: 16px;
+  padding-inline: 1rem;
   z-index: 1000;
 }
 
@@ -23,10 +23,10 @@
 
 .live {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: 0.0625rem;
+  height: 0.0625rem;
   padding: 0;
-  margin: -1px;
+  margin: -0.0625rem;
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;

@@ -38,6 +38,18 @@
         <option value="dark-high-contrast">Dark · high contrast</option>
       </select>
     </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
   </header>
 
   <main class="max-w-5xl mx-auto px-8 py-10">

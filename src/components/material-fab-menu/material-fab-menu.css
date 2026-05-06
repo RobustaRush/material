@@ -64,14 +64,14 @@
    chosen to interact, so leave it on screen. */
 :host([near-end]:not([open])) .fab {
   opacity: 0;
-  transform: translateY(16px) scale(.85);
+  transform: translateY(1rem) scale(.85);
   pointer-events: none;
   box-shadow: none;
 }
 .fab:focus { outline: none; }
 .fab:focus-visible {
   outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }
 
 .fab:hover {
@@ -126,16 +126,16 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 0.25rem;
   /* 8dp gap from last item to close button is added via padding-bottom. */
-  padding-bottom: 4px;
+  padding-bottom: 0.25rem;
 }
 .panel:not(:popover-open) { display: none; }
 
 /* Animation. */
 .panel {
   opacity: 0;
-  transform: translateY(8px) scale(.96);
+  transform: translateY(0.5rem) scale(.96);
   transform-origin: bottom right;
   transition: opacity 160ms linear, transform 200ms cubic-bezier(.2, 0, 0, 1);
 }

@@ -10,26 +10,26 @@
 
 .tp {
   background: var(--md-sys-color-surface-container-high);
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 1rem;
+  padding: 1.5rem;
   box-sizing: border-box;
   display: grid;
   grid-template-rows: auto auto auto auto;
-  row-gap: 20px;
-  width: 328px;
+  row-gap: 1.25rem;
+  width: 20.5rem;
 }
 
 .tp.is-24h {
-  width: 348px;
+  width: 21.75rem;
 }
 
 /* ---------- Headline ---------- */
 
 .tp__headline {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 0.75rem;
+  line-height: 1rem;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125rem;
   color: var(--md-sys-color-on-surface-variant);
 }
 
@@ -38,7 +38,7 @@
 .tp__selector {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .tp__tile {
@@ -46,15 +46,15 @@
   border: 0;
   margin: 0;
   padding: 0;
-  width: 96px;
-  height: 80px;
-  border-radius: 8px;
+  width: 6rem;
+  height: 5rem;
+  border-radius: 0.5rem;
   background: var(--md-sys-color-surface-container-highest);
   color: var(--md-sys-color-on-surface);
   font: inherit;
-  font-size: 45px;
-  line-height: 52px;
-  letter-spacing: -0.25px;
+  font-size: 2.8125rem;
+  line-height: 3.25rem;
+  letter-spacing: -0.015625rem;
   font-weight: 400;
   cursor: pointer;
   font-variant-numeric: tabular-nums;
@@ -62,7 +62,7 @@
 }
 
 .tp.is-24h .tp__tile {
-  width: 114px;
+  width: 7.125rem;
 }
 
 .tp__tile:hover {
@@ -73,19 +73,19 @@
   background: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -2px;
+  outline-offset: -0.125rem;
 }
 
 .tp__tile:focus-visible {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }
 
 .tp__sep {
-  font-size: 45px;
-  line-height: 52px;
+  font-size: 2.8125rem;
+  line-height: 3.25rem;
   color: var(--md-sys-color-on-surface);
-  width: 12px;
+  width: 0.75rem;
   text-align: center;
 }
 
@@ -94,12 +94,12 @@
 .tp__period {
   display: flex;
   flex-direction: column;
-  margin-left: 12px;
+  margin-left: 0.75rem;
   border: 1px solid var(--md-sys-color-outline);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   overflow: hidden;
-  width: 52px;
-  height: 80px;
+  width: 3.25rem;
+  height: 5rem;
 }
 
 .tp__period-btn {
@@ -111,9 +111,9 @@
   background: transparent;
   color: var(--md-sys-color-on-surface-variant);
   font: inherit;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
-  letter-spacing: 0.15px;
+  letter-spacing: 0.009375rem;
   cursor: pointer;
   transition: background-color 80ms linear, color 80ms linear;
 }
@@ -133,15 +133,15 @@
 
 .tp__period-btn:focus-visible {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -2px;
+  outline-offset: -0.125rem;
 }
 
 /* ---------- Dial ---------- */
 
 .tp__dial {
   position: relative;
-  width: 256px;
-  height: 256px;
+  width: 16rem;
+  height: 16rem;
   border-radius: 50%;
   background: var(--md-sys-color-surface-container-highest);
   margin: 0 auto;
@@ -149,7 +149,7 @@
 
 .tp__dial-track {
   position: absolute;
-  height: 2px;
+  height: 0.125rem;
   background: var(--md-sys-color-primary);
   transform-origin: 0 50%;
   pointer-events: none;
@@ -157,8 +157,8 @@
 
 .tp__dial-handle {
   position: absolute;
-  width: 48px;
-  height: 48px;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   background: var(--md-sys-color-primary);
   pointer-events: none;
@@ -166,8 +166,8 @@
 
 .tp__dial-center {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
   background: var(--md-sys-color-primary);
   pointer-events: none;
@@ -176,16 +176,16 @@
 .tp__dial-cell {
   appearance: none;
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   border: 0;
   margin: 0;
   padding: 0;
   background: transparent;
   border-radius: 50%;
   font: inherit;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   color: var(--md-sys-color-on-surface);
   cursor: pointer;
   display: inline-flex;
@@ -224,11 +224,11 @@
 
 .tp__dial-cell:focus-visible {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }
 
 .tp__dial-cell--inner {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--md-sys-color-on-surface-variant);
 }
 
@@ -238,13 +238,13 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 12px;
-  padding: 16px 0;
+  gap: 0.75rem;
+  padding: 1rem 0;
 }
 
 .tp__inputs .tp__period {
   /* In input view the AM/PM column matches the 72dp input height, not 80dp. */
-  height: 72px;
+  height: 4.5rem;
   margin-left: 0;
 }
 
@@ -252,20 +252,20 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 4px;
-  width: 96px;
+  gap: 0.25rem;
+  width: 6rem;
 }
 
 .tp__input {
-  width: 96px;
-  height: 72px;
+  width: 6rem;
+  height: 4.5rem;
   border: 1px solid var(--md-sys-color-outline);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background: var(--md-sys-color-surface-container-highest);
   color: var(--md-sys-color-on-surface);
   font: inherit;
-  font-size: 45px;
-  line-height: 52px;
+  font-size: 2.8125rem;
+  line-height: 3.25rem;
   text-align: center;
   font-variant-numeric: tabular-nums;
   /* hide spinner */
@@ -282,20 +282,20 @@
 
 .tp__input:focus {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -2px;
+  outline-offset: -0.125rem;
   border-color: var(--md-sys-color-primary);
 }
 
 .tp__input-label {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 0.75rem;
+  line-height: 1rem;
   color: var(--md-sys-color-on-surface-variant);
   text-align: center;
 }
 
 .tp__input-sep {
-  font-size: 45px;
-  line-height: 72px;
+  font-size: 2.8125rem;
+  line-height: 4.5rem;
   color: var(--md-sys-color-on-surface);
 }
 
@@ -304,8 +304,8 @@
 .tp__footer {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .tp__footer-spacer {

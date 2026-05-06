@@ -70,6 +70,15 @@
         <option value="light-high-contrast">Light · high contrast</option>
         <option value="dark-high-contrast">Dark · high contrast</option>
       </select>
+      <div data-density-picker slot="trailing" role="group" aria-label="Density"
+           class="inline-flex bg-surface-container-low border border-outline-variant rounded overflow-hidden mr-1">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
       <span slot="trailing"
             class="w-9 h-9 mr-2 rounded-full bg-tertiary text-on-tertiary inline-flex items-center justify-center text-sm font-medium"
             title="Mikhail Podgurskiy"

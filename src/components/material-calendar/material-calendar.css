@@ -9,11 +9,11 @@
 :host([hidden]) { display: none; }
 
 .cal {
-  width: 360px;
-  height: 456px;
+  width: 22.5rem;
+  height: 28.5rem;
   background: var(--md-sys-color-surface-container-high);
-  border-radius: 16px;
-  padding: 8px 12px 12px 12px;
+  border-radius: 1rem;
+  padding: 0.5rem 0.75rem 0.75rem 0.75rem;
   box-sizing: border-box;
   display: grid;
   grid-template-rows: 56px auto 1fr;
@@ -31,7 +31,7 @@
 }
 :host([dense]) .cal__list,
 :host([dense]) .cal__years {
-  max-height: 360px;
+  max-height: 22.5rem;
 }
 
 /* ---------- Header ---------- */
@@ -40,13 +40,13 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  height: 56px;
+  height: 3.5rem;
 }
 
 .cal__title {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 .cal__title-btn {
@@ -54,17 +54,17 @@
   background: none;
   border: 0;
   margin: 0;
-  padding: 4px 4px 4px 8px;
-  height: 32px;
+  padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+  height: 2rem;
   display: inline-flex;
   align-items: center;
   gap: 0;
   font: inherit;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
-  letter-spacing: 0.1px;
+  letter-spacing: 0.00625rem;
   color: var(--md-sys-color-on-surface-variant);
-  border-radius: 16px;
+  border-radius: 1rem;
   cursor: pointer;
 }
 
@@ -74,7 +74,7 @@
 
 .cal__title-btn:focus-visible {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }
 
 /* The non-active button while a picker is open: dim label, caret hidden
@@ -84,7 +84,7 @@
 }
 
 .cal__title-caret {
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1;
 }
 
@@ -115,7 +115,7 @@
 .cal__nav {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 /* ---------- Weekday header row ---------- */
@@ -124,13 +124,13 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   align-items: center;
-  height: 32px;
+  height: 2rem;
 }
 
 .cal__weekday {
   text-align: center;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 500;
   color: var(--md-sys-color-on-surface-variant);
 }
@@ -151,12 +151,12 @@
   border: 0;
   margin: 0;
   padding: 0;
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   font: inherit;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   color: var(--md-sys-color-on-surface);
   cursor: pointer;
   position: relative;
@@ -173,7 +173,7 @@
 .cal__day:focus-visible,
 .cal__grid:focus-within .cal__day.is-focused {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
   background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
 }
 
@@ -221,7 +221,7 @@
   overflow-y: auto;
   /* Bleed to the calendar's container edges so the selected highlight
      reaches all the way across (matches spec image). */
-  margin: 0 -12px;
+  margin: 0 -0.75rem;
 }
 
 .cal__list-item {
@@ -229,15 +229,15 @@
   background: none;
   border: 0;
   margin: 0;
-  padding: 0 24px 0 16px;
-  height: 48px;
+  padding: 0 1.5rem 0 1rem;
+  height: 3rem;
   flex: 0 0 48px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
   font: inherit;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   color: var(--md-sys-color-on-surface);
   text-align: start;
   cursor: pointer;
@@ -251,7 +251,7 @@
 .cal__list-item:focus-visible,
 .cal__list:focus-within .cal__list-item.is-kb-focused {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -2px;
+  outline-offset: -0.125rem;
   background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
 }
 
@@ -265,8 +265,8 @@
 }
 
 .cal__list-check {
-  width: 24px;
-  font-size: 24px;
+  width: 1.5rem;
+  font-size: 1.5rem;
   line-height: 1;
   flex: 0 0 24px;
   text-align: center;
@@ -283,8 +283,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-content: start;
-  gap: 8px;
-  padding: 8px 4px;
+  gap: 0.5rem;
+  padding: 0.5rem 0.25rem;
   overflow-y: auto;
 }
 
@@ -294,12 +294,12 @@
   border: 0;
   margin: 0;
   padding: 0;
-  height: 36px;
+  height: 2.25rem;
   font: inherit;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   color: var(--md-sys-color-on-surface);
-  border-radius: 999px;
+  border-radius: 62.4375rem;
   cursor: pointer;
   transition: background-color 80ms linear;
 }
@@ -311,7 +311,7 @@
 .cal__year:focus-visible,
 .cal__years:focus-within .cal__year.is-kb-focused {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -2px;
+  outline-offset: -0.125rem;
 }
 
 .cal__year:disabled {

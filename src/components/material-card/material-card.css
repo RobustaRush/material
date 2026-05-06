@@ -7,7 +7,7 @@
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   overflow: hidden;
   box-sizing: border-box;
   background: var(--md-sys-color-surface);
@@ -47,10 +47,10 @@ button[part="surface"] {
 [part="content"] {
   position: relative;
   z-index: 1;
-  padding: 16px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 ::slotted([slot="media"]) {
@@ -62,34 +62,34 @@ button[part="surface"] {
 
 ::slotted([slot="headline"]) {
   font-weight: 500;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   color: var(--md-sys-color-on-surface);
   margin: 0;
 }
 
 ::slotted([slot="subhead"]) {
   font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   color: var(--md-sys-color-on-surface-variant);
   margin: 0;
 }
 
 ::slotted([slot="supporting"]) {
   font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   color: var(--md-sys-color-on-surface-variant);
-  margin: 8px 0 0 0;
+  margin: 0.5rem 0 0 0;
 }
 
 [part="actions"] {
   position: relative;
   z-index: 1;
-  padding: 8px 16px 16px;
+  padding: 0.5rem 1rem 1rem;
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
   justify-content: flex-end;
   align-items: center;
 }
@@ -140,7 +140,7 @@ button[part="surface"] {
 :host([href]) [part="surface"]:focus-visible,
 :host([clickable]) [part="surface"]:focus-visible {
   outline: 3px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }
 
 :host([disabled]) [part="surface"] {

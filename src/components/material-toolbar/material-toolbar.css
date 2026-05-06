@@ -11,21 +11,21 @@
 [part="container"] {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   box-sizing: border-box;
-  min-height: 64px;
+  min-height: 4rem;
   background: var(--md-sys-color-surface-container);
   color: var(--md-sys-color-on-surface-variant);
 }
 
 :host([variant="docked"]) [part="container"] {
   width: 100%;
-  padding: 0 16px;
+  padding: 0 1rem;
   border-radius: 0;
 }
 
 :host([variant="floating"]) [part="container"] {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   border-radius: 9999px;
   box-shadow: 0 2px 6px rgb(0 0 0 / .15);
   width: max-content;
@@ -33,7 +33,7 @@
 
 :host([variant="floating"][orientation="vertical"]) [part="container"] {
   flex-direction: column;
-  padding: 16px 8px;
+  padding: 1rem 0.5rem;
   min-height: 0;
   width: max-content;
   height: max-content;
