@@ -7,11 +7,12 @@
 
 ## Properties
 
-| Property    | Attribute   | Description | Type                            | Default      |
-| ----------- | ----------- | ----------- | ------------------------------- | ------------ |
-| `dense`     | `dense`     |             | `boolean`                       | `false`      |
-| `selection` | `selection` |             | `"multi" \| "none" \| "single"` | `'none'`     |
-| `variant`   | `variant`   |             | `"baseline" \| "expressive"`    | `'baseline'` |
+| Property           | Attribute           | Description | Type                            | Default      |
+| ------------------ | ------------------- | ----------- | ------------------------------- | ------------ |
+| `dense`            | `dense`             |             | `boolean`                       | `false`      |
+| `selection`        | `selection`         |             | `"multi" \| "none" \| "single"` | `'none'`     |
+| `selectionTrigger` | `selection-trigger` |             | `"control" \| "row"`            | `'row'`      |
+| `variant`          | `variant`           |             | `"baseline" \| "expressive"`    | `'baseline'` |
 
 
 ## Events
