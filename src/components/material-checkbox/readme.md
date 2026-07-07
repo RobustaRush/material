@@ -29,6 +29,23 @@
 | `checkedChange` |             | `CustomEvent<{ checked: boolean; indeterminate: boolean; }>` |
 
 
+## Methods
+
+### `toggle() => Promise<void>`
+
+Programmatically toggle the checkbox as if a user clicked it.
+Mirrors a real interaction: respects `disabled`, clears `indeterminate`
+on first toggle, and emits `checkedChange`. Use this when another
+component (e.g. a list-item handling Space) needs to drive the
+checkbox without faking shadow-DOM clicks.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
