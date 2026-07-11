@@ -96,8 +96,20 @@ export class MaterialIconButton {
           togglePopover: (force?: boolean) => void;
           showPopover: () => void;
           hidePopover: () => void;
+          show?: (anchorEl?: Element) => void;
+          hide?: () => void;
         };
-        if (action === 'show') t.showPopover();
+        // Opening via togglePopover() (not a native popovertarget on a real
+        // <button>) means the browser never sets ToggleEvent.source, so an
+        // anchored popover like material-menu can't find its trigger and opens
+        // top-left. Use its show(anchorEl) method to pass this element as the
+        // anchor. (Its private `invoker` field can't be poked from here — under
+        // Stencil's lazy build the host and component instance are separate.)
+        if (t.localName === 'material-menu' && typeof t.show === 'function') {
+          const isOpen = t.matches(':popover-open');
+          if (action === 'hide' || (action === 'toggle' && isOpen)) t.hide!();
+          else t.show(this.el);
+        } else if (action === 'show') t.showPopover();
         else if (action === 'hide') t.hidePopover();
         else t.togglePopover();
         return;

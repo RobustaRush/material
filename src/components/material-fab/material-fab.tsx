@@ -95,8 +95,17 @@ export class MaterialFab {
           togglePopover: (force?: boolean) => void;
           showPopover: () => void;
           hidePopover: () => void;
+          show?: (anchorEl?: Element) => void;
+          hide?: () => void;
         };
-        if (action === 'show') t.showPopover();
+        // togglePopover() doesn't set ToggleEvent.source, so an anchored
+        // material-menu opens top-left. Use its show(anchorEl) method to pass
+        // this element as the anchor.
+        if (t.localName === 'material-menu' && typeof t.show === 'function') {
+          const isOpen = t.matches(':popover-open');
+          if (action === 'hide' || (action === 'toggle' && isOpen)) t.hide!();
+          else t.show(this.el);
+        } else if (action === 'show') t.showPopover();
         else if (action === 'hide') t.hidePopover();
         else t.togglePopover();
         return;
