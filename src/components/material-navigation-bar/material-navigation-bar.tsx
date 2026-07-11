@@ -8,7 +8,6 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive (flexible) navigation bar — 3–5 primary destinations at the
 // bottom edge of compact/medium windows. Items are the shared
@@ -57,7 +56,6 @@ export class MaterialNavigationBar {
 
   componentWillLoad() {
     this.setupMqlIfNeeded();
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -156,10 +154,7 @@ export class MaterialNavigationBar {
       // with the group centered (extra space goes to the container ends).
       <Host data-orientation={horizontal ? 'horizontal' : 'vertical'}>
         <nav
-          class={
-            'w-full bg-surface-container text-on-surface flex items-stretch ' +
-            (horizontal ? 'justify-center gap-2 px-4' : '')
-          }
+          class={horizontal ? 'bar horizontal' : 'bar'}
           aria-label={this.ariaLabel}
         >
           <slot onSlotchange={this.handleSlotChange} />

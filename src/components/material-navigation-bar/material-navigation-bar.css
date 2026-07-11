@@ -6,6 +6,21 @@
   display: none;
 }
 
+.bar {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+  display: flex;
+  align-items: stretch;
+}
+
+.bar.horizontal {
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+}
+
 /* Vertical items (compact): dynamic width — items equally fill the bar. */
 :host([data-orientation='vertical']) ::slotted(material-navigation-item) {
   flex: 1 1 0;
