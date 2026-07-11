@@ -10,7 +10,6 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 import {
   firstDayOfWeek as i18nFirstDayOfWeek,
   monthNames,
@@ -127,7 +126,6 @@ export class MaterialCalendar {
       const seed = fromISO(this.value) ?? new Date();
       this.displayMonth = `${seed.getFullYear()}-${pad2(seed.getMonth() + 1)}`;
     }
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -440,7 +438,7 @@ export class MaterialCalendar {
               <span class="cal__title-text-label">{monthLabel}</span>
             </span>
             <span
-              class={`material-symbols cal__title-caret ${monthState === 'inactive' ? 'is-hidden' : ''}`}
+              class={`cal__title-caret ${monthState === 'inactive' ? 'is-hidden' : ''}`}
               aria-hidden="true"
             >
               {caretGlyph(monthState)}
@@ -454,7 +452,7 @@ export class MaterialCalendar {
           >
             <span>{year}</span>
             <span
-              class={`material-symbols cal__title-caret ${yearState === 'inactive' ? 'is-hidden' : ''}`}
+              class={`cal__title-caret ${yearState === 'inactive' ? 'is-hidden' : ''}`}
               aria-hidden="true"
             >
               {caretGlyph(yearState)}
@@ -596,7 +594,7 @@ export class MaterialCalendar {
               disabled={!!disabled}
               onClick={() => this.pickMonth(i)}
             >
-              <span class="cal__list-check material-symbols" aria-hidden="true">
+              <span class="cal__list-check" aria-hidden="true">
                 {selected ? 'check' : ''}
               </span>
               <span class="cal__list-label">{name}</span>

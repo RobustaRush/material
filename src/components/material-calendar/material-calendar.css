@@ -87,6 +87,8 @@
 }
 
 .cal__title-caret {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
   font-size: 1.125rem;
   line-height: 1;
 }
@@ -285,6 +287,8 @@
 }
 
 .cal__list-check {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
   width: 1.5rem;
   font-size: 1.5rem;
   line-height: 1;
