@@ -10,7 +10,6 @@ import {
   h,
   Host,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive search app bar.
 //
@@ -69,7 +68,6 @@ export class MaterialSearchAppBar {
 
   componentWillLoad() {
     this.defaultValue = this.value;
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -165,7 +163,7 @@ export class MaterialSearchAppBar {
           </div>
           <div class="search-container" role="search">
             {this.searchIcon && (
-              <span class="material-symbols search-icon" aria-hidden="true">
+              <span class="search-icon" aria-hidden="true">
                 search
               </span>
             )}

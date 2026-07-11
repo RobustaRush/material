@@ -1,5 +1,4 @@
 import { Component, Element, Prop, State, Watch, h, Host } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive top app bar — small / medium-flexible / large-flexible.
 // Search variant lives in <material-search-app-bar>.
@@ -50,10 +49,6 @@ export class MaterialAppBar {
       (n) => n.nodeType === Node.ELEMENT_NODE || !!n.textContent?.trim(),
     );
   };
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   connectedCallback() {
     this.attachScroll();
