@@ -63,7 +63,9 @@
 
 :host([disabled]) [part="visual"] {
   box-shadow: none;
-  opacity: .4;
+  /* MD3 disabled: on-surface 12% container / 38% content, not a blanket opacity. */
+  --fab-bg: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+  --fab-fg: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
 }
 
 /* Sizes per spec — small 56dp / medium 80dp / large 96dp. */
@@ -119,7 +121,7 @@
   opacity: .25;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(1);
-  animation: material-fab-ripple 1.2s linear;
+  animation: material-fab-ripple var(--md-sys-motion-duration-long1, 450ms) var(--md-sys-motion-easing-standard-decelerate, cubic-bezier(0, 0, 0, 1));
   pointer-events: none;
 }
 

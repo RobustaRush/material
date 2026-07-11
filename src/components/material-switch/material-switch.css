@@ -3,9 +3,11 @@
 :host {
   display: inline-block;
   vertical-align: middle;
-  /* default off, no icon */
-  --handle-size: 16px;
-  --handle-x: 4px;
+  /* default off, no icon.
+     Handle sizes/offsets are in rem so they scale with the rem-based track
+     under the density switcher (px values overflowed the track at <1.0). */
+  --handle-size: 1rem;
+  --handle-x: 0.25rem;
   --track-bg: var(--md-sys-color-surface-container-highest);
   --track-border: var(--md-sys-color-outline);
   --handle-bg: var(--md-sys-color-outline);
@@ -15,12 +17,14 @@
 
 /* When an unchecked icon is supplied, off-handle grows to 24dp per spec. */
 :host([icon-unchecked]) {
-  --handle-size: 24px;
+  --handle-size: 1.5rem;
 }
 
 :host([checked]) {
-  --handle-size: 24px;
-  --handle-x: 24px;
+  --handle-size: 1.5rem;
+  /* Symmetric with the off inset (handle sits an equal gap from the track
+     edge on each side) rather than flush against the inner border. */
+  --handle-x: 1.25rem;
   --track-bg: var(--md-sys-color-primary);
   --track-border: transparent;
   --handle-bg: var(--md-sys-color-on-primary);
@@ -108,11 +112,11 @@
 
 /* Pressed: handle grows to 28dp; track edge offset shrinks to 2dp. */
 [part="switch"]:not(:disabled):active {
-  --handle-size: 28px;
-  --handle-x: 2px;
+  --handle-size: 1.75rem;
+  --handle-x: 0.125rem;
 }
 :host([checked]) [part="switch"]:not(:disabled):active {
-  --handle-x: 22px;
+  --handle-x: 1.125rem;
 }
 
 .icon {

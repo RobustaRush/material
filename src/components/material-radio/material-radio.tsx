@@ -53,6 +53,14 @@ export class MaterialRadio {
   @Prop({ attribute: 'label-position' }) labelPosition: 'trailing' | 'leading' = 'trailing';
   @Prop({ reflect: true }) error = false;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  /** Roving-tabindex slot, driven by material-radio-group. When false the
+   *  inner button leaves the tab order (tabindex -1). Reactive, so it applies
+   *  on the next render rather than requiring shadow-DOM access. */
+  @Prop() focusable = true;
+  /** Group-level disable, driven by material-radio-group. Kept separate from
+   *  the per-radio `disabled` so toggling the group off doesn't erase an
+   *  individually-disabled radio's state. */
+  @Prop({ reflect: true, attribute: 'group-disabled' }) groupDisabled = false;
 
   @Event({ bubbles: true, composed: true })
   radioSelect!: EventEmitter<{ value: string }>;
@@ -62,7 +70,7 @@ export class MaterialRadio {
   }
 
   private select = () => {
-    if (this.disabled || this.checked) return;
+    if (this.disabled || this.groupDisabled || this.checked) return;
     this.radioSelect.emit({ value: this.value });
   };
 
@@ -91,7 +99,8 @@ export class MaterialRadio {
         type="button"
         role="radio"
         class={TARGET_BASE}
-        disabled={this.disabled}
+        disabled={this.disabled || this.groupDisabled}
+        tabindex={this.focusable ? 0 : -1}
         aria-checked={String(isOn)}
         aria-label={this.ariaLabel ?? (this.label ? undefined : 'radio')}
         onClick={this.select}
@@ -99,9 +108,16 @@ export class MaterialRadio {
       >
         <span class={`${STATE_LAYER_BASE} ${stateLayerCls}`} aria-hidden="true"></span>
         <span class={`${RING_BASE} ${ringCls}`}>
-          {isOn && (
-            <span class={`w-2.5 h-2.5 rounded-full ${dotCls}`} aria-hidden="true"></span>
-          )}
+          {/* Always rendered so the dot can scale in — a conditionally rendered
+              dot can't transition. 200ms standard easing per MD3 selection-control motion. */}
+          <span
+            class={
+              `w-2.5 h-2.5 rounded-full ${dotCls} ` +
+              'transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ' +
+              (isOn ? 'scale-100' : 'scale-0')
+            }
+            aria-hidden="true"
+          ></span>
         </span>
       </button>
     );

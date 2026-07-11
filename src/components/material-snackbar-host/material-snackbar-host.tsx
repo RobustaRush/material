@@ -179,8 +179,27 @@ export class MaterialSnackbarHost {
     // 'replaced' is resolved at the point of replacement; ignore here.
     if (ev.detail.reason === 'replaced') return;
     item.resolve({ reason: ev.detail.reason });
-    this.current = undefined;
-    setTimeout(() => this.advance(), REPLACE_GAP_MS);
+
+    // The snackbar removed its own `[open]` attribute, which starts the CSS
+    // exit transition. Keep it mounted until that transition finishes so the
+    // animation actually plays; fall back to a timer for reduced-motion (no
+    // transitionend fires) or if the element is already gone.
+    const el = this.snackbarEl;
+    let finalized = false;
+    const finalize = () => {
+      if (finalized) return;
+      finalized = true;
+      el?.removeEventListener('transitionend', finalize);
+      this.current = undefined;
+      setTimeout(() => this.advance(), REPLACE_GAP_MS);
+    };
+    if (el) {
+      el.addEventListener('transitionend', finalize);
+      // Fallback slightly beyond the 150ms exit duration.
+      setTimeout(finalize, 200);
+    } else {
+      finalize();
+    }
   };
 
   private setSnackbarRef = (el?: HTMLElement) => {

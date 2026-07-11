@@ -65,12 +65,11 @@ export class MaterialButtonGroup {
   }
 
   render() {
-    const role =
-      this.selectionMode === 'single' ? 'radiogroup' :
-      this.selectionMode === 'multi'  ? 'group' :
-      'group';
+    // Always role="group": the toggle children expose button semantics
+    // (aria-pressed), not radio semantics, so role="radiogroup" would announce
+    // a radiogroup with zero radios. `aria-label` names the group.
     return (
-      <div class="root" role={role} aria-label={this.ariaLabel}>
+      <div class="root" role="group" aria-label={this.ariaLabel}>
         <slot />
       </div>
     );

@@ -575,7 +575,8 @@ export class MaterialSelect {
       tabindex: this.disabled ? -1 : 0,
       'aria-haspopup': 'listbox',
       'aria-expanded': this.open ? 'true' : 'false',
-      'aria-multiselectable': 'true',
+      // aria-multiselectable belongs on the listbox popup, not the combobox.
+      'aria-controls': 'listbox',
       'aria-disabled': this.disabled ? 'true' : null,
       'aria-invalid': this.error ? 'true' : null,
       'aria-describedby': subText ? 'description' : null,
@@ -722,6 +723,9 @@ export class MaterialSelect {
             variant="standard"
             icon="arrow_drop_down"
             aria-label={openLabel}
+            aria-haspopup="listbox"
+            aria-expanded={this.open ? 'true' : 'false'}
+            aria-controls="listbox"
             disabled={this.disabled}
             onClick={this.toggleMenu}
           />
@@ -742,6 +746,9 @@ export class MaterialSelect {
 
         <material-menu
           ref={this.setMenuRef}
+          id="listbox"
+          menu-role="listbox"
+          aria-multiselectable={this.multiple ? 'true' : null}
           onMaterialMenuOpen={this.handleMenuOpen}
           onMaterialMenuClose={this.handleMenuClose}
         >

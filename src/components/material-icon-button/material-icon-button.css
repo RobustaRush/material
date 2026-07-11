@@ -22,7 +22,6 @@
 [part="button"]:disabled,
 [part="button"][aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: .4;
   pointer-events: none;
 }
 
@@ -133,6 +132,24 @@
 }
 :host([variant="standard"][toggle][selected]) [part="visual"] {
   color: var(--md-sys-color-primary);
+}
+
+/* MD3 disabled system (placed after the variants so it overrides their live
+   colors): content at on-surface 38%, container/outline at 12% — neutral grey,
+   not a dimmed hue. */
+[part="button"]:disabled [part="visual"],
+[part="button"][aria-disabled="true"] [part="visual"] {
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+:host([variant="filled"]) [part="button"]:disabled [part="visual"],
+:host([variant="filled"]) [part="button"][aria-disabled="true"] [part="visual"],
+:host([variant="tonal"]) [part="button"]:disabled [part="visual"],
+:host([variant="tonal"]) [part="button"][aria-disabled="true"] [part="visual"] {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+}
+:host([variant="outlined"]) [part="button"]:disabled [part="visual"],
+:host([variant="outlined"]) [part="button"][aria-disabled="true"] [part="visual"] {
+  border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
 }
 
 [part="state-layer"] {

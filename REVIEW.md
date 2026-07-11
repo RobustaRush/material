@@ -19,6 +19,41 @@ The weaknesses cluster in four areas:
 
 ---
 
+## 1a. Resolution log — 2026-07-11
+
+Fixes applied against this review (verified via `stencil build` + dev-server
+screenshots of the affected demos). Items not listed remain open.
+
+**Top issues (table) — resolved:**
+- #1 chip remove-overlay — `position: relative` on `.trailing-btn`.
+- #2 fab-menu — `delegatesFocus` on the item; keyboard nav now lands on the inner control; `href` items no longer `preventDefault` navigation.
+- #3 textarea value sync — `@Watch('value')` pushes programmatic writes to the DOM node; autoResize now accounts for border-box padding.
+- #4 label association — `id`/`htmlFor` wired on textfield + textarea (both variants); checkbox `aria-labelledby`.
+- #5 select roles — `material-menu` gains a `menu-role` prop; select popup is now `listbox`, trigger gets `aria-haspopup/expanded/controls`, `aria-multiselectable` moved off the combobox.
+- #6 checkbox — `aria-checked` on the focusable `role="checkbox"` button.
+- #7 radio-group roving tabindex — reactive `focusable` prop on `material-radio` (no shadow-piercing); `group-disabled` prop stops the group clobbering per-radio `disabled`.
+- #8 snackbar exit — host keeps the snackbar mounted until `transitionend`.
+- #9 tooltip hoverable — surface pointer/focus handlers cancel the auto-hide (WCAG 1.4.13).
+- #10 menu typeahead — matches the `label` prop, not just light-DOM text.
+- #11 slider — `max(0%, …)` restores the leading inactive segment (**visually confirmed**).
+- #12 switch — handle geometry converted px→rem; ON handle no longer overflows at density 0.9 (**visually confirmed**); checked handle recentred.
+- #13 tabs — single hoisted indicator that slides between tabs via measured translateX/width (**visually confirmed**).
+- #14 button — submit `name`/`value` now reach FormData; `square` shape prop; MD3 disabled colors; `:focus-visible` state layer. *(Toggle variant + button-group label selection still open.)*
+- #15 dialog — elevation level-3 shadow (**visually confirmed**).
+
+**Cross-cutting — resolved / partial:**
+- 3.1 motion — added `src/theme/system.css` (`--md-sys-motion-*`, `--md-sys-shape-*`, `--md-sys-elevation-*`); swept the M2 exit curves (menu/dialog/snackbar) and the 1.2s linear ripple (button/fab/split) onto tokens.
+- 3.2 — button/split-button/chip pressed 12%→10%. *(Selection-control 10/15→8/10 still open.)*
+- 3.3 disabled system — button/icon-button/fab/split-button/chip/fab-menu-item now use on-surface 38% content / 12% container instead of blanket opacity (**visually confirmed** on buttons).
+- 3.8 — motion/shape/elevation tokens added; dialog scrim now `var(--md-sys-color-scrim)`. *(Fixed-color `@theme` bridge still open.)*
+- 3.9 — `disabled` prop marked `mutable` on material-button.
+
+**Also:** checkbox/radio mark animations (always-rendered + clip-path/scale, **confirmed**); dialog enter/exit retimed (emphasized decel/accel); button-group `role="group"`; linear-progress `@Watch('stopIndicator')`; `material-card` equal-height in grid/flex rows.
+
+**Not yet addressed:** #14 toggle variant; FAB size rename (4.3); select comma-in-value (4.9); and the long tail of per-component `[m]`/`[s]` items (selection-control state-layer opacities, textfield disabled-hover, textarea 24dp top padding, remaining motion refinements, ARIA in list/calendar/carousel/date-time fields).
+
+---
+
 ## 2. Top issues (ranked)
 
 | # | Sev | Component | Issue |

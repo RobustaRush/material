@@ -116,27 +116,10 @@ export class MaterialTab {
       ? 'relative inline-flex flex-col items-center justify-center gap-1 h-full'
       : 'relative inline-flex items-center justify-center gap-1 h-full';
 
-    // Active indicator:
-    //   primary   → 3dp tall, 3px top-rounded, full width of stack (which already
-    //               hugs label/icon), min-w-[24px], inset 2dp from each side via
-    //               left-0.5 right-0.5 (negative bottom keeps it above the divider).
-    //   secondary → 2dp tall, full tab-cell width (rendered outside the stack).
-    const primaryIndicator = (
-      <span
-        class={
-          'absolute -bottom-px left-0.5 right-0.5 h-[3px] min-w-[24px] ' +
-          'rounded-t-[3px] bg-primary'
-        }
-        aria-hidden="true"
-      />
-    );
-
-    const secondaryIndicator = (
-      <span
-        class="absolute -bottom-px inset-x-0 h-[2px] bg-primary"
-        aria-hidden="true"
-      />
-    );
+    // The active indicator is no longer rendered per-tab. A single indicator
+    // lives in <material-tabs> and slides between tabs (see material-tabs.tsx).
+    // For the primary variant it hugs this tab's content column, so expose the
+    // stack via part="content" for the parent to measure.
 
     // Badge anchor: when icon is present, hug the icon glyph and overlap by 6dp
     // (translate-y-1/2 puts the badge's center on the icon's top edge; -mr-1.5
@@ -161,7 +144,7 @@ export class MaterialTab {
       'text-sm font-medium tracking-[0.1px] leading-5 whitespace-nowrap';
 
     const inner = (
-      <span class={stackCls}>
+      <span class={stackCls} part="content">
         {iconAndBadge}
         {hasIcon ? (
           <span class={labelCls}>{this.label}</span>
@@ -171,14 +154,12 @@ export class MaterialTab {
             <slot name="badge" />
           </span>
         )}
-        {this.selected && isPrimary ? primaryIndicator : null}
       </span>
     );
 
     const body = [
       <span class={stateLayer} aria-hidden="true"></span>,
       inner,
-      this.selected && !isPrimary ? secondaryIndicator : null,
     ];
 
     const isLink = !!this.href && !this.disabled;

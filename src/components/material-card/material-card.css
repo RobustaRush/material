@@ -18,6 +18,11 @@
   padding: 0;
   border: 0;
   width: 100%;
+  /* Fill the host's height so cards laid out as grid/flex items (which stretch
+     the host to the row track height) render at equal height regardless of how
+     much text each card holds. In normal flow the host height is auto, so this
+     resolves to auto and changes nothing. */
+  height: 100%;
   cursor: default;
   transition: box-shadow 120ms linear;
 }

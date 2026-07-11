@@ -17,8 +17,14 @@ export class MaterialButton {
   @Prop({ reflect: true }) variant: MaterialButtonVariant = 'filled';
   @Prop({ reflect: true }) size: MaterialButtonSize = 's';
   @Prop() type: MaterialButtonType = 'button';
-  @Prop({ reflect: true }) disabled = false;
+  // mutable: formDisabledCallback writes this back; without it Stencil warns
+  // ("immutable prop was modified from within the component") on every form-
+  // disable toggle.
+  @Prop({ reflect: true, mutable: true }) disabled = false;
   @Prop({ reflect: true, attribute: 'shape-morph' }) shapeMorph = false;
+  /** Resting corner shape. `round` is the pill default; `square` uses the
+   *  small rounded-rect resting radius (parity with icon-button's `shape`). */
+  @Prop({ reflect: true }) shape: 'round' | 'square' = 'round';
   @Prop() label?: string;
   @Prop() icon?: string;
   @Prop() trailingIcon?: string;
@@ -60,8 +66,24 @@ export class MaterialButton {
     }
     const form = this.internals.form;
     if (!form) return;
-    if (this.type === 'submit') form.requestSubmit();
-    else if (this.type === 'reset') form.reset();
+    if (this.type === 'submit') {
+      // Contribute name/value to FormData like a native submit button does when
+      // it's the submitter. ElementInternals can't act as a submitter, so add a
+      // transient hidden input for this one submission; the form is serialized
+      // synchronously inside requestSubmit(), so we can remove it right after.
+      let hidden: HTMLInputElement | undefined;
+      if (this.name) {
+        hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = this.name;
+        hidden.value = this.value ?? '';
+        form.appendChild(hidden);
+      }
+      form.requestSubmit();
+      hidden?.remove();
+    } else if (this.type === 'reset') {
+      form.reset();
+    }
   };
 
   private handlePointerDown = (e: PointerEvent) => {

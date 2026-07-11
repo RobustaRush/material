@@ -79,6 +79,18 @@ export class MaterialTextarea {
     this.internals.setFormValue(this.disabled ? null : (this.value ?? ''));
   }
 
+  @Watch('value')
+  syncTextareaValue() {
+    // The `value` is seeded as a JSX child, which only sets the textarea's
+    // initial content — later programmatic writes never reach the live DOM
+    // node. Push them through here. The guard avoids clobbering the caret
+    // during user typing (handleInput has already set value === DOM value).
+    if (this.textareaEl && this.textareaEl.value !== (this.value ?? '')) {
+      this.textareaEl.value = this.value ?? '';
+      this.applyAutoResize();
+    }
+  }
+
   formDisabledCallback(disabled: boolean) {
     this.disabled = disabled;
   }
@@ -97,11 +109,14 @@ export class MaterialTextarea {
 
   private applyAutoResize() {
     if (!this.autoResize || !this.textareaEl) return;
-    const min = (this.minRows ?? this.rows) * LINE_H;
-    const max = this.maxRows ? this.maxRows * LINE_H : Infinity;
+    // scrollHeight is content + padding (border-box), so the row minimum/maximum
+    // must include the textarea's vertical padding too — otherwise min-rows=3
+    // yields ~1.5 visible lines because the padding eats into the line box.
+    const cs = getComputedStyle(this.textareaEl);
+    const padY = parseFloat(cs.paddingTop || '0') + parseFloat(cs.paddingBottom || '0');
+    const min = (this.minRows ?? this.rows) * LINE_H + padY;
+    const max = this.maxRows ? this.maxRows * LINE_H + padY : Infinity;
     this.textareaEl.style.height = 'auto';
-    // scrollHeight includes the textarea's own padding, so it already
-    // accounts for the 24dp top / 16dp bottom (outlined) gap.
     const next = Math.max(min, Math.min(this.textareaEl.scrollHeight, max));
     this.textareaEl.style.height = `${next}px`;
     this.textareaEl.style.overflowY =
@@ -152,6 +167,7 @@ export class MaterialTextarea {
     const renderTextarea = (extraCls: string) => (
       <textarea
         ref={el => (this.textareaEl = el)}
+        id="input"
         class={`${INPUT_BASE} ${extraCls}`}
         name={this.name}
         rows={rows}
@@ -212,7 +228,7 @@ export class MaterialTextarea {
             <span aria-hidden="true"
                   class="absolute top-0 left-0 right-0 h-6 rounded-t bg-surface-container-highest group-hover:bg-surface-container-high pointer-events-none transition-colors"></span>
             {label && (
-              <label class={`${labelRest} ${labelShrunk} ${labelTone} z-10`}>
+              <label htmlFor="input" class={`${labelRest} ${labelShrunk} ${labelTone} z-10`}>
                 {label}{this.required ? ' *' : ''}
               </label>
             )}
@@ -259,7 +275,7 @@ export class MaterialTextarea {
               positions text at y=16, so the clip is invisible at rest. */}
           {renderTextarea(`pt-4 pb-4 pl-4 ${innerR} [clip-path:inset(16px_0_0_0)]`)}
           {label && (
-            <label class={`${labelRest} ${labelShrunkOutlined} ${labelTone}`}>
+            <label htmlFor="input" class={`${labelRest} ${labelShrunkOutlined} ${labelTone}`}>
               {label}{this.required ? ' *' : ''}
             </label>
           )}

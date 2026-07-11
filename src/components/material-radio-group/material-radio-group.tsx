@@ -22,6 +22,8 @@ type RadioEl = HTMLElement & {
   value: string;
   checked: boolean;
   disabled: boolean;
+  groupDisabled: boolean;
+  focusable: boolean;
   error: boolean;
 };
 
@@ -75,14 +77,16 @@ export class MaterialRadioGroup {
   syncChildren() {
     const radios = this.getRadios();
     const hasSelected = radios.some((r) => r.value === this.value);
+    const firstIdx = this.firstFocusableIdx(radios);
     radios.forEach((r, i) => {
       r.checked = r.value === this.value;
       r.error = this.error;
-      // Don't override per-radio disabled when group isn't disabled.
-      if (this.disabled) r.disabled = true;
-      const isFocusable = r.checked || (!hasSelected && this.firstFocusableIdx(radios) === i);
-      const btn = r.shadowRoot?.querySelector('button');
-      if (btn) btn.tabIndex = isFocusable ? 0 : -1;
+      // Group disable is a separate prop so it doesn't clobber a per-radio
+      // `disabled` — toggling the group back on restores the original state.
+      r.groupDisabled = this.disabled;
+      // Roving tabindex via a reactive prop (not shadow-DOM poking, which
+      // ran before the child buttons existed and silently no-op'd).
+      r.focusable = r.checked || (!hasSelected && firstIdx === i);
     });
   }
 

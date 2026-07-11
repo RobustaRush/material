@@ -35,10 +35,25 @@
   outline-offset: 0.125rem;
 }
 
+/* MD3 disabled system: content at on-surface 38%, container/outline at 12% —
+   not a blanket opacity, which would keep the primary hue and read as tinted
+   grey rather than neutral. Text/outlined variants carry no fill. */
 [part="button"]:disabled,
 [part="button"][aria-disabled="true"] {
-  opacity: .4;
   pointer-events: none;
+  --btn-fg: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+:host([variant="filled"]) [part="button"]:disabled,
+:host([variant="filled"]) [part="button"][aria-disabled="true"],
+:host([variant="tonal"]) [part="button"]:disabled,
+:host([variant="tonal"]) [part="button"][aria-disabled="true"],
+:host([variant="elevated"]) [part="button"]:disabled,
+:host([variant="elevated"]) [part="button"][aria-disabled="true"] {
+  --btn-bg: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+}
+:host([variant="outlined"]) [part="button"]:disabled,
+:host([variant="outlined"]) [part="button"][aria-disabled="true"] {
+  border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
 }
 
 .icon {
@@ -82,13 +97,22 @@
 }
 
 [part="button"]:not(:disabled):not([aria-disabled="true"]):hover  { background-color: color-mix(in srgb, currentColor 8%,  var(--btn-bg)); }
-[part="button"]:not(:disabled):not([aria-disabled="true"]):active { background-color: color-mix(in srgb, currentColor 12%, var(--btn-bg)); }
+[part="button"]:not(:disabled):not([aria-disabled="true"]):focus-visible { background-color: color-mix(in srgb, currentColor 10%, var(--btn-bg)); }
+[part="button"]:not(:disabled):not([aria-disabled="true"]):active { background-color: color-mix(in srgb, currentColor 10%, var(--btn-bg)); }
 
 :host([shape-morph][size="xs"]) [part="button"]:active,
 :host([shape-morph][size="s"])  [part="button"]:active { --btn-r: 0.5rem;  }
 :host([shape-morph][size="m"])  [part="button"]:active { --btn-r: 0.75rem; }
 :host([shape-morph][size="l"])  [part="button"]:active,
 :host([shape-morph][size="xl"]) [part="button"]:active { --btn-r: 1rem; }
+
+/* Square resting shape — small rounded-rect radius per size (8/8/12/16/16dp),
+   matching the pressed-corner scale. */
+:host([shape="square"][size="xs"]) [part="button"],
+:host([shape="square"][size="s"])  [part="button"] { --btn-r: 0.5rem;  }
+:host([shape="square"][size="m"])  [part="button"] { --btn-r: 0.75rem; }
+:host([shape="square"][size="l"])  [part="button"],
+:host([shape="square"][size="xl"]) [part="button"] { --btn-r: 1rem; }
 
 [part="button"]:not(:disabled):not([aria-disabled="true"]):active::after {
   content: "";
@@ -101,7 +125,7 @@
   opacity: .25;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(1);
-  animation: material-ripple 1.2s linear;
+  animation: material-ripple var(--md-sys-motion-duration-long1, 450ms) var(--md-sys-motion-easing-standard-decelerate, cubic-bezier(0, 0, 0, 1));
   pointer-events: none;
 }
 

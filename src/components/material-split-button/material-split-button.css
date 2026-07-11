@@ -188,11 +188,29 @@
   z-index: 1;
 }
 
+/* MD3 disabled: content on-surface 38%, container/outline 12% — not a blanket
+   opacity (which keeps the hue and reads as tinted grey). */
 .leading:disabled,
 .leading[aria-disabled="true"],
 .trailing:disabled {
-  opacity: .4;
   pointer-events: none;
+  --sb-fg: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+:host([variant="filled"]) .leading:disabled,
+:host([variant="filled"]) .leading[aria-disabled="true"],
+:host([variant="filled"]) .trailing:disabled,
+:host([variant="tonal"]) .leading:disabled,
+:host([variant="tonal"]) .leading[aria-disabled="true"],
+:host([variant="tonal"]) .trailing:disabled,
+:host([variant="elevated"]) .leading:disabled,
+:host([variant="elevated"]) .leading[aria-disabled="true"],
+:host([variant="elevated"]) .trailing:disabled {
+  --sb-bg: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+}
+:host([variant="outlined"]) .leading:disabled,
+:host([variant="outlined"]) .leading[aria-disabled="true"],
+:host([variant="outlined"]) .trailing:disabled {
+  border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
 }
 
 /* State layer — fills the button on hover / focus / press. */
@@ -210,7 +228,7 @@
 .leading:not(:disabled):not([aria-disabled="true"]):focus-visible .state-layer,
 .trailing:not(:disabled):focus-visible                            .state-layer { opacity: .10; }
 .leading:not(:disabled):not([aria-disabled="true"]):active        .state-layer,
-.trailing:not(:disabled):active                                   .state-layer { opacity: .12; }
+.trailing:not(:disabled):active                                   .state-layer { opacity: .10; }
 
 /* Ripple on press — matches material-button. */
 .leading:not(:disabled):not([aria-disabled="true"]):active::after,
@@ -225,7 +243,7 @@
   opacity: .25;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(1);
-  animation: material-split-ripple 1.2s linear;
+  animation: material-split-ripple var(--md-sys-motion-duration-long1, 450ms) var(--md-sys-motion-easing-standard-decelerate, cubic-bezier(0, 0, 0, 1));
   pointer-events: none;
 }
 

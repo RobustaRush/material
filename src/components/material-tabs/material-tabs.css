@@ -2,6 +2,38 @@
   display: block;
 }
 
+/* Single active indicator, hoisted from the tabs so it can slide between them.
+   material-tabs.tsx measures the selected tab and sets width + translateX. */
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  border-radius: 3px 3px 0 0;
+  background: var(--md-sys-color-primary);
+  opacity: 0;
+  transform: translateX(0);
+  transform-origin: left center;
+  will-change: transform, width;
+  transition:
+    transform var(--md-sys-motion-duration-medium2, 300ms)
+      var(--md-sys-motion-easing-emphasized, cubic-bezier(0.2, 0, 0, 1)),
+    width var(--md-sys-motion-duration-medium2, 300ms)
+      var(--md-sys-motion-easing-emphasized, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host([variant="secondary"]) .tab-indicator {
+  height: 2px;
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-indicator {
+    transition: none;
+  }
+}
+
 /* Hide horizontal scrollbar in scrollable mode while preserving scrolling. */
 .no-scrollbar {
   scrollbar-width: none;

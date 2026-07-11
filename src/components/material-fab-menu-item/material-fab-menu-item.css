@@ -44,7 +44,9 @@
 }
 
 :host([disabled]) .item {
-  opacity: .4;
+  /* MD3 disabled: on-surface 12% container / 38% content. */
+  --fab-menu-item-bg: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+  --fab-menu-item-fg: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
   cursor: not-allowed;
   pointer-events: none;
   box-shadow: none;

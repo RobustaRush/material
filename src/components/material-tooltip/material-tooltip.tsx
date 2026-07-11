@@ -236,6 +236,34 @@ export class MaterialTooltip {
     else this.hasActions = has;
   };
 
+  // WCAG 1.4.13 (hoverable): while the pointer/focus is over the tooltip
+  // surface itself, the auto-hide must not fire — otherwise rich-tooltip
+  // actions disappear as the user reaches for them. Only applies in hover
+  // mode (persistent rich tooltips are click-toggled, not hover-dismissed).
+  private hoverMode() {
+    return !(this.persistent && this.variant === 'rich');
+  }
+
+  private onSurfacePointerEnter = (e: PointerEvent) => {
+    if (e.pointerType === 'touch' || !this.hoverMode()) return;
+    if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = 0; }
+  };
+
+  private onSurfacePointerLeave = (e: PointerEvent) => {
+    if (e.pointerType === 'touch' || !this.hoverMode()) return;
+    this.scheduleHide();
+  };
+
+  private onSurfaceFocusIn = () => {
+    if (!this.hoverMode()) return;
+    if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = 0; }
+  };
+
+  private onSurfaceFocusOut = () => {
+    if (!this.hoverMode()) return;
+    this.scheduleHide();
+  };
+
   private onTriggerClick = (e: MouseEvent) => {
     e.preventDefault();
     this.open = !this.open;
@@ -267,6 +295,10 @@ export class MaterialTooltip {
           role="tooltip"
           aria-hidden={this.open ? 'false' : 'true'}
           ref={(el) => (this.surfaceEl = el)}
+          onPointerEnter={this.onSurfacePointerEnter}
+          onPointerLeave={this.onSurfacePointerLeave}
+          onFocusin={this.onSurfaceFocusIn}
+          onFocusout={this.onSurfaceFocusOut}
         >
           {this.variant === 'rich'
             ? [

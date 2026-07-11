@@ -44,12 +44,29 @@ export class MaterialTabs {
   @Event({ bubbles: true, composed: true })
   materialTabSelect!: EventEmitter<{ value?: string }>;
 
+  private indicatorEl?: HTMLElement;
+  private innerEl?: HTMLElement;
+  private ro?: ResizeObserver;
+
   componentWillLoad() {
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
     this.syncChildren();
+    // Reposition when tab widths change (font load, container resize, etc.).
+    this.ro = new ResizeObserver(() => this.positionIndicator());
+    this.ro.observe(this.el);
+  }
+
+  disconnectedCallback() {
+    this.ro?.disconnect();
+    this.ro = undefined;
+  }
+
+  componentDidLoad() {
+    // Place the indicator without animating on first paint.
+    this.positionIndicator(true);
   }
 
   @Watch('variant')
@@ -73,6 +90,52 @@ export class MaterialTabs {
     const selected = tabs.find((t) => t.selected && !t.disabled);
     const focusable = selected ?? tabs.find((t) => !t.disabled);
     for (const t of tabs) t.tabbable = t === focusable;
+
+    this.positionIndicator();
+  }
+
+  // Slide the single hoisted indicator to the selected tab. `instant` skips the
+  // transition (initial paint / reduced motion falls out via CSS).
+  private positionIndicator(instant = false) {
+    const bar = this.indicatorEl;
+    const inner = this.innerEl;
+    if (!bar || !inner) return;
+    const tabs = this.tabs();
+    const selected = tabs.find((t) => t.selected && !t.disabled);
+    if (!selected) {
+      bar.style.opacity = '0';
+      return;
+    }
+    const innerRect = inner.getBoundingClientRect();
+    const isPrimary = this.variant === 'primary';
+    // Primary indicator hugs the tab's content column; secondary spans the
+    // whole cell. Measure whichever applies, relative to the (scrolling) inner
+    // container so it stays aligned when the tab strip is scrolled.
+    const measured = isPrimary
+      ? selected.shadowRoot?.querySelector<HTMLElement>('[part="content"]')
+      : null;
+    const rect = (measured ?? selected).getBoundingClientRect();
+    let left = rect.left - innerRect.left;
+    let width = rect.width;
+    if (isPrimary && width < 24) {
+      left -= (24 - width) / 2;
+      width = 24;
+    }
+    const apply = () => {
+      bar.style.opacity = '1';
+      bar.style.width = `${width}px`;
+      bar.style.transform = `translateX(${left}px)`;
+    };
+    if (instant) {
+      const prev = bar.style.transition;
+      bar.style.transition = 'none';
+      apply();
+      // Force reflow so the next change animates from here.
+      void bar.offsetWidth;
+      bar.style.transition = prev;
+    } else {
+      apply();
+    }
   }
 
   @Listen('materialTabActivate')
@@ -86,6 +149,7 @@ export class MaterialTabs {
       t.tabbable = t === target;
     }
 
+    this.positionIndicator();
     this.materialTabSelect.emit({ value: e.detail.value });
   }
 
@@ -132,17 +196,30 @@ export class MaterialTabs {
   private handleSlotChange = () => this.syncChildren();
 
   render() {
-    // Outer = role=tablist; inner = the flex/scroll container. The 1dp divider
-    // sits at the bottom of the outer container so it spans the full width
-    // even when scrollable content overflows.
-    const inner = this.scrollable
-      ? 'flex overflow-x-auto pl-[52px] no-scrollbar'
-      : 'flex w-full';
+    // Outer = role=tablist and (when scrollable) the horizontal scroller.
+    // Inner = the flex content wrapper that grows with the tabs; the single
+    // sliding indicator is absolutely positioned within it so it scrolls in
+    // lockstep with the tab strip. The 1dp divider sits on the Host bottom
+    // border so it always spans the full width.
+    const scroller = this.scrollable
+      ? 'overflow-x-auto no-scrollbar'
+      : '';
+    const content = this.scrollable
+      ? 'relative flex w-max pl-[52px]'
+      : 'relative flex w-full';
 
     return (
       <Host class="block bg-surface text-on-surface border-b border-outline-variant">
-        <div role="tablist" aria-orientation="horizontal" class={inner}>
-          <slot onSlotchange={this.handleSlotChange} />
+        <div role="tablist" aria-orientation="horizontal" class={scroller}>
+          <div class={content} ref={(el) => (this.innerEl = el)}>
+            <slot onSlotchange={this.handleSlotChange} />
+            <span
+              class="tab-indicator"
+              part="indicator"
+              aria-hidden="true"
+              ref={(el) => (this.indicatorEl = el)}
+            ></span>
+          </div>
         </div>
       </Host>
     );

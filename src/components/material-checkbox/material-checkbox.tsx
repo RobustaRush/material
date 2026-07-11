@@ -155,7 +155,9 @@ export class MaterialCheckbox {
         role="checkbox"
         class={TARGET_BASE}
         disabled={this.disabled}
+        aria-checked={this.indeterminate ? 'mixed' : this.checked ? 'true' : 'false'}
         aria-label={this.ariaLabel ?? (this.label ? undefined : 'checkbox')}
+        aria-labelledby={!this.ariaLabel && this.label ? 'label' : null}
         aria-required={this.required ? 'true' : null}
         aria-invalid={inError ? 'true' : null}
         aria-describedby={subText ? descId : null}
@@ -167,11 +169,19 @@ export class MaterialCheckbox {
           aria-hidden="true"
         ></span>
         <span class={`${BOX_BASE} ${boxCls}`}>
-          {isOn && (
-            <span class="material-symbols text-[18px] leading-none" aria-hidden="true">
-              {icon}
-            </span>
-          )}
+          {/* Always rendered so the check can animate in — a conditionally
+              rendered mark can't transition. Revealed left-to-right via
+              clip-path at 200ms standard easing (MD3 selection-control motion). */}
+          <span
+            class={
+              'material-symbols text-[18px] leading-none ' +
+              'transition-[clip-path] duration-200 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ' +
+              (isOn ? '[clip-path:inset(0)]' : '[clip-path:inset(0_100%_0_0)]')
+            }
+            aria-hidden="true"
+          >
+            {icon}
+          </span>
         </span>
       </button>
     );
@@ -188,7 +198,7 @@ export class MaterialCheckbox {
       <label class="inline-flex items-start gap-2 select-none cursor-pointer">
         {button}
         <span class="flex flex-col">
-          <span class="mt-3 leading-6 text-base text-on-surface">{this.label}</span>
+          <span id="label" class="mt-3 leading-6 text-base text-on-surface">{this.label}</span>
           {subText && (
             <span id={descId} class={`mt-1 leading-4 text-xs ${subToneCls}`}>
               {subText}

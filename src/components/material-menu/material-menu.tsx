@@ -46,6 +46,11 @@ export class MaterialMenu {
   /** Reflects open state. Toggling this prop drives the popover. */
   @Prop({ mutable: true, reflect: true }) open = false;
 
+  /** ARIA role for the popup container. `menu` for a real command menu (the
+   *  default); `listbox` when hosting selectable options (e.g. material-select),
+   *  where `option` children are only valid inside a listbox. */
+  @Prop() menuRole: 'menu' | 'listbox' = 'menu';
+
   @Event() materialMenuOpen!: EventEmitter<void>;
   @Event() materialMenuClose!: EventEmitter<void>;
 
@@ -134,6 +139,13 @@ export class MaterialMenu {
     );
   }
 
+  // Typeahead-matchable text for an item: prefer the `label` prop (rendered in
+  // shadow DOM, so absent from light-DOM textContent), fall back to slotted text.
+  private itemText(it: HTMLElement): string {
+    const label = (it as HTMLElement & { label?: string }).label;
+    return (label || it.textContent || '').trim();
+  }
+
   private focusFirstItem() {
     const items = this.getItems();
     if (items.length) items[0].focus();
@@ -182,7 +194,7 @@ export class MaterialMenu {
       window.clearTimeout(this.typeaheadTimer);
       this.typeaheadTimer = window.setTimeout(() => (this.typeahead = ''), 500);
       const match = items.find(it =>
-        (it.textContent || '').trim().toLowerCase().startsWith(this.typeahead),
+        this.itemText(it).toLowerCase().startsWith(this.typeahead),
       );
       if (match) match.focus();
     }
@@ -195,7 +207,7 @@ export class MaterialMenu {
 
   render() {
     return (
-      <Host role="menu" aria-orientation="vertical">
+      <Host role={this.menuRole} aria-orientation="vertical">
         <slot />
       </Host>
     );

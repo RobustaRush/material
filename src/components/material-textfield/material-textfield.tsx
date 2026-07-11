@@ -206,6 +206,7 @@ export class MaterialTextfield {
     const renderInput = (extraCls: string) => (
       <input
         ref={el => (this.inputEl = el)}
+        id="input"
         class={`${INPUT_BASE} ${extraCls} ${this.dimmed ? 'text-on-surface/40 line-through' : ''}`}
         type={effectiveType}
         name={this.name}
@@ -281,7 +282,7 @@ export class MaterialTextfield {
               )}
             </div>
             {label && (
-              <label class={`${labelRest} ${labelShrunk} ${labelTone}`}>
+              <label htmlFor="input" class={`${labelRest} ${labelShrunk} ${labelTone}`}>
                 {label}{this.required ? ' *' : ''}
               </label>
             )}
@@ -337,7 +338,7 @@ export class MaterialTextfield {
             )}
           </div>
           {label && (
-            <label class={`${labelRest} ${labelShrunkOutlined} ${labelTone}`}>
+            <label htmlFor="input" class={`${labelRest} ${labelShrunkOutlined} ${labelTone}`}>
               {label}{this.required ? ' *' : ''}
             </label>
           )}

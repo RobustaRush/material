@@ -77,6 +77,7 @@ export class MaterialLinearProgress {
   @Watch('value')
   @Watch('wavy')
   @Watch('thickness')
+  @Watch('stopIndicator')
   handlePropChange() {
     if (this.width) this.recomputePaths(performance.now());
   }

@@ -11,7 +11,9 @@ import {
 @Component({
   tag: 'material-fab-menu-item',
   styleUrl: 'material-fab-menu-item.css',
-  shadow: true,
+  // delegatesFocus lets the group's roving `host.focus()` land on the inner
+  // <a>/<button> — without it, focusing the host did nothing.
+  shadow: { delegatesFocus: true },
 })
 export class MaterialFabMenuItem {
   @Element() el!: HTMLElement;
@@ -44,6 +46,11 @@ export class MaterialFabMenuItem {
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (this.disabled) return;
+    // For link items, let the browser handle activation natively: keyboard
+    // activation of an <a> dispatches a click, which runs handleClick →
+    // activate() and then follows the href. Calling preventDefault here (as
+    // before) killed the navigation entirely.
+    if (this.href) return;
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       this.activate();

@@ -1,0 +1,69 @@
+/*
+ * MD3 system tokens that are NOT theme-dependent: motion (easing + duration),
+ * shape (corner radii) and elevation (shadow sets). Unlike the color files,
+ * these are identical across light/dark/contrast themes, so they live on :root
+ * and cascade into every shadow DOM as inherited custom properties.
+ *
+ * Components should reference these instead of hardcoding curves, durations,
+ * radii and shadows per file. See docs/wiki + REVIEW.md §3.1 / §3.8.
+ */
+
+:root {
+  /* ---- Motion: easing ---------------------------------------------------- */
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --md-sys-motion-easing-linear: linear;
+
+  /* Expressive spring approximations as CSS linear() easings. The slight
+     overshoot (>1) gives the characteristic bounce of the M3 spring tokens
+     without a JS animation. */
+  --md-sys-motion-spring-fast-spatial: linear(
+    0, 0.4 20%, 0.9 40%, 1.04 65%, 0.99 85%, 1
+  );
+  --md-sys-motion-spring-default-effects: linear(
+    0, 0.6 30%, 1.05 60%, 0.98 80%, 1
+  );
+
+  /* ---- Motion: duration -------------------------------------------------- */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+
+  /* ---- Shape: corner radii ---------------------------------------------- */
+  --md-sys-shape-corner-none: 0;
+  --md-sys-shape-corner-xs: 0.25rem;   /* 4dp  */
+  --md-sys-shape-corner-sm: 0.5rem;    /* 8dp  */
+  --md-sys-shape-corner-md: 0.75rem;   /* 12dp */
+  --md-sys-shape-corner-lg: 1rem;      /* 16dp */
+  --md-sys-shape-corner-xl: 1.75rem;   /* 28dp */
+  --md-sys-shape-corner-full: 9999px;
+
+  /* ---- Elevation: shadow sets ------------------------------------------- */
+  --md-sys-elevation-0: none;
+  --md-sys-elevation-1:
+    0 1px 2px 0 rgb(0 0 0 / 0.30),
+    0 1px 3px 1px rgb(0 0 0 / 0.15);
+  --md-sys-elevation-2:
+    0 1px 2px 0 rgb(0 0 0 / 0.30),
+    0 2px 6px 2px rgb(0 0 0 / 0.15);
+  --md-sys-elevation-3:
+    0 1px 3px 0 rgb(0 0 0 / 0.30),
+    0 4px 8px 3px rgb(0 0 0 / 0.15);
+  --md-sys-elevation-4:
+    0 2px 3px 0 rgb(0 0 0 / 0.30),
+    0 6px 10px 4px rgb(0 0 0 / 0.15);
+  --md-sys-elevation-5:
+    0 4px 4px 0 rgb(0 0 0 / 0.30),
+    0 8px 12px 6px rgb(0 0 0 / 0.15);
+}

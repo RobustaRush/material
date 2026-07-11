@@ -64,11 +64,17 @@
   outline-offset: 0.125rem;
 }
 
+/* MD3 disabled: content on-surface 38%, container/outline 12% — not a blanket
+   opacity that keeps the hue. */
 [part="chip"]:disabled,
 [part="chip"][aria-disabled="true"],
 :host([disabled]) [part="chip"] {
-  opacity: .4;
   pointer-events: none;
+  --chip-fg: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+  border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+}
+:host([disabled][selected]) [part="chip"] {
+  --chip-bg: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
 }
 
 .label {
@@ -145,14 +151,14 @@
   background-color: color-mix(in srgb, currentColor 8%, var(--chip-bg, transparent));
 }
 :host(:not([variant="input"])) [part="chip"]:not(:disabled):not([aria-disabled="true"]):active {
-  background-color: color-mix(in srgb, currentColor 12%, var(--chip-bg, transparent));
+  background-color: color-mix(in srgb, currentColor 10%, var(--chip-bg, transparent));
 }
 
 :host([variant="input"]) .body:not(:disabled):hover {
   background-color: color-mix(in srgb, currentColor 8%, transparent);
 }
 :host([variant="input"]) .body:not(:disabled):active {
-  background-color: color-mix(in srgb, currentColor 12%, transparent);
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
 }
 
 /* Avatar — 24dp circular, flush to the 4dp left edge. */
@@ -174,6 +180,7 @@
 /* Trailing remove button on input chips — own focus/hover; hit area
    extends past the visible 18dp icon to meet the 48dp target spec. */
 .trailing-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;

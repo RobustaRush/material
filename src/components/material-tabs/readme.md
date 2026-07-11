@@ -20,6 +20,13 @@
 | `materialTabSelect` |             | `CustomEvent<{ value?: string \| undefined; }>` |
 
 
+## Shadow Parts
+
+| Part          | Description |
+| ------------- | ----------- |
+| `"indicator"` |             |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

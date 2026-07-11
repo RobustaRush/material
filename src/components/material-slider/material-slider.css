@@ -91,7 +91,7 @@
 
 .seg.leading {
   left: 0;
-  width: max(0, calc(var(--vl, 0%) - var(--seg-gap)));
+  width: max(0%, calc(var(--vl, 0%) - var(--seg-gap)));
   border-top-left-radius: var(--track-r);
   border-bottom-left-radius: var(--track-r);
 }
@@ -125,7 +125,7 @@
   /* "leading" = lower value side = bottom */
   bottom: 0;
   top: auto;
-  height: max(0, calc(var(--vl, 0%) - var(--seg-gap)));
+  height: max(0%, calc(var(--vl, 0%) - var(--seg-gap)));
   border-radius: 0 0 var(--track-r) var(--track-r);
 }
 :host([orientation="vertical"]) .seg.active {
