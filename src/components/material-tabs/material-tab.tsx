@@ -1,5 +1,4 @@
 import { Component, Element, Event, EventEmitter, Host, Prop, h } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 tab — child of <material-tabs>. The parent owns selection coordination,
 // keyboard nav, and roving tabindex; this component renders the visual tab cell
@@ -41,10 +40,6 @@ export class MaterialTab {
   @Event({ bubbles: true, composed: true })
   materialTabActivate!: EventEmitter<{ value?: string }>;
 
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
-
   private activate = () => {
     if (this.disabled) return;
     this.materialTabActivate.emit({ value: this.value });
@@ -81,42 +76,14 @@ export class MaterialTab {
   }
 
   render() {
-    const isPrimary = this.variant === 'primary';
     const hasIcon = !!this.icon;
-
-    // Cell padding: per token tables, content sits in vertical center; the
-    // 48dp / 64dp container heights drive layout. State-layer is rectangular,
-    // so no overflow-hidden / rounding-clip concerns.
-    const cellHeight = hasIcon ? 'h-16' : 'h-12';
-
-    // Active label/icon color:
-    //   primary  selected → text-primary
-    //   secondary selected → text-on-surface
-    //   either   inactive → text-on-surface-variant
-    const activeColor = isPrimary ? 'text-primary' : 'text-on-surface';
-    const colorCls = this.selected ? activeColor : 'text-on-surface-variant';
-
-    const stateLayer =
-      'absolute inset-0 pointer-events-none bg-current opacity-0 transition-opacity ' +
-      'group-hover/t:opacity-[0.08] group-focus-visible/t:opacity-[0.10] group-active/t:opacity-[0.10]';
-
-    const focusRing =
-      'focus:outline-none focus-visible:outline-2 focus-visible:outline-secondary focus-visible:outline-offset-[-3px]';
-
-    const root =
-      `group/t relative flex items-center justify-center w-full ${cellHeight} px-4 ` +
-      `bg-transparent border-0 m-0 cursor-pointer no-underline select-none ` +
-      `transition-colors ${colorCls} ${focusRing} ` +
-      `disabled:cursor-not-allowed disabled:opacity-40`;
 
     // Inner content stack hugs the label/icon column horizontally so the
     // primary indicator can be anchored to its width (min 24dp, inset 2dp
-    // each side). It stretches to full cell height (`h-full`) so the
-    // indicator at `bottom-0` sits at the bottom of the tab cell, just above
-    // the divider — not flush against the label baseline.
-    const stackCls = hasIcon
-      ? 'relative inline-flex flex-col items-center justify-center gap-1 h-full'
-      : 'relative inline-flex items-center justify-center gap-1 h-full';
+    // each side). It stretches to full cell height so the indicator (in
+    // material-tabs) sits at the bottom of the tab cell, just above the
+    // divider — not flush against the label baseline.
+    const stackCls = hasIcon ? 'stack column' : 'stack';
 
     // The active indicator is no longer rendered per-tab. A single indicator
     // lives in <material-tabs> and slides between tabs (see material-tabs.tsx).
@@ -124,35 +91,28 @@ export class MaterialTab {
     // stack via part="content" for the parent to measure.
 
     // Badge anchor: when icon is present, hug the icon glyph and overlap by 6dp
-    // (translate-y-1/2 puts the badge's center on the icon's top edge; -mr-1.5
-    // gives the 6dp overlap toward the trailing edge). When label-only, the
-    // badge sits inline as a sibling of the label with a 4dp (gap-1) gap.
+    // (translate covers both the -50% vertical center-on-edge and the 6px
+    // trailing overlap). When label-only, the badge sits inline as a sibling
+    // of the label with a 4dp gap.
     const iconAndBadge = hasIcon ? (
-      <span class="relative inline-flex">
-        <span
-          class="material-symbols leading-none text-[24px]"
-          style={this.iconStyle()}
-          aria-hidden="true"
-        >
+      <span class="icon-badge">
+        <span class="icon" style={this.iconStyle()} aria-hidden="true">
           {this.icon}
         </span>
-        <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-[6px] pointer-events-none z-10">
+        <span class="badge-slot">
           <slot name="badge" />
         </span>
       </span>
     ) : null;
 
-    const labelCls =
-      'text-sm font-medium tracking-[0.1px] leading-5 whitespace-nowrap';
-
     const inner = (
       <span class={stackCls} part="content">
         {iconAndBadge}
         {hasIcon ? (
-          <span class={labelCls}>{this.label}</span>
+          <span class="label">{this.label}</span>
         ) : (
-          <span class="inline-flex items-center gap-1">
-            <span class={labelCls}>{this.label}</span>
+          <span class="label-row">
+            <span class="label">{this.label}</span>
             <slot name="badge" />
           </span>
         )}
@@ -160,7 +120,7 @@ export class MaterialTab {
     );
 
     const body = [
-      <span class={stateLayer} aria-hidden="true"></span>,
+      <span class="state-layer" aria-hidden="true"></span>,
       inner,
     ];
 
@@ -168,7 +128,7 @@ export class MaterialTab {
     const Tag: any = isLink ? 'a' : 'button';
 
     const props: Record<string, unknown> = {
-      class: root,
+      class: hasIcon ? 'root tall' : 'root',
       role: 'tab',
       'aria-selected': this.selected ? 'true' : 'false',
       'aria-disabled': this.disabled ? 'true' : null,

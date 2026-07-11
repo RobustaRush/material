@@ -9,7 +9,6 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 tabs container — holds <material-tab> children, drives selection,
 // keyboard navigation, and roving tabindex. Two variants share anatomy and
@@ -47,10 +46,6 @@ export class MaterialTabs {
   private indicatorEl?: HTMLElement;
   private innerEl?: HTMLElement;
   private ro?: ResizeObserver;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   connectedCallback() {
     this.syncChildren();
@@ -209,17 +204,10 @@ export class MaterialTabs {
     // sliding indicator is absolutely positioned within it so it scrolls in
     // lockstep with the tab strip. The 1dp divider sits on the Host bottom
     // border so it always spans the full width.
-    const scroller = this.scrollable
-      ? 'overflow-x-auto no-scrollbar'
-      : '';
-    const content = this.scrollable
-      ? 'relative flex w-max pl-[52px]'
-      : 'relative flex w-full';
-
     return (
-      <Host class="block bg-surface text-on-surface border-b border-outline-variant">
-        <div role="tablist" aria-orientation="horizontal" class={scroller}>
-          <div class={content} ref={(el) => (this.innerEl = el)}>
+      <Host>
+        <div role="tablist" aria-orientation="horizontal" class="tablist">
+          <div class="inner" ref={(el) => (this.innerEl = el)}>
             <slot onSlotchange={this.handleSlotChange} />
             <span
               class="tab-indicator"

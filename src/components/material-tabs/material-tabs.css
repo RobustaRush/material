@@ -1,5 +1,29 @@
 :host {
   display: block;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+:host([scrollable]) .tablist {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+:host([scrollable]) .tablist::-webkit-scrollbar {
+  display: none;
+}
+
+:host([scrollable]) .inner {
+  width: max-content;
+  padding-left: 52px;
 }
 
 /* Single active indicator, hoisted from the tabs so it can slide between them.
@@ -32,13 +56,4 @@
   .tab-indicator {
     transition: none;
   }
-}
-
-/* Hide horizontal scrollbar in scrollable mode while preserving scrolling. */
-.no-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
 }
