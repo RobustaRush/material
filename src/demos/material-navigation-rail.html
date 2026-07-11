@@ -21,7 +21,8 @@
         <p class="text-on-surface-variant text-sm">
           MD3 Expressive nav rail — collapsed (96dp) and expanded (220–360dp).
           Items via slotted <code>&lt;material-navigation-item&gt;</code>; the rail
-          propagates layout when toggled. Click the menu icon to expand.
+          propagates layout when toggled. Built-in toggle + title header, external
+          control methods, standard/modal/auto modality, arrow-key navigation.
         </p>
       </div>
     </div>
@@ -55,10 +56,13 @@
     <section class="space-y-6">
       <div class="grid sm:grid-cols-2 gap-6">
         <div>
-          <p class="text-sm text-on-surface-variant mb-2">collapsed · top alignment</p>
+          <p class="text-sm text-on-surface-variant mb-2">
+            built-in toggle · <code>label="Mail"</code> — expand to see the title
+            at the leading edge and the toggle moved to the trailing edge;
+            ↑/↓/Home/End move focus between items
+          </p>
           <div class="border border-outline-variant rounded overflow-hidden h-[480px] flex">
-            <material-navigation-rail>
-              <material-icon-button slot="menu" variant="standard" icon="menu" aria-label="Toggle navigation"></material-icon-button>
+            <material-navigation-rail label="Mail">
               <material-icon-button slot="fab" variant="tonal" icon="edit" aria-label="Compose"></material-icon-button>
               <material-navigation-item icon="inbox" label="Inbox" active aria-label="Inbox, 8 unread">
                 <material-badge slot="badge" value="8"></material-badge>
@@ -76,10 +80,14 @@
         </div>
 
         <div>
-          <p class="text-sm text-on-surface-variant mb-2">expanded · center alignment</p>
+          <p class="text-sm text-on-surface-variant mb-2">
+            expanded · center alignment · custom slotted <code>menu</code> button ·
+            section header (<code>data-section-header</code>, expanded-only)
+          </p>
           <div class="border border-outline-variant rounded overflow-hidden h-[480px] flex">
-            <material-navigation-rail expanded alignment="center">
+            <material-navigation-rail expanded alignment="center" label="Workspace">
               <material-icon-button slot="menu" variant="standard" icon="menu_open" aria-label="Collapse"></material-icon-button>
+              <h3 data-section-header class="ps-4 pt-3 pb-2 m-0 text-xs font-medium text-on-surface-variant">General</h3>
               <material-navigation-item icon="dashboard" label="Dashboard"></material-navigation-item>
               <material-navigation-item icon="folder" label="Projects" active aria-label="Projects, 12 active">
                 <material-badge slot="badge" value="12"></material-badge>
@@ -88,6 +96,7 @@
                 <material-badge slot="badge"></material-badge>
               </material-navigation-item>
               <material-divider inset="middle"></material-divider>
+              <h3 data-section-header class="ps-4 pt-3 pb-2 m-0 text-xs font-medium text-on-surface-variant">Storage</h3>
               <material-navigation-item icon="archive" label="Archive"></material-navigation-item>
               <material-navigation-item icon="delete" label="Trash"></material-navigation-item>
               <material-navigation-item icon="settings" slot="bottom" label="Settings"></material-navigation-item>
@@ -99,14 +108,117 @@
         </div>
       </div>
 
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">
+            external control — <code>expand()/collapse()/conceal()/reveal()</code> +
+            <code>materialRailToggle</code>
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[420px] flex">
+            <material-navigation-rail id="ctl-rail" label="Console">
+              <material-navigation-item icon="dashboard" label="Dashboard" active></material-navigation-item>
+              <material-navigation-item icon="storage" label="Data"></material-navigation-item>
+              <material-navigation-item icon="settings" label="Settings"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant space-y-4">
+              <div class="flex flex-wrap gap-2">
+                <material-button id="btn-expand" variant="tonal">expand()</material-button>
+                <material-button id="btn-collapse" variant="tonal">collapse()</material-button>
+                <material-button id="btn-conceal" variant="outlined">conceal()</material-button>
+                <material-button id="btn-reveal" variant="outlined">reveal()</material-button>
+              </div>
+              <p>last event: <code id="ctl-state">—</code></p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">
+            <code>hide-on-collapse</code> — collapsing removes the rail entirely;
+            reopen affordance lives in the content (app-bar hamburger pattern)
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[420px] flex">
+            <material-navigation-rail id="hoc-rail" hide-on-collapse expanded label="Projects">
+              <material-navigation-item icon="folder" label="Active" active></material-navigation-item>
+              <material-navigation-item icon="archive" label="Archive"></material-navigation-item>
+              <material-navigation-item icon="delete" label="Trash"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant space-y-4">
+              <material-icon-button id="hoc-open" variant="standard" icon="menu" aria-label="Open navigation"></material-icon-button>
+              <p>Collapse via the rail header, reopen with the hamburger here.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">
+            <code>modality="modal"</code> — expanding overlays the viewport with a
+            scrim (native <code>&lt;dialog&gt;</code>: Esc, scrim click, focus trap);
+            content never reflows
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[420px] flex">
+            <material-navigation-rail modality="modal" label="Reports">
+              <material-navigation-item icon="monitoring" label="Metrics" active></material-navigation-item>
+              <material-navigation-item icon="table_chart" label="Tables"></material-navigation-item>
+              <material-navigation-item icon="description" label="Exports"></material-navigation-item>
+              <material-navigation-item icon="schedule" label="Scheduled"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant">
+              Selecting an item closes the panel.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">
+            <code>modality="auto"</code> — standard rail ≥600px viewport; below
+            that the rail hides and expands as a modal panel (resize the window)
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[420px] flex">
+            <material-navigation-rail id="auto-rail" modality="auto" label="Adaptive">
+              <material-navigation-item icon="home" label="Home" active></material-navigation-item>
+              <material-navigation-item icon="explore" label="Explore"></material-navigation-item>
+              <material-navigation-item icon="person" label="Profile"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant space-y-4">
+              <material-icon-button id="auto-open" variant="standard" icon="menu" aria-label="Open navigation"></material-icon-button>
+              <p>On a compact viewport the rail is hidden — the hamburger here
+                 opens it as a modal panel.</p>
+            </div>
+          </div>
+        </div>
+
+        <div dir="rtl">
+          <p class="text-sm text-on-surface-variant mb-2" dir="ltr">
+            RTL — logical properties keep the rail on the leading (right) edge,
+            badges and paddings mirrored
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden h-[420px] flex">
+            <material-navigation-rail expanded label="بريد">
+              <material-navigation-item icon="inbox" label="الوارد" active>
+                <material-badge slot="badge" value="8"></material-badge>
+              </material-navigation-item>
+              <material-navigation-item icon="send" label="الصادر"></material-navigation-item>
+              <material-navigation-item icon="delete" label="المهملات"></material-navigation-item>
+            </material-navigation-rail>
+            <div class="flex-1 p-6 bg-surface-container-low text-sm text-on-surface-variant">
+              محتوى الصفحة
+            </div>
+          </div>
+        </div>
+      </div>
+
       <details class="rounded-lg bg-surface-container-low border border-outline-variant">
         <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
-<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-navigation-rail&gt;
-  &lt;material-icon-button slot="menu" variant="standard" icon="menu"
-                         aria-label="Menu"&gt;&lt;/material-icon-button&gt;
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Built-in toggle renders when nothing is slotted into `menu`. When
+     expanded, the title sits at the leading edge, the toggle at the trailing
+     edge. modality="auto": standard rail ≥ breakpoint (600px), hidden + modal
+     panel below it. --&gt;
+&lt;material-navigation-rail label="Mail" modality="auto"&gt;
   &lt;material-icon-button slot="fab" variant="tonal" icon="edit"
                          aria-label="Compose"&gt;&lt;/material-icon-button&gt;
 
+  &lt;h3 data-section-header&gt;Mailboxes&lt;/h3&gt;  &lt;!-- shown only while expanded --&gt;
   &lt;material-navigation-item icon="inbox"    label="Inbox" active&gt;&lt;/material-navigation-item&gt;
   &lt;material-navigation-item icon="send"     label="Outbox"&gt;&lt;/material-navigation-item&gt;
   &lt;material-navigation-item icon="favorite" label="Favorites"&gt;&lt;/material-navigation-item&gt;
@@ -115,15 +227,38 @@
                              label="Settings"&gt;&lt;/material-navigation-item&gt;
 &lt;/material-navigation-rail&gt;
 
-&lt;!-- menu slot toggles `expanded` automatically; opt out with data-no-rail-toggle --&gt;
-&lt;!-- or drive it manually --&gt;
+&lt;!-- slotted menu buttons still toggle automatically; opt out with
+     data-no-rail-toggle. External control + state sync: --&gt;
 &lt;script&gt;
-  document.querySelector('material-navigation-rail').expanded = true;
-&lt;/script&gt;</code></pre>
+  const rail = document.querySelector('material-navigation-rail');
+  rail.toggle();  // also: expand() / collapse() / conceal() / reveal()
+  rail.addEventListener('materialRailToggle',
+    (e) =&gt; console.log(e.detail));  // { expanded, concealed }
+&lt;/script&gt;
+
+&lt;!-- expanded width is tunable within the 220–360dp spec range --&gt;
+&lt;style&gt;
+  material-navigation-rail { --material-rail-expanded-width: 16rem; }
+&lt;/style&gt;</code></pre>
       </details>
     </section>
   </main>
 
   <script src="/demos/_shared.js"></script>
+  <script>
+    const ctl = document.getElementById('ctl-rail');
+    document.getElementById('btn-expand').addEventListener('click', () => ctl.expand());
+    document.getElementById('btn-collapse').addEventListener('click', () => ctl.collapse());
+    document.getElementById('btn-conceal').addEventListener('click', () => ctl.conceal());
+    document.getElementById('btn-reveal').addEventListener('click', () => ctl.reveal());
+    ctl.addEventListener('materialRailToggle', (e) => {
+      document.getElementById('ctl-state').textContent = JSON.stringify(e.detail);
+    });
+
+    document.getElementById('hoc-open').addEventListener('click',
+      () => document.getElementById('hoc-rail').expand());
+    document.getElementById('auto-open').addEventListener('click',
+      () => document.getElementById('auto-rail').expand());
+  </script>
 </body>
 </html>

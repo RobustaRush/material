@@ -1,0 +1,76 @@
+/* Modal expanded rail. A native <dialog> gives us top layer, ::backdrop
+   scrim, focus trap, Esc handling, and focus return for free — same approach
+   as material-dialog. The panel slides in from the leading edge. */
+
+.rail-dialog {
+  position: fixed;
+  inset: 0;
+  inset-inline-end: auto;
+  margin: 0;
+  border: none;
+  padding: 0;
+  width: var(--material-rail-expanded-width, 13.75rem);
+  max-width: 85vw;
+  height: 100%;
+  max-height: none;
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+
+  /* MD3 modal drawer: 16dp corners on the trailing edge, elevation 1. */
+  border-start-end-radius: 1rem;
+  border-end-end-radius: 1rem;
+  box-shadow: var(--md-sys-elevation-1,
+    0 1px 2px 0 rgb(0 0 0 / 0.30),
+    0 1px 3px 1px rgb(0 0 0 / 0.15));
+
+  transform: translateX(-100%);
+  transition:
+    transform var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+
+.rail-dialog:dir(rtl) { transform: translateX(100%); }
+
+.rail-dialog[open] {
+  transform: translateX(0);
+  transition:
+    transform var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    overlay 300ms allow-discrete,
+    display 300ms allow-discrete;
+}
+
+@starting-style {
+  .rail-dialog[open] { transform: translateX(-100%); }
+  .rail-dialog[open]:dir(rtl) { transform: translateX(100%); }
+}
+
+.rail-dialog::backdrop {
+  background: rgb(0 0 0 / 0);
+  transition:
+    background var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+
+.rail-dialog[open]::backdrop {
+  /* MD3 scrim token at 32% rather than a hardcoded black. */
+  background: color-mix(in srgb, var(--md-sys-color-scrim) 32%, transparent);
+  transition:
+    background var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    overlay 300ms allow-discrete,
+    display 300ms allow-discrete;
+}
+
+@starting-style {
+  .rail-dialog[open]::backdrop { background: color-mix(in srgb, var(--md-sys-color-scrim) 0%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-dialog, .rail-dialog[open] {
+    transition: none;
+    transform: none;
+  }
+  .rail-dialog::backdrop, .rail-dialog[open]::backdrop { transition: none; }
+}

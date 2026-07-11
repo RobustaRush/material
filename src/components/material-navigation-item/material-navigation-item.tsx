@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Prop, h, Host } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Method, Prop, h, Host } from '@stencil/core';
 import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive navigation item — shared by navigation-rail (collapsed/expanded)
@@ -37,6 +37,12 @@ export class MaterialNavigationItem {
 
   componentWillLoad() {
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
+  }
+
+  /** Focus the inner button/link — used by the rail's arrow-key navigation. */
+  @Method()
+  async setFocus(): Promise<void> {
+    this.el.shadowRoot?.querySelector<HTMLElement>('a, button')?.focus();
   }
 
   private handleClick = (e: MouseEvent) => {
@@ -121,21 +127,22 @@ export class MaterialNavigationItem {
   }
 
   private renderExpanded() {
+    // Leading padding sits on the row, not the icon: .material-symbols forces
+    // `direction: ltr` (icon-font ligatures), so padding-inline-start on the
+    // icon itself resolves as LEFT padding even in RTL context.
     const row = [
-      'relative flex items-center w-full h-14 overflow-hidden',
+      'relative flex items-center w-full h-14 overflow-hidden ps-4',
       'rounded-full transition-colors',
       this.active
         ? 'bg-secondary-container text-on-secondary-container'
         : 'bg-transparent text-on-surface-variant',
     ].join(' ');
 
-    const iconPad = 'ps-4';
-
     return (
       <span key="expanded" class={row}>
         {this.stateLayer()}
         <span
-          class={`material-symbols leading-none text-[1.5rem] relative ${iconPad}`}
+          class="material-symbols leading-none text-[1.5rem] relative"
           style={this.iconStyle()}
           aria-hidden="true"
         >

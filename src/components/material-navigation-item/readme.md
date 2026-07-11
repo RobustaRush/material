@@ -27,6 +27,19 @@
 | `materialSelect` |             | `CustomEvent<{ value?: string \| undefined; }>` |
 
 
+## Methods
+
+### `setFocus() => Promise<void>`
+
+Focus the inner button/link — used by the rail's arrow-key navigation.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

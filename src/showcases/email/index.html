@@ -32,13 +32,15 @@
 <body class="bg-background text-on-background h-screen flex overflow-hidden">
 
   <!-- Navigation rail — full-height on the leading edge per nav-rail spec.
-       Collapsed (96dp) by default; menu icon at top toggles expanded.
+       Collapsed (96dp) by default; the built-in toggle expands it (title at
+       the leading edge, toggle at the trailing edge). modality="auto": below
+       640px the rail hides and opens as a modal panel from the app-bar
+       hamburger instead.
        Note: FAB is intentionally not nested in the rail here — a 96dp Large FAB
        fills the rail width and looks oversized. The compose FAB lives fixed in
        the lower-trailing corner of the content area instead (Gmail-style). -->
-  <material-navigation-rail id="rail" class="shrink-0">
-    <material-icon-button slot="menu" variant="standard" icon="menu"
-                          aria-label="Toggle navigation"></material-icon-button>
+  <material-navigation-rail id="rail" class="shrink-0" label="Mail"
+                            modality="auto" breakpoint="640">
 
     <material-navigation-item icon="inbox" label="Inbox" active aria-label="Inbox, 4 unread">
       <material-badge slot="badge" value="4"></material-badge>
@@ -57,9 +59,13 @@
 
   <div class="flex-1 flex flex-col min-w-0">
 
-    <!-- Search app bar — sits above content panes only; the rail owns its own
-         leading edge so no leading menu button is needed here. -->
+    <!-- Search app bar — sits above content panes only. The hamburger in
+         `leading` shows only on compact viewports, where the rail is hidden
+         and opens as a modal panel. -->
     <material-search-app-bar id="search" placeholder="Search mail" class="shrink-0">
+      <material-icon-button id="rail-open" slot="leading" variant="standard"
+                            icon="menu" aria-label="Open navigation"
+                            class="sm:hidden"></material-icon-button>
       <select id="theme-picker" slot="trailing"
               class="bg-surface-container text-on-surface border border-outline-variant rounded px-2 py-1 text-xs mr-1"
               aria-label="Theme">
@@ -420,6 +426,12 @@
     document.getElementById('more-menu').addEventListener('materialMenuSelect', (e) => {
       host.enqueue({ message: `Action: ${e.detail.value}` });
     });
+
+    // ─── Navigation rail (compact viewports) ────────────────────────────
+    // Below 640px the rail hides (modality="auto"); the app-bar hamburger
+    // opens it as a modal panel.
+    document.getElementById('rail-open').addEventListener('click',
+      () => document.getElementById('rail').expand());
   </script>
 </body>
 </html>
