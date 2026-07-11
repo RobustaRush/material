@@ -10,7 +10,6 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 import { gettext } from '../../utils/i18n';
 
 export type MaterialSelectVariant = 'filled' | 'outlined';
@@ -104,7 +103,6 @@ export class MaterialSelect {
       this.defaultValues = [...(this.values ?? [])];
       this.value = this.values.join(VALUE_SEP);
     }
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -508,19 +506,11 @@ export class MaterialSelect {
     const openLabel = this.openLabel || gettext('Open list');
     const clearLabel = this.clearLabel || gettext('Clear selection');
     const showClear = this.clearable && this.values.length > 0 && !this.disabled && !this.readOnly;
-    const wide = showClear ? 'pr-24' : 'pr-12';
     const filled = this.variant === 'filled';
     const hasLeading = !!this.leadingIcon;
-    const labelLeft = hasLeading ? 'left-12' : 'left-4';
     const isFilled = this.values.length > 0 || this.shellFocused;
-    const labelTone = this.error
-      ? 'text-error'
-      : (this.shellFocused ? 'text-primary' : 'text-on-surface-variant');
+    const labelTone = this.error ? 'error' : (this.shellFocused ? 'focused' : 'idle');
     const subText = this.error ? this.errorText : this.helpText;
-
-    const labelBaseCls =
-      `absolute ${labelLeft} pointer-events-none origin-left transition-all duration-150 ` +
-      `text-base ${labelTone}`;
 
     const stopBlur = (e: Event) => e.preventDefault();
     const removeAria = (lbl: string) => `${gettext('Remove')} ${lbl}`;
@@ -529,34 +519,31 @@ export class MaterialSelect {
       const o = this.findOption(v);
       const lbl = o ? this.optionLabel(o) : v;
       return (
-        <span
-          class="inline-flex items-center gap-1 h-7 pl-2.5 pr-1 rounded-lg bg-secondary-container text-on-secondary-container text-sm max-w-full"
-          role="listitem"
-        >
-          <span class="truncate">{lbl}</span>
+        <span class="chip" role="listitem">
+          <span class="chip-label">{lbl}</span>
           <button
             type="button"
-            class="inline-flex items-center justify-center w-5 h-5 rounded-full text-on-secondary-container hover:bg-on-secondary-container/15 active:bg-on-secondary-container/25 focus-visible:outline-2 focus-visible:outline-secondary disabled:pointer-events-none"
+            class="chip-remove"
             aria-label={removeAria(lbl)}
             disabled={this.disabled || this.readOnly}
             onClick={this.removeValue(v)}
             onMouseDown={stopBlur as any}
           >
-            <span class="material-symbols text-[16px]" aria-hidden="true">close</span>
+            <span class="chip-remove-icon" aria-hidden="true">close</span>
           </button>
         </span>
       );
     };
 
     const trailing = (
-      <span class="absolute right-1 top-1 inline-flex items-center z-10">
+      <span class="trailing">
         {showClear && (
           <material-icon-button
             size="xs"
             variant="standard"
             icon="close"
             aria-label={clearLabel}
-            class="-mr-5"
+            class="clear-btn"
             onClick={this.clear}
             onMouseDown={stopBlur as any}
           />
@@ -575,7 +562,7 @@ export class MaterialSelect {
 
     const leading = hasLeading && (
       <span
-        class={`absolute left-3 top-3 z-10 inline-flex items-center material-symbols text-2xl pointer-events-none ${this.error ? 'text-error' : 'text-on-surface-variant'}`}
+        class={this.error ? 'leading-icon error' : 'leading-icon'}
         aria-hidden="true"
       >
         {this.leadingIcon}
@@ -599,10 +586,10 @@ export class MaterialSelect {
     } as const;
 
     const supportingRow = (subText) && (
-      <div class="flex justify-between gap-4 mt-1 px-4 text-xs leading-4">
+      <div class="supporting-row">
         <span
           id="description"
-          class={this.error ? 'text-error' : 'text-on-surface-variant'}
+          class={this.error ? 'error' : 'idle'}
           role={this.error ? 'alert' : undefined}
         >
           {subText}
@@ -610,41 +597,44 @@ export class MaterialSelect {
       </div>
     );
 
-    const innerL = hasLeading ? 'pl-12' : 'pl-3';
+    const shellCls = [
+      'shell',
+      filled ? 'filled' : 'outlined',
+      hasLeading ? 'leading' : 'no-leading',
+      showClear ? 'wide' : 'narrow',
+    ].join(' ');
 
     if (filled) {
-      const labelShrunkCls = isFilled
-        ? 'top-2 translate-y-0 text-xs'
-        : 'top-1/2 -translate-y-1/2';
-      const indicatorCls = this.error
-        ? 'h-0.5 bg-error'
-        : (this.shellFocused
-          ? 'h-0.5 bg-primary'
-          : 'h-px bg-on-surface-variant');
+      const labelCls = [
+        'field-label',
+        'filled',
+        hasLeading ? 'leading' : '',
+        isFilled ? 'shrunk' : 'rest',
+        labelTone,
+      ].filter(Boolean).join(' ');
+      const indicatorCls = [
+        'indicator',
+        this.error ? 'error' : (this.shellFocused ? 'focused' : ''),
+        this.error || this.shellFocused ? 'active' : '',
+      ].filter(Boolean).join(' ');
 
       return (
-        <div class="block w-full">
-          <div class={`relative w-full min-h-14 rounded-t bg-surface-container-highest hover:bg-surface-container-high transition-colors ${this.disabled ? 'opacity-40 pointer-events-none' : ''}`}>
+        <div class="wrapper">
+          <div class={this.disabled ? 'surface filled disabled' : 'surface filled'}>
             {leading}
             {trailing}
-            <div
-              {...sharedShellAttrs}
-              class={`relative min-h-14 w-full flex flex-wrap items-center gap-1.5 ${innerL} ${wide} pt-6 pb-2 outline-none cursor-pointer`}
-            >
+            <div {...sharedShellAttrs} class={shellCls}>
               {this.values.map(chip)}
               {!this.values.length && this.placeholder && this.shellFocused && (
-                <span class="text-on-surface-variant text-base">{this.placeholder}</span>
+                <span class="placeholder">{this.placeholder}</span>
               )}
             </div>
             {this.label && (
-              <label class={`${labelBaseCls} ${labelShrunkCls}`}>
+              <label class={labelCls}>
                 {this.label}{this.required ? ' *' : ''}
               </label>
             )}
-            <span
-              class={`absolute left-0 right-0 bottom-0 pointer-events-none ${indicatorCls}`}
-              aria-hidden="true"
-            ></span>
+            <span class={indicatorCls} aria-hidden="true"></span>
           </div>
           {supportingRow}
         </div>
@@ -652,42 +642,39 @@ export class MaterialSelect {
     }
 
     // Outlined.
-    const labelShrunkCls = isFilled
-      ? `top-0 -translate-y-1/2 text-xs ${hasLeading ? 'left-4' : ''}`
-      : 'top-7 -translate-y-1/2';
-    const fieldsetTone = this.error
-      ? 'border-2 border-error'
-      : (this.shellFocused
-        ? 'border-2 border-primary'
-        : 'border border-outline hover:border-on-surface');
-    const legendOffset = this.error || this.shellFocused ? '-ml-[2px]' : '-ml-px';
+    const labelCls = [
+      'field-label',
+      'outlined',
+      hasLeading ? 'leading' : '',
+      isFilled ? 'shrunk' : 'rest',
+      labelTone,
+    ].filter(Boolean).join(' ');
+    const fieldsetCls = [
+      'fieldset',
+      this.error ? 'error' : (this.shellFocused ? 'focused' : ''),
+    ].filter(Boolean).join(' ');
+    const legendCls = this.error || this.shellFocused ? 'legend active' : 'legend';
 
     return (
-      <div class="block w-full">
-        <div class={`relative w-full min-h-14 ${this.disabled ? 'opacity-40 pointer-events-none' : ''}`}>
+      <div class="wrapper">
+        <div class={this.disabled ? 'surface disabled' : 'surface'}>
           {leading}
           {trailing}
-          <div
-            {...sharedShellAttrs}
-            class={`relative min-h-14 w-full flex flex-wrap items-center gap-1.5 ${innerL} ${wide} py-2 outline-none cursor-pointer`}
-          >
+          <div {...sharedShellAttrs} class={shellCls}>
             {this.values.map(chip)}
             {!this.values.length && this.placeholder && this.shellFocused && (
-              <span class="text-on-surface-variant text-base">{this.placeholder}</span>
+              <span class="placeholder">{this.placeholder}</span>
             )}
           </div>
           {this.label && (
-            <label class={`${labelBaseCls} ${labelShrunkCls}`}>
+            <label class={labelCls}>
               {this.label}{this.required ? ' *' : ''}
             </label>
           )}
-          <fieldset
-            aria-hidden="true"
-            class={`absolute inset-0 m-0 px-3 pt-0 pointer-events-none rounded text-left ${fieldsetTone}`}
-          >
+          <fieldset aria-hidden="true" class={fieldsetCls}>
             {this.label && (
-              <legend class={`invisible block h-0 overflow-visible p-0 text-xs leading-none ${legendOffset}`}>
-                <span class={`inline-block overflow-hidden whitespace-nowrap transition-[max-width,padding] duration-150 ${isFilled ? 'max-w-full px-1' : 'max-w-[0.01px]'}`}>
+              <legend class={legendCls}>
+                <span class={isFilled ? 'legend-text expanded' : 'legend-text'}>
                   {this.label}{this.required ? ' *' : ''}
                 </span>
               </legend>
@@ -720,14 +707,14 @@ export class MaterialSelect {
         wideTrailing={showClear}
         onClick={this.handleTextfieldClick as unknown as (e: MouseEvent) => void}
       >
-        <span slot="trailing" class="inline-flex items-center">
+        <span slot="trailing" class="single-trailing">
           {showClear && (
             <material-icon-button
               size="xs"
               variant="standard"
               icon="close"
               aria-label={clearLabel}
-              class="-mr-5"
+              class="clear-btn"
               onClick={this.clear}
             />
           )}
@@ -750,7 +737,6 @@ export class MaterialSelect {
   render() {
     return (
       <Host
-        class="block w-full"
         onKeyDown={this.handleHostKeyDown}
         onMaterialOptionSelect={this.handleOptionSelect}
         onMaterialOptionToggle={this.handleOptionToggle}
