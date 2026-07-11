@@ -195,7 +195,10 @@ export class MaterialNavigationGroup {
         aria-hidden={this.open ? undefined : 'true'}
       >
         <div class="overflow-hidden min-h-0">
-          <div class="flex flex-col gap-1 ps-6 pt-1">
+          {/* Indent so a sub-item's label (own ps-4) starts under the header
+              label: header = ps-4 + 24dp icon + ms-3 gap = 52dp text offset,
+              children container adds the missing 36dp (52 − 16). */}
+          <div class={'flex flex-col gap-1 pt-1 ' + (this.icon ? 'ps-9' : 'ps-4')}>
             <slot />
           </div>
         </div>
