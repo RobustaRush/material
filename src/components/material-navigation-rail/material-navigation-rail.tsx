@@ -97,6 +97,7 @@ export class MaterialNavigationRail {
   private dialogEl?: HTMLDialogElement;
   private mql?: MediaQueryList;
   private mqlHandler?: (e: MediaQueryListEvent) => void;
+  private pendingToggleFocus = false;
 
   componentWillLoad() {
     this.setupMqlIfNeeded();
@@ -118,6 +119,16 @@ export class MaterialNavigationRail {
   }
 
   componentDidRender() {
+    // The header is keyed per layout, so toggling recreates the built-in
+    // toggle button; restore focus to it after the switch (keyboard users
+    // would otherwise drop to <body>).
+    if (this.pendingToggleFocus) {
+      this.pendingToggleFocus = false;
+      this.el.shadowRoot
+        ?.querySelector<HTMLElement>('button[aria-expanded]')
+        ?.focus();
+    }
+
     // <dialog> open state must be driven imperatively; sync it after the
     // slots have (re)projected into the panel.
     const dlg = this.dialogEl;
@@ -245,6 +256,7 @@ export class MaterialNavigationRail {
 
   private handleToggleClick = () => {
     this.expanded = !this.expanded;
+    this.pendingToggleFocus = true;
   };
 
   private handleDialogClose = () => {
@@ -340,8 +352,8 @@ export class MaterialNavigationRail {
 
     if (expandedLayout) {
       return (
-        <div class="flex items-center gap-1 min-h-12 ps-4 pe-2">
-          <span class="flex-1 min-w-0 truncate text-base font-medium">
+        <div key="header-expanded" class="flex items-center gap-1 min-h-12 ps-4 pe-2">
+          <span class="flex-1 min-w-0 truncate text-base font-medium rail-morph-in">
             <slot name="title">{this.label}</slot>
           </span>
           {menuSlot}
@@ -350,7 +362,7 @@ export class MaterialNavigationRail {
       );
     }
     return (
-      <div class="flex flex-col items-center gap-2 px-2">
+      <div key="header-collapsed" class="flex flex-col items-center gap-2 px-2">
         {menuSlot}
         {toggle}
       </div>
@@ -396,7 +408,8 @@ export class MaterialNavigationRail {
         <nav
           class={
             'h-full bg-surface text-on-surface flex flex-col py-2 overflow-hidden ' +
-            'transition-[width] duration-200 ease-out' +
+            // MD3 spatial motion: emphasized easing over medium2 (300ms).
+            'transition-[width] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none' +
             (shellGone ? ' invisible' : '')
           }
           style={{ width: shellWidth }}

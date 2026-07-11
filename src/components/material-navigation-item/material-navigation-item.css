@@ -1,0 +1,24 @@
+/* Layout-morph entrance. Variant switches (rail collapsed↔expanded, bar
+   vertical↔horizontal) replace the keyed subtree, so the incoming layout
+   animates in per MD3: fade + slight scale, emphasized-decelerate. Applied
+   only after the first variant change — initial render stays static. */
+
+@keyframes nav-item-morph-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+.morph-in {
+  animation: nav-item-morph-in
+    var(--md-sys-motion-duration-medium2, 300ms)
+    var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1))
+    both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .morph-in {
+    animation: none;
+  }
+}

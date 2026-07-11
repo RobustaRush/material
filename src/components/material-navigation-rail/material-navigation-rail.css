@@ -1,3 +1,21 @@
+/* Header title entrance — the expanded header is keyed, so it mounts fresh
+   on every expand; the title fades in with the width transition. */
+
+@keyframes rail-morph-in {
+  from { opacity: 0; }
+}
+
+.rail-morph-in {
+  animation: rail-morph-in
+    var(--md-sys-motion-duration-medium2, 300ms)
+    var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1))
+    both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-morph-in { animation: none; }
+}
+
 /* Modal expanded rail. A native <dialog> gives us top layer, ::backdrop
    scrim, focus trap, Esc handling, and focus return for free — same approach
    as material-dialog. The panel slides in from the leading edge. */

@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Method, Prop, h, Host } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Method, Prop, Watch, h, Host } from '@stencil/core';
 import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive navigation item — shared by navigation-rail (collapsed/expanded)
@@ -20,6 +20,7 @@ export type MaterialNavigationItemVariant =
 
 @Component({
   tag: 'material-navigation-item',
+  styleUrl: 'material-navigation-item.css',
   shadow: true,
 })
 export class MaterialNavigationItem {
@@ -37,8 +38,21 @@ export class MaterialNavigationItem {
 
   @Event() materialSelect!: EventEmitter<{ value?: string }>;
 
+  // True after the first runtime variant switch — gates the morph-in
+  // animation so items don't animate on initial page render.
+  private variantChanged = false;
+
   componentWillLoad() {
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
+  }
+
+  @Watch('variant')
+  onVariantChange(newValue: string, oldValue: string) {
+    if (oldValue !== undefined && newValue !== oldValue) this.variantChanged = true;
+  }
+
+  private morphClass() {
+    return this.variantChanged ? ' morph-in' : '';
   }
 
   /** Focus the inner button/link — used by the rail's arrow-key navigation. */
@@ -98,7 +112,7 @@ export class MaterialNavigationItem {
     // patched reuse makes transition-* classes animate from the old element's
     // computed values (visible dark flash on the state layer).
     return (
-      <span key="collapsed" class="flex flex-col items-center justify-center w-full py-2 gap-1">
+      <span key="collapsed" class={'flex flex-col items-center justify-center w-full py-2 gap-1' + this.morphClass()}>
         <span class="relative inline-flex">
           <span class={indicator}>
             {this.stateLayer()}
@@ -141,7 +155,7 @@ export class MaterialNavigationItem {
     ].join(' ');
 
     return (
-      <span key="expanded" class={row}>
+      <span key="expanded" class={row + this.morphClass()}>
         {this.stateLayer()}
         <span
           class="material-symbols leading-none text-[1.5rem] relative"
@@ -180,7 +194,7 @@ export class MaterialNavigationItem {
     ].join(' ');
 
     return (
-      <span key="bar-horizontal" class="flex items-center justify-center w-full py-3">
+      <span key="bar-horizontal" class={'flex items-center justify-center w-full py-3' + this.morphClass()}>
         <span class={pill}>
           <span
             class={
