@@ -149,10 +149,15 @@ export class MaterialTextfield {
     const showStaticLeading = !!leadingIcon && !hasLeadingSlot;
     const reserveTrailing = !!trailingIcon || hasTrailingAction;
 
+    const disabled = this.disabled;
     const subText = error ? errorText : helpText;
     const showCounter = typeof maxLength === 'number';
-    const subToneCls = error ? 'text-error' : 'text-on-surface-variant';
-    const iconToneCls = error ? 'text-error' : 'text-on-surface-variant';
+    const subToneCls = disabled
+      ? 'text-on-surface/38'
+      : error ? 'text-error' : 'text-on-surface-variant';
+    const iconToneCls = disabled
+      ? 'text-on-surface/38'
+      : error ? 'text-error' : 'text-on-surface-variant';
     const labelLeft = hasLeading ? 'left-12' : 'left-4';
 
     const labelRest =
@@ -160,7 +165,9 @@ export class MaterialTextfield {
       'pointer-events-none origin-left transition-all duration-150 ' +
       'text-base';
 
-    const labelTone = error
+    const labelTone = disabled
+      ? 'text-on-surface/38'
+      : error
       ? 'text-error'
       : 'text-on-surface-variant group-focus-within:text-primary';
 
@@ -246,14 +253,27 @@ export class MaterialTextfield {
     const groupCls = `group${hasValue ? ' is-filled' : ''}`;
 
     if (variant === 'filled') {
+      // Filled label rests vertically centered (top-4 == the old
+      // top-1/2 -translate-y-1/2 for a 24dp line box in a 56dp field) and
+      // shrinks via scale-75 + origin-top-left rather than swapping
+      // text-base→text-xs. The font-size/line-height interpolation of the
+      // latter changes the label's box height mid-animation, so the
+      // percentage `-translate-y-1/2` resting target shifts and the label
+      // dips below its resting spot before snapping up. Scale keeps the
+      // layout box constant — only top + transform animate. (Ported from
+      // material-textarea's filled label.)
+      const labelRestFilled =
+        `absolute ${labelLeft} top-4 ` +
+        'pointer-events-none origin-top-left transition-all duration-150 text-base';
       const labelShrunk =
-        'group-focus-within:top-2 group-focus-within:translate-y-0 group-focus-within:text-xs ' +
-        'group-[.is-filled]:top-2 group-[.is-filled]:translate-y-0 group-[.is-filled]:text-xs ' +
+        'group-focus-within:top-2 group-focus-within:scale-75 ' +
+        'group-[.is-filled]:top-2 group-[.is-filled]:scale-75 ' +
         'group-has-[input:not(:placeholder-shown)]:top-2 ' +
-        'group-has-[input:not(:placeholder-shown)]:translate-y-0 ' +
-        'group-has-[input:not(:placeholder-shown)]:text-xs';
+        'group-has-[input:not(:placeholder-shown)]:scale-75';
 
-      const indicatorCls = error
+      const indicatorCls = disabled
+        ? 'h-px bg-on-surface/38'
+        : error
         ? 'h-0.5 bg-error'
         : 'h-px bg-on-surface-variant ' +
           'group-hover:bg-on-surface ' +
@@ -267,7 +287,7 @@ export class MaterialTextfield {
 
       return (
         <div class="block w-full">
-          <div class={`${groupCls} relative w-full h-14 rounded-t bg-surface-container-highest hover:bg-surface-container-high transition-colors`}>
+          <div class={`${groupCls} relative w-full h-14 rounded-t overflow-hidden ${disabled ? 'bg-on-surface/[0.04]' : 'bg-surface-container-highest tf-state-layer'}`}>
             {showStaticLeading && renderIcon('left', leadingIcon)}
             {renderLeadingSlot()}
             {showStaticTrailing && renderIcon('right', trailingIcon)}
@@ -282,7 +302,7 @@ export class MaterialTextfield {
               )}
             </div>
             {label && (
-              <label htmlFor="input" class={`${labelRest} ${labelShrunk} ${labelTone}`}>
+              <label htmlFor="input" class={`${labelRestFilled} ${labelShrunk} ${labelTone}`}>
                 {label}{this.required ? ' *' : ''}
               </label>
             )}
@@ -305,7 +325,9 @@ export class MaterialTextfield {
         ? ' group-focus-within:left-4 group-[.is-filled]:left-4 group-has-[input:not(:placeholder-shown)]:left-4'
         : '');
 
-    const fieldsetTone = error
+    const fieldsetTone = disabled
+      ? 'border border-on-surface/12'
+      : error
       ? 'border-2 border-error'
       : 'border border-outline group-hover:border-on-surface ' +
         'group-focus-within:border-2 group-focus-within:border-primary';

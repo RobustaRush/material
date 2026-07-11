@@ -5,7 +5,11 @@ export type MaterialCarouselItemAspect = '16:9' | '9:16' | '1:1' | '3:4';
 @Component({
   tag: 'material-carousel-item',
   styleUrl: 'material-carousel-item.css',
-  shadow: true,
+  // delegatesFocus so the carousel's roving arrow-key `item.focus()` lands on
+  // the inner <a>/<button> (link/clickable variants) rather than being a
+  // no-op on the non-focusable host. The plain variant keeps its host
+  // tabindex and is focused directly.
+  shadow: { delegatesFocus: true },
 })
 export class MaterialCarouselItem {
   @Prop({ reflect: true }) aspect?: MaterialCarouselItemAspect;

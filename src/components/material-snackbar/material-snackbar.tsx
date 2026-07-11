@@ -52,6 +52,11 @@ export class MaterialSnackbar {
   /** Reflects open state. Toggling drives the enter/exit animation. */
   @Prop({ mutable: true, reflect: true }) open = false;
 
+  /** Set by `material-snackbar-host`, which owns its own ARIA live region and
+   *  Escape handling. When hosted, this element skips both to avoid a double
+   *  announcement. Standalone (default) it provides them itself. */
+  @Prop() hosted = false;
+
   @State() private hasSlotted = false;
 
   @Event() materialSnackbarOpen!: EventEmitter<void>;
@@ -67,6 +72,7 @@ export class MaterialSnackbar {
 
   disconnectedCallback() {
     this.clearTimer();
+    document.removeEventListener('keydown', this.onDocKeyDown, true);
   }
 
   @Watch('open')
@@ -74,11 +80,26 @@ export class MaterialSnackbar {
     if (open) {
       this.materialSnackbarOpen.emit();
       this.scheduleAutoDismiss();
+      // Standalone Escape dismiss (the host handles this when hosted).
+      if (!this.hosted) document.addEventListener('keydown', this.onDocKeyDown, true);
     } else {
       this.clearTimer();
+      document.removeEventListener('keydown', this.onDocKeyDown, true);
       this.materialSnackbarClose.emit({ reason: this.closeReason });
       this.closeReason = 'programmatic';
     }
+  }
+
+  private onDocKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && this.open) this.close('close');
+  };
+
+  /** Restart the auto-dismiss countdown — e.g. after a same-id content update
+   *  where the duration value is unchanged and the `duration` watcher wouldn't
+   *  otherwise fire. */
+  @Method()
+  async resetAutoDismiss(): Promise<void> {
+    if (this.open) this.scheduleAutoDismiss();
   }
 
   @Watch('duration')
@@ -136,8 +157,15 @@ export class MaterialSnackbar {
   render() {
     const showAction = !!this.actionLabel;
     const showClose = this.closable;
+    // Standalone announcement: the host owns its own live region when hosted.
+    const liveMsg = this.message || this.el.textContent?.trim() || '';
     return (
       <Host>
+        {!this.hosted && (
+          <div class="sb-live" role="status" aria-live="polite" aria-atomic="true">
+            {this.open ? liveMsg : ''}
+          </div>
+        )}
         <div class="sb" part="container" role="presentation">
           <div class="sb__label">
             <slot onSlotchange={this.onSlotChange}>{!this.hasSlotted && this.message}</slot>

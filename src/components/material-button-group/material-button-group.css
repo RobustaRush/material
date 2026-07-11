@@ -58,3 +58,21 @@
 :host([variant="connected"][shape="square"]) ::slotted(material-icon-button:last-child) {
   --btn-r-end: var(--bg-inner);
 }
+
+/* Selected-segment morph: pinning --btn-r-start/end above suppresses the
+   child's own selected shape morph (it only sets the --btn-r fallback). Drive
+   the "selected segment becomes a pill" behavior from the group instead, for
+   both label and icon toggle buttons. */
+:host([variant="connected"]) ::slotted(material-button[selected]),
+:host([variant="connected"]) ::slotted(material-icon-button[selected]) {
+  --btn-r-start: var(--md-sys-shape-corner-full, 9999px);
+  --btn-r-end:   var(--md-sys-shape-corner-full, 9999px);
+}
+
+/* XS/S icon buttons carry a 48dp interactive box that is wider than the visible
+   circle, which inflates the connected 2dp gap. Pull the hosts together with a
+   negative inline margin equal to the per-side overhang so the visible gap
+   stays 2dp. (Label buttons have no such overhang, so this targets icon-buttons
+   only.) */
+:host([variant="connected"][size="xs"]) ::slotted(material-icon-button) { margin-inline: -0.5rem; }
+:host([variant="connected"][size="s"])  ::slotted(material-icon-button) { margin-inline: -0.25rem; }

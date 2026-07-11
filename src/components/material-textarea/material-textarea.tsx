@@ -143,14 +143,28 @@ export class MaterialTextarea {
     const showStaticTrailing = !!trailingIcon && !hasTrailingAction;
     const reserveTrailing = !!trailingIcon || hasTrailingAction;
 
+    const disabled = this.disabled;
     const subText = error ? errorText : helpText;
     const showCounter = typeof maxLength === 'number';
-    const subToneCls = error ? 'text-error' : 'text-on-surface-variant';
-    const iconToneCls = error ? 'text-error' : 'text-on-surface-variant';
+    const subToneCls = disabled
+      ? 'text-on-surface/38'
+      : error ? 'text-error' : 'text-on-surface-variant';
+    const iconToneCls = disabled
+      ? 'text-on-surface/38'
+      : error ? 'text-error' : 'text-on-surface-variant';
 
-    const labelTone = error
+    const labelTone = disabled
+      ? 'text-on-surface/38'
+      : error
       ? 'text-error'
       : 'text-on-surface-variant group-focus-within:text-primary';
+
+    // Safari's :has(textarea:not(:placeholder-shown)) doesn't reliably
+    // re-evaluate after a programmatic value assignment, leaving the label
+    // stuck "down". Mirror the textfield fix: an explicit is-filled class on
+    // the group wrapper drives the float too.
+    const hasValue = (this.value ?? '') !== '';
+    const groupCls = `group${hasValue ? ' is-filled' : ''}`;
 
     const renderTrailing = () => (
       (showStaticTrailing || hasTrailingAction) && (
@@ -208,25 +222,36 @@ export class MaterialTextarea {
         'transition-all duration-150 text-base';
       const labelShrunk =
         'group-focus-within:top-2 group-focus-within:scale-75 ' +
+        'group-[.is-filled]:top-2 group-[.is-filled]:scale-75 ' +
         'group-has-[textarea:not(:placeholder-shown)]:top-2 ' +
         'group-has-[textarea:not(:placeholder-shown)]:scale-75';
 
-      const indicatorCls = error
+      const indicatorCls = disabled
+        ? 'h-px bg-on-surface/38'
+        : error
         ? 'h-0.5 bg-error'
         : 'h-px bg-on-surface-variant ' +
           'group-hover:bg-on-surface ' +
           'group-focus-within:h-0.5 group-focus-within:bg-primary';
 
+      // Disabled: MD3 filled container is On surface @ 4% (no hover swap).
+      const filledBg = disabled
+        ? 'bg-on-surface/[0.04]'
+        : 'bg-surface-container-highest hover:bg-surface-container-high transition-colors';
+      const maskBg = disabled
+        ? 'bg-on-surface/[0.04]'
+        : 'bg-surface-container-highest group-hover:bg-surface-container-high transition-colors';
+
       return (
         <div class="block w-full">
-          <div class="group relative w-full rounded-t bg-surface-container-highest hover:bg-surface-container-high transition-colors">
+          <div class={`${groupCls} relative w-full rounded-t ${filledBg}`}>
             {renderTrailing()}
             {renderTextarea(`pt-6 pb-2 pl-4 ${innerR}`)}
             {/* Surface-colored mask: keeps scrolled textarea text from
                 bleeding through behind the floated label. Sits above the
                 textarea, below the label. */}
             <span aria-hidden="true"
-                  class="absolute top-0 left-0 right-0 h-6 rounded-t bg-surface-container-highest group-hover:bg-surface-container-high pointer-events-none transition-colors"></span>
+                  class={`absolute top-0 left-0 right-0 h-6 rounded-t ${maskBg} pointer-events-none`}></span>
             {label && (
               <label htmlFor="input" class={`${labelRest} ${labelShrunk} ${labelTone} z-10`}>
                 {label}{this.required ? ' *' : ''}
@@ -240,12 +265,12 @@ export class MaterialTextarea {
       );
     }
 
-    // Outlined: label rests at top-4 left-4 — same y as the centered label
-    // in material-textfield, and aligned with the textarea's first input
-    // line (pt-4 below). Floats to top-0 + -translate-y-1/2 so the shrunk
-    // label sits centred on the top stroke, matching textfield's notch.
+    // Outlined: label rests at top-6 left-4 — aligned with the textarea's
+    // first input line (pt-6 == 24dp below, per the multi-line spec). Floats
+    // to top-0 + -translate-y-2 so the shrunk label sits centred on the top
+    // stroke, matching textfield's notch.
     const labelRest =
-      'absolute left-4 top-4 pointer-events-none origin-left ' +
+      'absolute left-4 top-6 pointer-events-none origin-left ' +
       'transition-all duration-150 text-base';
     // Fixed-pixel translate (-translate-y-2 = -8px) instead of -translate-y-1/2:
     // the percentage form bases off the label's own height, which shrinks
@@ -253,11 +278,14 @@ export class MaterialTextarea {
     // intermediate translate values overshoot the final resting position.
     const labelShrunkOutlined =
       'group-focus-within:top-0 group-focus-within:-translate-y-2 group-focus-within:text-xs ' +
+      'group-[.is-filled]:top-0 group-[.is-filled]:-translate-y-2 group-[.is-filled]:text-xs ' +
       'group-has-[textarea:not(:placeholder-shown)]:top-0 ' +
       'group-has-[textarea:not(:placeholder-shown)]:-translate-y-2 ' +
       'group-has-[textarea:not(:placeholder-shown)]:text-xs';
 
-    const fieldsetTone = error
+    const fieldsetTone = disabled
+      ? 'border border-on-surface/12'
+      : error
       ? 'border-2 border-error'
       : 'border border-outline group-hover:border-on-surface ' +
         'group-focus-within:border-2 group-focus-within:border-primary';
@@ -268,12 +296,12 @@ export class MaterialTextarea {
 
     return (
       <div class="block w-full">
-        <div class="group relative w-full">
+        <div class={`${groupCls} relative w-full`}>
           {renderTrailing()}
-          {/* Clip the textarea's top 16dp so scrolled content can't render
-              under the floated label / notch. The pt-4 padding already
-              positions text at y=16, so the clip is invisible at rest. */}
-          {renderTextarea(`pt-4 pb-4 pl-4 ${innerR} [clip-path:inset(16px_0_0_0)]`)}
+          {/* Clip the textarea's top 24dp so scrolled content can't render
+              under the floated label / notch. The pt-6 padding already
+              positions text at y=24, so the clip is invisible at rest. */}
+          {renderTextarea(`pt-6 pb-4 pl-4 ${innerR} [clip-path:inset(24px_0_0_0)]`)}
           {label && (
             <label htmlFor="input" class={`${labelRest} ${labelShrunkOutlined} ${labelTone}`}>
               {label}{this.required ? ' *' : ''}
@@ -284,7 +312,7 @@ export class MaterialTextarea {
             class={`absolute inset-0 m-0 px-3 pt-0 pointer-events-none rounded text-left ${fieldsetTone}`}>
             {label && (
               <legend class={`invisible block h-0 overflow-visible p-0 text-xs leading-none ${legendOffset}`}>
-                <span class="inline-block overflow-hidden whitespace-nowrap max-w-[0.01px] transition-[max-width,padding] duration-150 group-focus-within:max-w-full group-focus-within:px-1 group-has-[textarea:not(:placeholder-shown)]:max-w-full group-has-[textarea:not(:placeholder-shown)]:px-1">
+                <span class="inline-block overflow-hidden whitespace-nowrap max-w-[0.01px] transition-[max-width,padding] duration-150 group-focus-within:max-w-full group-focus-within:px-1 group-[.is-filled]:max-w-full group-[.is-filled]:px-1 group-has-[textarea:not(:placeholder-shown)]:max-w-full group-has-[textarea:not(:placeholder-shown)]:px-1">
                   {label}{this.required ? ' *' : ''}
                 </span>
               </legend>

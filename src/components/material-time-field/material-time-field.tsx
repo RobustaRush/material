@@ -183,6 +183,8 @@ export class MaterialTimeField {
   };
 
   private handlePickerChange = (e: Event) => {
+    // Inner time-picker valueChange must not surface as this field's event.
+    e.stopPropagation();
     const detail = (e as CustomEvent<{ value: string }>).detail;
     this.pending = detail?.value ?? '';
   };
@@ -197,6 +199,8 @@ export class MaterialTimeField {
   };
 
   private handleTextChange = (e: Event) => {
+    // Inner textfield valueChange must not surface as this field's event.
+    e.stopPropagation();
     const detail = (e as CustomEvent<{ value: string }>).detail;
     const raw = (detail?.value ?? '').trim();
     if (raw === '') {

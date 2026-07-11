@@ -77,7 +77,7 @@ export class MaterialMenuItem {
         role="menuitem"
         tabindex={this.disabled ? -1 : 0}
         aria-disabled={this.disabled ? 'true' : null}
-        aria-selected={this.selected ? 'true' : null}
+        aria-current={this.selected ? 'true' : null}
         onClick={this.handleClick}
         onKeyDown={this.handleKeyDown}
       >
@@ -93,7 +93,7 @@ export class MaterialMenuItem {
         >
           {/* state layer */}
           <span
-            class="absolute inset-0 pointer-events-none transition-colors group-hover:bg-on-surface/10 group-active:bg-on-surface/15 group-focus-visible:bg-on-surface/10"
+            class="absolute inset-0 pointer-events-none transition-colors group-hover:bg-on-surface/8 group-active:bg-on-surface/10 group-focus-visible:bg-on-surface/10"
             aria-hidden="true"
           ></span>
 

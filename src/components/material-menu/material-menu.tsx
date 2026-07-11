@@ -58,6 +58,11 @@ export class MaterialMenu {
   private invoker: Element | null = null;
   private typeahead = '';
   private typeaheadTimer = 0;
+  // Only return focus to the invoker when the menu was dismissed via the
+  // keyboard (Tab/Escape) or by selecting an item — NOT when the user
+  // light-dismissed it by clicking elsewhere (that would yank focus away
+  // from wherever they clicked).
+  private restoreFocusOnClose = false;
 
   componentWillLoad() {
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
@@ -96,9 +101,10 @@ export class MaterialMenu {
 
   private resolveAnchor(): Element | null {
     if (this.anchor) {
-      const sel = this.anchor.startsWith('#') || this.anchor.includes(' ')
-        ? this.anchor
-        : `#${this.anchor}`;
+      // Only auto-prefix `#` for a bare HTML id; leave any real CSS selector
+      // (class, attribute, descendant, id already prefixed) untouched.
+      const isBareId = /^[A-Za-z_][\w-]*$/.test(this.anchor);
+      const sel = isBareId ? `#${this.anchor}` : this.anchor;
       const found = document.querySelector(sel);
       if (found) return found;
     }
@@ -120,6 +126,7 @@ export class MaterialMenu {
           maxHeight: this.maxHeight,
         });
       }
+      this.restoreFocusOnClose = false;
       requestAnimationFrame(() => this.focusFirstItem());
       this.materialMenuOpen.emit();
     } else {
@@ -128,7 +135,12 @@ export class MaterialMenu {
       this.cleanupTrack = undefined;
       const returnTo = this.invoker as HTMLElement | null;
       this.invoker = null;
-      if (returnTo && typeof returnTo.focus === 'function') returnTo.focus();
+      // Refocus the invoker only for keyboard/Escape/selection dismissals;
+      // on a light-dismiss (outside click) leave focus where the user put it.
+      if (this.restoreFocusOnClose && returnTo && typeof returnTo.focus === 'function') {
+        returnTo.focus();
+      }
+      this.restoreFocusOnClose = false;
       this.materialMenuClose.emit();
     }
   };
@@ -184,7 +196,13 @@ export class MaterialMenu {
         return;
       case 'Tab':
         // Per WAI-ARIA menu pattern: Tab closes the menu.
+        this.restoreFocusOnClose = true;
         this.open = false;
+        return;
+      case 'Escape':
+        // The popover closes itself on Escape; flag it so focus returns to
+        // the invoker in the toggle handler.
+        this.restoreFocusOnClose = true;
         return;
     }
 
@@ -202,7 +220,11 @@ export class MaterialMenu {
 
   @Listen('materialMenuItemActivate')
   handleActivate(e: CustomEvent<{ keepOpen: boolean }>) {
-    if (!e.detail.keepOpen) this.open = false;
+    if (!e.detail.keepOpen) {
+      // Selecting an item returns focus to the invoker.
+      this.restoreFocusOnClose = true;
+      this.open = false;
+    }
   }
 
   render() {

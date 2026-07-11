@@ -101,7 +101,7 @@ export class MaterialOption {
           ].join(' ')}
         >
           <span
-            class="absolute inset-0 pointer-events-none transition-colors group-hover:bg-on-surface/10 group-active:bg-on-surface/15 group-focus-visible:bg-on-surface/10"
+            class="absolute inset-0 pointer-events-none transition-colors group-hover:bg-on-surface/8 group-active:bg-on-surface/10 group-focus-visible:bg-on-surface/10"
             aria-hidden="true"
           ></span>
 

@@ -14,7 +14,7 @@ import { adoptMaterialStyles } from '../../utils/adopted-styles';
 // keyboard navigation + selection. Three selection modes:
 //   - none   → role="list",    items act as buttons/links
 //   - single → role="listbox", one item selected at a time
-//   - multi  → role="group",   any subset selected (typically with checkboxes)
+//   - multi  → role="listbox" + aria-multiselectable, any subset selected
 //
 // `selection-trigger` controls how an item's selected state changes:
 //   - "row"     (default) — clicking anywhere on the row toggles selection;
@@ -51,17 +51,43 @@ export class MaterialList {
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
+  connectedCallback() {
+    this.syncRoving();
+  }
+
+  private handleSlotChange = () => this.syncRoving();
+
+  private allItems(): (HTMLElement & { tabbable?: boolean; selected?: boolean; active?: boolean })[] {
+    return Array.from(this.el.querySelectorAll('material-list-item'));
+  }
+
   private getItems(): HTMLElement[] {
     return Array.from(
       this.el.querySelectorAll<HTMLElement>('material-list-item:not([disabled])'),
     );
   }
 
+  // Roving tabindex: exactly one item is a Tab stop. Prefer the selected item,
+  // else the active (master-detail) one, else the first enabled item.
+  private syncRoving() {
+    const all = this.allItems();
+    const enabled = all.filter((i) => !i.hasAttribute('disabled'));
+    if (!enabled.length) return;
+    // Read reflected attributes so this works even before children upgrade.
+    const target =
+      enabled.find((i) => i.hasAttribute('selected')) ??
+      enabled.find((i) => i.hasAttribute('active')) ??
+      enabled[0];
+    for (const it of all) it.tabbable = it === target;
+  }
+
   private focusItem(items: HTMLElement[], idx: number) {
     if (!items.length) return;
     const i = (idx + items.length) % items.length;
-    items[i].focus();
-    items[i].scrollIntoView({ block: 'nearest' });
+    const target = items[i] as HTMLElement & { tabbable?: boolean };
+    for (const it of this.allItems()) it.tabbable = it === target;
+    target.focus();
+    target.scrollIntoView({ block: 'nearest' });
   }
 
   @Listen('keydown')
@@ -101,9 +127,12 @@ export class MaterialList {
 
   @Listen('materialListItemActivate')
   handleActivate(e: CustomEvent<{ value?: string; checked?: boolean }>) {
-    const target = e.target as HTMLElement & { selected?: boolean; value?: string };
+    const target = e.target as HTMLElement & { selected?: boolean; value?: string; tabbable?: boolean };
     const value = e.detail.value;
     let checked = e.detail.checked;
+
+    // Keep the roving Tab stop on the item the user just interacted with.
+    for (const it of this.allItems()) it.tabbable = it === target;
 
     // selection-trigger="control" — the row click is just an activate signal
     // (e.g. "open"). Selection is owned by the consumer via the leading
@@ -142,11 +171,13 @@ export class MaterialList {
   }
 
   render() {
+    // Both single- and multi-select present as a listbox; multi adds
+    // aria-multiselectable and its items expose aria-selected (see list-item).
     const role =
-      this.selection === 'single' ? 'listbox' : this.selection === 'multi' ? 'group' : 'list';
+      this.selection === 'single' || this.selection === 'multi' ? 'listbox' : 'list';
     return (
       <Host role={role} aria-multiselectable={this.selection === 'multi' ? 'true' : null}>
-        <slot />
+        <slot onSlotchange={this.handleSlotChange} />
       </Host>
     );
   }

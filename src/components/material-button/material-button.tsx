@@ -1,4 +1,13 @@
-import { Component, Element, Prop, AttachInternals, h } from '@stencil/core';
+import {
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  Prop,
+  Watch,
+  AttachInternals,
+  h,
+} from '@stencil/core';
 
 export type MaterialButtonVariant = 'filled' | 'tonal' | 'elevated' | 'outlined' | 'text';
 export type MaterialButtonType = 'submit' | 'reset' | 'button';
@@ -25,6 +34,11 @@ export class MaterialButton {
   /** Resting corner shape. `round` is the pill default; `square` uses the
    *  small rounded-rect resting radius (parity with icon-button's `shape`). */
   @Prop({ reflect: true }) shape: 'round' | 'square' = 'round';
+  /** Toggle (selectable) button — exposes `aria-pressed`, a selected color
+   *  treatment and a shape morph. Enables label-button selection inside
+   *  `material-button-group`. */
+  @Prop({ reflect: true }) toggle = false;
+  @Prop({ mutable: true, reflect: true }) selected = false;
   @Prop() label?: string;
   @Prop() icon?: string;
   @Prop() trailingIcon?: string;
@@ -38,13 +52,53 @@ export class MaterialButton {
   @Prop({ attribute: 'popovertarget' }) popoverTarget?: string;
   @Prop({ attribute: 'popovertargetaction' }) popoverTargetAction?: 'toggle' | 'show' | 'hide';
 
+  @Event() selectedChange!: EventEmitter<{ selected: boolean }>;
+
+  private defaultSelected = false;
+
+  componentWillLoad() {
+    this.defaultSelected = this.selected;
+  }
+
+  connectedCallback() {
+    this.syncFormValue();
+  }
+
   formDisabledCallback(disabled: boolean) {
     this.disabled = disabled;
+  }
+
+  // Toggle buttons contribute name/value to FormData only while selected, like a
+  // checkbox. Non-toggle buttons stay form-value-less (they submit via the
+  // transient hidden input in handleClick when type="submit").
+  @Watch('selected')
+  @Watch('toggle')
+  @Watch('value')
+  @Watch('disabled')
+  syncFormValue() {
+    if (this.toggle && !this.disabled) {
+      this.internals.setFormValue(this.selected ? (this.value ?? 'on') : null);
+    } else {
+      this.internals.setFormValue(null);
+    }
+  }
+
+  formResetCallback() {
+    if (this.toggle) this.selected = this.defaultSelected;
+  }
+
+  formStateRestoreCallback(state: string | null) {
+    if (this.toggle) this.selected = state === (this.value ?? 'on');
   }
 
   private handleClick = (e: MouseEvent) => {
     if (this.disabled) {
       e.preventDefault();
+      return;
+    }
+    if (this.toggle) {
+      this.selected = !this.selected;
+      this.selectedChange.emit({ selected: this.selected });
       return;
     }
     if (this.href) return;
@@ -113,7 +167,9 @@ export class MaterialButton {
       ),
     ];
 
-    if (this.href) {
+    // Toggle wins over href: a toggle is a button, so we never render the
+    // anchor branch for it (avoids the "toggle silently ignored on a link" trap).
+    if (this.href && !this.toggle) {
       const rel =
         this.rel ?? (this.target === '_blank' ? 'noopener noreferrer' : undefined);
       return (
@@ -136,8 +192,9 @@ export class MaterialButton {
 
     return (
       <button
-        type={this.type}
+        type={this.toggle ? 'button' : this.type}
         disabled={this.disabled}
+        aria-pressed={this.toggle ? String(this.selected) : undefined}
         aria-label={this.ariaLabel}
         part="button"
         onClick={this.handleClick}

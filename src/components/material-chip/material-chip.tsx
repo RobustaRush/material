@@ -85,8 +85,21 @@ export class MaterialChip {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       this.toggle();
+      return;
+    }
+    // Input chips: Backspace/Delete on the focused chip removes it
+    // (chips/accessibility.md § Keyboard).
+    if (this.variant === 'input' && (e.key === 'Backspace' || e.key === 'Delete')) {
+      e.preventDefault();
+      this.remove.emit();
     }
   };
+
+  // "Remove {label}" per spec, falling back to the slotted text content.
+  private removeLabel(): string {
+    const name = this.label ?? this.el.textContent?.trim() ?? '';
+    return `Remove ${name}`.trim();
+  }
 
   private handleTrailingClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -103,9 +116,11 @@ export class MaterialChip {
   };
 
   private renderBodyContents() {
-    const showCheckmark =
-      this.variant === 'filter' && this.selected && !this.icon;
-    const leadingIcon = showCheckmark ? 'check' : this.icon;
+    // Filter chips reserve a check glyph that is always in the DOM so it can
+    // animate its width/scale in on selection (see .check in the CSS) instead
+    // of popping via a conditional render. A custom leading icon suppresses it.
+    const showCheck = this.variant === 'filter' && !this.icon;
+    const leadingIcon = this.icon;
     const hasAvatar = !!this.el.querySelector('[slot="avatar"]');
 
     return [
@@ -113,6 +128,9 @@ export class MaterialChip {
         <span class="avatar" aria-hidden="true">
           <slot name="avatar" />
         </span>
+      ),
+      showCheck && (
+        <span class="icon leading check" aria-hidden="true">check</span>
       ),
       leadingIcon && (
         <span class="icon leading" aria-hidden="true">{leadingIcon}</span>
@@ -171,7 +189,7 @@ export class MaterialChip {
             type="button"
             class="trailing-btn"
             disabled={this.disabled}
-            aria-label="Remove"
+            aria-label={this.removeLabel()}
             onClick={this.handleTrailingClick}
             onKeyDown={this.handleTrailingKeyDown}
           >

@@ -4,6 +4,7 @@ import {
   Event,
   EventEmitter,
   Prop,
+  State,
   Watch,
   AttachInternals,
   h,
@@ -47,11 +48,24 @@ export class MaterialSearchAppBar {
   @Event() materialSearchInput!: EventEmitter<{ value: string }>;
   @Event() materialSearchSubmit!: EventEmitter<{ value: string }>;
 
+  @State() hasInsideTrailing = false;
+
   private scrollEl: Window | HTMLElement = window;
   private rafId = 0;
   private listening = false;
   private defaultValue = '';
   private inputEl?: HTMLInputElement;
+
+  // Collapse the inside-trailing wrapper when empty — otherwise its flex `gap`
+  // leaves a phantom 4px space after the input. Driven by slotchange because
+  // `:has(::slotted(*))` is not valid CSS.
+  private onInsideTrailingSlotChange = (e: Event) => {
+    const slot = e.target as HTMLSlotElement;
+    const nodes = slot.assignedNodes({ flatten: true });
+    this.hasInsideTrailing = nodes.some(
+      (n) => n.nodeType === Node.ELEMENT_NODE || !!n.textContent?.trim(),
+    );
+  };
 
   componentWillLoad() {
     this.defaultValue = this.value;
@@ -168,8 +182,8 @@ export class MaterialSearchAppBar {
               onInput={this.handleInput}
               onKeyDown={this.handleKeyDown}
             />
-            <div class="inside-trailing">
-              <slot name="inside-trailing" />
+            <div class={{ 'inside-trailing': true, 'has-content': this.hasInsideTrailing }}>
+              <slot name="inside-trailing" onSlotchange={this.onInsideTrailingSlotChange} />
             </div>
           </div>
           <div class="trailing">

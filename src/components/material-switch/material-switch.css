@@ -67,13 +67,24 @@
   background: transparent;
   cursor: pointer;
   color: var(--layer-color);
-  /* Keep the button itself a 52×32 hit area; the 40dp state-layer extends
-     visually past it but isn't load-bearing for hit-testing. */
+}
+
+/* Guarantee the 48dp minimum touch target (guideline) without enlarging the
+   visual 52×32 track: an invisible hit area, centered on the track, extends the
+   button's clickable region vertically to 48dp. Width already exceeds 48dp. */
+[part="switch"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 3rem;
+  transform: translateY(-50%);
 }
 
 [part="switch"]:focus { outline: none; }
 [part="switch"]:focus-visible {
-  outline: 2px solid var(--md-sys-color-secondary);
+  outline: 0.1875rem solid var(--md-sys-color-secondary);
   outline-offset: 0.125rem;
   border-radius: 9999px;
 }
@@ -156,6 +167,20 @@
   background: color-mix(in srgb, currentColor 10%, transparent);
 }
 
+/* Handle color shift on hover/focus/press per spec: unselected → on-surface-
+   variant, selected → primary-container. Driven through --handle-bg so it
+   inherits the existing background-color transition. Error palette opts out. */
+:host(:not([error])) [part="switch"]:not(:disabled):hover,
+:host(:not([error])) [part="switch"]:not(:disabled):focus-visible,
+:host(:not([error])) [part="switch"]:not(:disabled):active {
+  --handle-bg: var(--md-sys-color-on-surface-variant);
+}
+:host([checked]:not([error])) [part="switch"]:not(:disabled):hover,
+:host([checked]:not([error])) [part="switch"]:not(:disabled):focus-visible,
+:host([checked]:not([error])) [part="switch"]:not(:disabled):active {
+  --handle-bg: var(--md-sys-color-primary-container);
+}
+
 /* Disabled — spec opacity tokens 0.12 (track) / 0.38 (handle, icon). */
 :host([disabled]) [part="switch"] { cursor: not-allowed; }
 :host([disabled]) .track {
@@ -164,6 +189,12 @@
 }
 :host([disabled]) .handle {
   background: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+}
+/* Selected + disabled: handle stays fully opaque with the surface color per spec
+   (only the track is dimmed), keeping the ON state legible while disabled. */
+:host([disabled][checked]) .handle {
+  background: var(--md-sys-color-surface);
+  opacity: 1;
 }
 :host([disabled]) .icon {
   color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);

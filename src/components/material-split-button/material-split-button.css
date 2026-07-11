@@ -92,7 +92,8 @@
 .leading,
 .trailing {
   position: relative;
-  overflow: hidden;
+  /* No `overflow: hidden` here — the XS/S touch-target pseudo (below) must
+     extend past the visible pill. The ripple is clipped by `.fx` instead. */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -230,9 +231,20 @@
 .leading:not(:disabled):not([aria-disabled="true"]):active        .state-layer,
 .trailing:not(:disabled):active                                   .state-layer { opacity: .10; }
 
-/* Ripple on press — matches material-button. */
-.leading:not(:disabled):not([aria-disabled="true"]):active::after,
-.trailing:not(:disabled):active::after {
+/* Ripple clip layer — an always-opaque inset box that contains the ripple so
+   the buttons themselves can stay `overflow: visible` (for the touch target). */
+.fx {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Ripple on press — matches material-button. --ripple-x/y are set on the button
+   and inherited into .fx. */
+.leading:not(:disabled):not([aria-disabled="true"]):active .fx::after,
+.trailing:not(:disabled):active .fx::after {
   content: "";
   position: absolute;
   left: var(--ripple-x, 50%);
@@ -245,6 +257,22 @@
   transform: translate(-50%, -50%) scale(1);
   animation: material-split-ripple var(--md-sys-motion-duration-long1, 450ms) var(--md-sys-motion-easing-standard-decelerate, cubic-bezier(0, 0, 0, 1));
   pointer-events: none;
+}
+
+/* 48dp touch target for XS/S (visible pill stays 32/40dp). A transparent,
+   overflow-escaping pseudo extends the hit area vertically — mirrors the 48dp
+   box icon-button gives its XS/S sizes. */
+:host([size="xs"]) .leading::before,
+:host([size="xs"]) .trailing::before,
+:host([size="s"]) .leading::before,
+:host([size="s"]) .trailing::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3rem;
+  transform: translateY(-50%);
 }
 
 @keyframes material-split-ripple {

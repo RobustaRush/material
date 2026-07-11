@@ -19,6 +19,7 @@ import { adoptMaterialStyles } from '../../utils/adopted-styles';
 // the stroke + amplitude fit within the box.
 
 const TRACK_THICKNESS = 4;          // spec: track stays 4dp
+const GAP_DP = 4;                    // spec: ~4dp gap between active arc and track
 const WAVE_AMPLITUDE = 1.6;
 const WAVE_WAVELENGTH = 15;          // arc length (dp) per wave cycle
 const WAVE_PHASE_PERIOD_MS = 1800;
@@ -38,7 +39,8 @@ export class MaterialCircularProgress {
   @Prop() value?: number;
   @Prop({ reflect: true }) wavy = false;
   @Prop() thickness = 4;
-  @Prop() size = 40;
+  /** Diameter in dp. Defaults to 40 (flat) or 48 (wavy) when unset. */
+  @Prop() size?: number;
   @Prop() label?: string;
   @Prop({ reflect: true }) paused = false;
 
@@ -83,13 +85,18 @@ export class MaterialCircularProgress {
     return this.value != null && !Number.isNaN(this.value);
   }
 
-  private get cx(): number { return this.size / 2; }
-  private get cy(): number { return this.size / 2; }
+  // Resolved diameter — wavy indicators default to 48dp, flat to 40dp (spec).
+  private get sz(): number {
+    return this.size ?? (this.wavy ? 48 : 40);
+  }
+
+  private get cx(): number { return this.sz / 2; }
+  private get cy(): number { return this.sz / 2; }
 
   // Centerline radius — leaves room for half the stroke and the wave amplitude.
   private get r(): number {
     const padding = this.thickness / 2 + (this.wavy ? WAVE_AMPLITUDE : 0);
-    return this.size / 2 - padding;
+    return this.sz / 2 - padding;
   }
 
   private startLoop() {
@@ -119,16 +126,14 @@ export class MaterialCircularProgress {
     const phase = this.wavy
       ? ((now - this.startedAt) / WAVE_PHASE_PERIOD_MS) * 2 * Math.PI
       : 0;
-
-    // Track is a full ring.
-    this.trackD = this.buildArc(-Math.PI / 2, -Math.PI / 2 + 2 * Math.PI - 0.0001, r, 0, phase);
+    const full = 2 * Math.PI;
 
     // Active arc.
     let theta_a: number, theta_b: number;
     if (this.isDeterminate) {
       const v = Math.max(0, Math.min(100, this.value!)) / 100;
       theta_a = -Math.PI / 2;
-      theta_b = theta_a + v * 2 * Math.PI;
+      theta_b = theta_a + v * full;
     } else {
       // Indeterminate: outer rotation + grow/shrink sweep.
       const t_spin = ((now - this.startedAt) % SPIN_PERIOD_MS) / SPIN_PERIOD_MS;
@@ -142,6 +147,19 @@ export class MaterialCircularProgress {
     }
     const amp = this.wavy ? WAVE_AMPLITUDE : 0;
     this.activeD = this.buildArc(theta_a, theta_b, r, amp, phase);
+
+    // Track: the remainder of the ring, retracted from each active end by a
+    // ~4dp gap (plus both cap radii) so the active arc reads as separated from
+    // the track rather than drawn over a full underlying ring.
+    const activeLen = Math.abs(theta_b - theta_a);
+    if (activeLen < 1e-4) {
+      this.trackD = this.buildArc(-Math.PI / 2, -Math.PI / 2 + full - 1e-4, r, 0, 0);
+    } else {
+      const gapArc = (GAP_DP + this.thickness / 2 + TRACK_THICKNESS / 2) / r;
+      const start = theta_b + gapArc;
+      const end = theta_a + full - gapArc;
+      this.trackD = end > start ? this.buildArc(start, end, r, 0, 0) : '';
+    }
   }
 
   // Build an SVG path tracing an arc from theta_a to theta_b at centerline r,
@@ -168,16 +186,20 @@ export class MaterialCircularProgress {
   }
 
   render() {
+    const sz = this.sz;
+    const valueNow = this.isDeterminate
+      ? String(Math.max(0, Math.min(100, this.value!)))
+      : null;
     return (
       <Host
         role="progressbar"
         aria-label={this.label ?? 'Loading'}
         aria-valuemin={this.isDeterminate ? '0' : null}
         aria-valuemax={this.isDeterminate ? '100' : null}
-        aria-valuenow={this.isDeterminate ? String(this.value) : null}
-        style={{ display: 'inline-block', width: `${this.size}px`, height: `${this.size}px` }}
+        aria-valuenow={valueNow}
+        style={{ display: 'inline-block', width: `${sz}px`, height: `${sz}px` }}
       >
-        <svg viewBox={`0 0 ${this.size} ${this.size}`} width={String(this.size)} height={String(this.size)}>
+        <svg viewBox={`0 0 ${sz} ${sz}`} width={String(sz)} height={String(sz)}>
           {this.trackD && (
             <path
               d={this.trackD}

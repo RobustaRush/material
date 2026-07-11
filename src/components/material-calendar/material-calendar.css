@@ -16,7 +16,10 @@
   padding: 0.5rem 0.75rem 0.75rem 0.75rem;
   box-sizing: border-box;
   display: grid;
-  grid-template-rows: 56px auto 1fr;
+  /* Header, then the body region (day grid, or the month/year picker). The
+     day grid now nests its own weekday-header row, so the body is a single
+     1fr track rather than the old 56px/auto/1fr split. */
+  grid-template-rows: 56px 1fr;
 }
 
 /* Dense variant: drop the fixed 456dp height so the day grid only takes
@@ -26,8 +29,8 @@
 :host([dense]) .cal {
   height: auto;
 }
-:host([dense]) .cal__grid {
-  grid-auto-rows: 40px;
+:host([dense]) .cal__week {
+  flex: 0 0 40px;
 }
 :host([dense]) .cal__list,
 :host([dense]) .cal__years {
@@ -125,6 +128,8 @@
   grid-template-columns: repeat(7, 1fr);
   align-items: center;
   height: 2rem;
+  /* Fixed strip at the top of the day-grid flex column. */
+  flex: none;
 }
 
 .cal__weekday {
@@ -138,11 +143,26 @@
 /* ---------- Day grid ---------- */
 
 .cal__grid {
+  display: flex;
+  flex-direction: column;
+}
+
+/* One ARIA row per week — its own 7-column track so the day cells line up
+   with the weekday header. Rows share the body height equally (flex:1),
+   reproducing the old grid-auto-rows:1fr stretch. */
+.cal__week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: 1fr;
   align-items: center;
   justify-items: center;
+  flex: 1 1 0;
+}
+
+/* gridcell wrapper — shrink-wraps and centers the day button. */
+.cal__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cal__day {

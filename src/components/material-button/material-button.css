@@ -114,6 +114,43 @@
 :host([shape="square"][size="l"])  [part="button"],
 :host([shape="square"][size="xl"]) [part="button"] { --btn-r: 1rem; }
 
+/* ---- Toggle (selectable) button --------------------------------------------
+   Selected morphs shape to the opposite of its resting shape (round↔square),
+   the same expressive treatment as icon-button, so the selected segment reads
+   distinctly. */
+:host([toggle][selected][shape="round"][size="xs"]) [part="button"],
+:host([toggle][selected][shape="round"][size="s"])  [part="button"] { --btn-r: 0.5rem;  }
+:host([toggle][selected][shape="round"][size="m"])  [part="button"] { --btn-r: 0.75rem; }
+:host([toggle][selected][shape="round"][size="l"])  [part="button"],
+:host([toggle][selected][shape="round"][size="xl"]) [part="button"] { --btn-r: 1rem; }
+/* Square resting → selected swaps back to the pill. */
+:host([toggle][selected][shape="square"]) [part="button"] { --btn-r: 9999px; }
+
+/* Selected color treatment per variant (mirrors icon-button's toggle set).
+   Unselected toggle variants keep a quieter resting look; selected switches to
+   the vivid/emphasis tone. */
+:host([variant="filled"][toggle]:not([selected]):not([disabled])) [part="button"] {
+  --btn-bg: var(--md-sys-color-surface-container);
+  --btn-fg: var(--md-sys-color-on-surface-variant);
+}
+:host([variant="tonal"][toggle][selected]:not([disabled])) [part="button"] {
+  --btn-bg: var(--md-sys-color-secondary);
+  --btn-fg: var(--md-sys-color-on-secondary);
+}
+:host([variant="elevated"][toggle][selected]:not([disabled])) [part="button"] {
+  --btn-bg: var(--md-sys-color-primary);
+  --btn-fg: var(--md-sys-color-on-primary);
+}
+:host([variant="outlined"][toggle][selected]:not([disabled])) [part="button"] {
+  --btn-bg: var(--md-sys-color-inverse-surface);
+  --btn-fg: var(--md-sys-color-inverse-on-surface);
+  border-color: transparent;
+}
+:host([variant="text"][toggle][selected]:not([disabled])) [part="button"] {
+  --btn-bg: var(--md-sys-color-secondary-container);
+  --btn-fg: var(--md-sys-color-on-secondary-container);
+}
+
 [part="button"]:not(:disabled):not([aria-disabled="true"]):active::after {
   content: "";
   position: absolute;

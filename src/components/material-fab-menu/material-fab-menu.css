@@ -56,18 +56,23 @@
     box-shadow 120ms linear,
     background-color 120ms linear,
     opacity 200ms cubic-bezier(.2, 0, 0, 1),
-    transform 200ms cubic-bezier(.2, 0, 0, 1);
+    transform 200ms cubic-bezier(.2, 0, 0, 1),
+    visibility var(--md-sys-motion-duration-short4, 200ms);
 }
 
 /* Hide-near-end: fade + slide down as the page bottom approaches.
    Only the FAB itself hides — if the panel is open the user has already
-   chosen to interact, so leave it on screen. */
+   chosen to interact, so leave it on screen. `visibility` (discrete, allow-
+   discrete) flips at the end of the fade so the FAB also drops out of the tab
+   order / hit-testing rather than staying an invisible focus stop. */
 :host([near-end]:not([open])) .fab {
   opacity: 0;
   transform: translateY(1rem) scale(.85);
   pointer-events: none;
   box-shadow: none;
+  visibility: hidden;
 }
+.fab { transition-behavior: allow-discrete; }
 .fab:focus { outline: none; }
 .fab:focus-visible {
   outline: 2px solid var(--md-sys-color-secondary);
@@ -130,16 +135,69 @@
   /* 8dp gap from last item to close button is added via padding-bottom. */
   padding-bottom: 0.25rem;
 }
-.panel:not(:popover-open) { display: none; }
-
-/* Animation. */
+/* Entrance / exit choreography. The panel is a popover, so the browser toggles
+   its `display`. Transitioning `display`/`overlay` with `allow-discrete` plus an
+   `@starting-style` rule lets it animate in instead of popping.
+   Enter: emphasized-decelerate rise+fade. Exit: emphasized-accelerate. */
 .panel {
-  opacity: 0;
-  transform: translateY(0.5rem) scale(.96);
-  transform-origin: bottom right;
-  transition: opacity 160ms linear, transform 200ms cubic-bezier(.2, 0, 0, 1);
-}
-.panel:popover-open {
   opacity: 1;
   transform: none;
+  transform-origin: bottom right;
+  transition:
+    opacity var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    transform var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    overlay var(--md-sys-motion-duration-medium2, 300ms) allow-discrete,
+    display var(--md-sys-motion-duration-medium2, 300ms) allow-discrete;
+}
+.panel:not(:popover-open) {
+  /* Author `display: flex` above overrides the UA popover hide rule, so the
+     closed state must restore it explicitly. `display` is in the transition
+     list (allow-discrete) so the panel stays laid out through the exit fade. */
+  display: none;
+  opacity: 0;
+  transform: translateY(0.5rem) scale(.96);
+  transition:
+    opacity var(--md-sys-motion-duration-short2, 100ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    transform var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    overlay var(--md-sys-motion-duration-short4, 200ms) allow-discrete,
+    display var(--md-sys-motion-duration-short4, 200ms) allow-discrete;
+}
+@starting-style {
+  .panel:popover-open {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(.96);
+  }
+}
+
+/* Per-item stagger: items rise+fade with a small delay from the bottom (nearest
+   the FAB) upward. Degrades gracefully — if @starting-style on ::slotted is a
+   no-op, items simply appear with the panel (no pop). */
+::slotted(material-fab-menu-item) {
+  transition:
+    opacity var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    transform var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1));
+}
+.panel ::slotted(material-fab-menu-item:nth-last-child(2)) { transition-delay: 25ms; }
+.panel ::slotted(material-fab-menu-item:nth-last-child(3)) { transition-delay: 50ms; }
+.panel ::slotted(material-fab-menu-item:nth-last-child(4)) { transition-delay: 75ms; }
+.panel ::slotted(material-fab-menu-item:nth-last-child(5)) { transition-delay: 100ms; }
+.panel:not(:popover-open) ::slotted(material-fab-menu-item) { transition-delay: 0ms; }
+@starting-style {
+  .panel:popover-open ::slotted(material-fab-menu-item) {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+/* Respect reduced-motion: keep the fade, drop the translate/scale + stagger. */
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel:not(:popover-open) {
+    transform: none;
+  }
+  ::slotted(material-fab-menu-item) { transition-delay: 0ms !important; }
+  @starting-style {
+    .panel:popover-open,
+    .panel:popover-open ::slotted(material-fab-menu-item) { transform: none; }
+  }
 }

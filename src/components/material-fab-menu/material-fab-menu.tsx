@@ -46,6 +46,9 @@ export class MaterialFabMenu {
   private fabEl?: HTMLButtonElement;
   private panelEl?: HTMLElement;
   private cleanupTrack?: () => void;
+  // When the menu closes we normally return focus to the FAB; on Tab we let the
+  // browser move focus onward instead (spec: Tab moves on, not back).
+  private returnFocusToFab = true;
 
   connectedCallback() {
     this.rendered = true;
@@ -126,7 +129,8 @@ export class MaterialFabMenu {
     } else {
       this.cleanupTrack?.();
       this.cleanupTrack = undefined;
-      if (this.fabEl) this.fabEl.focus();
+      if (this.returnFocusToFab && this.fabEl) this.fabEl.focus();
+      this.returnFocusToFab = true;
       this.materialFabMenuClose.emit();
     }
   };
@@ -174,6 +178,9 @@ export class MaterialFabMenu {
         focusItem(items.length - 1);
         return;
       case 'Tab':
+        // Let the browser move focus onward — don't preventDefault and don't
+        // return focus to the FAB.
+        this.returnFocusToFab = false;
         this.open = false;
         return;
     }

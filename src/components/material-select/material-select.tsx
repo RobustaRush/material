@@ -15,6 +15,14 @@ import { gettext } from '../../utils/i18n';
 
 export type MaterialSelectVariant = 'filled' | 'outlined';
 
+// Internal delimiter for the multi-select `value` string mirror and the
+// form-state string. ASCII Unit Separator (0x1F) — a control char that can't
+// appear in real option values, so joining/splitting the `values` array
+// round-trips losslessly even when a value itself contains a comma. Multi
+// consumers should read `el.values` / `el.dataset.values` (JSON) rather than
+// parsing `value`.
+const VALUE_SEP = '\x1f';
+
 interface MaterialOptionLike extends HTMLElement {
   value: string;
   label?: string;
@@ -91,10 +99,10 @@ export class MaterialSelect {
     // If `values` was supplied directly, capture it; otherwise derive from CSV.
     if (this.multiple) {
       if (!this.values?.length && this.value) {
-        this.values = this.value.split(',').filter(Boolean);
+        this.values = this.value.split(VALUE_SEP).filter(Boolean);
       }
       this.defaultValues = [...(this.values ?? [])];
-      this.value = this.values.join(',');
+      this.value = this.values.join(VALUE_SEP);
     }
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
@@ -111,11 +119,16 @@ export class MaterialSelect {
     this.applySelection();
   }
 
+  disconnectedCallback() {
+    // Typeahead reset timer would otherwise fire on a detached component.
+    window.clearTimeout(this.typeaheadTimer);
+  }
+
   @Watch('value')
   onValueChange() {
     if (this.multiple) {
-      const parsed = this.value ? this.value.split(',').filter(Boolean) : [];
-      if (parsed.join(',') !== this.values.join(',')) {
+      const parsed = this.value ? this.value.split(VALUE_SEP).filter(Boolean) : [];
+      if (parsed.join(VALUE_SEP) !== this.values.join(VALUE_SEP)) {
         this.values = parsed;
         return; // values watcher will run the rest
       }
@@ -128,8 +141,8 @@ export class MaterialSelect {
   @Watch('values')
   onValuesChange() {
     if (!this.multiple) return;
-    const csv = this.values.join(',');
-    if (this.value !== csv) this.value = csv;
+    const joined = this.values.join(VALUE_SEP);
+    if (this.value !== joined) this.value = joined;
     this.refreshDisplay();
     this.applySelection();
     this.syncFormValue();
@@ -164,7 +177,7 @@ export class MaterialSelect {
   formStateRestoreCallback(state: string | null) {
     if (state == null) return;
     if (this.multiple) {
-      this.values = state ? state.split(',').filter(Boolean) : [];
+      this.values = state ? state.split(VALUE_SEP).filter(Boolean) : [];
     } else {
       this.value = state;
     }
@@ -187,7 +200,7 @@ export class MaterialSelect {
     if (this.multiple) {
       const fd = new FormData();
       if (this.name) for (const v of this.values) fd.append(this.name, v);
-      this.internals.setFormValue(fd, this.values.join(','));
+      this.internals.setFormValue(fd, this.values.join(VALUE_SEP));
       const missing = this.required && this.values.length === 0;
       if (missing) {
         this.internals.setValidity(

@@ -23,13 +23,13 @@ const STATE_LAYER_BASE =
   '[grid-area:1/1] w-10 h-10 rounded-full transition-colors pointer-events-none';
 
 const STATE_LAYER_OFF =
-  'group-hover:bg-on-surface/10 group-focus-visible:bg-on-surface/15 group-active:bg-on-surface/15';
+  'group-hover:bg-on-surface/8 group-focus-visible:bg-on-surface/10 group-active:bg-on-surface/10';
 
 const STATE_LAYER_ON =
-  'group-hover:bg-primary/10 group-focus-visible:bg-primary/15 group-active:bg-primary/15';
+  'group-hover:bg-primary/8 group-focus-visible:bg-primary/10 group-active:bg-primary/10';
 
 const STATE_LAYER_ERR =
-  'group-hover:bg-error/10 group-focus-visible:bg-error/15 group-active:bg-error/15';
+  'group-hover:bg-error/8 group-focus-visible:bg-error/10 group-active:bg-error/10';
 
 const RING_BASE =
   '[grid-area:1/1] inline-flex items-center justify-center ' +

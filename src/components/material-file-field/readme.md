@@ -29,9 +29,9 @@
 
 ## Events
 
-| Event        | Description | Type                                                     |
-| ------------ | ----------- | -------------------------------------------------------- |
-| `fileChange` |             | `CustomEvent<{ file: File \| null; cleared: boolean; }>` |
+| Event        | Description | Type                                                                    |
+| ------------ | ----------- | ----------------------------------------------------------------------- |
+| `fileChange` |             | `CustomEvent<{ file: File \| null; files: File[]; cleared: boolean; }>` |
 
 
 ## Dependencies

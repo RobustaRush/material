@@ -43,6 +43,8 @@ export class MaterialListItem {
    *  out from the open one. */
   @Prop({ reflect: true, mutable: true }) active = false;
   @Prop({ reflect: true }) divider: 'top' | 'bottom' | 'none' = 'none';
+  /** Internal — set by the parent list for roving tabindex. */
+  @Prop({ mutable: true }) tabbable = false;
 
   /** Internal: tells the parent list this item was activated. */
   @Event({ bubbles: true, composed: true })
@@ -212,21 +214,21 @@ export class MaterialListItem {
       </div>
     );
 
-    // ARIA role: listbox parent → option; group parent (multi) → keep as listitem
-    // with aria-checked; otherwise listitem.
+    // ARIA role: both single- and multi-select present as listbox options with
+    // aria-selected (a role="option" is invalid outside a listbox, and
+    // menuitemcheckbox is invalid outside a menu). Plain lists → listitem.
     const list = this.el.closest('material-list');
     const sel = list?.getAttribute('selection');
-    const role = sel === 'single' ? 'option' : sel === 'multi' ? 'menuitemcheckbox' : 'listitem';
-    const ariaSelected = sel === 'single' ? (this.selected ? 'true' : 'false') : null;
-    const ariaChecked = sel === 'multi' ? (this.selected ? 'true' : 'false') : null;
+    const selectable = sel === 'single' || sel === 'multi';
+    const role = selectable ? 'option' : 'listitem';
+    const ariaSelected = selectable ? (this.selected ? 'true' : 'false') : null;
 
     return (
       <Host
         role={role}
         aria-selected={ariaSelected}
-        aria-checked={ariaChecked}
         aria-disabled={this.disabled ? 'true' : null}
-        tabindex={this.disabled ? -1 : 0}
+        tabindex={this.disabled ? -1 : this.tabbable ? 0 : -1}
         onClick={this.handleClick}
         onKeyDown={this.handleKeyDown}
       >

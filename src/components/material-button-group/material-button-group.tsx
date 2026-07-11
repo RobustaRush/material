@@ -32,7 +32,9 @@ export class MaterialButtonGroup {
 
   private getToggles(): HTMLElement[] {
     return Array.from(
-      this.el.querySelectorAll<HTMLElement>(':scope > material-icon-button[toggle]'),
+      this.el.querySelectorAll<HTMLElement>(
+        ':scope > material-icon-button[toggle], :scope > material-button[toggle]',
+      ),
     );
   }
 
@@ -40,7 +42,12 @@ export class MaterialButtonGroup {
   onChildSelectedChange(ev: CustomEvent<{ selected: boolean }>) {
     if (this.selectionMode === 'none') return;
     const target = ev.target as HTMLElement & { selected: boolean; value: string };
-    if (!target.matches('material-icon-button[toggle]')) return;
+    // Accept both icon-button and label-button toggles, but only direct children.
+    if (
+      !target.matches('material-icon-button[toggle], material-button[toggle]') ||
+      target.parentElement !== this.el
+    )
+      return;
 
     if (this.selectionMode === 'single') {
       if (ev.detail.selected) {

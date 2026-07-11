@@ -93,6 +93,35 @@
   color: var(--chip-leading, var(--md-sys-color-primary));
 }
 
+/* Filter check-in: the check glyph is always in the DOM and animates its width
+   0→18dp + scale(0.6→1) on selection (~200ms standard easing). The negative
+   inline-end margin cancels the flex `gap` while collapsed so unselected chips
+   show no phantom leading space. */
+.icon.leading.check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  margin-inline-end: -0.5rem;
+  overflow: hidden;
+  transform: scale(0.6);
+  transition:
+    width var(--md-sys-motion-duration-short4, 200ms)
+      var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1)),
+    margin-inline-end var(--md-sys-motion-duration-short4, 200ms)
+      var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1)),
+    transform var(--md-sys-motion-duration-short4, 200ms)
+      var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1));
+}
+:host([variant="filter"][selected]) .icon.leading.check {
+  width: 1.125rem;
+  margin-inline-end: 0;
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .icon.leading.check { transition: none; }
+}
+
 /* Padding shrinks to 8dp on the side that has an icon/avatar/trailing. */
 :host(:not([variant="input"])[icon]) [part="chip"],
 :host([variant="filter"][selected]) [part="chip"] { padding-left: 0.5rem; }

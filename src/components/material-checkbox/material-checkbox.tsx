@@ -13,8 +13,8 @@ import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 spec: container 18dp / corner 2dp / icon 18dp / target 48dp / state-layer 40dp.
 // The button is a 1×1 inline-grid; the 40px state-layer and 18px box share the
-// single cell so both auto-center without absolute positioning. Tailwind opacity
-// steps 10/15 stand in for the spec's 8/12 — close enough by design.
+// single cell so both auto-center without absolute positioning. State-layer
+// opacities follow the spec's 8% (hover) / 10% (focus, pressed) tokens.
 
 const TARGET_BASE =
   'group inline-grid place-items-center w-12 h-12 rounded-full ' +
@@ -26,17 +26,17 @@ const STATE_LAYER_BASE =
   '[grid-area:1/1] w-10 h-10 rounded-full transition-colors pointer-events-none';
 
 const STATE_LAYER_OFF =
-  'group-hover:bg-on-surface/10 group-focus-visible:bg-on-surface/15 group-active:bg-on-surface/15';
+  'group-hover:bg-on-surface/8 group-focus-visible:bg-on-surface/10 group-active:bg-on-surface/10';
 
 const STATE_LAYER_ON =
-  'group-hover:bg-primary/10 group-focus-visible:bg-primary/15 group-active:bg-primary/15';
+  'group-hover:bg-primary/8 group-focus-visible:bg-primary/10 group-active:bg-primary/10';
 
 const STATE_LAYER_ERR =
-  'group-hover:bg-error/10 group-focus-visible:bg-error/15 group-active:bg-error/15';
+  'group-hover:bg-error/8 group-focus-visible:bg-error/10 group-active:bg-error/10';
 
 const BOX_BASE =
   '[grid-area:1/1] relative inline-flex items-center justify-center ' +
-  'w-[18px] h-[18px] rounded-sm transition-colors box-border';
+  'w-[18px] h-[18px] rounded-[2px] transition-colors box-border';
 
 const BOX_OFF = 'border-2 border-on-surface-variant bg-transparent';
 const BOX_ON = 'bg-primary text-on-primary';
@@ -80,6 +80,7 @@ export class MaterialCheckbox {
 
   connectedCallback() {
     this.syncFormValue();
+    this.syncValidity();
   }
 
   @Watch('checked')
@@ -88,6 +89,33 @@ export class MaterialCheckbox {
   syncFormValue() {
     this.internals.setFormValue(this.checked && !this.indeterminate ? this.value : null);
     this.internals.ariaChecked = this.indeterminate ? 'mixed' : String(this.checked);
+  }
+
+  // A required checkbox is only satisfied when it submits a value — i.e. checked
+  // and not indeterminate (a mixed box submits null, same as native).
+  @Watch('required')
+  @Watch('checked')
+  @Watch('indeterminate')
+  @Watch('error')
+  @Watch('errorText')
+  syncValidity() {
+    if (this.error) {
+      this.internals.setValidity(
+        { customError: true },
+        this.errorText || 'Invalid',
+      );
+    } else if (this.required && !(this.checked && !this.indeterminate)) {
+      this.internals.setValidity(
+        { valueMissing: true },
+        'Please check this box.',
+      );
+    } else {
+      this.internals.setValidity({});
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
   }
 
   formResetCallback() {
@@ -195,7 +223,12 @@ export class MaterialCheckbox {
     // the box and primary label never move. Across siblings, set items-start
     // on the row to keep all primary labels aligned.
     return (
-      <label class="inline-flex items-start gap-2 select-none cursor-pointer">
+      <label
+        class={
+          'inline-flex items-start gap-2 select-none ' +
+          (this.disabled ? 'cursor-not-allowed' : 'cursor-pointer')
+        }
+      >
         {button}
         <span class="flex flex-col">
           <span id="label" class="mt-3 leading-6 text-base text-on-surface">{this.label}</span>

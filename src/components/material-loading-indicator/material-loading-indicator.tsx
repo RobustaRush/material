@@ -168,6 +168,10 @@ export class MaterialLoadingIndicator {
 
   private handleReducedMotion = (e: MediaQueryListEvent) => {
     this.prefersReducedMotion = e.matches;
+    // Leaving reduced-motion while idled: restart the morph loop. Entering it
+    // while running is handled by the next tick, which draws the static frame
+    // once and stops.
+    if (!e.matches && !this.paused && !this.rafId) this.startLoop();
   };
 
   private startLoop() {
@@ -176,12 +180,16 @@ export class MaterialLoadingIndicator {
   }
 
   private tick = (now: number) => {
-    // Reduced motion: freeze on shape #4 (squircle) — the most neutral silhouette.
+    // Reduced motion: freeze on shape #4 (squircle) — the most neutral
+    // silhouette. Build the static path once and idle the loop (rebuilding the
+    // identical path every frame is pointless). handleReducedMotion / unpause
+    // restart it if motion is re-enabled.
     if (this.prefersReducedMotion) {
-      const d = pathFromRadii(SAMPLED[3]);
-      if (this.pathEl) this.pathEl.setAttribute('d', d);
+      // Write through @State (not a bare setAttribute) so the static shape
+      // survives any later Stencil re-render now that the loop idles here.
+      this.d = pathFromRadii(SAMPLED[3]);
       if (this.spinEl) this.spinEl.style.transform = 'rotate(0deg)';
-      this.rafId = requestAnimationFrame(this.tick);
+      this.rafId = 0;
       return;
     }
     const elapsed = (now - this.startedAt) % CYCLE_MS;

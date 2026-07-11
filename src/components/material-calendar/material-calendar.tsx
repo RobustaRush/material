@@ -291,7 +291,7 @@ export class MaterialCalendar {
       // buttons / nav arrows where Tab/Arrows have native meaning).
       if (!inner.dataset?.iso && !inner.classList?.contains('cal__day')) return;
       this.keyboardModality = true;
-      this.handleDaysKeyDown(e);
+      this.handleDaysKeyDown(e, inner);
       return;
     }
     if (this.mode === 'months') {
@@ -308,7 +308,7 @@ export class MaterialCalendar {
     }
   }
 
-  private handleDaysKeyDown(e: KeyboardEvent) {
+  private handleDaysKeyDown(e: KeyboardEvent, focused: HTMLElement) {
     switch (e.key) {
       case 'ArrowLeft':  e.preventDefault(); this.moveFocus(-1); return;
       case 'ArrowRight': e.preventDefault(); this.moveFocus(1); return;
@@ -339,12 +339,15 @@ export class MaterialCalendar {
         return;
       }
       case 'Enter':
-      case ' ':
+      case ' ': {
         e.preventDefault();
-        if (this.focusedDate || this.value) {
-          this.selectDate(this.focusedDate || this.value);
-        }
+        // On first focus neither focusedDate nor value is set, but the
+        // focused button (tabindex=0, today / first-of-month) carries the
+        // real ISO — fall back to it so Enter/Space isn't dead.
+        const iso = this.focusedDate || this.value || focused.dataset?.iso || '';
+        if (iso) this.selectDate(iso);
         return;
+      }
     }
   }
 
@@ -522,43 +525,54 @@ export class MaterialCalendar {
       : inMonth(today)                                  ? today
       : firstInMonth;
 
-    return [
-      <div class="cal__weekdays" role="row">
-        {orderedWeekdays.map((name) => (
-          <span class="cal__weekday" role="columnheader">{name}</span>
-        ))}
-      </div>,
+    // Chunk cells into calendar weeks so the grid can expose one ARIA row per
+    // week, each holding 7 gridcells (proper role="grid" structure).
+    const weeks: (typeof cells)[] = [];
+    for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
+    return (
       <div class="cal__grid" role="grid">
-        {cells.map((c) => {
-          const disabled = !inRange(c.iso, this.min || undefined, this.max || undefined);
-          const selected = c.iso === this.value;
-          const isToday = c.iso === today;
-          const tabIndex = c.iso === focusISO ? 0 : -1;
-          const showFocusRing = this.keyboardModality && c.iso === focusISO;
-          const cls = [
-            'cal__day',
-            c.outside ? 'is-outside' : '',
-            selected ? 'is-selected' : '',
-            isToday ? 'is-today' : '',
-            showFocusRing ? 'is-focused' : '',
-          ].filter(Boolean).join(' ');
-          return (
-            <button
-              type="button"
-              class={cls}
-              data-iso={c.iso}
-              aria-selected={selected ? 'true' : 'false'}
-              aria-current={isToday ? 'date' : undefined}
-              disabled={disabled}
-              tabIndex={tabIndex}
-              onClick={() => this.selectDate(c.iso)}
-            >
-              {c.day}
-            </button>
-          );
-        })}
-      </div>,
-    ];
+        <div class="cal__weekdays" role="row">
+          {orderedWeekdays.map((name) => (
+            <span class="cal__weekday" role="columnheader">{name}</span>
+          ))}
+        </div>
+        {weeks.map((week) => (
+          <div class="cal__week" role="row">
+            {week.map((c) => {
+              const disabled = !inRange(c.iso, this.min || undefined, this.max || undefined);
+              const selected = c.iso === this.value;
+              const isToday = c.iso === today;
+              const tabIndex = c.iso === focusISO ? 0 : -1;
+              const showFocusRing = this.keyboardModality && c.iso === focusISO;
+              const cls = [
+                'cal__day',
+                c.outside ? 'is-outside' : '',
+                selected ? 'is-selected' : '',
+                isToday ? 'is-today' : '',
+                showFocusRing ? 'is-focused' : '',
+              ].filter(Boolean).join(' ');
+              return (
+                // aria-selected lives on the gridcell, not the button.
+                <div class="cal__cell" role="gridcell" aria-selected={selected ? 'true' : 'false'}>
+                  <button
+                    type="button"
+                    class={cls}
+                    data-iso={c.iso}
+                    aria-current={isToday ? 'date' : undefined}
+                    disabled={disabled}
+                    tabIndex={tabIndex}
+                    onClick={() => this.selectDate(c.iso)}
+                  >
+                    {c.day}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
   }
 
   private renderMonths() {

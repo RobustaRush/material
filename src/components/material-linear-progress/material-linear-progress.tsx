@@ -80,10 +80,24 @@ export class MaterialLinearProgress {
   @Watch('stopIndicator')
   handlePropChange() {
     if (this.width) this.recomputePaths(performance.now());
+    this.ensureLoop();
+  }
+
+  @Watch('paused')
+  handlePausedChange(now: boolean) {
+    if (now) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = 0;
+    } else {
+      this.ensureLoop();
+    }
   }
 
   private handleReducedMotion = (e: MediaQueryListEvent) => {
     this.prefersReducedMotion = e.matches;
+    // Entering reduced-motion is handled by the next tick (it idles); leaving it
+    // needs an explicit restart.
+    if (!e.matches) this.ensureLoop();
   };
 
   private measure = () => {
@@ -91,6 +105,7 @@ export class MaterialLinearProgress {
     if (w !== this.width) {
       this.width = w;
       this.recomputePaths(performance.now());
+      this.ensureLoop();
     }
   };
 
@@ -113,19 +128,31 @@ export class MaterialLinearProgress {
     return this.isDeterminate;
   }
 
+  private get isAnimated(): boolean {
+    return !this.isDeterminate || this.wavy;
+  }
+
   private startLoop() {
     this.startedAt = performance.now();
     this.rafId = requestAnimationFrame(this.tick);
   }
 
+  // Start the rAF loop only when there is motion to render and it isn't already
+  // running. Width changes arrive via the ResizeObserver; prop/paused/reduced-
+  // motion changes call this to (re)start after the loop has idled.
+  private ensureLoop() {
+    if (this.rafId || this.paused || this.prefersReducedMotion) return;
+    if (this.isAnimated && this.width) this.startLoop();
+  }
+
   private tick = (now: number) => {
-    // Re-render every frame when we have animated motion (indeterminate or wavy).
-    // Determinate flat is static — but we still tick to pick up width changes
-    // promptly via the cached `this.width`.
-    const animated = !this.isDeterminate || this.wavy;
-    if (animated && !this.paused && !this.prefersReducedMotion && this.width) {
-      this.recomputePaths(now);
+    // Idle when nothing animates (determinate flat), or while paused / reduced
+    // motion / not yet measured — instead of spinning a no-op rAF every frame.
+    if (!this.isAnimated || this.paused || this.prefersReducedMotion || !this.width) {
+      this.rafId = 0;
+      return;
     }
+    this.recomputePaths(now);
     this.rafId = requestAnimationFrame(this.tick);
   };
 
@@ -168,12 +195,40 @@ export class MaterialLinearProgress {
           segments.push([trackStart + startFrac * trackLen, trackStart + endFrac * trackLen]);
         }
       }
-      this.trackSegments = [{ d: `M${this.fmt(trackStart)} ${this.fmt(cy)} L${this.fmt(trackEnd)} ${this.fmt(cy)}` }];
+      // Expressive look: the track is drawn only in the gaps around the active
+      // bars (retracted by the 4dp SPACING) — not a full-length line the bars
+      // sit on top of.
+      this.trackSegments = this.trackGapSegments(segments, trackStart, trackEnd, cy);
     }
 
     this.activeSegments = segments.map(([x1, x2]) => ({
       d: this.wavy ? this.buildWavePath(x1, x2, cy, phase) : `M${this.fmt(x1)} ${this.fmt(cy)} L${this.fmt(x2)} ${this.fmt(cy)}`,
     }));
+  }
+
+  // Track drawn only in the gaps around the active bars, each retracted by
+  // SPACING (4dp) so the moving indeterminate bars keep the expressive
+  // separation from the track in every frame.
+  private trackGapSegments(
+    active: [number, number][],
+    trackStart: number,
+    trackEnd: number,
+    cy: number,
+  ): { d: string }[] {
+    const sorted = [...active].sort((a, b) => a[0] - b[0]);
+    const out: { d: string }[] = [];
+    let cursor = trackStart;
+    for (const [s, e] of sorted) {
+      const gapEnd = s - SPACING;
+      if (gapEnd > cursor) {
+        out.push({ d: `M${this.fmt(cursor)} ${this.fmt(cy)} L${this.fmt(gapEnd)} ${this.fmt(cy)}` });
+      }
+      cursor = Math.max(cursor, e + SPACING);
+    }
+    if (trackEnd > cursor) {
+      out.push({ d: `M${this.fmt(cursor)} ${this.fmt(cy)} L${this.fmt(trackEnd)} ${this.fmt(cy)}` });
+    }
+    return out;
   }
 
   private computeUsable(W: number) {
@@ -210,6 +265,9 @@ export class MaterialLinearProgress {
     const cy = this.cy;
     const stopX = W - PADDING - STOP_SIZE / 2;
     const stopRy = this.thickness > TRACK_THICKNESS ? 1 : STOP_SIZE / 2;
+    const valueNow = this.isDeterminate
+      ? String(Math.max(0, Math.min(100, this.value!)))
+      : null;
 
     return (
       <Host
@@ -217,7 +275,7 @@ export class MaterialLinearProgress {
         aria-label={this.label ?? 'Loading'}
         aria-valuemin={this.isDeterminate ? '0' : null}
         aria-valuemax={this.isDeterminate ? '100' : null}
-        aria-valuenow={this.isDeterminate ? String(this.value) : null}
+        aria-valuenow={valueNow}
         style={{ height: `${H}px` }}
       >
         <svg

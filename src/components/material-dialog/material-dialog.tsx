@@ -187,7 +187,11 @@ export class MaterialDialog {
     const inside =
       ev.clientX >= rect.left && ev.clientX <= rect.right &&
       ev.clientY >= rect.top && ev.clientY <= rect.bottom;
-    if (!inside) this.dialog.close();
+    if (inside) return;
+    // Route backdrop dismiss through the same cancelable path as Esc so
+    // "unsaved changes" guards can veto it.
+    const proceed = this.materialDialogCancel.emit();
+    if (!proceed.defaultPrevented) this.dialog.close();
   };
 
   private setDialogRef = (el?: HTMLDialogElement) => {

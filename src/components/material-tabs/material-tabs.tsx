@@ -149,6 +149,9 @@ export class MaterialTabs {
       t.tabbable = t === target;
     }
 
+    // Scroll a clipped tab fully into view when activated by click.
+    target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+
     this.positionIndicator();
     this.materialTabSelect.emit({ value: e.detail.value });
   }
@@ -168,9 +171,14 @@ export class MaterialTabs {
     const active = (e.target as Element | null)?.closest('material-tab') as TabEl | null;
     const idx = active ? tabs.indexOf(active) : -1;
 
+    // Flip the horizontal arrows in RTL so Arrow keys track visual direction.
+    const rtl = getComputedStyle(this.el).direction === 'rtl';
+    const forward = rtl ? 'ArrowLeft' : 'ArrowRight';
+    const backward = rtl ? 'ArrowRight' : 'ArrowLeft';
+
     let next = idx;
-    if (e.key === 'ArrowLeft') next = idx <= 0 ? tabs.length - 1 : idx - 1;
-    else if (e.key === 'ArrowRight') next = idx === tabs.length - 1 ? 0 : idx + 1;
+    if (e.key === backward) next = idx <= 0 ? tabs.length - 1 : idx - 1;
+    else if (e.key === forward) next = idx === tabs.length - 1 ? 0 : idx + 1;
     else if (e.key === 'Home') next = 0;
     else if (e.key === 'End') next = tabs.length - 1;
 

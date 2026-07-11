@@ -6,9 +6,11 @@ import {
   Host,
   Prop,
   State,
+  AttachInternals,
   h,
 } from '@stencil/core';
 import { adoptMaterialStyles } from '../../utils/adopted-styles';
+import { gettext } from '../../utils/i18n';
 
 export type MaterialFileFieldVariant = 'filled' | 'outlined';
 
@@ -26,9 +28,15 @@ export type MaterialFileFieldVariant = 'filled' | 'outlined';
   tag: 'material-file-field',
   styleUrl: 'material-file-field.css',
   shadow: false,
+  // Form-associated so `required` can actually block submission via
+  // ElementInternals validity. The native <input type="file"> still carries
+  // the file payload; the host contributes no form value of its own (never
+  // calls setFormValue) — it only owns the validity state.
+  formAssociated: true,
 })
 export class MaterialFileField {
   @Element() el!: HTMLElement;
+  @AttachInternals() internals!: ElementInternals;
 
   @Prop() variant: MaterialFileFieldVariant = 'outlined';
   @Prop() name!: string;
@@ -51,15 +59,55 @@ export class MaterialFileField {
   @Prop() undoLabel = '';
   @Prop() downloadLabel = '';
 
-  @State() private pickedName: string | null = null;
+  // Locally-picked files (empty until the user chooses via the picker).
+  @State() private pickedFiles: File[] = [];
   @State() private pendingClear = false;
 
-  @Event() fileChange!: EventEmitter<{ file: File | null; cleared: boolean }>;
+  // `file` is the first picked file (back-compat / single-file consumers);
+  // `files` is the full list when `multiple` is set.
+  @Event() fileChange!: EventEmitter<{ file: File | null; files: File[]; cleared: boolean }>;
 
   private fileInput?: HTMLInputElement;
 
   componentWillLoad() {
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
+  }
+
+  componentDidRender() {
+    // Keep validity in sync with the current picked/cleared/required state on
+    // every render (covers prop changes as well as user interaction).
+    this.updateValidity();
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
+  formResetCallback() {
+    this.pickedFiles = [];
+    this.pendingClear = false;
+    if (this.fileInput) this.fileInput.value = '';
+  }
+
+  private hasSelection(): boolean {
+    // A satisfied field either has freshly-picked files, or keeps the existing
+    // server-side file (currentName) without a pending clear.
+    return this.pickedFiles.length > 0
+      || (!!this.currentName && !this.pendingClear);
+  }
+
+  private updateValidity() {
+    if (!this.internals?.setValidity) return;
+    if (!this.required || this.hasSelection() || this.disabled) {
+      this.internals.setValidity({});
+      return;
+    }
+    const anchor = this.el.querySelector('material-textfield') as HTMLElement | null;
+    this.internals.setValidity(
+      { valueMissing: true },
+      this.errorText || gettext('Please select a file'),
+      anchor ?? undefined,
+    );
   }
 
   private openPicker = () => {
@@ -84,10 +132,10 @@ export class MaterialFileField {
 
   private handleFileChange = (e: Event) => {
     const input = e.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
-    this.pickedName = file?.name ?? null;
-    if (file) this.pendingClear = false;
-    this.fileChange.emit({ file, cleared: false });
+    const files = input.files ? Array.from(input.files) : [];
+    this.pickedFiles = files;
+    if (files.length) this.pendingClear = false;
+    this.fileChange.emit({ file: files[0] ?? null, files, cleared: false });
   };
 
   private handleClearToggle = (e: CustomEvent<{ selected: boolean }>) => {
@@ -95,11 +143,11 @@ export class MaterialFileField {
     const next = e.detail.selected;
     this.pendingClear = next;
     if (next) {
-      // Drop any locally picked file — clear takes precedence.
-      this.pickedName = null;
+      // Drop any locally picked files — clear takes precedence.
+      this.pickedFiles = [];
       if (this.fileInput) this.fileInput.value = '';
     }
-    this.fileChange.emit({ file: null, cleared: next });
+    this.fileChange.emit({ file: null, files: [], cleared: next });
   };
 
   private handleChangeClick = (e: MouseEvent) => {
@@ -108,10 +156,14 @@ export class MaterialFileField {
   };
 
   render() {
-    const displayName = this.pickedName ?? this.currentName ?? '';
-    const hasFile = !!(this.pickedName || this.currentName);
+    // Show every picked file name (joined) so `multiple` selections are all
+    // visible, not just the first.
+    const pickedDisplay = this.pickedFiles.map(f => f.name).join(', ');
+    const displayName = pickedDisplay || this.currentName || '';
+    const hasPicked = this.pickedFiles.length > 0;
+    const hasFile = hasPicked || !!this.currentName;
     const showDownload =
-      !!this.currentUrl && !this.pickedName && !this.pendingClear;
+      !!this.currentUrl && !hasPicked && !this.pendingClear;
 
     return (
       <Host class="block w-full" onClick={this.handleSurfaceClick}>

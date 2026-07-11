@@ -169,11 +169,16 @@ export class MaterialDateField {
   };
 
   private handleCalendarSelect = (e: Event) => {
+    // Keep the inner calendar's dateSelect from leaking to consumers.
+    e.stopPropagation();
     const detail = (e as CustomEvent<{ value: string }>).detail;
     this.pending = detail?.value ?? '';
   };
 
   private handleTextChange = (e: Event) => {
+    // The inner textfield's own valueChange bubbles through this light-DOM
+    // host; stop it so consumers only see this field's canonical event.
+    e.stopPropagation();
     const detail = (e as CustomEvent<{ value: string }>).detail;
     const raw = (detail?.value ?? '').trim();
     if (raw === '') {
@@ -186,6 +191,13 @@ export class MaterialDateField {
     try {
       const d = parseDateTimeAny(this.effectiveInputFormats(), raw);
       const iso = toISO(d);
+      // Typed entry must respect min/max the same way the calendar does —
+      // ISO YYYY-MM-DD compares lexicographically.
+      if ((this.min && iso < this.min) || (this.max && iso > this.max)) {
+        this.error = true;
+        this.liveError = this.invalidLabel || gettext('Date outside allowed range');
+        return;
+      }
       this.value = iso;
       this.error = false;
       this.liveError = '';

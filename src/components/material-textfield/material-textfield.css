@@ -11,3 +11,20 @@
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+/* Filled hover: an 8% on-surface state layer over the container tone,
+   per MD3, rather than swapping surface-container-highest → high (which
+   changed the tone in the wrong direction). Sits above the container
+   background but below the input content / interactive slots (z-10). */
+.tf-state-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-sys-color-on-surface);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms;
+}
+.tf-state-layer:hover::before {
+  opacity: 0.08;
+}

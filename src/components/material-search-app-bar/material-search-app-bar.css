@@ -96,7 +96,9 @@
   gap: 0.25rem;
 }
 
-.inside-trailing:not(:has(::slotted(*))) {
+/* `has-content` is toggled from a slotchange handler; hiding an empty wrapper
+   removes the phantom flex gap after the input. `:has(::slotted())` is invalid. */
+.inside-trailing:not(.has-content) {
   display: none;
 }
 

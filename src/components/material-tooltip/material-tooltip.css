@@ -3,19 +3,40 @@
 :host { display: contents; }
 
 [part="surface"] {
+  /* Reset the popover UA defaults (inset:0; margin:auto centering) and keep
+     position:fixed so `trackAnchored` can drive top/left. When rendered as a
+     `popover="hint"` element it is promoted to the top layer (above modal
+     dialogs); the z-index is a no-op there but keeps the non-popover fallback
+     (older browsers) stacked above page content. */
   position: fixed;
   inset: auto;
   top: 0;
   left: 0;
+  margin: 0;
   z-index: 1000;
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  transition: opacity 120ms linear;
+  border: none;
+  background: none;
+  overflow: visible;
+  /* allow-discrete lets the fade play across the popover display swap. */
+  transition:
+    opacity 120ms linear,
+    overlay 120ms allow-discrete,
+    display 120ms allow-discrete;
 }
 
-:host([open]) [part="surface"] { opacity: 1; }
-:host([variant="rich"][open]) [part="surface"] { pointer-events: auto; }
+/* Visible in either mode: `[open]` reflects for the non-popover fallback,
+   `:popover-open` matches when shown via the Popover API. */
+:host([open]) [part="surface"],
+[part="surface"]:popover-open { opacity: 1; }
+:host([variant="rich"][open]) [part="surface"],
+:host([variant="rich"]) [part="surface"]:popover-open { pointer-events: auto; }
+
+@starting-style {
+  [part="surface"]:popover-open { opacity: 0; }
+}
 
 :host([variant="plain"]) [part="surface"] {
   min-height: 1.5rem;
@@ -53,7 +74,8 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
-  color: var(--md-sys-color-on-surface);
+  /* Spec color role: on-surface-variant (subhead + supporting text). */
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 :host([variant="rich"]) [part="subhead"][hidden],
@@ -64,5 +86,7 @@
 :host([variant="rich"]) [part="actions"] {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.25rem;
+  /* Spec: 12dp from bottom of body to button area. The surface's 4dp column
+     gap contributes 4dp, so 8dp here totals 12dp. */
+  margin-top: 0.5rem;
 }

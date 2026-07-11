@@ -29,6 +29,21 @@
   }
 }
 
+/* Visually hidden ARIA live region for the standalone snackbar (the host
+   provides its own when the snackbar is used through material-snackbar-host). */
+.sb-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .sb {
   pointer-events: auto;
   display: inline-flex;

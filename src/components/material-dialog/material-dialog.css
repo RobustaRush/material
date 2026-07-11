@@ -213,7 +213,8 @@
 .dlg--full-screen .dlg__headline {
   font-size: 1.375rem;
   line-height: 1.75rem;
-  font-weight: 500;
+  /* Title-large is weight 400 per MD3 type scale. */
+  font-weight: 400;
   text-align: start;
 }
 

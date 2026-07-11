@@ -35,7 +35,7 @@ export class MaterialIconButton {
   @Prop({ mutable: true, reflect: true }) selected = false;
   @Prop({ reflect: true }) disabled = false;
   @Prop() type: MaterialIconButtonType = 'button';
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
   @Prop() value = 'on';
   @Prop() href?: string;
   @Prop() target?: '_self' | '_blank' | '_parent' | '_top';
@@ -86,6 +86,14 @@ export class MaterialIconButton {
       e.preventDefault();
       return;
     }
+    // Toggle before the href short-circuit so toggle works on the anchor branch
+    // too — previously `if (this.href) return` skipped the toggle logic entirely.
+    if (this.toggle) {
+      e.preventDefault();
+      this.selected = !this.selected;
+      this.selectedChange.emit({ selected: this.selected });
+      return;
+    }
     if (this.href) return;
     if (this.popoverTarget) {
       const root = this.el.getRootNode() as Document | ShadowRoot;
@@ -114,11 +122,6 @@ export class MaterialIconButton {
         else t.togglePopover();
         return;
       }
-    }
-    if (this.toggle) {
-      this.selected = !this.selected;
-      this.selectedChange.emit({ selected: this.selected });
-      return;
     }
     const form = this.internals.form;
     if (!form) return;
@@ -151,6 +154,7 @@ export class MaterialIconButton {
           rel={rel}
           download={this.download}
           aria-label={this.ariaLabel}
+          aria-pressed={isToggle ? String(this.selected) : undefined}
           aria-disabled={this.disabled ? 'true' : undefined}
           tabindex={this.disabled ? -1 : undefined}
           part="button"

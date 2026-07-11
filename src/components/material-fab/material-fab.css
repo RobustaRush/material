@@ -24,6 +24,14 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+/* visibility flips discretely at the END of the fade (its special-cased
+   behavior: it stays `visible` while transitioning TO hidden), so the FAB fades
+   out fully, then drops out of the tab order / hit-testing. */
+[part="button"] {
+  transition: visibility var(--md-sys-motion-duration-short4, 200ms);
+  transition-behavior: allow-discrete;
+}
+:host([near-end]) [part="button"] { visibility: hidden; }
 
 [part="visual"] {
   position: relative;
@@ -48,12 +56,16 @@
     transform 200ms cubic-bezier(.2, 0, 0, 1);
 }
 
-/* Hide-near-end: fade + slide down as the page bottom approaches. */
+/* Hide-near-end: fade + slide down as the page bottom approaches (exit uses
+   emphasized-accelerate). */
 :host([near-end]) [part="visual"] {
   opacity: 0;
   transform: translateY(1rem) scale(.85);
   pointer-events: none;
   box-shadow: none;
+  transition:
+    opacity var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    transform var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15));
 }
 
 [part="button"]:focus-visible [part="visual"] {

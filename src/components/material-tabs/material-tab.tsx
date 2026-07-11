@@ -28,6 +28,8 @@ export class MaterialTab {
   @Prop() icon?: string;
   @Prop() value?: string;
   @Prop() href?: string;
+  /** id of the tabpanel this tab controls (ARIA tab↔panel association). */
+  @Prop() panel?: string;
   @Prop({ reflect: true, mutable: true }) selected = false;
   @Prop({ reflect: true }) disabled = false;
   @Prop({ reflect: true, mutable: true }) variant: MaterialTabVariant = 'primary';
@@ -171,6 +173,7 @@ export class MaterialTab {
       'aria-selected': this.selected ? 'true' : 'false',
       'aria-disabled': this.disabled ? 'true' : null,
       'aria-label': this.ariaLabel,
+      'aria-controls': this.panel,
       tabindex: this.tabbable && !this.disabled ? 0 : -1,
       onClick: this.handleClick,
       onKeyDown: this.handleKeyDown,
@@ -182,6 +185,8 @@ export class MaterialTab {
       props.disabled = this.disabled;
     }
 
-    return <Host>{h(Tag, props, body)}</Host>;
+    // Host is presentational so the inner role="tab" element is the effective
+    // direct child of the parent's role="tablist" in the flattened a11y tree.
+    return <Host role="presentation">{h(Tag, props, body)}</Host>;
   }
 }

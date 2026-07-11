@@ -68,6 +68,8 @@ export class MaterialSnackbarHost {
   private snackbarEl?: HTMLElement & {
     show: () => Promise<void>;
     close: (reason?: MaterialSnackbarCloseReason) => Promise<void>;
+    resetAutoDismiss: () => Promise<void>;
+    duration: number;
   };
   private advancing = false;
 
@@ -159,17 +161,24 @@ export class MaterialSnackbarHost {
     this.liveAssertive = !!item.assertive;
     this.liveText = item.message;
     if (this.snackbarEl) {
-      // Re-trigger auto-dismiss after replace.
-      (this.snackbarEl as unknown as { duration: number }).duration =
-        item.duration ?? 5000;
+      // Re-trigger auto-dismiss after an in-place update. Setting `duration`
+      // only restarts the timer when the value actually changes (Stencil skips
+      // same-value @Watch), so also call resetAutoDismiss() unconditionally.
+      this.snackbarEl.duration = item.duration ?? 5000;
+      this.snackbarEl.resetAutoDismiss();
     }
   }
 
-  private handleAction = () => {
+  private handleAction = (ev: CustomEvent<void>) => {
     const item = this.current;
     if (!item) return;
     const result = item.onAction?.();
-    if (result === false) return; // caller controls close
+    if (result === false) {
+      // Honor the documented contract: keep the snackbar open and let the
+      // caller close it. Veto the snackbar's own auto-close.
+      ev.preventDefault();
+      return;
+    }
     this.snackbarEl?.close('action');
   };
 
@@ -223,6 +232,7 @@ export class MaterialSnackbarHost {
           {item && (
             <material-snackbar
               ref={this.setSnackbarRef}
+              hosted={true}
               message={item.message}
               action-label={item.actionLabel}
               closable={!!item.closable}

@@ -115,6 +115,7 @@ export class MaterialSplitButton {
         onPointerDown={this.handlePointerDown}
       >
         <span class="state-layer" aria-hidden="true"></span>
+        <span class="fx" aria-hidden="true"></span>
         {leadingInner}
       </a>
     ) : (
@@ -128,6 +129,7 @@ export class MaterialSplitButton {
         onPointerDown={this.handlePointerDown}
       >
         <span class="state-layer" aria-hidden="true"></span>
+        <span class="fx" aria-hidden="true"></span>
         {leadingInner}
       </button>
     );
@@ -150,6 +152,7 @@ export class MaterialSplitButton {
           onPointerDown={this.handlePointerDown}
         >
           <span class="state-layer" aria-hidden="true"></span>
+          <span class="fx" aria-hidden="true"></span>
           <span class="chevron" aria-hidden="true">arrow_drop_down</span>
         </button>
         <material-menu

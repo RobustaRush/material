@@ -57,8 +57,10 @@
   min-width: 0;
 }
 
-/* Hide subtitle wrapper if no content slotted (avoid stray gap). */
-.subtitle:not(:has(::slotted(*))) {
+/* Hide subtitle wrapper if no content slotted (avoid stray gap). The
+   `has-content` class is toggled from a slotchange handler — `:has(::slotted())`
+   is not valid CSS. */
+.subtitle:not(.has-content) {
   display: none;
 }
 

@@ -54,12 +54,20 @@ export class MaterialTooltip {
   private hideTimer = 0;
   private longPressTimer = 0;
   private savedTitle: string | null = null;
-  private surfaceEl?: HTMLElement;
+  private surfaceEl?: HTMLElement & {
+    popover?: string;
+    showPopover?: () => void;
+    hidePopover?: () => void;
+  };
+  // Render the surface in the top layer (above modal dialogs) via the Popover
+  // API where available, falling back to position:fixed + z-index otherwise.
+  private supportsPopover =
+    typeof HTMLElement !== 'undefined' &&
+    Object.prototype.hasOwnProperty.call(HTMLElement.prototype, 'popover');
+  private dismissBound = false;
 
   connectedCallback() {
     queueMicrotask(() => this.bindTrigger());
-    document.addEventListener('pointerdown', this.onDocPointerDown, true);
-    document.addEventListener('keydown', this.onDocKeyDown, true);
   }
 
   disconnectedCallback() {
@@ -67,10 +75,75 @@ export class MaterialTooltip {
     this.cancelTimers();
     this.cleanupTrack?.();
     this.cleanupTrack = undefined;
-    document.removeEventListener('pointerdown', this.onDocPointerDown, true);
-    document.removeEventListener('keydown', this.onDocKeyDown, true);
+    this.unbindDismiss();
+    this.surfaceEl?.removeEventListener('toggle', this.onSurfaceToggle as EventListener);
     if (openInstance === this) openInstance = null;
   }
+
+  // The Popover API drives top-layer + light-dismiss for hover-mode tooltips.
+  // Persistent rich tooltips are click-toggled: hint's own light-dismiss would
+  // race the re-open click, so they keep the position:fixed fallback and the
+  // manual document dismiss listeners instead.
+  private usePopover() {
+    return this.supportsPopover && this.hoverMode();
+  }
+
+  // Document-level dismiss listeners (outside click / Escape). Only bound
+  // while open, and only when the Popover API isn't handling light-dismiss.
+  private bindDismiss() {
+    if (this.dismissBound || this.usePopover()) return;
+    this.dismissBound = true;
+    document.addEventListener('pointerdown', this.onDocPointerDown, true);
+    document.addEventListener('keydown', this.onDocKeyDown, true);
+  }
+
+  private unbindDismiss() {
+    if (!this.dismissBound) return;
+    this.dismissBound = false;
+    document.removeEventListener('pointerdown', this.onDocPointerDown, true);
+    document.removeEventListener('keydown', this.onDocKeyDown, true);
+  }
+
+  private showSurface() {
+    const el = this.surfaceEl;
+    if (!el || !this.usePopover() || !el.popover) return;
+    if (!el.matches(':popover-open')) {
+      try { el.showPopover?.(); } catch { /* not yet connected */ }
+    }
+  }
+
+  private hideSurface() {
+    const el = this.surfaceEl;
+    if (!el || !this.usePopover() || !el.popover) return;
+    if (el.matches(':popover-open')) {
+      try { el.hidePopover?.(); } catch { /* already hidden */ }
+    }
+  }
+
+  // The browser closes a `hint` popover on outside click / Escape; mirror that
+  // back into our reactive `open` state so the two never drift.
+  private onSurfaceToggle = (e: Event & { newState?: string }) => {
+    if (e.newState === 'closed' && this.open) this.open = false;
+  };
+
+  private setSurfaceRef = (el?: HTMLElement) => {
+    if (!el || el === this.surfaceEl) return;
+    this.surfaceEl = el as typeof this.surfaceEl;
+    if (this.usePopover()) {
+      const s = this.surfaceEl!;
+      try {
+        // Prefer `hint` (light-dismiss, separate top-layer stack that doesn't
+        // close open `auto` popovers); fall back to `manual` if the keyword
+        // isn't recognized (older Popover API implementations).
+        s.popover = 'hint';
+        if (s.popover !== 'hint') s.popover = 'manual';
+      } catch {
+        this.supportsPopover = false;
+      }
+      s.addEventListener('toggle', this.onSurfaceToggle as EventListener);
+      if (this.open) this.showSurface();
+    }
+  };
 
   @Watch('htmlFor')
   onForChange() {
@@ -83,11 +156,15 @@ export class MaterialTooltip {
     if (now) {
       if (openInstance && openInstance !== this) openInstance.open = false;
       openInstance = this;
+      this.showSurface();
       this.startTracking();
+      this.bindDismiss();
       this.tooltipShow.emit();
     } else {
+      this.hideSurface();
       this.cleanupTrack?.();
       this.cleanupTrack = undefined;
+      this.unbindDismiss();
       if (openInstance === this) openInstance = null;
       this.tooltipHide.emit();
     }
@@ -294,7 +371,7 @@ export class MaterialTooltip {
           id={this.surfaceId}
           role="tooltip"
           aria-hidden={this.open ? 'false' : 'true'}
-          ref={(el) => (this.surfaceEl = el)}
+          ref={this.setSurfaceRef}
           onPointerEnter={this.onSurfacePointerEnter}
           onPointerLeave={this.onSurfacePointerLeave}
           onFocusin={this.onSurfaceFocusIn}

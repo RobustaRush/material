@@ -1,4 +1,4 @@
-import { Component, Element, Prop, Watch, h, Host } from '@stencil/core';
+import { Component, Element, Prop, State, Watch, h, Host } from '@stencil/core';
 import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive top app bar — small / medium-flexible / large-flexible.
@@ -35,9 +35,21 @@ export class MaterialAppBar {
   @Prop({ mutable: true, reflect: true }) scrolled = false;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
+  @State() hasSubtitle = false;
+
   private scrollEl: Window | HTMLElement = window;
   private rafId = 0;
   private listening = false;
+
+  // Track whether the subtitle slot has content so the wrapper can collapse
+  // without an invalid `:has(::slotted(*))` CSS selector.
+  private onSubtitleSlotChange = (e: Event) => {
+    const slot = e.target as HTMLSlotElement;
+    const nodes = slot.assignedNodes({ flatten: true });
+    this.hasSubtitle = nodes.some(
+      (n) => n.nodeType === Node.ELEMENT_NODE || !!n.textContent?.trim(),
+    );
+  };
 
   componentWillLoad() {
     return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
@@ -111,8 +123,8 @@ export class MaterialAppBar {
             <span class="headline">
               <slot name="headline" />
             </span>
-            <span class="subtitle">
-              <slot name="subtitle" />
+            <span class={{ subtitle: true, 'has-content': this.hasSubtitle }}>
+              <slot name="subtitle" onSlotchange={this.onSubtitleSlotChange} />
             </span>
           </div>
           <div class="trailing">

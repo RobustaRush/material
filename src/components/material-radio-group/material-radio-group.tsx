@@ -61,6 +61,7 @@ export class MaterialRadioGroup {
   connectedCallback() {
     this.syncChildren();
     this.syncFormValue();
+    this.syncValidity();
     // Slot mutations (added/removed radios) → re-sync state.
     this.mo = new MutationObserver(() => this.syncChildren());
     this.mo.observe(this.el, { childList: true, subtree: true });
@@ -95,6 +96,30 @@ export class MaterialRadioGroup {
     this.internals.setFormValue(this.value ?? null);
     this.internals.ariaRequired = this.required ? 'true' : null;
     this.internals.ariaInvalid = this.error ? 'true' : null;
+  }
+
+  @Watch('required')
+  @Watch('value')
+  @Watch('error')
+  @Watch('errorText')
+  syncValidity() {
+    if (this.error) {
+      this.internals.setValidity(
+        { customError: true },
+        this.errorText || 'Invalid',
+      );
+    } else if (this.required && !this.value) {
+      this.internals.setValidity(
+        { valueMissing: true },
+        'Please select an option.',
+      );
+    } else {
+      this.internals.setValidity({});
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
   }
 
   formResetCallback() {

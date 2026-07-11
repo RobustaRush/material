@@ -7,13 +7,14 @@
 
 ## Properties
 
-| Property      | Attribute      | Description                                                                                                                              | Type                  | Default     |
-| ------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
-| `actionLabel` | `action-label` | When set, renders a trailing text button.                                                                                                | `string \| undefined` | `undefined` |
-| `closable`    | `closable`     | When true, renders a trailing close icon button next to (or instead of) the action button.                                               | `boolean`             | `false`     |
-| `duration`    | `duration`     | Auto-dismiss timeout in ms. `0` disables auto-dismiss. Ignored when an action is present (action-bearing snackbars stay until acted on). | `number`              | `5000`      |
-| `message`     | `message`      | Supporting text. Default slot also accepted; slot wins when both are set.                                                                | `string \| undefined` | `undefined` |
-| `open`        | `open`         | Reflects open state. Toggling drives the enter/exit animation.                                                                           | `boolean`             | `false`     |
+| Property      | Attribute      | Description                                                                                                                                                                                                  | Type                  | Default     |
+| ------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- | ----------- |
+| `actionLabel` | `action-label` | When set, renders a trailing text button.                                                                                                                                                                    | `string \| undefined` | `undefined` |
+| `closable`    | `closable`     | When true, renders a trailing close icon button next to (or instead of) the action button.                                                                                                                   | `boolean`             | `false`     |
+| `duration`    | `duration`     | Auto-dismiss timeout in ms. `0` disables auto-dismiss. Ignored when an action is present (action-bearing snackbars stay until acted on).                                                                     | `number`              | `5000`      |
+| `hosted`      | `hosted`       | Set by `material-snackbar-host`, which owns its own ARIA live region and Escape handling. When hosted, this element skips both to avoid a double announcement. Standalone (default) it provides them itself. | `boolean`             | `false`     |
+| `message`     | `message`      | Supporting text. Default slot also accepted; slot wins when both are set.                                                                                                                                    | `string \| undefined` | `undefined` |
+| `open`        | `open`         | Reflects open state. Toggling drives the enter/exit animation.                                                                                                                                               | `boolean`             | `false`     |
 
 
 ## Events
@@ -36,6 +37,18 @@ Close the snackbar with an optional reason.
 | Name     | Type                                                               | Description |
 | -------- | ------------------------------------------------------------------ | ----------- |
 | `reason` | `"action" \| "close" \| "timeout" \| "replaced" \| "programmatic"` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `resetAutoDismiss() => Promise<void>`
+
+Restart the auto-dismiss countdown — e.g. after a same-id content update
+where the duration value is unchanged and the `duration` watcher wouldn't
+otherwise fire.
 
 #### Returns
 

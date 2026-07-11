@@ -315,16 +315,22 @@ export class MaterialDatetimeField {
   };
 
   private handleCalendarSelect = (e: Event) => {
+    // Keep the inner calendar's dateSelect from leaking to consumers.
+    e.stopPropagation();
     const detail = (e as CustomEvent<{ value: string }>).detail;
     this.pendingDate = detail?.value ?? '';
   };
 
   private handleTimeChange = (e: Event) => {
+    // Inner time-picker valueChange must not surface as this field's event.
+    e.stopPropagation();
     const detail = (e as CustomEvent<{ value: string }>).detail;
     this.pendingTime = detail?.value ?? '';
   };
 
   private handleTextChange = (e: Event) => {
+    // Inner textfield valueChange must not surface as this field's event.
+    e.stopPropagation();
     const detail = (e as CustomEvent<{ value: string }>).detail;
     const raw = (detail?.value ?? '').trim();
     if (raw === '') {
