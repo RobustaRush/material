@@ -1,5 +1,4 @@
 import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Linear progress indicator — determinate / indeterminate × flat / wavy.
 // Spec: docs/wiki/specs/google-material/progress-indicators/specs.md
@@ -52,10 +51,6 @@ export class MaterialLinearProgress {
   private resizeObserver?: ResizeObserver;
   private prefersReducedMotion = false;
   private mql?: MediaQueryList;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   componentDidLoad() {
     this.resizeObserver = new ResizeObserver(() => this.measure());
@@ -287,7 +282,7 @@ export class MaterialLinearProgress {
           {this.trackSegments.map((s) => (
             <path
               d={s.d}
-              class="text-secondary-container"
+              class="track"
               stroke="currentColor"
               stroke-width={String(TRACK_THICKNESS)}
               stroke-linecap="round"
@@ -297,7 +292,7 @@ export class MaterialLinearProgress {
           {this.activeSegments.map((s) => (
             <path
               d={s.d}
-              class="text-primary"
+              class="active"
               stroke="currentColor"
               stroke-width={String(this.thickness)}
               stroke-linecap="round"
@@ -311,7 +306,7 @@ export class MaterialLinearProgress {
               cy={String(cy)}
               rx={String(STOP_SIZE / 2)}
               ry={String(stopRy)}
-              class="text-primary"
+              class="stop"
               fill="currentColor"
             />
           )}

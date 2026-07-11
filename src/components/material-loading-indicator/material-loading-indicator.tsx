@@ -1,5 +1,4 @@
 import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive loading indicator — simultaneously spins and morphs through
 // 7 distinct M3 shapes on a ~4.7s loop. The combined rotation + shape change
@@ -137,10 +136,6 @@ export class MaterialLoadingIndicator {
   private prefersReducedMotion = false;
   private mql?: MediaQueryList;
 
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
-
   componentDidLoad() {
     const root = this.el.shadowRoot!;
     this.pathEl = root.querySelector('path.shape') as SVGPathElement;
@@ -214,12 +209,8 @@ export class MaterialLoadingIndicator {
   };
 
   render() {
-    const isContained = this.variant === 'contained';
     // Container disk: full 48dp track. Active indicator: 38/48 ratio inside.
     const hostStyle = { width: `${this.size}px`, height: `${this.size}px` };
-    const wrapperCls = isContained
-      ? 'flex items-center justify-center w-full h-full rounded-full bg-primary-container text-on-primary-container'
-      : 'flex items-center justify-center w-full h-full text-primary';
 
     return (
       <Host
@@ -228,9 +219,9 @@ export class MaterialLoadingIndicator {
         aria-busy={this.paused ? 'false' : 'true'}
         style={hostStyle}
       >
-        <div class={wrapperCls}>
-          <span class="indicator inline-flex w-[79.166%] h-[79.166%]">
-            <svg viewBox="0 0 100 100" class="w-full h-full overflow-visible">
+        <div class="wrapper">
+          <span class="indicator">
+            <svg viewBox="0 0 100 100">
               <path class="shape" d={this.d} fill="currentColor" />
             </svg>
           </span>

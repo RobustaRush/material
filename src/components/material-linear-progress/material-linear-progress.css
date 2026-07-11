@@ -4,6 +4,15 @@
   /* height set inline from the component height calc — see render() */
 }
 
+.track {
+  color: var(--md-sys-color-secondary-container);
+}
+
+.active,
+.stop {
+  color: var(--md-sys-color-primary);
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* The rAF loop short-circuits when prefers-reduced-motion is on. */
 }

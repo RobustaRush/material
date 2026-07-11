@@ -1,5 +1,4 @@
 import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Circular progress indicator — determinate / indeterminate × flat / wavy.
 // Spec: docs/wiki/specs/google-material/progress-indicators/specs.md
@@ -51,10 +50,6 @@ export class MaterialCircularProgress {
   private startedAt = 0;
   private prefersReducedMotion = false;
   private mql?: MediaQueryList;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   componentDidLoad() {
     this.mql = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -203,7 +198,7 @@ export class MaterialCircularProgress {
           {this.trackD && (
             <path
               d={this.trackD}
-              class="text-secondary-container"
+              class="track"
               stroke="currentColor"
               stroke-width={String(TRACK_THICKNESS)}
               stroke-linecap="round"
@@ -213,7 +208,7 @@ export class MaterialCircularProgress {
           {this.activeD && (
             <path
               d={this.activeD}
-              class="text-primary"
+              class="active"
               stroke="currentColor"
               stroke-width={String(this.thickness)}
               stroke-linecap="round"

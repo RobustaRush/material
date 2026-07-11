@@ -2,3 +2,11 @@
   display: inline-block;
   vertical-align: middle;
 }
+
+.track {
+  color: var(--md-sys-color-secondary-container);
+}
+
+.active {
+  color: var(--md-sys-color-primary);
+}
