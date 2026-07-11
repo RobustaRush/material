@@ -6,3 +6,26 @@
   display: inline-flex;
   align-self: stretch;
 }
+
+.line {
+  display: block;
+  background: var(--md-sys-color-outline-variant);
+}
+
+:host(:not([orientation="vertical"])) .line {
+  height: 1px;
+}
+
+:host([orientation="vertical"]) .line {
+  width: 1px;
+  align-self: stretch;
+}
+
+:host([inset="inset"]:not([orientation="vertical"])) .line {
+  margin-left: 1rem;
+}
+
+:host([inset="middle"]:not([orientation="vertical"])) .line {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
