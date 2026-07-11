@@ -4,3 +4,237 @@
 :host textarea {
   resize: none;
 }
+
+.wrapper {
+  display: block;
+  width: 100%;
+}
+
+.shell {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.shell.filled {
+  border-radius: 0.25rem 0.25rem 0 0;
+  background: var(--md-sys-color-surface-container-highest);
+  transition: background-color 120ms linear;
+}
+
+.shell.filled.disabled {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 4%, transparent);
+}
+
+.shell.filled:not(.disabled):hover {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  outline: none;
+  border: 0;
+  margin: 0;
+  resize: none;
+  color: var(--md-sys-color-on-surface);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-family: inherit;
+}
+
+.input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0;
+}
+
+.input:focus::placeholder {
+  opacity: 1;
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 40%, transparent);
+}
+
+.input.filled {
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 1rem;
+}
+
+.input.outlined {
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+  padding-left: 1rem;
+  clip-path: inset(24px 0 0 0);
+}
+
+/* Surface-colored mask: keeps scrolled textarea text from bleeding through
+   behind the floated label. Sits above the textarea, below the label. */
+.mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.5rem;
+  border-radius: 0.25rem 0.25rem 0 0;
+  pointer-events: none;
+  background: var(--md-sys-color-surface-container-highest);
+  transition: background-color 120ms linear;
+}
+
+.shell.filled:hover .mask {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.shell.filled.disabled .mask {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 4%, transparent);
+}
+
+.trailing {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+}
+
+.trailing.disabled { color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
+.trailing.error { color: var(--md-sys-color-error); }
+.trailing.idle { color: var(--md-sys-color-on-surface-variant); }
+
+.icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.5rem;
+  pointer-events: none;
+}
+
+.label {
+  position: absolute;
+  pointer-events: none;
+  transition: all 150ms;
+  font-size: 1rem;
+}
+
+.label.disabled { color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
+.label.error { color: var(--md-sys-color-error); }
+.label.idle { color: var(--md-sys-color-on-surface-variant); }
+.shell:focus-within .label.idle { color: var(--md-sys-color-primary); }
+
+/* Same rationale as material-textfield: shrink via scale/translate rather
+   than swapping font-size, so the layout box stays constant and the label
+   doesn't dip before snapping to its resting spot. */
+.label.filled {
+  left: 1rem;
+  top: 1rem;
+  transform-origin: top left;
+  z-index: 10;
+}
+
+.shell:focus-within .label.filled,
+.shell:has(textarea:not(:placeholder-shown)) .label.filled,
+.shell.is-filled .label.filled {
+  top: 0.5rem;
+  transform: scale(0.75);
+}
+
+.label.outlined {
+  left: 1rem;
+  top: 1.5rem;
+  transform-origin: left;
+}
+
+.shell:focus-within .label.outlined,
+.shell:has(textarea:not(:placeholder-shown)) .label.outlined,
+.shell.is-filled .label.outlined {
+  top: 0;
+  transform: translateY(-8px);
+  font-size: 0.75rem;
+}
+
+.indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  height: 1px;
+  background: var(--md-sys-color-on-surface-variant);
+}
+
+.indicator.disabled { background: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
+.indicator.error { height: 2px; background: var(--md-sys-color-error); }
+
+.shell:hover .indicator.idle { background: var(--md-sys-color-on-surface); }
+.shell:focus-within .indicator.idle { height: 2px; background: var(--md-sys-color-primary); }
+
+.fieldset {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0 0.75rem;
+  padding-top: 0;
+  pointer-events: none;
+  border-radius: 0.25rem;
+  text-align: left;
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.fieldset.disabled { border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent); }
+.fieldset.error { border: 2px solid var(--md-sys-color-error); }
+
+.shell:focus-within .fieldset.idle { border: 2px solid var(--md-sys-color-primary); }
+
+.legend {
+  visibility: hidden;
+  display: block;
+  height: 0;
+  overflow: visible;
+  padding: 0;
+  font-size: 0.75rem;
+  line-height: 1;
+  margin-left: -1px;
+}
+
+.legend.error { margin-left: -2px; }
+.shell:focus-within .legend.idle { margin-left: -2px; }
+
+.legend-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 150ms, padding 150ms;
+  max-width: 0.01px;
+}
+
+.shell:focus-within .legend-text,
+.shell:has(textarea:not(:placeholder-shown)) .legend-text,
+.shell.is-filled .legend-text {
+  max-width: 100%;
+  padding: 0 0.25rem;
+}
+
+.supporting {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.25rem;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.supporting .error { color: var(--md-sys-color-error); }
+.supporting .disabled { color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
+.supporting .idle { color: var(--md-sys-color-on-surface-variant); }
+
+.counter {
+  color: var(--md-sys-color-on-surface-variant);
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}

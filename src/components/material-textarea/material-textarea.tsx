@@ -8,18 +8,8 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 export type MaterialTextareaVariant = 'filled' | 'outlined';
-
-const SUPPORT_BASE = 'flex justify-between gap-4 mt-1 px-4 text-xs leading-4';
-
-const INPUT_BASE =
-  'peer block w-full bg-transparent outline-none border-0 m-0 resize-none ' +
-  'text-on-surface text-base leading-6 ' +
-  'placeholder:text-on-surface-variant placeholder:opacity-0 ' +
-  'focus:placeholder:opacity-100 ' +
-  'disabled:cursor-not-allowed disabled:text-on-surface/40';
 
 // Line-box height matches MD3 textarea spec (24dp per line).
 const LINE_H = 24;
@@ -62,7 +52,6 @@ export class MaterialTextarea {
 
   componentWillLoad() {
     this.defaultValue = this.value;
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   componentDidLoad() {
@@ -146,43 +135,35 @@ export class MaterialTextarea {
     const disabled = this.disabled;
     const subText = error ? errorText : helpText;
     const showCounter = typeof maxLength === 'number';
-    const subToneCls = disabled
-      ? 'text-on-surface/38'
-      : error ? 'text-error' : 'text-on-surface-variant';
-    const iconToneCls = disabled
-      ? 'text-on-surface/38'
-      : error ? 'text-error' : 'text-on-surface-variant';
-
-    const labelTone = disabled
-      ? 'text-on-surface/38'
-      : error
-      ? 'text-error'
-      : 'text-on-surface-variant group-focus-within:text-primary';
+    const tone = disabled ? 'disabled' : error ? 'error' : 'idle';
 
     // Safari's :has(textarea:not(:placeholder-shown)) doesn't reliably
     // re-evaluate after a programmatic value assignment, leaving the label
     // stuck "down". Mirror the textfield fix: an explicit is-filled class on
-    // the group wrapper drives the float too.
+    // the shell drives the float too.
     const hasValue = (this.value ?? '') !== '';
-    const groupCls = `group${hasValue ? ' is-filled' : ''}`;
+    const shellBase = hasValue ? 'shell is-filled' : 'shell';
 
     const renderTrailing = () => (
       (showStaticTrailing || hasTrailingAction) && (
-        <span class={`absolute right-3 top-3 z-10 inline-flex items-center ${iconToneCls}`}>
+        <span class={`trailing ${tone}`}>
           {showStaticTrailing
-            ? <span class="material-symbols text-2xl pointer-events-none" aria-hidden="true">{trailingIcon}</span>
+            ? <span class="icon" aria-hidden="true">{trailingIcon}</span>
             : <slot name="trailing" />}
         </span>
       )
     );
 
-    const innerR = reserveTrailing ? (this.wideTrailing ? 'pr-24' : 'pr-12') : 'pr-4';
+    const trailingStyle: { [k: string]: string } = {
+      paddingRight: reserveTrailing ? (this.wideTrailing ? '6rem' : '3rem') : '1rem',
+    };
 
-    const renderTextarea = (extraCls: string) => (
+    const renderTextarea = (variantCls: string) => (
       <textarea
         ref={el => (this.textareaEl = el)}
         id="input"
-        class={`${INPUT_BASE} ${extraCls}`}
+        class={`input ${variantCls}`}
+        style={trailingStyle}
         name={this.name}
         rows={rows}
         placeholder={this.placeholder ?? ' '}
@@ -198,13 +179,13 @@ export class MaterialTextarea {
     );
 
     const renderSupporting = () => (subText || showCounter) && (
-      <div class={SUPPORT_BASE}>
-        <span id="description" class={subToneCls}
+      <div class="supporting">
+        <span id="description" class={tone}
               role={error ? 'alert' : undefined}>
           {subText}
         </span>
         {showCounter && (
-          <span class="text-on-surface-variant ml-auto tabular-nums">
+          <span class="counter">
             {(this.value?.length ?? 0)}/{maxLength}
           </span>
         )}
@@ -212,107 +193,47 @@ export class MaterialTextarea {
     );
 
     if (variant === 'filled') {
-      // Label rests at top-4 (16dp), shrinks via scale-75 (visual ~12dp font)
-      // rather than swapping text-base→text-xs. The font-size + line-height
-      // interpolation in the latter makes the label box grow asymmetrically
-      // mid-animation, reading as a vertical wobble. Scale keeps the layout
-      // box constant — only top + transform animate, so motion is smooth.
-      const labelRest =
-        'absolute left-4 top-4 pointer-events-none origin-top-left ' +
-        'transition-all duration-150 text-base';
-      const labelShrunk =
-        'group-focus-within:top-2 group-focus-within:scale-75 ' +
-        'group-[.is-filled]:top-2 group-[.is-filled]:scale-75 ' +
-        'group-has-[textarea:not(:placeholder-shown)]:top-2 ' +
-        'group-has-[textarea:not(:placeholder-shown)]:scale-75';
-
-      const indicatorCls = disabled
-        ? 'h-px bg-on-surface/38'
-        : error
-        ? 'h-0.5 bg-error'
-        : 'h-px bg-on-surface-variant ' +
-          'group-hover:bg-on-surface ' +
-          'group-focus-within:h-0.5 group-focus-within:bg-primary';
-
-      // Disabled: MD3 filled container is On surface @ 4% (no hover swap).
-      const filledBg = disabled
-        ? 'bg-on-surface/[0.04]'
-        : 'bg-surface-container-highest hover:bg-surface-container-high transition-colors';
-      const maskBg = disabled
-        ? 'bg-on-surface/[0.04]'
-        : 'bg-surface-container-highest group-hover:bg-surface-container-high transition-colors';
-
       return (
-        <div class="block w-full">
-          <div class={`${groupCls} relative w-full rounded-t ${filledBg}`}>
+        <div class="wrapper">
+          <div class={`${shellBase} filled ${tone}`}>
             {renderTrailing()}
-            {renderTextarea(`pt-6 pb-2 pl-4 ${innerR}`)}
+            {renderTextarea('filled')}
             {/* Surface-colored mask: keeps scrolled textarea text from
                 bleeding through behind the floated label. Sits above the
                 textarea, below the label. */}
-            <span aria-hidden="true"
-                  class={`absolute top-0 left-0 right-0 h-6 rounded-t ${maskBg} pointer-events-none`}></span>
+            <span aria-hidden="true" class="mask"></span>
             {label && (
-              <label htmlFor="input" class={`${labelRest} ${labelShrunk} ${labelTone} z-10`}>
+              <label htmlFor="input" class={`label filled ${tone}`}>
                 {label}{this.required ? ' *' : ''}
               </label>
             )}
-            <span class={`absolute left-0 right-0 bottom-0 pointer-events-none ${indicatorCls}`}
-                  aria-hidden="true"></span>
+            <span class={`indicator ${tone}`} aria-hidden="true"></span>
           </div>
           {renderSupporting()}
         </div>
       );
     }
 
-    // Outlined: label rests at top-6 left-4 — aligned with the textarea's
-    // first input line (pt-6 == 24dp below, per the multi-line spec). Floats
-    // to top-0 + -translate-y-2 so the shrunk label sits centred on the top
-    // stroke, matching textfield's notch.
-    const labelRest =
-      'absolute left-4 top-6 pointer-events-none origin-left ' +
-      'transition-all duration-150 text-base';
-    // Fixed-pixel translate (-translate-y-2 = -8px) instead of -translate-y-1/2:
-    // the percentage form bases off the label's own height, which shrinks
-    // mid-animation as text-base → text-xs (line-height 24 → 16), and the
-    // intermediate translate values overshoot the final resting position.
-    const labelShrunkOutlined =
-      'group-focus-within:top-0 group-focus-within:-translate-y-2 group-focus-within:text-xs ' +
-      'group-[.is-filled]:top-0 group-[.is-filled]:-translate-y-2 group-[.is-filled]:text-xs ' +
-      'group-has-[textarea:not(:placeholder-shown)]:top-0 ' +
-      'group-has-[textarea:not(:placeholder-shown)]:-translate-y-2 ' +
-      'group-has-[textarea:not(:placeholder-shown)]:text-xs';
-
-    const fieldsetTone = disabled
-      ? 'border border-on-surface/12'
-      : error
-      ? 'border-2 border-error'
-      : 'border border-outline group-hover:border-on-surface ' +
-        'group-focus-within:border-2 group-focus-within:border-primary';
-
-    const legendOffset = error
-      ? '-ml-[2px]'
-      : '-ml-px group-focus-within:-ml-[2px]';
-
+    // Outlined: label rests aligned with the textarea's first input line
+    // (24dp below the top edge, per the multi-line spec). Floats up to sit
+    // centred on the top stroke, matching textfield's notch.
     return (
-      <div class="block w-full">
-        <div class={`${groupCls} relative w-full`}>
+      <div class="wrapper">
+        <div class={`${shellBase} outlined`}>
           {renderTrailing()}
           {/* Clip the textarea's top 24dp so scrolled content can't render
-              under the floated label / notch. The pt-6 padding already
+              under the floated label / notch. The top padding already
               positions text at y=24, so the clip is invisible at rest. */}
-          {renderTextarea(`pt-6 pb-4 pl-4 ${innerR} [clip-path:inset(24px_0_0_0)]`)}
+          {renderTextarea('outlined')}
           {label && (
-            <label htmlFor="input" class={`${labelRest} ${labelShrunkOutlined} ${labelTone}`}>
+            <label htmlFor="input" class={`label outlined ${tone}`}>
               {label}{this.required ? ' *' : ''}
             </label>
           )}
-          <fieldset
-            aria-hidden="true"
-            class={`absolute inset-0 m-0 px-3 pt-0 pointer-events-none rounded text-left ${fieldsetTone}`}>
+          <fieldset aria-hidden="true" class={`fieldset ${tone}`}>
             {label && (
-              <legend class={`invisible block h-0 overflow-visible p-0 text-xs leading-none ${legendOffset}`}>
-                <span class="inline-block overflow-hidden whitespace-nowrap max-w-[0.01px] transition-[max-width,padding] duration-150 group-focus-within:max-w-full group-focus-within:px-1 group-[.is-filled]:max-w-full group-[.is-filled]:px-1 group-has-[textarea:not(:placeholder-shown)]:max-w-full group-has-[textarea:not(:placeholder-shown)]:px-1">
+              <legend class={error ? 'legend error' : 'legend idle'}>
+                <span class="legend-text">
                   {label}{this.required ? ' *' : ''}
                 </span>
               </legend>
