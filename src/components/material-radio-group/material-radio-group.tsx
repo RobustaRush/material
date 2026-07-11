@@ -10,7 +10,6 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 radiogroup. Owns name/value/form-association and coordinates child
 // <material-radio> elements via property assignment. ARIA Authoring Practices
@@ -29,6 +28,7 @@ type RadioEl = HTMLElement & {
 
 @Component({
   tag: 'material-radio-group',
+  styleUrl: 'material-radio-group.css',
   shadow: true,
   formAssociated: true,
 })
@@ -55,7 +55,6 @@ export class MaterialRadioGroup {
 
   componentWillLoad() {
     this.defaultValue = this.value;
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -187,11 +186,8 @@ export class MaterialRadioGroup {
   render() {
     const inError = this.error;
     const subText = inError ? this.errorText : this.helpText;
-    const subToneCls = inError ? 'text-error' : 'text-on-surface-variant';
     const subId = 'description';
     const labelId = 'group-label';
-
-    const flexDir = this.orientation === 'horizontal' ? 'flex-row gap-4' : 'flex-col';
 
     return (
       <Host
@@ -201,15 +197,15 @@ export class MaterialRadioGroup {
         aria-describedby={subText ? subId : null}
       >
         {this.label && (
-          <div id={labelId} class="mb-1 text-sm text-on-surface-variant">
+          <div id={labelId} class="group-label">
             {this.label}
           </div>
         )}
-        <div class={`flex ${flexDir}`}>
+        <div class={this.orientation === 'horizontal' ? 'items horizontal' : 'items'}>
           <slot />
         </div>
         {subText && (
-          <div id={subId} class={`mt-1 px-4 text-xs leading-4 ${subToneCls}`}>
+          <div id={subId} class={inError ? 'sub-text error' : 'sub-text normal'}>
             {subText}
           </div>
         )}

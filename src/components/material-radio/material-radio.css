@@ -1,0 +1,104 @@
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.target {
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.target:focus,
+.target:focus-visible {
+  outline: none;
+}
+
+.target:disabled {
+  cursor: not-allowed;
+  opacity: .4;
+}
+
+.state-layer {
+  grid-area: 1 / 1;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  transition: background-color 120ms linear;
+  pointer-events: none;
+}
+
+.target:hover .state-layer.off { background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent); }
+.target:focus-visible .state-layer.off,
+.target:active .state-layer.off { background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent); }
+
+.target:hover .state-layer.on { background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent); }
+.target:focus-visible .state-layer.on,
+.target:active .state-layer.on { background: color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent); }
+
+.target:hover .state-layer.err { background: color-mix(in srgb, var(--md-sys-color-error) 8%, transparent); }
+.target:focus-visible .state-layer.err,
+.target:active .state-layer.err { background: color-mix(in srgb, var(--md-sys-color-error) 10%, transparent); }
+
+.ring {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  border: 2px solid;
+  transition: border-color 120ms linear;
+}
+
+.ring.off { border-color: var(--md-sys-color-on-surface-variant); }
+.ring.on { border-color: var(--md-sys-color-primary); }
+.ring.err { border-color: var(--md-sys-color-error); }
+
+.dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  transform: scale(0);
+  transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.dot.on {
+  transform: scale(1);
+}
+
+.dot.primary { background: var(--md-sys-color-primary); }
+.dot.error { background: var(--md-sys-color-error); }
+
+@media (prefers-reduced-motion: reduce) {
+  .dot { transition: none; }
+}
+
+.row {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  user-select: none;
+  cursor: pointer;
+}
+
+.row.reverse {
+  flex-direction: row-reverse;
+}
+
+.label {
+  margin-top: 0.75rem;
+  line-height: 1.5rem;
+  font-size: 1rem;
+  color: var(--md-sys-color-on-surface);
+}
