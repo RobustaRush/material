@@ -50,6 +50,7 @@
 
 ### Used by
 
+ - [material-autocomplete](../material-autocomplete)
  - [material-calendar](../material-calendar)
  - [material-date-field](../material-date-field)
  - [material-datetime-field](../material-datetime-field)
@@ -63,6 +64,7 @@
 ### Graph
 ```mermaid
 graph TD;
+  material-autocomplete --> material-icon-button
   material-calendar --> material-icon-button
   material-date-field --> material-icon-button
   material-datetime-field --> material-icon-button

@@ -1,0 +1,501 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+/* Field chrome mirrors material-select's multi shell (which itself mirrors
+   material-textfield's floating-label technique) — but with an editable
+   <input> inline and logical properties throughout so RTL mirrors free. */
+
+.wrapper {
+  display: block;
+  width: 100%;
+}
+
+.surface {
+  position: relative;
+  width: 100%;
+  min-height: 3.5rem;
+  cursor: text;
+}
+
+.surface.filled {
+  border-start-start-radius: 0.25rem;
+  border-start-end-radius: 0.25rem;
+  background: var(--md-sys-color-surface-container-highest);
+  transition: background-color 120ms linear;
+}
+
+.surface.filled:hover {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.surface.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.shell {
+  position: relative;
+  min-height: 3.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.shell.filled {
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.shell.outlined {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.shell.leading {
+  padding-inline-start: 3rem;
+}
+
+.shell.no-leading {
+  padding-inline-start: 0.75rem;
+}
+
+.shell.wide {
+  padding-inline-end: 6rem;
+}
+
+.shell.narrow {
+  padding-inline-end: 3rem;
+}
+
+/* The combobox input rides inline after the chips and absorbs leftover row
+   width; all field chrome (label, outline, indicator) is drawn around it. */
+.query {
+  flex: 1 1 4rem;
+  min-width: 4rem;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  height: 1.5rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--md-sys-color-on-surface);
+  caret-color: var(--md-sys-color-primary);
+}
+
+.query::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* --- chips (multi mode) — same look as material-select's --------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 1.75rem;
+  padding-inline-start: 0.625rem;
+  padding-inline-end: 0.25rem;
+  border-radius: 0.5rem;
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-size: 0.875rem;
+  max-width: 100%;
+}
+
+.chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  color: var(--md-sys-color-on-secondary-container);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.chip-remove:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-secondary-container) 15%, transparent);
+}
+
+.chip-remove:active {
+  background: color-mix(in srgb, var(--md-sys-color-on-secondary-container) 25%, transparent);
+}
+
+.chip-remove:focus-visible {
+  outline: 2px solid var(--md-sys-color-secondary);
+}
+
+.chip-remove:disabled {
+  pointer-events: none;
+}
+
+.chip-remove-icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  line-height: 1;
+  font-size: 16px;
+  direction: ltr;
+}
+
+/* --- leading / trailing --------------------------------------------------- */
+
+.trailing {
+  position: absolute;
+  inset-inline-end: 0.25rem;
+  top: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.clear-btn {
+  margin-inline-end: -1.25rem;
+}
+
+.chevron {
+  transition: rotate 150ms;
+}
+
+.chevron.open {
+  rotate: 180deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+}
+
+.spinner {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--md-sys-color-primary);
+  animation: autocomplete-spin 0.8s linear infinite;
+  margin-inline-end: 0.25rem;
+  direction: ltr;
+}
+
+@keyframes autocomplete-spin {
+  to { transform: rotate(360deg); }
+}
+
+.leading-icon {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  top: 0.75rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.5rem;
+  pointer-events: none;
+  color: var(--md-sys-color-on-surface-variant);
+  direction: ltr;
+}
+
+.leading-icon.error {
+  color: var(--md-sys-color-error);
+}
+
+/* --- supporting text ------------------------------------------------------ */
+
+.supporting-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.25rem;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.supporting-row .error {
+  color: var(--md-sys-color-error);
+}
+
+.supporting-row .idle {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* --- floating label ------------------------------------------------------- */
+
+.field-label {
+  position: absolute;
+  inset-inline-start: 1rem;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  transition: all 150ms;
+  font-size: 1rem;
+}
+
+.field-label:dir(rtl) {
+  transform-origin: 100% 50%;
+}
+
+.field-label.leading {
+  inset-inline-start: 3rem;
+}
+
+.field-label.error {
+  color: var(--md-sys-color-error);
+}
+
+.field-label.focused {
+  color: var(--md-sys-color-primary);
+}
+
+.field-label.idle {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.field-label.filled.rest {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.field-label.filled.shrunk {
+  top: 0.5rem;
+  transform: translateY(0);
+  font-size: 0.75rem;
+}
+
+.field-label.outlined.rest {
+  top: 1.75rem;
+  transform: translateY(-50%);
+}
+
+.field-label.outlined.shrunk {
+  top: 0;
+  inset-inline-start: 1rem;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+}
+
+/* --- filled indicator / outlined fieldset ---------------------------------- */
+
+.indicator {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  pointer-events: none;
+  height: 1px;
+  background: var(--md-sys-color-on-surface-variant);
+}
+
+.indicator.active {
+  height: 2px;
+}
+
+.indicator.error {
+  background: var(--md-sys-color-error);
+}
+
+.indicator.focused {
+  background: var(--md-sys-color-primary);
+}
+
+.fieldset {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0 0.75rem;
+  pointer-events: none;
+  border-radius: 0.25rem;
+  text-align: start;
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.fieldset.focused {
+  border: 2px solid var(--md-sys-color-primary);
+}
+
+.fieldset.error {
+  border: 2px solid var(--md-sys-color-error);
+}
+
+.legend {
+  visibility: hidden;
+  display: block;
+  height: 0;
+  overflow: visible;
+  padding: 0;
+  font-size: 0.75rem;
+  line-height: 1;
+  margin-inline-start: -1px;
+}
+
+.legend.active {
+  margin-inline-start: -2px;
+}
+
+.legend-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 150ms, padding 150ms;
+  max-width: 0.01px;
+}
+
+.legend-text.expanded {
+  max-width: 100%;
+  padding: 0 0.25rem;
+}
+
+/* --- listbox popup ---------------------------------------------------------- */
+
+/* Manual popover in the top layer; positioned by trackAnchored. Focus stays
+   in the input the whole time — rows cancel mousedown, so clicking them
+   never blurs, and clicking anywhere else blurs → focusout closes. */
+.popup {
+  position: fixed;
+  inset: unset;
+  margin: 0;
+  padding: 0.5rem 0;
+  border: 0;
+  max-width: min(40rem, calc(100vw - 1rem));
+  overflow-y: auto;
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+  border-radius: 0.75rem;
+  box-shadow:
+    0 2px 6px 2px rgb(0 0 0 / 0.15),
+    0 1px 2px 0 rgb(0 0 0 / 0.3);
+}
+
+.popup:popover-open {
+  animation: autocomplete-pop-in 120ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes autocomplete-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup:popover-open {
+    animation: none;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3rem;
+  padding-inline: 1rem;
+  padding-block: 0.375rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.row.highlighted {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.row.selected {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.row.selected.highlighted {
+  background: color-mix(in srgb, var(--md-sys-color-on-secondary-container) 12%, var(--md-sys-color-secondary-container));
+}
+
+.row.disabled {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.row-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-label .match {
+  font-weight: 600;
+  color: var(--md-sys-color-primary);
+}
+
+.row.selected .row-label .match {
+  color: inherit;
+}
+
+.row-supporting {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row.selected .row-supporting {
+  color: color-mix(in srgb, var(--md-sys-color-on-secondary-container) 80%, transparent);
+}
+
+.row-check-icon,
+.row-selected-icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  flex: none;
+  direction: ltr;
+}
+
+.row-check-icon {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.row.selected .row-check-icon {
+  color: var(--md-sys-color-primary);
+}
+
+.status {
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  padding-inline: 1rem;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.875rem;
+}
+
+.status.loading-more {
+  min-height: 2rem;
+}
+
+.option-source {
+  display: none;
+}
