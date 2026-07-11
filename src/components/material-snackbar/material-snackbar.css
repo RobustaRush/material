@@ -153,7 +153,9 @@
 .sb__close:focus-visible::before,
 .sb__close:active::before { opacity: 0.10; }
 
-.sb__close .material-symbols {
+.sb__close-icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
   font-size: 1.25rem;
   line-height: 1;
 }

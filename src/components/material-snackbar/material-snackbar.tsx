@@ -10,7 +10,6 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 export type MaterialSnackbarCloseReason =
   | 'timeout'
@@ -65,10 +64,6 @@ export class MaterialSnackbar {
 
   private timer?: number;
   private closeReason: MaterialSnackbarCloseReason = 'programmatic';
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   disconnectedCallback() {
     this.clearTimer();
@@ -188,7 +183,7 @@ export class MaterialSnackbar {
               aria-label="Dismiss"
               onClick={this.handleClose}
             >
-              <span class="material-symbols" aria-hidden="true">close</span>
+              <span class="sb__close-icon" aria-hidden="true">close</span>
             </button>
           )}
         </div>

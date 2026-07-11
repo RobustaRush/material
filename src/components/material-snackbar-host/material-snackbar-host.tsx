@@ -1,13 +1,11 @@
 import {
   Component,
-  Element,
   Host,
   Method,
   Prop,
   State,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 import type { MaterialSnackbarCloseReason } from '../material-snackbar/material-snackbar';
 
 export type SnackbarPlacement = 'bottom' | 'bottom-start' | 'bottom-end';
@@ -51,8 +49,6 @@ const REPLACE_GAP_MS = 150;
   shadow: true,
 })
 export class MaterialSnackbarHost {
-  @Element() el!: HTMLElement;
-
   /** Where the snackbar sits along the bottom edge. */
   @Prop({ reflect: true }) placement: SnackbarPlacement = 'bottom';
 
@@ -72,10 +68,6 @@ export class MaterialSnackbarHost {
     duration: number;
   };
   private advancing = false;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   /**
    * Enqueue a snackbar. Resolves with the close reason when the message is
