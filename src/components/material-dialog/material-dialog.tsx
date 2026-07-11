@@ -10,7 +10,6 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 import { ensureDialogTriggersInstalled } from '../../utils/dialog-triggers';
 
 export type MaterialDialogVariant = 'basic' | 'full-screen' | 'adaptive';
@@ -81,7 +80,6 @@ export class MaterialDialog {
   componentWillLoad() {
     ensureDialogTriggersInstalled();
     this.setupMqlIfNeeded();
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -253,7 +251,7 @@ export class MaterialDialog {
       <div class="dlg__icon" hidden={!showIcon}>
         <slot name="icon" onSlotchange={this.onIconSlotChange}>
           {this.icon ? (
-            <span class="material-symbols" aria-hidden="true">{this.icon}</span>
+            <span class="dlg__icon-glyph" aria-hidden="true">{this.icon}</span>
           ) : null}
         </slot>
       </div>,
