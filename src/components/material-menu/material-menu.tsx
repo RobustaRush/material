@@ -10,7 +10,6 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 import {
   AnchorPlacement,
   trackAnchored,
@@ -63,10 +62,6 @@ export class MaterialMenu {
   // light-dismissed it by clicking elsewhere (that would yank focus away
   // from wherever they clicked).
   private restoreFocusOnClose = false;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   connectedCallback() {
     // popover="auto" on the host gives top-layer + light-dismiss + Escape for free.

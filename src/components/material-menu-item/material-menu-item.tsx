@@ -7,7 +7,6 @@ import {
   Prop,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 vertical menu item. 48dp height (single-line) / 64dp (with supporting
 // text). Leading icon + label + trailing icon-or-text, or named slots for
@@ -42,10 +41,6 @@ export class MaterialMenuItem {
   /** Internal: tells the parent menu whether to close. */
   @Event({ bubbles: true, composed: true })
   materialMenuItemActivate!: EventEmitter<{ keepOpen: boolean }>;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   private activate = (e?: Event) => {
     if (this.disabled) return;
@@ -83,48 +78,42 @@ export class MaterialMenuItem {
       >
         <div
           class={[
-            'group relative flex items-center w-full pl-1 pr-3 cursor-pointer select-none',
-            twoLine ? 'min-h-16 py-2' : 'h-12',
-            this.disabled ? 'opacity-40 pointer-events-none' : '',
-            this.selected
-              ? 'bg-tertiary-container text-on-tertiary-container'
-              : 'text-on-surface-variant',
-          ].join(' ')}
+            'row',
+            twoLine ? 'two-line' : '',
+            this.disabled ? 'disabled' : '',
+            this.selected ? 'selected' : '',
+          ].filter(Boolean).join(' ')}
         >
-          {/* state layer */}
-          <span
-            class="absolute inset-0 pointer-events-none transition-colors group-hover:bg-on-surface/8 group-active:bg-on-surface/10 group-focus-visible:bg-on-surface/10"
-            aria-hidden="true"
-          ></span>
+          <span class="state-layer" aria-hidden="true"></span>
 
-          <span class="flex items-center justify-center w-9 shrink-0">
+          <span class="leading">
             <slot name="leading">
               {this.leadingIcon && (
-                <span class="material-symbols text-[24px]" aria-hidden="true">
+                <span class="icon" aria-hidden="true">
                   {this.leadingIcon}
                 </span>
               )}
             </slot>
           </span>
 
-          <span class="flex flex-col flex-1 min-w-0 gap-0.5 px-2">
-            <span class="truncate text-sm leading-5">
+          <span class="text">
+            <span class="label">
               <slot>{this.label}</slot>
             </span>
             {twoLine && (
-              <span class="truncate text-xs leading-4 text-on-surface-variant">
+              <span class="supporting-text">
                 {this.supportingText}
               </span>
             )}
           </span>
 
-          <span class="flex items-center justify-end gap-2 shrink-0 pl-2">
+          <span class="trailing">
             <slot name="trailing">
               {this.trailingText && (
-                <span class="text-xs text-on-surface-variant">{this.trailingText}</span>
+                <span class="trailing-text">{this.trailingText}</span>
               )}
               {this.trailingIcon && (
-                <span class="material-symbols text-[24px]" aria-hidden="true">
+                <span class="icon" aria-hidden="true">
                   {this.trailingIcon}
                 </span>
               )}
