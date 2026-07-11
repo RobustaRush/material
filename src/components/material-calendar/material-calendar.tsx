@@ -38,8 +38,22 @@ type CalendarMode = 'days' | 'months' | 'years';
 export class MaterialCalendar {
   @Element() el!: HTMLElement;
 
-  /** Selected date as ISO `YYYY-MM-DD`. Empty string = no selection. */
+  /** Selected date as ISO `YYYY-MM-DD`. Empty string = no selection.
+   *  Ignored in `range` mode — see `startValue` / `endValue`. */
   @Prop({ mutable: true, reflect: true }) value = '';
+
+  /** Range-selection mode: the first pick sets `startValue`, the second sets
+   *  `endValue`; picking a date before the start restarts the range. The
+   *  in-between band renders in secondary-container per the MD3 date range
+   *  picker spec. */
+  @Prop({ reflect: true }) range = false;
+
+  /** Range start, ISO `YYYY-MM-DD` (range mode). */
+  @Prop({ mutable: true, reflect: true, attribute: 'start-value' }) startValue = '';
+
+  /** Range end, ISO `YYYY-MM-DD` (range mode). Empty while the second pick
+   *  is still outstanding. */
+  @Prop({ mutable: true, reflect: true, attribute: 'end-value' }) endValue = '';
 
   /** Min selectable date (ISO). */
   @Prop() min = '';
@@ -119,11 +133,17 @@ export class MaterialCalendar {
   }
 
   @Event() dateSelect!: EventEmitter<{ value: string }>;
+  /** Range mode: emitted on every pick; `end` stays empty until the second. */
+  @Event() rangeSelect!: EventEmitter<{ start: string; end: string }>;
   @Event() displayMonthChange!: EventEmitter<{ value: string }>;
+
+  // Hover candidate for the not-yet-committed range end — drives the
+  // preview band while the second pick is outstanding.
+  @State() hoverDate = '';
 
   componentWillLoad() {
     if (!this.displayMonth) {
-      const seed = fromISO(this.value) ?? new Date();
+      const seed = fromISO(this.range ? this.startValue : this.value) ?? new Date();
       this.displayMonth = `${seed.getFullYear()}-${pad2(seed.getMonth() + 1)}`;
     }
   }
@@ -164,6 +184,15 @@ export class MaterialCalendar {
   onValueChange() {
     // Snap displayMonth to the selected value when it changes externally.
     const d = fromISO(this.value);
+    if (!d) return;
+    const newMonth = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+    if (newMonth !== this.displayMonth) this.displayMonth = newMonth;
+  }
+
+  @Watch('startValue')
+  onStartValueChange() {
+    if (!this.range) return;
+    const d = fromISO(this.startValue);
     if (!d) return;
     const newMonth = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
     if (newMonth !== this.displayMonth) this.displayMonth = newMonth;
@@ -217,6 +246,20 @@ export class MaterialCalendar {
 
   private selectDate = (iso: string) => {
     if (!inRange(iso, this.min || undefined, this.max || undefined)) return;
+    if (this.range) {
+      if (!this.startValue || this.endValue || iso < this.startValue) {
+        // First pick, a fresh range after a complete one, or an earlier
+        // date than the current start — (re)start the range.
+        this.startValue = iso;
+        this.endValue = '';
+      } else {
+        this.endValue = iso; // same-day ranges allowed
+      }
+      this.focusedDate = iso;
+      this.hoverDate = '';
+      this.rangeSelect.emit({ start: this.startValue, end: this.endValue });
+      return;
+    }
     this.value = iso;
     this.focusedDate = iso;
     this.dateSelect.emit({ value: iso });
@@ -528,8 +571,23 @@ export class MaterialCalendar {
     const weeks: (typeof cells)[] = [];
     for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
 
+    // Range band boundaries. While the second pick is outstanding, the
+    // hovered day previews the band (only forward from the start).
+    const bandStart = this.range ? this.startValue : '';
+    const bandEnd = this.range
+      ? (this.endValue
+          || (this.startValue && this.hoverDate && this.hoverDate > this.startValue
+              ? this.hoverDate
+              : ''))
+      : '';
+    const hasBand = !!(bandStart && bandEnd && bandEnd > bandStart);
+
     return (
-      <div class="cal__grid" role="grid">
+      <div
+        class="cal__grid"
+        role="grid"
+        onMouseLeave={this.range ? () => (this.hoverDate = '') : undefined}
+      >
         <div class="cal__weekdays" role="row">
           {orderedWeekdays.map((name) => (
             <span class="cal__weekday" role="columnheader">{name}</span>
@@ -539,7 +597,9 @@ export class MaterialCalendar {
           <div class="cal__week" role="row">
             {week.map((c) => {
               const disabled = !inRange(c.iso, this.min || undefined, this.max || undefined);
-              const selected = c.iso === this.value;
+              const selected = this.range
+                ? (c.iso === this.startValue || c.iso === this.endValue)
+                : c.iso === this.value;
               const isToday = c.iso === today;
               const tabIndex = c.iso === focusISO ? 0 : -1;
               const showFocusRing = this.keyboardModality && c.iso === focusISO;
@@ -550,9 +610,15 @@ export class MaterialCalendar {
                 isToday ? 'is-today' : '',
                 showFocusRing ? 'is-focused' : '',
               ].filter(Boolean).join(' ');
+              const cellCls = [
+                'cal__cell',
+                hasBand && c.iso > bandStart && c.iso < bandEnd ? 'range-mid' : '',
+                hasBand && c.iso === bandStart ? 'range-cap-start' : '',
+                hasBand && c.iso === bandEnd ? 'range-cap-end' : '',
+              ].filter(Boolean).join(' ');
               return (
                 // aria-selected lives on the gridcell, not the button.
-                <div class="cal__cell" role="gridcell" aria-selected={selected ? 'true' : 'false'}>
+                <div class={cellCls} role="gridcell" aria-selected={selected ? 'true' : 'false'}>
                   <button
                     type="button"
                     class={cls}
@@ -561,6 +627,11 @@ export class MaterialCalendar {
                     disabled={disabled}
                     tabIndex={tabIndex}
                     onClick={() => this.selectDate(c.iso)}
+                    onMouseEnter={
+                      this.range && this.startValue && !this.endValue
+                        ? () => (this.hoverDate = c.iso)
+                        : undefined
+                    }
                   >
                     {c.day}
                   </button>

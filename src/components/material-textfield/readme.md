@@ -45,6 +45,7 @@
 ### Used by
 
  - [material-date-field](../material-date-field)
+ - [material-date-range-field](../material-date-range-field)
  - [material-datetime-field](../material-datetime-field)
  - [material-file-field](../material-file-field)
  - [material-select](../material-select)
@@ -59,6 +60,7 @@
 graph TD;
   material-textfield --> material-icon-button
   material-date-field --> material-textfield
+  material-date-range-field --> material-textfield
   material-datetime-field --> material-textfield
   material-file-field --> material-textfield
   material-select --> material-textfield

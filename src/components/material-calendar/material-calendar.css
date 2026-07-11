@@ -156,8 +156,48 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   align-items: center;
-  justify-items: center;
+  /* stretch (not center) so the range band on a cell spans its full
+     column; the cell itself centers the 40dp day button. */
+  justify-items: stretch;
   flex: 1 1 0;
+}
+
+/* ---------- Range-selection band (range mode) ----------
+   Secondary-container fill from the center of the start day to the center
+   of the end day, per the MD3 date range picker. Drawn as a ::before strip
+   on the gridcell (40dp tall, vertically centered) so row height can grow
+   without fattening the band; logical insets mirror it in RTL for free. */
+
+.cal__cell.range-mid,
+.cal__cell.range-cap-start,
+.cal__cell.range-cap-end {
+  position: relative;
+}
+
+.cal__cell.range-mid::before,
+.cal__cell.range-cap-start::before,
+.cal__cell.range-cap-end::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2.5rem;
+  inset-inline: 0;
+  background: var(--md-sys-color-secondary-container);
+}
+
+.cal__cell.range-cap-start::before {
+  inset-inline-start: 50%;
+}
+
+.cal__cell.range-cap-end::before {
+  inset-inline-end: 50%;
+}
+
+/* In-between days read in on-secondary-container (.cal__day is already
+   position:relative, so it paints above the ::before band). */
+.cal__cell.range-mid .cal__day:not(:disabled):not(.is-outside) {
+  color: var(--md-sys-color-on-secondary-container);
 }
 
 /* gridcell wrapper — shrink-wraps and centers the day button. */

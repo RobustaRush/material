@@ -1,0 +1,9 @@
+/* Light-DOM container — visual look comes from material-textfield. */
+
+material-date-range-field { display: block; }
+material-date-range-field[hidden] { display: none; }
+
+material-date-range-field .range-trailing {
+  display: inline-flex;
+  align-items: center;
+}
