@@ -9,42 +9,15 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 spec: container 18dp / corner 2dp / icon 18dp / target 48dp / state-layer 40dp.
 // The button is a 1×1 inline-grid; the 40px state-layer and 18px box share the
 // single cell so both auto-center without absolute positioning. State-layer
 // opacities follow the spec's 8% (hover) / 10% (focus, pressed) tokens.
 
-const TARGET_BASE =
-  'group inline-grid place-items-center w-12 h-12 rounded-full ' +
-  'border-0 bg-transparent p-0 m-0 cursor-pointer ' +
-  'focus:outline-none focus-visible:outline-none ' +
-  'disabled:cursor-not-allowed disabled:opacity-40';
-
-const STATE_LAYER_BASE =
-  '[grid-area:1/1] w-10 h-10 rounded-full transition-colors pointer-events-none';
-
-const STATE_LAYER_OFF =
-  'group-hover:bg-on-surface/8 group-focus-visible:bg-on-surface/10 group-active:bg-on-surface/10';
-
-const STATE_LAYER_ON =
-  'group-hover:bg-primary/8 group-focus-visible:bg-primary/10 group-active:bg-primary/10';
-
-const STATE_LAYER_ERR =
-  'group-hover:bg-error/8 group-focus-visible:bg-error/10 group-active:bg-error/10';
-
-const BOX_BASE =
-  '[grid-area:1/1] relative inline-flex items-center justify-center ' +
-  'w-[18px] h-[18px] rounded-[2px] transition-colors box-border';
-
-const BOX_OFF = 'border-2 border-on-surface-variant bg-transparent';
-const BOX_ON = 'bg-primary text-on-primary';
-const BOX_OFF_ERR = 'border-2 border-error bg-transparent';
-const BOX_ON_ERR = 'bg-error text-on-error';
-
 @Component({
   tag: 'material-checkbox',
+  styleUrl: 'material-checkbox.css',
   shadow: true,
   formAssociated: true,
 })
@@ -75,7 +48,6 @@ export class MaterialCheckbox {
   componentWillLoad() {
     this.defaultChecked = this.checked;
     this.defaultIndeterminate = this.indeterminate;
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -157,31 +129,21 @@ export class MaterialCheckbox {
     const icon = this.indeterminate ? 'remove' : 'check';
     const inError = this.error;
 
-    const stateLayerCls = inError
-      ? STATE_LAYER_ERR
-      : isOn
-      ? STATE_LAYER_ON
-      : STATE_LAYER_OFF;
-
+    const stateLayerCls = inError ? 'state-layer err' : isOn ? 'state-layer on' : 'state-layer off';
     const boxCls = inError
-      ? isOn
-        ? BOX_ON_ERR
-        : BOX_OFF_ERR
-      : isOn
-      ? BOX_ON
-      : BOX_OFF;
+      ? isOn ? 'box on-err' : 'box off-err'
+      : isOn ? 'box on' : 'box off';
 
     // errorText replaces helpText when in error; either may be empty.
     // The id is referenced by aria-describedby only when text is present.
     const descId = 'description';
     const subText = inError ? this.errorText : this.helpText;
-    const subToneCls = inError ? 'text-error' : 'text-on-surface-variant';
 
     const button = (
       <button
         type="button"
         role="checkbox"
-        class={TARGET_BASE}
+        class="target"
         disabled={this.disabled}
         aria-checked={this.indeterminate ? 'mixed' : this.checked ? 'true' : 'false'}
         aria-label={this.ariaLabel ?? (this.label ? undefined : 'checkbox')}
@@ -192,22 +154,12 @@ export class MaterialCheckbox {
         onClick={() => this.toggle()}
         onKeyDown={this.handleKeyDown}
       >
-        <span
-          class={`${STATE_LAYER_BASE} ${stateLayerCls}`}
-          aria-hidden="true"
-        ></span>
-        <span class={`${BOX_BASE} ${boxCls}`}>
+        <span class={stateLayerCls} aria-hidden="true"></span>
+        <span class={boxCls}>
           {/* Always rendered so the check can animate in — a conditionally
               rendered mark can't transition. Revealed left-to-right via
               clip-path at 200ms standard easing (MD3 selection-control motion). */}
-          <span
-            class={
-              'material-symbols text-[18px] leading-none ' +
-              'transition-[clip-path] duration-200 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ' +
-              (isOn ? '[clip-path:inset(0)]' : '[clip-path:inset(0_100%_0_0)]')
-            }
-            aria-hidden="true"
-          >
+          <span class={isOn ? 'mark revealed' : 'mark'} aria-hidden="true">
             {icon}
           </span>
         </span>
@@ -223,17 +175,12 @@ export class MaterialCheckbox {
     // the box and primary label never move. Across siblings, set items-start
     // on the row to keep all primary labels aligned.
     return (
-      <label
-        class={
-          'inline-flex items-start gap-2 select-none ' +
-          (this.disabled ? 'cursor-not-allowed' : 'cursor-pointer')
-        }
-      >
+      <label class={this.disabled ? 'row disabled' : 'row'}>
         {button}
-        <span class="flex flex-col">
-          <span id="label" class="mt-3 leading-6 text-base text-on-surface">{this.label}</span>
+        <span class="text-col">
+          <span id="label" class="primary-label">{this.label}</span>
           {subText && (
-            <span id={descId} class={`mt-1 leading-4 text-xs ${subToneCls}`}>
+            <span id={descId} class={inError ? 'sub-text error' : 'sub-text normal'}>
               {subText}
             </span>
           )}
