@@ -124,7 +124,7 @@ export class MaterialOption {
                 </span>
               )}
             </slot>
-            {checkAtTrailing && checkGlyph}
+            {checkAtTrailing && <span class="trailing-check">{checkGlyph}</span>}
           </span>
         </div>
       </Host>

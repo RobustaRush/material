@@ -124,3 +124,13 @@
   flex-shrink: 0;
   padding-left: 0.5rem;
 }
+
+/* Mirrors `.leading`'s centered 36px box when the checkbox is pushed to the
+   trailing edge instead (leading icon present) — gives it the same reserved
+   column instead of sitting flush against the row's edge padding. */
+.trailing-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+}
