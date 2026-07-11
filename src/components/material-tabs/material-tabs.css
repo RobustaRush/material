@@ -1,3 +1,10 @@
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet — .inner combines width and
+   padding in the scrollable variant and needs border-box to size correctly. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :host {
   display: block;
   background: var(--md-sys-color-surface);

@@ -1,3 +1,10 @@
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet — several rules below combine
+   width/padding on the same box and need border-box to size correctly. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :host,
 :host(:focus),
 :host(:focus-visible) {

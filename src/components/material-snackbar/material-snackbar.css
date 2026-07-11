@@ -3,6 +3,13 @@
    content height. Positioning lives on the host element (typically
    <material-snackbar-host>), not here. */
 
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet — .sb combines max-width with
+   padding and needs border-box so the cap isn't exceeded. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :host {
   display: block;
   pointer-events: none;

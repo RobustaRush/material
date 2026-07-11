@@ -2,6 +2,13 @@
    shifts the inline alignment. z-index sits above FAB (per MD3 guideline).
    Uses safe-area-inset-bottom so iOS home indicator doesn't overlap. */
 
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet — :host combines left/right
+   insets with padding-inline and needs border-box to stay within them. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :host {
   position: fixed;
   left: 0;

@@ -1,3 +1,9 @@
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 /* Layout-morph entrance. Variant switches (rail collapsed↔expanded, bar
    vertical↔horizontal) replace the keyed subtree, so the incoming layout
    animates in per MD3: fade + slight scale, emphasized-decelerate. Applied

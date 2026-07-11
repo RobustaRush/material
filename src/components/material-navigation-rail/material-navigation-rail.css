@@ -1,3 +1,9 @@
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 /* Header title entrance — the expanded header is keyed, so it mounts fresh
    on every expand; the title fades in with the width transition. */
 

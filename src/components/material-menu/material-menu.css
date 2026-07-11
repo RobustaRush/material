@@ -7,6 +7,13 @@
    `transition-behavior: allow-discrete` + `@starting-style` lets us animate
    in/out across the popover open/closed `display` swap. */
 
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet — min/max-width below combine
+   with padding and need border-box to size correctly. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :host {
   /* Hidden until the popover opens. Belt-and-suspenders for the brief
      window before connectedCallback adds the [popover] attribute (without

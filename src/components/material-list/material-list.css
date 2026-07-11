@@ -1,3 +1,9 @@
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :host {
   display: block;
   background: var(--md-sys-color-surface);

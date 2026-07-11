@@ -1,3 +1,9 @@
+/* Preflight normally provides this; restore it now that the component no
+   longer adopts the shared Tailwind stylesheet. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 /* Hide native resize handle — auto-resize and rows are driven by props,
    so the user-drag handle would conflict with our height management. */
 
