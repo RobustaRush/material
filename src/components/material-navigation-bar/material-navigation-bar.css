@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+/* Vertical items (compact): dynamic width — items equally fill the bar. */
+:host([data-orientation='vertical']) ::slotted(material-navigation-item) {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Horizontal items (medium): fixed item width, group centered in the bar
+   (extra space becomes dynamic margin at the container ends). */
+:host([data-orientation='horizontal']) ::slotted(material-navigation-item) {
+  flex: 0 0 auto;
+}

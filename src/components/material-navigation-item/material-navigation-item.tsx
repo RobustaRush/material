@@ -9,12 +9,14 @@ import { adoptMaterialStyles } from '../../utils/adopted-styles';
 // Sizing per spec:
 //   rail-collapsed : 96dp container, 56×32 indicator hugging icon, label below
 //   rail-expanded  : 220–360dp container, 56dp full-width row, icon+label inline
-//   bar            : same vertical anatomy as rail-collapsed (used by nav-bar)
+//   bar            : same vertical anatomy as rail-collapsed (nav-bar, compact)
+//   bar-horizontal : 40dp pill wrapping icon+label inline (nav-bar, medium)
 
 export type MaterialNavigationItemVariant =
   | 'rail-collapsed'
   | 'rail-expanded'
-  | 'bar';
+  | 'bar'
+  | 'bar-horizontal';
 
 @Component({
   tag: 'material-navigation-item',
@@ -165,6 +167,53 @@ export class MaterialNavigationItem {
     );
   }
 
+  // Nav-bar horizontal item (medium windows): 40dp pill indicator wrapping
+  // icon + label inline. Badge overlaps the icon's top-trailing corner per
+  // spec; the state layer carries its own radius so the pill needs no
+  // overflow-hidden that would clip the badge.
+  private renderBarHorizontal() {
+    const pill = [
+      'relative inline-flex items-center h-10 px-4 rounded-full transition-colors',
+      this.active
+        ? 'bg-secondary-container text-on-secondary-container'
+        : 'bg-transparent text-on-surface-variant',
+    ].join(' ');
+
+    return (
+      <span key="bar-horizontal" class="flex items-center justify-center w-full py-3">
+        <span class={pill}>
+          <span
+            class={
+              'absolute inset-0 rounded-full pointer-events-none bg-current opacity-0 transition-opacity ' +
+              'group-hover/n:opacity-[0.08] group-focus-visible/n:opacity-[0.10] group-active/n:opacity-[0.10]'
+            }
+            aria-hidden="true"
+          />
+          <span class="relative inline-flex">
+            <span
+              class="material-symbols leading-none text-[1.5rem]"
+              style={this.iconStyle()}
+              aria-hidden="true"
+            >
+              {this.iconName()}
+            </span>
+            <span class="absolute top-0 end-0 translate-x-1/2 rtl:-translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
+              <slot name="badge" />
+            </span>
+          </span>
+          <span
+            class={
+              'relative ms-1 text-sm whitespace-nowrap ' +
+              (this.active ? 'font-medium' : '')
+            }
+          >
+            {this.label}
+          </span>
+        </span>
+      </span>
+    );
+  }
+
   render() {
     const isLink = !!this.href && !this.disabled;
     const Tag: any = isLink ? 'a' : 'button';
@@ -188,9 +237,9 @@ export class MaterialNavigationItem {
     }
 
     const body =
-      this.variant === 'rail-expanded'
-        ? this.renderExpanded()
-        : this.renderCollapsed();
+      this.variant === 'rail-expanded' ? this.renderExpanded()
+      : this.variant === 'bar-horizontal' ? this.renderBarHorizontal()
+      : this.renderCollapsed();
 
     return <Host>{h(Tag, props, body)}</Host>;
   }

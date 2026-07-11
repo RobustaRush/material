@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-navigation-bar — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-navigation-bar</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 Expressive (flexible) nav bar — 3–5 destinations at the bottom of
+          compact/medium windows. Vertical items (compact) / horizontal pill items
+          (medium); shared <code>&lt;material-navigation-item&gt;</code>;
+          ←/→/Home/End move focus.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <section class="space-y-6">
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">
+            vertical items (compact windows) — items equally fill the bar;
+            badges overlap the icon
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden w-[360px] max-w-full mx-auto">
+            <div class="h-56 bg-surface-container-low p-4 text-sm text-on-surface-variant">
+              Page content
+            </div>
+            <material-navigation-bar>
+              <material-navigation-item icon="home" label="Home" active></material-navigation-item>
+              <material-navigation-item icon="explore" label="Explore" aria-label="Explore, new">
+                <material-badge slot="badge"></material-badge>
+              </material-navigation-item>
+              <material-navigation-item icon="notifications" label="Alerts" aria-label="Alerts, 12">
+                <material-badge slot="badge" value="12"></material-badge>
+              </material-navigation-item>
+              <material-navigation-item icon="person" label="Profile"></material-navigation-item>
+            </material-navigation-bar>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">
+            horizontal items (medium windows) — fixed-width pills centered in
+            the bar
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden">
+            <div class="h-56 bg-surface-container-low p-4 text-sm text-on-surface-variant">
+              Page content
+            </div>
+            <material-navigation-bar orientation="horizontal">
+              <material-navigation-item icon="home" label="Home" active></material-navigation-item>
+              <material-navigation-item icon="explore" label="Explore"></material-navigation-item>
+              <material-navigation-item icon="notifications" label="Alerts" aria-label="Alerts, 12">
+                <material-badge slot="badge" value="12"></material-badge>
+              </material-navigation-item>
+              <material-navigation-item icon="person" label="Profile"></material-navigation-item>
+            </material-navigation-bar>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-on-surface-variant mb-2">
+            <code>orientation="auto"</code> — vertical below 600px viewport,
+            horizontal at/above (resize the window)
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden">
+            <div class="h-40 bg-surface-container-low p-4 text-sm text-on-surface-variant">
+              Page content
+            </div>
+            <material-navigation-bar orientation="auto">
+              <material-navigation-item icon="movie" label="Movies" active></material-navigation-item>
+              <material-navigation-item icon="tv" label="Shows"></material-navigation-item>
+              <material-navigation-item icon="bookmark" label="Saved"></material-navigation-item>
+            </material-navigation-bar>
+          </div>
+        </div>
+
+        <div dir="rtl">
+          <p class="text-sm text-on-surface-variant mb-2" dir="ltr">
+            RTL — item order and arrow keys follow the reading direction;
+            disabled item is skipped by keyboard navigation
+          </p>
+          <div class="border border-outline-variant rounded overflow-hidden w-[360px] max-w-full mx-auto">
+            <div class="h-40 bg-surface-container-low p-4 text-sm text-on-surface-variant">
+              محتوى الصفحة
+            </div>
+            <material-navigation-bar>
+              <material-navigation-item icon="home" label="الرئيسية" active></material-navigation-item>
+              <material-navigation-item icon="search" label="بحث"></material-navigation-item>
+              <material-navigation-item icon="settings" label="الإعدادات" disabled></material-navigation-item>
+              <material-navigation-item icon="person" label="الحساب"></material-navigation-item>
+            </material-navigation-bar>
+          </div>
+        </div>
+      </div>
+
+      <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+        <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- 3–5 primary destinations, bottom of the window. Clicking an item makes
+     it the single active one (activation="manual" to opt out). Never pair a
+     navigation bar with a navigation rail in the same window. --&gt;
+&lt;material-navigation-bar orientation="auto"&gt;
+  &lt;material-navigation-item icon="home"    label="Home" active&gt;&lt;/material-navigation-item&gt;
+  &lt;material-navigation-item icon="explore" label="Explore"&gt;
+    &lt;material-badge slot="badge" value="12"&gt;&lt;/material-badge&gt;
+  &lt;/material-navigation-item&gt;
+  &lt;material-navigation-item icon="person"  label="Profile"&gt;&lt;/material-navigation-item&gt;
+&lt;/material-navigation-bar&gt;
+
+&lt;!-- typical placement: sticky at the bottom of a compact layout --&gt;
+&lt;style&gt;
+  material-navigation-bar { position: sticky; bottom: 0; }
+&lt;/style&gt;</code></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

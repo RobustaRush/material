@@ -7,17 +7,17 @@
 
 ## Properties
 
-| Property             | Attribute     | Description | Type                                           | Default            |
-| -------------------- | ------------- | ----------- | ---------------------------------------------- | ------------------ |
-| `active`             | `active`      |             | `boolean`                                      | `false`            |
-| `activeIcon`         | `active-icon` |             | `string \| undefined`                          | `undefined`        |
-| `ariaLabel`          | `aria-label`  |             | `string \| undefined`                          | `undefined`        |
-| `disabled`           | `disabled`    |             | `boolean`                                      | `false`            |
-| `href`               | `href`        |             | `string \| undefined`                          | `undefined`        |
-| `icon` _(required)_  | `icon`        |             | `string`                                       | `undefined`        |
-| `label` _(required)_ | `label`       |             | `string`                                       | `undefined`        |
-| `value`              | `value`       |             | `string \| undefined`                          | `undefined`        |
-| `variant`            | `variant`     |             | `"bar" \| "rail-collapsed" \| "rail-expanded"` | `'rail-collapsed'` |
+| Property             | Attribute     | Description | Type                                                               | Default            |
+| -------------------- | ------------- | ----------- | ------------------------------------------------------------------ | ------------------ |
+| `active`             | `active`      |             | `boolean`                                                          | `false`            |
+| `activeIcon`         | `active-icon` |             | `string \| undefined`                                              | `undefined`        |
+| `ariaLabel`          | `aria-label`  |             | `string \| undefined`                                              | `undefined`        |
+| `disabled`           | `disabled`    |             | `boolean`                                                          | `false`            |
+| `href`               | `href`        |             | `string \| undefined`                                              | `undefined`        |
+| `icon` _(required)_  | `icon`        |             | `string`                                                           | `undefined`        |
+| `label` _(required)_ | `label`       |             | `string`                                                           | `undefined`        |
+| `value`              | `value`       |             | `string \| undefined`                                              | `undefined`        |
+| `variant`            | `variant`     |             | `"bar" \| "bar-horizontal" \| "rail-collapsed" \| "rail-expanded"` | `'rail-collapsed'` |
 
 
 ## Events
