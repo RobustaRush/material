@@ -1,5 +1,4 @@
 import { Component, Element, Event, EventEmitter, Method, Prop, Watch, h, Host } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive navigation item — shared by navigation-rail (collapsed/expanded)
 // and (future) navigation-bar / navigation-drawer. Anatomy is identical across
@@ -44,10 +43,6 @@ export class MaterialNavigationItem {
   // animation so items don't animate on initial page render.
   private variantChanged = false;
 
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
-
   @Watch('variant')
   onVariantChange(newValue: string, oldValue: string) {
     if (oldValue !== undefined && newValue !== oldValue) this.variantChanged = true;
@@ -84,64 +79,40 @@ export class MaterialNavigationItem {
     return this.active && this.activeIcon ? this.activeIcon : this.icon;
   }
 
-  // MD3 state layer (8% / 10% / 10%) — rides the host button via `group/n:` modifiers
-  // on the parent <a>/<button>. Lives inside the indicator container so the layer
-  // morphs with the pill shape.
-  private stateLayer() {
+  // MD3 state layer (8% / 10% / 10%) — hover/focus-visible/active opacity is
+  // driven from the root <a>/<button> via CSS descendant selectors (`.root:hover
+  // .state-layer` etc. — see the .css file). Lives inside the indicator
+  // container so the layer morphs with the pill shape. `pill` variants have no
+  // overflow-hidden of their own (it would clip the badge), so their state
+  // layer needs its own border-radius.
+  private stateLayer(pill = false) {
     return (
-      <span
-        class={
-          'absolute inset-0 pointer-events-none bg-current opacity-0 transition-opacity ' +
-          'group-hover/n:opacity-[0.08] group-focus-visible/n:opacity-[0.10] group-active/n:opacity-[0.10]'
-        }
-        aria-hidden="true"
-      />
+      <span class={pill ? 'state-layer pill' : 'state-layer'} aria-hidden="true" />
     );
   }
 
   private renderCollapsed() {
-    const indicator = [
-      'relative inline-flex items-center justify-center overflow-hidden',
-      'w-14 h-8 rounded-full transition-colors',
-      this.active
-        ? 'bg-secondary-container text-on-secondary-container'
-        : 'bg-transparent text-on-surface-variant',
-    ].join(' ');
-
     // Badge slot lives OUTSIDE the indicator's overflow-hidden box; the wrapper
     // hugs the indicator so anchoring stays at the indicator's top-trailing edge.
     // Keyed so variant switches replace the subtree instead of patching it —
     // patched reuse makes transition-* classes animate from the old element's
     // computed values (visible dark flash on the state layer).
     return (
-      <span key="collapsed" class={'flex flex-col items-center justify-center w-full py-2 gap-1' + this.morphClass()}>
-        <span class="relative inline-flex">
-          <span class={indicator}>
+      <span key="collapsed" class={'item-collapsed' + this.morphClass()}>
+        <span class="badge-anchor">
+          <span class="indicator">
             {this.stateLayer()}
             {this.iconName() && (
-              <span
-                class="material-symbols leading-none text-[1.5rem] relative"
-                style={this.iconStyle()}
-                aria-hidden="true"
-              >
+              <span class="icon" style={this.iconStyle()} aria-hidden="true">
                 {this.iconName()}
               </span>
             )}
           </span>
-          <span class="absolute top-0 end-2 translate-x-1/2 rtl:-translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
+          <span class="badge-slot">
             <slot name="badge" />
           </span>
         </span>
-        <span
-          class={
-            'text-xs leading-tight text-center px-1 ' +
-            (this.active
-              ? 'text-secondary font-medium'
-              : 'text-on-surface-variant')
-          }
-        >
-          {this.label}
-        </span>
+        <span class="label-collapsed">{this.label}</span>
       </span>
     );
   }
@@ -150,37 +121,18 @@ export class MaterialNavigationItem {
     // Leading padding sits on the row, not the icon: .material-symbols forces
     // `direction: ltr` (icon-font ligatures), so padding-inline-start on the
     // icon itself resolves as LEFT padding even in RTL context.
-    const row = [
-      'relative flex items-center w-full h-14 overflow-hidden ps-4',
-      'rounded-full transition-colors',
-      this.active
-        ? 'bg-secondary-container text-on-secondary-container'
-        : 'bg-transparent text-on-surface-variant',
-    ].join(' ');
-
     return (
-      <span key="expanded" class={row + this.morphClass()}>
+      <span key="expanded" class={'item-expanded' + this.morphClass()}>
         {this.stateLayer()}
         {this.iconName() && (
-          <span
-            class="material-symbols leading-none text-[1.5rem] relative"
-            style={this.iconStyle()}
-            aria-hidden="true"
-          >
+          <span class="icon" style={this.iconStyle()} aria-hidden="true">
             {this.iconName()}
           </span>
         )}
-        <span
-          class={
-            (this.iconName() ? 'relative ms-3 ' : 'relative ') + 'text-sm truncate ' +
-            // Active label inherits on-secondary-container from the pill row
-            // (the container sets it); only the weight changes.
-            (this.active ? 'font-medium' : '')
-          }
-        >
+        <span class={this.iconName() ? 'label-expanded with-icon' : 'label-expanded'}>
           {this.label}
         </span>
-        <span class="relative ms-auto pe-4 flex items-center">
+        <span class="badge-trailing">
           <slot name="badge" />
         </span>
       </span>
@@ -192,43 +144,21 @@ export class MaterialNavigationItem {
   // spec; the state layer carries its own radius so the pill needs no
   // overflow-hidden that would clip the badge.
   private renderBarHorizontal() {
-    const pill = [
-      'relative inline-flex items-center h-10 px-4 rounded-full transition-colors',
-      this.active
-        ? 'bg-secondary-container text-on-secondary-container'
-        : 'bg-transparent text-on-surface-variant',
-    ].join(' ');
-
     return (
-      <span key="bar-horizontal" class={'flex items-center justify-center w-full py-3' + this.morphClass()}>
-        <span class={pill}>
-          <span
-            class={
-              'absolute inset-0 rounded-full pointer-events-none bg-current opacity-0 transition-opacity ' +
-              'group-hover/n:opacity-[0.08] group-focus-visible/n:opacity-[0.10] group-active/n:opacity-[0.10]'
-            }
-            aria-hidden="true"
-          />
-          <span class="relative inline-flex">
+      <span key="bar-horizontal" class={'item-bar-horizontal' + this.morphClass()}>
+        <span class="pill">
+          {this.stateLayer(true)}
+          <span class="badge-anchor">
             {this.iconName() && (
-              <span
-                class="material-symbols leading-none text-[1.5rem]"
-                style={this.iconStyle()}
-                aria-hidden="true"
-              >
+              <span class="icon" style={this.iconStyle()} aria-hidden="true">
                 {this.iconName()}
               </span>
             )}
-            <span class="absolute top-0 end-0 translate-x-1/2 rtl:-translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
+            <span class="badge-slot flush">
               <slot name="badge" />
             </span>
           </span>
-          <span
-            class={
-              (this.iconName() ? 'relative ms-1 ' : 'relative ') + 'text-sm whitespace-nowrap ' +
-              (this.active ? 'font-medium' : '')
-            }
-          >
+          <span class={this.iconName() ? 'label-pill with-icon' : 'label-pill'}>
             {this.label}
           </span>
         </span>
@@ -240,13 +170,8 @@ export class MaterialNavigationItem {
     const isLink = !!this.href && !this.disabled;
     const Tag: any = isLink ? 'a' : 'button';
 
-    const root =
-      'group/n block w-full bg-transparent border-0 p-0 m-0 text-start no-underline ' +
-      'cursor-pointer focus:outline-none focus-visible:outline-2 focus-visible:outline-secondary focus-visible:outline-offset-[-2px] ' +
-      'disabled:cursor-not-allowed disabled:opacity-40';
-
     const props: Record<string, unknown> = {
-      class: root,
+      class: 'root',
       'aria-label': this.ariaLabel ?? this.label,
       'aria-current': this.active ? 'page' : undefined,
       onClick: this.handleClick,
