@@ -9,7 +9,6 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 import { gettext } from '../../utils/i18n';
 
 export type MaterialFileFieldVariant = 'filled' | 'outlined';
@@ -68,10 +67,6 @@ export class MaterialFileField {
   @Event() fileChange!: EventEmitter<{ file: File | null; files: File[]; cleared: boolean }>;
 
   private fileInput?: HTMLInputElement;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   componentDidRender() {
     // Keep validity in sync with the current picked/cleared/required state on
@@ -166,7 +161,7 @@ export class MaterialFileField {
       !!this.currentUrl && !hasPicked && !this.pendingClear;
 
     return (
-      <Host class="block w-full" onClick={this.handleSurfaceClick}>
+      <Host onClick={this.handleSurfaceClick}>
         <material-textfield
           variant={this.variant}
           label={this.label}
@@ -188,12 +183,12 @@ export class MaterialFileField {
               rel="noopener"
               aria-label={this.downloadLabel || undefined}
               onClick={(e: MouseEvent) => e.stopPropagation()}
-              class="material-symbols text-2xl text-on-surface-variant no-underline"
+              class="download"
             >
               download
             </a>
           )}
-          <span slot="trailing" class="inline-flex items-center">
+          <span slot="trailing" class="trailing">
             {hasFile && (
               <material-icon-button
                 size="s"
