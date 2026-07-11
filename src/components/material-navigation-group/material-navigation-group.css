@@ -1,0 +1,22 @@
+/* Layout-morph entrance — same contract as material-navigation-item:
+   applied only after the first runtime variant switch. */
+
+@keyframes nav-group-morph-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+.morph-in {
+  animation: nav-group-morph-in
+    var(--md-sys-motion-duration-medium2, 300ms)
+    var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1))
+    both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .morph-in {
+    animation: none;
+  }
+}

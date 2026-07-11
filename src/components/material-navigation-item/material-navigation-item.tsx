@@ -26,7 +26,9 @@ export type MaterialNavigationItemVariant =
 export class MaterialNavigationItem {
   @Element() el!: HTMLElement;
 
-  @Prop() icon!: string;
+  /** Material Symbols glyph. Optional — sub-items inside
+   *  material-navigation-group typically render label-only. */
+  @Prop() icon?: string;
   @Prop() activeIcon?: string;
   @Prop() label!: string;
   @Prop() href?: string;
@@ -116,13 +118,15 @@ export class MaterialNavigationItem {
         <span class="relative inline-flex">
           <span class={indicator}>
             {this.stateLayer()}
-            <span
-              class="material-symbols leading-none text-[1.5rem] relative"
-              style={this.iconStyle()}
-              aria-hidden="true"
-            >
-              {this.iconName()}
-            </span>
+            {this.iconName() && (
+              <span
+                class="material-symbols leading-none text-[1.5rem] relative"
+                style={this.iconStyle()}
+                aria-hidden="true"
+              >
+                {this.iconName()}
+              </span>
+            )}
           </span>
           <span class="absolute top-0 end-2 translate-x-1/2 rtl:-translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
             <slot name="badge" />
@@ -157,16 +161,18 @@ export class MaterialNavigationItem {
     return (
       <span key="expanded" class={row + this.morphClass()}>
         {this.stateLayer()}
-        <span
-          class="material-symbols leading-none text-[1.5rem] relative"
-          style={this.iconStyle()}
-          aria-hidden="true"
-        >
-          {this.iconName()}
-        </span>
+        {this.iconName() && (
+          <span
+            class="material-symbols leading-none text-[1.5rem] relative"
+            style={this.iconStyle()}
+            aria-hidden="true"
+          >
+            {this.iconName()}
+          </span>
+        )}
         <span
           class={
-            'relative ms-3 text-sm truncate ' +
+            (this.iconName() ? 'relative ms-3 ' : 'relative ') + 'text-sm truncate ' +
             // Active label inherits on-secondary-container from the pill row
             // (the container sets it); only the weight changes.
             (this.active ? 'font-medium' : '')
@@ -204,20 +210,22 @@ export class MaterialNavigationItem {
             aria-hidden="true"
           />
           <span class="relative inline-flex">
-            <span
-              class="material-symbols leading-none text-[1.5rem]"
-              style={this.iconStyle()}
-              aria-hidden="true"
-            >
-              {this.iconName()}
-            </span>
+            {this.iconName() && (
+              <span
+                class="material-symbols leading-none text-[1.5rem]"
+                style={this.iconStyle()}
+                aria-hidden="true"
+              >
+                {this.iconName()}
+              </span>
+            )}
             <span class="absolute top-0 end-0 translate-x-1/2 rtl:-translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
               <slot name="badge" />
             </span>
           </span>
           <span
             class={
-              'relative ms-1 text-sm whitespace-nowrap ' +
+              (this.iconName() ? 'relative ms-1 ' : 'relative ') + 'text-sm whitespace-nowrap ' +
               (this.active ? 'font-medium' : '')
             }
           >

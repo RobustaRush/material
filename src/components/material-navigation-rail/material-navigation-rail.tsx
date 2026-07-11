@@ -203,24 +203,32 @@ export class MaterialNavigationRail {
     }
   }
 
-  // Arrow-key navigation between items (Home/End jump to the edges). Items
-  // stay in the tab order; arrows are an enhancement, not roving tabindex.
+  // Arrow-key navigation between items and group headers (Home/End jump to
+  // the edges). Items inside closed groups are skipped. Everything stays in
+  // the tab order; arrows are an enhancement, not roving tabindex.
   @Listen('keydown')
   handleKeydown(ev: KeyboardEvent) {
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(ev.key)) return;
-    const from = (ev.target as HTMLElement | null)?.closest?.('material-navigation-item');
+    const from = (ev.target as HTMLElement | null)?.closest?.(
+      'material-navigation-item, material-navigation-group',
+    );
     if (!from) return;
-    const items = Array.from(
-      this.el.querySelectorAll('material-navigation-item'),
-    ).filter((it) => !it.disabled);
-    const idx = items.indexOf(from);
-    if (idx < 0 || items.length === 0) return;
+    type NavStop = HTMLElement & { disabled?: boolean; setFocus: () => Promise<void> };
+    const stops = (Array.from(
+      this.el.querySelectorAll('material-navigation-item, material-navigation-group'),
+    ) as NavStop[]).filter((el) => {
+      if (el.disabled) return false;
+      const group = el.parentElement?.closest('material-navigation-group');
+      return !group || group.open;
+    });
+    const idx = stops.indexOf(from as NavStop);
+    if (idx < 0 || stops.length === 0) return;
     ev.preventDefault();
     const next =
-      ev.key === 'ArrowDown' ? (idx + 1) % items.length :
-      ev.key === 'ArrowUp' ? (idx - 1 + items.length) % items.length :
-      ev.key === 'Home' ? 0 : items.length - 1;
-    items[next].setFocus();
+      ev.key === 'ArrowDown' ? (idx + 1) % stops.length :
+      ev.key === 'ArrowUp' ? (idx - 1 + stops.length) % stops.length :
+      ev.key === 'Home' ? 0 : stops.length - 1;
+    stops[next].setFocus();
   }
 
   private emitToggle() {
@@ -231,6 +239,9 @@ export class MaterialNavigationRail {
     const variant = this.expanded ? 'rail-expanded' : 'rail-collapsed';
     this.el.querySelectorAll('material-navigation-item').forEach((it) => {
       (it as HTMLElement & { variant: string }).variant = variant;
+    });
+    this.el.querySelectorAll('material-navigation-group').forEach((g) => {
+      g.variant = variant;
     });
     // Section headers don't fit the 96dp collapsed rail — expanded-only per spec.
     this.el.querySelectorAll<HTMLElement>('[data-section-header]').forEach((elm) => {
