@@ -3,3 +3,40 @@
   vertical-align: middle;
   pointer-events: none;
 }
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1rem;
+  height: 1rem;
+  border-radius: 8px;
+  padding: 0 4px;
+  font-size: 11px;
+  line-height: 1rem;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+:host([color="error"]) .dot,
+:host([color="error"]) .pill {
+  background: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+}
+:host([color="primary"]) .dot,
+:host([color="primary"]) .pill {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+:host([color="tertiary"]) .dot,
+:host([color="tertiary"]) .pill {
+  background: var(--md-sys-color-tertiary);
+  color: var(--md-sys-color-on-tertiary);
+}

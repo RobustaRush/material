@@ -1,5 +1,4 @@
-import { Component, Element, Host, Prop, h } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
+import { Component, Host, Prop, h } from '@stencil/core';
 
 // MD3 Badge — notification / count indicator anchored to a host icon.
 // Spec: docs/wiki/specs/google-material/badges/specs.md
@@ -14,20 +13,14 @@ import { adoptMaterialStyles } from '../../utils/adopted-styles';
 //
 // For ad-hoc use on a custom icon, wrap in a positioned ancestor:
 //
-//   <span class="relative inline-flex">
+//   <span style="position: relative; display: inline-flex">
 //     <span class="material-symbols">mail</span>
-//     <span class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2">
+//     <span style="position: absolute; top: 0; right: 0; transform: translate(50%, -50%)">
 //       <material-badge value="3"></material-badge>
 //     </span>
 //   </span>
 
 export type MaterialBadgeColor = 'error' | 'primary' | 'tertiary';
-
-const COLORS: Record<MaterialBadgeColor, string> = {
-  error: 'bg-error text-on-error',
-  primary: 'bg-primary text-on-primary',
-  tertiary: 'bg-tertiary text-on-tertiary',
-};
 
 @Component({
   tag: 'material-badge',
@@ -35,40 +28,23 @@ const COLORS: Record<MaterialBadgeColor, string> = {
   shadow: true,
 })
 export class MaterialBadge {
-  @Element() el!: HTMLElement;
-
   @Prop() value?: string;
   @Prop({ reflect: true }) color: MaterialBadgeColor = 'error';
 
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
-
   render() {
     const isLarge = this.value != null && this.value !== '';
-    const colorCls = COLORS[this.color];
 
     if (!isLarge) {
       return (
         <Host>
-          <span
-            class={`inline-block w-[6px] h-[6px] rounded-[3px] ${colorCls}`}
-            aria-hidden="true"
-          ></span>
+          <span class="dot" aria-hidden="true"></span>
         </Host>
       );
     }
 
     return (
       <Host>
-        <span
-          class={
-            'inline-flex items-center justify-center min-w-4 h-4 rounded-[8px] px-1 ' +
-            `text-[11px] leading-4 tracking-[0.5px] font-medium ${colorCls}`
-          }
-        >
-          {this.value}
-        </span>
+        <span class="pill">{this.value}</span>
       </Host>
     );
   }
