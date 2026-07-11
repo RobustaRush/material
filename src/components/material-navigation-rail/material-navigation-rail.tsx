@@ -11,7 +11,6 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 Expressive navigation rail — collapsed (96dp) and expanded (220–360dp)
 // variants in a single component. Items are slotted (<material-navigation-item>);
@@ -101,7 +100,6 @@ export class MaterialNavigationRail {
 
   componentWillLoad() {
     this.setupMqlIfNeeded();
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -326,24 +324,13 @@ export class MaterialNavigationRail {
     return (
       <button
         type="button"
-        class={
-          'group/t relative inline-flex items-center justify-center w-12 h-12 shrink-0 ' +
-          'rounded-full overflow-hidden bg-transparent border-0 p-0 cursor-pointer ' +
-          'text-on-surface-variant ' +
-          'focus:outline-none focus-visible:outline-2 focus-visible:outline-secondary'
-        }
+        class="toggle"
         aria-expanded={this.expanded ? 'true' : 'false'}
         aria-label={this.toggleLabel}
         onClick={this.handleToggleClick}
       >
-        <span
-          class={
-            'absolute inset-0 pointer-events-none bg-current opacity-0 transition-opacity ' +
-            'group-hover/t:opacity-[0.08] group-focus-visible/t:opacity-[0.10] group-active/t:opacity-[0.10]'
-          }
-          aria-hidden="true"
-        />
-        <span class="material-symbols text-[1.5rem] leading-none relative" aria-hidden="true">
+        <span class="state-layer" aria-hidden="true" />
+        <span class="icon" aria-hidden="true">
           {this.expanded ? 'menu_open' : 'menu'}
         </span>
       </button>
@@ -355,7 +342,7 @@ export class MaterialNavigationRail {
   // meaning to "collapse" when the rail is open).
   private renderHeader(expandedLayout: boolean) {
     const menuSlot = (
-      <div onClick={this.handleMenuClick} class="contents">
+      <div onClick={this.handleMenuClick} class="menu-wrapper">
         <slot name="menu" onSlotchange={this.handleMenuSlotChange} />
       </div>
     );
@@ -363,8 +350,8 @@ export class MaterialNavigationRail {
 
     if (expandedLayout) {
       return (
-        <div key="header-expanded" class="flex items-center gap-1 min-h-12 ps-4 pe-2">
-          <span class="flex-1 min-w-0 truncate text-base font-medium rail-morph-in">
+        <div key="header-expanded" class="header-expanded">
+          <span class="title rail-morph-in">
             <slot name="title">{this.label}</slot>
           </span>
           {menuSlot}
@@ -373,7 +360,7 @@ export class MaterialNavigationRail {
       );
     }
     return (
-      <div key="header-collapsed" class="flex flex-col items-center gap-2 px-2">
+      <div key="header-collapsed" class="header-collapsed">
         {menuSlot}
         {toggle}
       </div>
@@ -383,16 +370,16 @@ export class MaterialNavigationRail {
   // Items area uses px-2 (8dp) so the indicator pill (56dp) fits centered
   // inside a 96dp rail (96 - 16 = 80, indicator 56dp leaves 12dp/side gutter).
   private renderContent(expandedLayout: boolean) {
-    const itemsAlign = this.alignment === 'center' ? 'justify-center' : 'justify-start';
+    const itemsAlign = this.alignment === 'center' ? 'align-center' : 'align-start';
     return [
       this.renderHeader(expandedLayout),
-      <div class={expandedLayout ? 'flex px-4 mt-2' : 'flex flex-col items-center px-2 mt-2'}>
+      <div class={expandedLayout ? 'fab-expanded' : 'fab-collapsed'}>
         <slot name="fab" />
       </div>,
-      <div class={`flex-1 flex flex-col gap-1 px-2 mt-3 overflow-y-auto ${itemsAlign}`}>
+      <div class={`items ${itemsAlign}`}>
         <slot onSlotchange={this.handleSlotChange} />
       </div>,
-      <div class="flex flex-col gap-1 px-2">
+      <div class="bottom">
         <slot name="bottom" onSlotchange={this.handleSlotChange} />
       </div>,
     ];
@@ -417,12 +404,7 @@ export class MaterialNavigationRail {
     return (
       <Host>
         <nav
-          class={
-            'h-full bg-surface text-on-surface flex flex-col py-2 overflow-hidden ' +
-            // MD3 spatial motion: emphasized easing over medium2 (300ms).
-            'transition-[width] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none' +
-            (shellGone ? ' invisible' : '')
-          }
+          class={shellGone ? 'shell gone' : 'shell'}
           style={{ width: shellWidth }}
           aria-label={this.ariaLabel}
           aria-hidden={shellGone || modalOpen ? 'true' : undefined}
@@ -431,7 +413,7 @@ export class MaterialNavigationRail {
         </nav>
         <dialog class="rail-dialog" ref={this.setDialogRef} aria-label={this.ariaLabel}>
           {modalOpen && (
-            <nav class="h-full flex flex-col py-2 text-on-surface" aria-label={this.ariaLabel}>
+            <nav class="modal-nav" aria-label={this.ariaLabel}>
               {this.renderContent(true)}
             </nav>
           )}
