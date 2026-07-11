@@ -9,7 +9,6 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 export type MaterialTextfieldVariant = 'filled' | 'outlined';
 export type MaterialTextfieldType =
@@ -18,21 +17,10 @@ export type MaterialTextfieldType =
 // Implementation rationale (placeholder-shown trick, fieldset/legend notch,
 // leading-14, label-shift over icon, etc.):
 // docs/wiki/projects/material-textfield-notes.md
-
-const SUPPORT_BASE = 'flex justify-between gap-4 mt-1 px-4 text-xs leading-4';
-
-const INPUT_BASE =
-  'peer bg-transparent outline-none border-0 m-0 p-0 ' +
-  'text-on-surface text-base ' +
-  'placeholder:text-on-surface-variant placeholder:opacity-0 ' +
-  'focus:placeholder:opacity-100 ' +
-  'disabled:cursor-not-allowed disabled:text-on-surface/40';
-
-const AFFIX_BASE =
-  'text-base text-on-surface-variant whitespace-nowrap select-none ' +
-  'transition-opacity duration-150 opacity-0 ' +
-  'group-focus-within:opacity-100 ' +
-  'group-has-[input:not(:placeholder-shown)]:opacity-100';
+//
+// The floating label / affix visibility / legend notch are driven purely by
+// CSS state (:focus-within, :has(input:not(:placeholder-shown)), plus an
+// `.is-filled` fallback class for Safari — see material-textfield.css).
 
 @Component({
   tag: 'material-textfield',
@@ -86,8 +74,6 @@ export class MaterialTextfield {
 
   componentWillLoad() {
     this.defaultValue = this.value;
-    // Block first render until the shared Tailwind sheet is adopted.
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   connectedCallback() {
@@ -152,37 +138,19 @@ export class MaterialTextfield {
     const disabled = this.disabled;
     const subText = error ? errorText : helpText;
     const showCounter = typeof maxLength === 'number';
-    const subToneCls = disabled
-      ? 'text-on-surface/38'
-      : error ? 'text-error' : 'text-on-surface-variant';
-    const iconToneCls = disabled
-      ? 'text-on-surface/38'
-      : error ? 'text-error' : 'text-on-surface-variant';
-    const labelLeft = hasLeading ? 'left-12' : 'left-4';
+    // Tone drives color across icon/label/indicator/fieldset — disabled wins
+    // over error, error wins over the idle (hover/focus-reactive) state.
+    const tone = disabled ? 'disabled' : error ? 'error' : 'idle';
+    const labelSideCls = hasLeading ? 'leading' : 'no-leading';
 
-    const labelRest =
-      `absolute ${labelLeft} top-1/2 -translate-y-1/2 ` +
-      'pointer-events-none origin-left transition-all duration-150 ' +
-      'text-base';
-
-    const labelTone = disabled
-      ? 'text-on-surface/38'
-      : error
-      ? 'text-error'
-      : 'text-on-surface-variant group-focus-within:text-primary';
-
-    const renderIcon = (side: 'left' | 'right', name?: string) => name && (
-      <span
-        class={`absolute ${side === 'left' ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 material-symbols text-2xl pointer-events-none ${iconToneCls}`}
-        aria-hidden="true">
-        {name}
-      </span>
+    const renderIcon = (side: 'leading' | 'trailing', name?: string) => name && (
+      <span class={`icon ${side} ${tone}`} aria-hidden="true">{name}</span>
     );
 
     // Leading slot — when provided, replaces the static leading-icon span.
     // Same 12dp-from-edge positioning so it lines up with the icon spec.
     const renderLeadingSlot = () => hasLeadingSlot && (
-      <span class={`absolute left-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center ${iconToneCls}`}>
+      <span class={`leading-slot ${tone}`}>
         <slot name="leading" />
       </span>
     );
@@ -191,7 +159,7 @@ export class MaterialTextfield {
     // the right edge, matching the static trailing-icon position. Uses a
     // size-s icon-button (40dp visual inside a 48dp tap target).
     const renderTrailingAction = () => hasTrailingAction && (
-      <span class="absolute right-1 top-1/2 -translate-y-1/2 z-10">
+      <span class="trailing-action">
         {showPwdToggle ? (
           <material-icon-button
             size="s"
@@ -210,11 +178,12 @@ export class MaterialTextfield {
       </span>
     );
 
-    const renderInput = (extraCls: string) => (
+    const renderInput = (variantCls: string, style: { [k: string]: string }) => (
       <input
         ref={el => (this.inputEl = el)}
         id="input"
-        class={`${INPUT_BASE} ${extraCls} ${this.dimmed ? 'text-on-surface/40 line-through' : ''}`}
+        class={this.dimmed ? `input ${variantCls} dimmed` : `input ${variantCls}`}
+        style={style}
         type={effectiveType}
         name={this.name}
         value={this.value}
@@ -232,13 +201,13 @@ export class MaterialTextfield {
     );
 
     const renderSupporting = () => (subText || showCounter) && (
-      <div class={SUPPORT_BASE}>
-        <span id="description" class={subToneCls}
+      <div class="supporting">
+        <span id="description" class={tone}
               role={error ? 'alert' : undefined}>
           {subText}
         </span>
         {showCounter && (
-          <span class="text-on-surface-variant ml-auto tabular-nums">
+          <span class="counter">
             {(this.value?.length ?? 0)}/{maxLength}
           </span>
         )}
@@ -246,68 +215,49 @@ export class MaterialTextfield {
     );
 
     // Treat any non-empty `value` prop as "filled" — explicit class on the
-    // group wrapper, in addition to :placeholder-shown. Safari's :has() +
+    // shell, in addition to :placeholder-shown. Safari's :has() +
     // :placeholder-shown doesn't reliably re-evaluate after a programmatic
     // value assignment, leaving the label stuck "down".
     const hasValue = (this.value ?? '') !== '';
-    const groupCls = `group${hasValue ? ' is-filled' : ''}`;
+    const shellBase = hasValue ? 'shell is-filled' : 'shell';
+
+    // Container/input padding depends on which of {icon, slot, text, none}
+    // occupies each side — purely a function of props, so it's computed as
+    // inline style rather than a CSS class (the pseudo-state-driven parts —
+    // focus-within / :has / is-filled — live in the stylesheet instead).
+    const rowStyle: { [k: string]: string } = {};
+    if (hasLeading) rowStyle.paddingLeft = '3rem';
+    else if (leadingText) rowStyle.paddingLeft = '1rem';
+    if (reserveTrailing) rowStyle.paddingRight = this.wideTrailing ? '6rem' : '3rem';
+    else if (trailingText) rowStyle.paddingRight = '1rem';
+
+    const inputStyle: { [k: string]: string } = {};
+    if (!hasLeading) inputStyle.paddingLeft = leadingText ? '0.25rem' : '1rem';
+    if (!reserveTrailing) inputStyle.paddingRight = trailingText ? '0.25rem' : '1rem';
 
     if (variant === 'filled') {
-      // Filled label rests vertically centered (top-4 == the old
-      // top-1/2 -translate-y-1/2 for a 24dp line box in a 56dp field) and
-      // shrinks via scale-75 + origin-top-left rather than swapping
-      // text-base→text-xs. The font-size/line-height interpolation of the
-      // latter changes the label's box height mid-animation, so the
-      // percentage `-translate-y-1/2` resting target shifts and the label
-      // dips below its resting spot before snapping up. Scale keeps the
-      // layout box constant — only top + transform animate. (Ported from
-      // material-textarea's filled label.)
-      const labelRestFilled =
-        `absolute ${labelLeft} top-4 ` +
-        'pointer-events-none origin-top-left transition-all duration-150 text-base';
-      const labelShrunk =
-        'group-focus-within:top-2 group-focus-within:scale-75 ' +
-        'group-[.is-filled]:top-2 group-[.is-filled]:scale-75 ' +
-        'group-has-[input:not(:placeholder-shown)]:top-2 ' +
-        'group-has-[input:not(:placeholder-shown)]:scale-75';
-
-      const indicatorCls = disabled
-        ? 'h-px bg-on-surface/38'
-        : error
-        ? 'h-0.5 bg-error'
-        : 'h-px bg-on-surface-variant ' +
-          'group-hover:bg-on-surface ' +
-          'group-focus-within:h-0.5 group-focus-within:bg-primary';
-
-      const innerL = hasLeading ? 'pl-12' : (leadingText ? 'pl-4' : '');
-      const innerR = reserveTrailing ? (this.wideTrailing ? 'pr-24' : 'pr-12') : (trailingText ? 'pr-4' : '');
-      const inputL = hasLeading ? '' : (leadingText ? 'pl-1' : 'pl-4');
-      const inputR = reserveTrailing ? '' : (trailingText ? 'pr-1' : 'pr-4');
-      const affixFilled = `${AFFIX_BASE} self-stretch pt-6 pb-2`;
-
       return (
-        <div class="block w-full">
-          <div class={`${groupCls} relative w-full h-14 rounded-t overflow-hidden ${disabled ? 'bg-on-surface/[0.04]' : 'bg-surface-container-highest tf-state-layer'}`}>
-            {showStaticLeading && renderIcon('left', leadingIcon)}
+        <div class="wrapper">
+          <div class={`${shellBase} filled ${disabled ? 'disabled' : 'tf-state-layer'}`}>
+            {showStaticLeading && renderIcon('leading', leadingIcon)}
             {renderLeadingSlot()}
-            {showStaticTrailing && renderIcon('right', trailingIcon)}
+            {showStaticTrailing && renderIcon('trailing', trailingIcon)}
             {renderTrailingAction()}
-            <div class={`flex items-end h-full ${innerL} ${innerR}`}>
+            <div class="field-row" style={rowStyle}>
               {leadingText && (
-                <span class={affixFilled} aria-hidden="true">{leadingText}</span>
+                <span class="affix filled" aria-hidden="true">{leadingText}</span>
               )}
-              {renderInput(`w-full h-full pt-6 pb-2 ${inputL} ${inputR}`)}
+              {renderInput('filled', inputStyle)}
               {trailingText && (
-                <span class={affixFilled} aria-hidden="true">{trailingText}</span>
+                <span class="affix filled" aria-hidden="true">{trailingText}</span>
               )}
             </div>
             {label && (
-              <label htmlFor="input" class={`${labelRestFilled} ${labelShrunk} ${labelTone}`}>
+              <label htmlFor="input" class={`label filled ${labelSideCls} ${tone}`}>
                 {label}{this.required ? ' *' : ''}
               </label>
             )}
-            <span class={`absolute left-0 right-0 bottom-0 pointer-events-none ${indicatorCls}`}
-                  aria-hidden="true"></span>
+            <span class={`indicator ${tone}`} aria-hidden="true"></span>
           </div>
           {renderSupporting()}
         </div>
@@ -315,61 +265,33 @@ export class MaterialTextfield {
     }
 
     // Outlined: floated label slides to left-4 (over the icon column) so it
-    // aligns with the notch, regardless of leading-icon presence.
-    const labelShrunkOutlined =
-      'group-focus-within:top-0 group-focus-within:text-xs ' +
-      'group-[.is-filled]:top-0 group-[.is-filled]:text-xs ' +
-      'group-has-[input:not(:placeholder-shown)]:top-0 ' +
-      'group-has-[input:not(:placeholder-shown)]:text-xs' +
-      (hasLeading
-        ? ' group-focus-within:left-4 group-[.is-filled]:left-4 group-has-[input:not(:placeholder-shown)]:left-4'
-        : '');
-
-    const fieldsetTone = disabled
-      ? 'border border-on-surface/12'
-      : error
-      ? 'border-2 border-error'
-      : 'border border-outline group-hover:border-on-surface ' +
-        'group-focus-within:border-2 group-focus-within:border-primary';
-
-    // Counter the fieldset's border-left width so the notch lines up with
-    // the floated label at left-4. Doubles when the border thickens on focus.
-    const legendOffset = error
-      ? '-ml-[2px]'
-      : '-ml-px group-focus-within:-ml-[2px]';
-
-    const innerL = hasLeading ? 'pl-12' : '';
-    const innerR = reserveTrailing ? (this.wideTrailing ? 'pr-24' : 'pr-12') : '';
-    const inputL = hasLeading ? '' : (leadingText ? 'pl-1' : 'pl-4');
-    const inputR = reserveTrailing ? '' : (trailingText ? 'pr-1' : 'pr-4');
-
+    // aligns with the notch, regardless of leading-icon presence — handled
+    // in CSS via the higher-specificity `.label.outlined.leading` override.
     return (
-      <div class="block w-full">
-        <div class={`${groupCls} relative w-full h-14`}>
-          {showStaticLeading && renderIcon('left', leadingIcon)}
+      <div class="wrapper">
+        <div class={`${shellBase} outlined`}>
+          {showStaticLeading && renderIcon('leading', leadingIcon)}
           {renderLeadingSlot()}
-          {showStaticTrailing && renderIcon('right', trailingIcon)}
+          {showStaticTrailing && renderIcon('trailing', trailingIcon)}
           {renderTrailingAction()}
-          <div class={`flex items-center h-full ${innerL} ${innerR}`}>
+          <div class="field-row" style={rowStyle}>
             {leadingText && (
-              <span class={`${AFFIX_BASE} pl-4`} aria-hidden="true">{leadingText}</span>
+              <span class="affix" style={{ paddingLeft: '1rem' }} aria-hidden="true">{leadingText}</span>
             )}
-            {renderInput(`w-full h-full leading-14 ${inputL} ${inputR}`)}
+            {renderInput('outlined', inputStyle)}
             {trailingText && (
-              <span class={`${AFFIX_BASE} pr-4`} aria-hidden="true">{trailingText}</span>
+              <span class="affix" style={{ paddingRight: '1rem' }} aria-hidden="true">{trailingText}</span>
             )}
           </div>
           {label && (
-            <label htmlFor="input" class={`${labelRest} ${labelShrunkOutlined} ${labelTone}`}>
+            <label htmlFor="input" class={`label outlined ${labelSideCls} ${tone}`}>
               {label}{this.required ? ' *' : ''}
             </label>
           )}
-          <fieldset
-            aria-hidden="true"
-            class={`absolute inset-0 m-0 px-3 pt-0 pointer-events-none rounded text-left ${fieldsetTone}`}>
+          <fieldset aria-hidden="true" class={`fieldset ${tone}`}>
             {label && (
-              <legend class={`invisible block h-0 overflow-visible p-0 text-xs leading-none ${legendOffset}`}>
-                <span class="inline-block overflow-hidden whitespace-nowrap max-w-[0.01px] transition-[max-width,padding] duration-150 group-focus-within:max-w-full group-focus-within:px-1 group-[.is-filled]:max-w-full group-[.is-filled]:px-1 group-has-[input:not(:placeholder-shown)]:max-w-full group-has-[input:not(:placeholder-shown)]:px-1">
+              <legend class={error ? 'legend error' : 'legend idle'}>
+                <span class="legend-text">
                   {label}{this.required ? ' *' : ''}
                 </span>
               </legend>

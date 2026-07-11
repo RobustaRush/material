@@ -28,3 +28,272 @@
 .tf-state-layer:hover::before {
   opacity: 0.08;
 }
+
+.wrapper {
+  display: block;
+  width: 100%;
+}
+
+.shell {
+  position: relative;
+  width: 100%;
+  height: 3.5rem;
+  box-sizing: border-box;
+}
+
+.shell.filled {
+  border-radius: 0.25rem 0.25rem 0 0;
+  overflow: hidden;
+  background: var(--md-sys-color-surface-container-highest);
+}
+
+.shell.filled.disabled {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 4%, transparent);
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.shell.filled .field-row {
+  align-items: flex-end;
+}
+
+.input {
+  background: transparent;
+  outline: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: var(--md-sys-color-on-surface);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0;
+}
+
+.input:focus::placeholder {
+  opacity: 1;
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 40%, transparent);
+}
+
+.input.dimmed {
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 40%, transparent);
+  text-decoration: line-through;
+}
+
+.input.filled {
+  width: 100%;
+  height: 100%;
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.input.outlined {
+  width: 100%;
+  height: 100%;
+  line-height: 3.5rem;
+}
+
+.affix {
+  font-size: 1rem;
+  color: var(--md-sys-color-on-surface-variant);
+  white-space: nowrap;
+  user-select: none;
+  transition: opacity 150ms;
+  opacity: 0;
+}
+
+.affix.filled {
+  align-self: stretch;
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.shell:focus-within .affix,
+.shell:has(input:not(:placeholder-shown)) .affix {
+  opacity: 1;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.5rem;
+  pointer-events: none;
+}
+
+.icon.leading { left: 0.75rem; }
+.icon.trailing { right: 0.75rem; }
+
+.icon.disabled,
+.leading-slot.disabled { color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
+.icon.error,
+.leading-slot.error { color: var(--md-sys-color-error); }
+.icon.idle,
+.leading-slot.idle { color: var(--md-sys-color-on-surface-variant); }
+
+.leading-slot {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+}
+
+.trailing-action {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.label {
+  position: absolute;
+  pointer-events: none;
+  transition: all 150ms;
+  font-size: 1rem;
+}
+
+.label.leading { left: 3rem; }
+.label.no-leading { left: 1rem; }
+
+.label.disabled { color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
+.label.error { color: var(--md-sys-color-error); }
+.label.idle { color: var(--md-sys-color-on-surface-variant); }
+.shell:focus-within .label.idle { color: var(--md-sys-color-primary); }
+
+/* Filled label: rests vertically centered on the 24dp line box, shrinks via
+   scale(0.75) + a fixed top rather than swapping font-size — that keeps the
+   layout box constant so the label doesn't dip before snapping up (percentage
+   translateY resting targets shift when font-size/line-height interpolate). */
+.label.filled {
+  top: 1rem;
+  transform-origin: top left;
+}
+
+.shell:focus-within .label.filled,
+.shell:has(input:not(:placeholder-shown)) .label.filled,
+.shell.is-filled .label.filled {
+  top: 0.5rem;
+  transform: scale(0.75);
+}
+
+.label.outlined {
+  top: 50%;
+  transform: translateY(-50%);
+  transform-origin: left;
+}
+
+.shell:focus-within .label.outlined,
+.shell:has(input:not(:placeholder-shown)) .label.outlined,
+.shell.is-filled .label.outlined {
+  top: 0;
+  font-size: 0.75rem;
+}
+
+/* Shrunk outlined label always sits over the notch at left-4, regardless of
+   a leading icon (higher specificity than .label.leading wins). */
+.shell:focus-within .label.outlined.leading,
+.shell:has(input:not(:placeholder-shown)) .label.outlined.leading,
+.shell.is-filled .label.outlined.leading {
+  left: 1rem;
+}
+
+.indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  height: 1px;
+  background: var(--md-sys-color-on-surface-variant);
+}
+
+.indicator.disabled { background: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
+.indicator.error { height: 2px; background: var(--md-sys-color-error); }
+
+.shell:hover .indicator.idle { background: var(--md-sys-color-on-surface); }
+.shell:focus-within .indicator.idle { height: 2px; background: var(--md-sys-color-primary); }
+
+.fieldset {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0 0.75rem;
+  padding-top: 0;
+  pointer-events: none;
+  border-radius: 0.25rem;
+  text-align: left;
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.fieldset.disabled { border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent); }
+.fieldset.error { border: 2px solid var(--md-sys-color-error); }
+
+.shell:focus-within .fieldset.idle { border: 2px solid var(--md-sys-color-primary); }
+
+.legend {
+  visibility: hidden;
+  display: block;
+  height: 0;
+  overflow: visible;
+  padding: 0;
+  font-size: 0.75rem;
+  line-height: 1;
+  margin-left: -1px;
+}
+
+.legend.error { margin-left: -2px; }
+.shell:focus-within .legend.idle { margin-left: -2px; }
+
+.legend-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 150ms, padding 150ms;
+  max-width: 0.01px;
+}
+
+.shell:focus-within .legend-text,
+.shell:has(input:not(:placeholder-shown)) .legend-text,
+.shell.is-filled .legend-text {
+  max-width: 100%;
+  padding: 0 0.25rem;
+}
+
+.supporting {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.25rem;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.supporting .error { color: var(--md-sys-color-error); }
+.supporting .disabled { color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
+.supporting .idle { color: var(--md-sys-color-on-surface-variant); }
+
+.counter {
+  color: var(--md-sys-color-on-surface-variant);
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
