@@ -7,7 +7,6 @@ import {
   Prop,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 list item. Heights follow the baseline spec:
 //   1-line  56dp  (text-only / leading icon)
@@ -49,10 +48,6 @@ export class MaterialListItem {
   /** Internal: tells the parent list this item was activated. */
   @Event({ bubbles: true, composed: true })
   materialListItemActivate!: EventEmitter<{ value?: string; checked?: boolean }>;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   private parentVariant(): 'baseline' | 'expressive' {
     const list = this.el.closest('material-list') as HTMLElement | null;
@@ -138,74 +133,56 @@ export class MaterialListItem {
     const twoLine = !!this.supportingText;
     const threeLine = !!this.overline && !!this.supportingText;
 
-    const heightCls = threeLine
-      ? 'min-h-[88px] py-3 items-start'
-      : twoLine
-        ? 'min-h-[72px] py-2 items-center'
-        : 'min-h-14 py-2 items-center';
-    const densityCls = dense ? 'py-1' : '';
     // selected (checked) wins visually over active (master-detail open).
     // active uses a tinted secondary surface so checked rows still stand out
     // (full container) next to active rows (half-tinted container).
-    const selectedCls = this.selected
-      ? expressive
-        ? 'bg-primary-container text-on-primary-container'
-        : 'bg-secondary-container text-on-secondary-container'
-      : this.active
-        ? 'bg-secondary-container/40 text-on-surface'
-        : 'text-on-surface';
-    const expressiveShape = expressive ? 'rounded-2xl mx-2' : '';
+    const rowCls = [
+      'row',
+      threeLine ? 'three-line' : twoLine ? 'two-line' : 'one-line',
+      dense ? 'dense' : '',
+      expressive ? 'expressive' : '',
+      this.selected ? 'selected' : '',
+      !this.selected && this.active ? 'active' : '',
+      this.disabled ? 'disabled' : '',
+    ].filter(Boolean).join(' ');
 
     const inner = (
-      <div
-        class={[
-          'group relative flex w-full px-4 gap-4 cursor-pointer select-none',
-          heightCls,
-          densityCls,
-          selectedCls,
-          expressiveShape,
-          this.disabled ? 'opacity-40 pointer-events-none' : '',
-        ].join(' ')}
-      >
-        {/* state layer */}
-        <span
-          class="absolute inset-0 pointer-events-none transition-colors group-hover:bg-on-surface/10 group-active:bg-on-surface/15 group-focus-visible:bg-on-surface/10"
-          aria-hidden="true"
-        ></span>
+      <div class={rowCls}>
+        <span class="state-layer" aria-hidden="true"></span>
 
-        <span class={`flex ${threeLine ? 'items-start pt-0.5' : 'items-center'} justify-center shrink-0 min-w-6`}>
+        <span class="leading">
           <slot name="leading">
             {this.leadingIcon && (
-              <span class="material-symbols text-[24px]" aria-hidden="true">
+              <span class="icon" aria-hidden="true">
                 {this.leadingIcon}
               </span>
             )}
           </slot>
         </span>
 
-        <span class="flex flex-col flex-1 min-w-0 gap-0.5 justify-center">
+        <span class="text">
           {this.overline && (
-            <span class="truncate text-[11px] uppercase tracking-wide text-on-surface-variant">
+            <span class="overline">
               {this.overline}
             </span>
           )}
-          <span class="truncate text-sm leading-5">
+          <span class="label">
             <slot>{this.label}</slot>
           </span>
           {twoLine && (
-            <span class="line-clamp-2 text-xs leading-4 text-on-surface-variant">
+            <span class="supporting-text">
               {this.supportingText}
             </span>
           )}
         </span>
 
-        <span class={`flex ${threeLine ? 'items-start' : 'items-center'} justify-end gap-3 shrink-0`}>
+        <span class="trailing">
           <slot name="trailing">
             {this.trailingText && (
-              <span class="text-xs text-on-surface-variant">{this.trailingText}</span>
+              <span class="trailing-text">{this.trailingText}</span>
             )}
             {this.trailingIcon && (
-              <span class="material-symbols text-[24px] text-on-surface-variant" aria-hidden="true">
+              <span class="icon trailing-icon" aria-hidden="true">
                 {this.trailingIcon}
               </span>
             )}
@@ -235,7 +212,7 @@ export class MaterialListItem {
         {this.href ? (
           <a
             href={this.href}
-            class="block no-underline text-inherit"
+            class="link"
             tabIndex={-1}
           >
             {inner}

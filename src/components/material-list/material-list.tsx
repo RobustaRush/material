@@ -8,7 +8,6 @@ import {
   Prop,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 
 // MD3 list container. Holds <material-list-item> children and coordinates
 // keyboard navigation + selection. Three selection modes:
@@ -46,10 +45,6 @@ export class MaterialList {
   /** Fires when an item is activated. For multi, `checked` reflects the new state. */
   @Event({ bubbles: true, composed: true })
   materialListSelect!: EventEmitter<{ value?: string; checked?: boolean }>;
-
-  componentWillLoad() {
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
-  }
 
   connectedCallback() {
     this.syncRoving();
