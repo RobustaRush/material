@@ -9,7 +9,6 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { adoptMaterialStyles } from '../../utils/adopted-styles';
 import {
   defaultTimeMode,
   gettext,
@@ -79,7 +78,6 @@ export class MaterialTimePicker {
     }
     if (!this.value) this.value = this.normaliseToBounds(nowISOTime());
     else this.value = this.normaliseToBounds(this.value);
-    return this.el.shadowRoot ? adoptMaterialStyles(this.el.shadowRoot) : undefined;
   }
 
   /** Snap an ISO time to the nearest precision step that lies within
