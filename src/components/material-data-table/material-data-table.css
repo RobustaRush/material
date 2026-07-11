@@ -1,0 +1,219 @@
+/* material-data-table — light-DOM styles.
+ *
+ * NOT a Stencil styleUrl: the table lives in the light DOM (server-rendered
+ * markup), so these are plain document-level selectors. The file is
+ * @import-ed by src/global/material.css into Tailwind's `components` layer —
+ * below `utilities` — so any Tailwind class on the markup still wins.
+ *
+ * Visual style is the M2 data-table anatomy (M3 never shipped one) redrawn
+ * with M3 tokens: 12dp rounded outline container on surface, outline-variant
+ * row dividers, 8% on-surface hover, secondary-container selection tint.
+ * All sizes in rem so the A−/A/A+ density picker scales them.
+ */
+
+material-data-table {
+  display: block;
+  overflow: auto;
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 0.75rem;
+}
+
+material-data-table table {
+  width: 100%;
+  /* `separate` (not collapse) so the sticky header keeps its border while
+     the rows scroll under it; dividers are per-cell border-bottoms. */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* --- header ------------------------------------------------------------- */
+
+material-data-table th {
+  height: 3.5rem;
+  padding-inline: 1rem;
+  text-align: start;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--md-sys-color-on-surface-variant);
+  background: var(--md-sys-color-surface); /* opaque for sticky mode */
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+material-data-table[sticky-header] thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* The actively sorted column reads at full contrast. */
+material-data-table th[aria-sort] {
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Sort controls: server-driven <a href="?o=…"> or client-side <button>
+   inside th[data-sort]. Same anatomy either way. */
+material-data-table th a,
+material-data-table th[data-sort] button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+material-data-table th a:hover,
+material-data-table th[data-sort] button:hover {
+  color: var(--md-sys-color-on-surface);
+}
+
+material-data-table th a:focus-visible,
+material-data-table th[data-sort] button:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Direction arrow — Material Symbols ligature. Hidden until the column is
+   sorted; sortable columns preview it faintly on hover. */
+material-data-table th a::after,
+material-data-table th[data-sort] button::after {
+  content: 'arrow_upward';
+  font-family: 'Material Symbols Outlined';
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1;
+  direction: ltr;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+material-data-table th:not([aria-sort]) a:hover::after,
+material-data-table th:not([aria-sort]) a:focus-visible::after,
+material-data-table th[data-sort]:not([aria-sort]) button:hover::after,
+material-data-table th[data-sort]:not([aria-sort]) button:focus-visible::after {
+  opacity: 0.5;
+}
+
+material-data-table th[aria-sort='ascending'] a::after,
+material-data-table th[aria-sort='ascending'] button::after {
+  opacity: 1;
+}
+
+material-data-table th[aria-sort='descending'] a::after,
+material-data-table th[aria-sort='descending'] button::after {
+  content: 'arrow_downward';
+  opacity: 1;
+}
+
+/* --- body ----------------------------------------------------------------- */
+
+material-data-table td {
+  height: 3.25rem;
+  padding-inline: 1rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+material-data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+material-data-table tbody tr:not(:has(td.empty)):hover td {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+/* Checked rows — set by the component from the row checkbox state. */
+material-data-table tbody tr.selected td {
+  background: color-mix(in srgb, var(--md-sys-color-secondary-container) 40%, transparent);
+}
+
+material-data-table tbody tr.selected:hover td {
+  background: color-mix(in srgb, var(--md-sys-color-secondary-container) 60%, transparent);
+}
+
+material-data-table tr[data-row-link] {
+  cursor: pointer;
+}
+
+/* In-cell links (row title, related object) — primary-tinted, underline on
+   hover only, so dense tables don't turn into underline soup. */
+material-data-table td a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+}
+
+material-data-table td a:hover {
+  text-decoration: underline;
+}
+
+/* --- cell modifiers ------------------------------------------------------- */
+
+material-data-table th.numeric,
+material-data-table td.numeric {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Selection column hugs its checkbox. */
+material-data-table th.cell-select,
+material-data-table td.cell-select {
+  width: 2.5rem;
+  padding-inline: 0.75rem 0;
+}
+
+material-data-table .cell-select material-checkbox,
+material-data-table .cell-select input[type='checkbox'] {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/* Server renders <td class="empty" colspan="…"> when the queryset is empty. */
+material-data-table td.empty {
+  height: auto;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* --- states / addons ------------------------------------------------------ */
+
+material-data-table tbody {
+  transition: opacity 0.15s;
+}
+
+material-data-table[loading] tbody {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+material-data-table[dense] th {
+  height: 2.75rem;
+}
+
+material-data-table[dense] td {
+  height: 2.5rem;
+}
+
+/* Pagination / status bar slot: a plain <footer> after the table. Its
+   border-top is the closing divider — the last row's own divider is already
+   suppressed above. */
+material-data-table > footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+}

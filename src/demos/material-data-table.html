@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-data-table — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-data-table</h1>
+        <p class="text-on-surface-variant text-sm">
+          Progressive enhancement over a server-rendered <code>&lt;table&gt;</code>
+          (Django / Unpoly fragment swaps / any framework). Server-driven sort
+          links, form-posting row selection, sticky header, row links.
+          M2 anatomy redrawn with M3 tokens.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-8 py-10 space-y-10">
+
+    <!-- 1. Server-driven table: selection + sort links + footer -->
+    <section>
+      <p class="text-sm text-on-surface-variant mb-2">
+        server-rendered markup — checkboxes are form controls
+        (<code>request.POST.getlist('selected')</code>), sorting is plain
+        <code>&lt;a href="?o=…"&gt;</code> links marked with
+        <code>aria-sort</code> (Unpoly swaps the fragment; the links here just
+        change the hash), pagination is a plain <code>&lt;footer&gt;</code>
+      </p>
+      <div class="mb-2 flex items-center gap-3 min-h-10">
+        <span id="sel-count" class="text-sm text-on-surface-variant">0 selected</span>
+        <material-button id="sel-clear" variant="text" label="Clear" class="hidden"></material-button>
+        <material-button id="sel-delete" variant="tonal" label="Archive selected" class="hidden"></material-button>
+      </div>
+      <material-data-table id="main-table">
+        <table>
+          <thead>
+            <tr>
+              <th class="cell-select">
+                <material-checkbox data-select-all aria-label="Select all rows"></material-checkbox>
+              </th>
+              <th aria-sort="ascending"><a href="#o=number">PO #</a></th>
+              <th><a href="#o=vendor">Vendor</a></th>
+              <th><a href="#o=date">Date</a></th>
+              <th class="numeric"><a href="#o=total">Total</a></th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cell-select"><material-checkbox name="selected" value="142" aria-label="Select PO-2026-0142"></material-checkbox></td>
+              <td><a href="#po-142">PO-2026-0142</a></td>
+              <td>Acme Corp</td>
+              <td>2026-05-05</td>
+              <td class="numeric">$12,400.00</td>
+              <td>Pending</td>
+            </tr>
+            <tr>
+              <td class="cell-select"><material-checkbox name="selected" value="141" aria-label="Select PO-2026-0141"></material-checkbox></td>
+              <td><a href="#po-141">PO-2026-0141</a></td>
+              <td>Globex Ltd</td>
+              <td>2026-05-04</td>
+              <td class="numeric">$3,180.50</td>
+              <td>Approved</td>
+            </tr>
+            <tr>
+              <td class="cell-select"><material-checkbox name="selected" value="140" aria-label="Select PO-2026-0140" disabled></material-checkbox></td>
+              <td><a href="#po-140">PO-2026-0140</a></td>
+              <td>Initech</td>
+              <td>2026-05-02</td>
+              <td class="numeric">$940.00</td>
+              <td>Received · locked</td>
+            </tr>
+            <tr>
+              <td class="cell-select"><material-checkbox name="selected" value="139" aria-label="Select PO-2026-0139"></material-checkbox></td>
+              <td><a href="#po-139">PO-2026-0139</a></td>
+              <td>Stark Industries</td>
+              <td>2026-04-28</td>
+              <td class="numeric">$67,000.00</td>
+              <td>Draft</td>
+            </tr>
+          </tbody>
+        </table>
+        <footer>
+          <span>1–4 of 132</span>
+          <material-icon-button variant="standard" size="s" icon="chevron_left" aria-label="Previous page" disabled></material-icon-button>
+          <material-icon-button variant="standard" size="s" icon="chevron_right" aria-label="Next page"></material-icon-button>
+        </footer>
+      </material-data-table>
+    </section>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+
+      <!-- 2. Client-side sorting -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          client-side sorting — <code>th[data-sort]</code> with a
+          <code>&lt;button&gt;</code> (no link) emits <code>materialSort</code>;
+          the page reorders rows and sets <code>aria-sort</code> itself
+        </p>
+        <material-data-table id="sort-table">
+          <table>
+            <thead>
+              <tr>
+                <th data-sort="name"><button type="button">Name</button></th>
+                <th data-sort="stock" class="numeric"><button type="button">In stock</button></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Bolt M6</td><td class="numeric">1,204</td></tr>
+              <tr><td>Anchor plate</td><td class="numeric">88</td></tr>
+              <tr><td>Washer 12mm</td><td class="numeric">470</td></tr>
+              <tr><td>Clamp</td><td class="numeric">12</td></tr>
+            </tbody>
+          </table>
+        </material-data-table>
+      </section>
+
+      <!-- 3. Row links -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          <code>tr[data-row-link]</code> — clicking dead space proxies to the
+          row's first link (Unpoly attrs on it keep working); clicks on
+          controls inside the row are left alone
+        </p>
+        <material-data-table id="link-table">
+          <table>
+            <thead>
+              <tr><th>Customer</th><th>Owner</th><th class="w-14"></th></tr>
+            </thead>
+            <tbody>
+              <tr data-row-link>
+                <td><a href="#customer-acme">Acme Corp</a></td>
+                <td>M. Fowler</td>
+                <td><material-icon-button variant="standard" size="s" icon="more_vert" aria-label="Actions for Acme Corp"></material-icon-button></td>
+              </tr>
+              <tr data-row-link>
+                <td><a href="#customer-globex">Globex Ltd</a></td>
+                <td>D. Kim</td>
+                <td><material-icon-button variant="standard" size="s" icon="more_vert" aria-label="Actions for Globex Ltd"></material-icon-button></td>
+              </tr>
+            </tbody>
+          </table>
+        </material-data-table>
+        <p class="text-xs text-on-surface-variant mt-2">activated: <span id="row-log">—</span></p>
+      </section>
+
+      <!-- 4. Sticky header -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          <code>sticky-header</code> + a max-height on the host (it is the
+          scroll container)
+        </p>
+        <material-data-table sticky-header class="max-h-72" id="sticky-table">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Event</th><th class="numeric">Duration</th></tr>
+            </thead>
+            <tbody id="sticky-body"></tbody>
+          </table>
+        </material-data-table>
+      </section>
+
+      <!-- 5. Fragment swap + loading -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          Unpoly-style fragment swap — replacing the <code>tbody</code> resets
+          the selection and re-syncs the header checkbox via MutationObserver;
+          <code>loading</code> dims the body during the round-trip
+        </p>
+        <div class="mb-2 flex gap-2">
+          <material-button id="swap-btn" variant="tonal" label="Swap tbody (page 2)"></material-button>
+        </div>
+        <material-data-table id="swap-table">
+          <table>
+            <thead>
+              <tr>
+                <th class="cell-select"><material-checkbox data-select-all aria-label="Select all"></material-checkbox></th>
+                <th>Task</th>
+              </tr>
+            </thead>
+            <tbody id="swap-body">
+              <tr>
+                <td class="cell-select"><material-checkbox name="selected" value="t1" aria-label="Select Ship build"></material-checkbox></td>
+                <td>Ship build</td>
+              </tr>
+              <tr>
+                <td class="cell-select"><material-checkbox name="selected" value="t2" aria-label="Select Review PR"></material-checkbox></td>
+                <td>Review PR</td>
+              </tr>
+            </tbody>
+          </table>
+        </material-data-table>
+        <p class="text-xs text-on-surface-variant mt-2">selection events: <span id="swap-log">—</span></p>
+      </section>
+
+      <!-- 6. Dense + empty -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          <code>dense</code> rows · empty state is a server-rendered
+          <code>td.empty</code>
+        </p>
+        <material-data-table dense class="mb-4">
+          <table>
+            <thead>
+              <tr><th>Code</th><th>Qty</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>SKU-001</td><td>14</td></tr>
+              <tr><td>SKU-002</td><td>3</td></tr>
+              <tr><td>SKU-003</td><td>151</td></tr>
+            </tbody>
+          </table>
+        </material-data-table>
+        <material-data-table>
+          <table>
+            <thead>
+              <tr><th>Invoice</th><th>Amount</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="empty" colspan="2">No invoices match the current filters</td></tr>
+            </tbody>
+          </table>
+        </material-data-table>
+      </section>
+
+      <!-- 7. RTL -->
+      <section dir="rtl">
+        <p class="text-sm text-on-surface-variant mb-2" dir="ltr">
+          RTL — text alignment, selection column, numeric cells and sort arrows
+          mirror with the reading direction
+        </p>
+        <material-data-table>
+          <table>
+            <thead>
+              <tr>
+                <th class="cell-select"><material-checkbox data-select-all aria-label="تحديد الكل"></material-checkbox></th>
+                <th aria-sort="descending"><a href="#o=-name">المورد</a></th>
+                <th class="numeric"><a href="#o=total">الإجمالي</a></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="cell-select"><material-checkbox name="selected" value="a1" aria-label="تحديد أكمي"></material-checkbox></td>
+                <td>شركة أكمي</td>
+                <td class="numeric">12,400</td>
+              </tr>
+              <tr>
+                <td class="cell-select"><material-checkbox name="selected" value="a2" aria-label="تحديد جلوبكس"></material-checkbox></td>
+                <td>جلوبكس المحدودة</td>
+                <td class="numeric">3,180</td>
+              </tr>
+            </tbody>
+          </table>
+        </material-data-table>
+      </section>
+    </div>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage (Django / Unpoly)</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;form method="post" action="{% url 'po-bulk' %}"&gt;
+  &lt;material-data-table sticky-header class="max-h-[70vh]"&gt;
+    &lt;table up-target="table"&gt;
+      &lt;thead&gt;&lt;tr&gt;
+        &lt;th class="cell-select"&gt;
+          &lt;material-checkbox data-select-all aria-label="Select all"&gt;&lt;/material-checkbox&gt;
+        &lt;/th&gt;
+        &lt;th aria-sort="{{ sort.number }}"&gt;&lt;a href="?o=number" up-target="table"&gt;PO #&lt;/a&gt;&lt;/th&gt;
+        &lt;th class="numeric"&gt;&lt;a href="?o=total" up-target="table"&gt;Total&lt;/a&gt;&lt;/th&gt;
+      &lt;/tr&gt;&lt;/thead&gt;
+      &lt;tbody&gt;
+        {% for po in page %}
+        &lt;tr data-row-link&gt;
+          &lt;td class="cell-select"&gt;
+            &lt;material-checkbox name="selected" value="{{ po.pk }}"
+                               aria-label="Select {{ po }}"&gt;&lt;/material-checkbox&gt;
+          &lt;/td&gt;
+          &lt;td&gt;&lt;a href="{{ po.get_absolute_url }}" up-layer="new"&gt;{{ po.number }}&lt;/a&gt;&lt;/td&gt;
+          &lt;td class="numeric"&gt;{{ po.total }}&lt;/td&gt;
+        &lt;/tr&gt;
+        {% empty %}
+        &lt;tr&gt;&lt;td class="empty" colspan="3"&gt;No purchase orders&lt;/td&gt;&lt;/tr&gt;
+        {% endfor %}
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+    &lt;footer&gt;{% include "pagination.html" %}&lt;/footer&gt;
+  &lt;/material-data-table&gt;
+  &lt;button&gt;Archive selected&lt;/button&gt;  &lt;!-- request.POST.getlist('selected') --&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  table.addEventListener('materialSelectionChange', (e) =&gt; e.detail); // {values, count, allSelected}
+  table.addEventListener('materialSort', (e) =&gt; e.detail);            // {column, direction} (client-side mode)
+&lt;/script&gt;</code></pre>
+    </details>
+  </main>
+
+  <script>
+    // 1. selection toolbar
+    const mainTable = document.getElementById('main-table');
+    const selCount = document.getElementById('sel-count');
+    const selClear = document.getElementById('sel-clear');
+    const selDelete = document.getElementById('sel-delete');
+    mainTable.addEventListener('materialSelectionChange', (e) => {
+      const { count, allSelected } = e.detail;
+      selCount.textContent = `${count} selected${allSelected ? ' (all)' : ''}`;
+      selClear.classList.toggle('hidden', count === 0);
+      selDelete.classList.toggle('hidden', count === 0);
+    });
+    selClear.addEventListener('click', () => mainTable.clearSelection());
+    selDelete.addEventListener('click', async () => {
+      selCount.textContent = 'would archive: ' + (await mainTable.getSelected()).join(', ');
+    });
+
+    // 2. client-side sort
+    const sortTable = document.getElementById('sort-table');
+    sortTable.addEventListener('materialSort', (e) => {
+      const { column, direction } = e.detail;
+      sortTable.querySelectorAll('th[data-sort]').forEach((th) => {
+        if (th.dataset.sort === column) th.setAttribute('aria-sort', direction);
+        else th.removeAttribute('aria-sort');
+      });
+      const tbody = sortTable.querySelector('tbody');
+      const idx = column === 'name' ? 0 : 1;
+      const rows = [...tbody.rows].sort((a, b) => {
+        const av = a.cells[idx].textContent.trim();
+        const bv = b.cells[idx].textContent.trim();
+        const cmp = column === 'stock'
+          ? parseFloat(av.replace(/,/g, '')) - parseFloat(bv.replace(/,/g, ''))
+          : av.localeCompare(bv);
+        return direction === 'ascending' ? cmp : -cmp;
+      });
+      tbody.append(...rows);
+    });
+
+    // 3. row-link log
+    document.getElementById('link-table').addEventListener('click', (e) => {
+      const a = e.target.closest('a[href^="#customer-"]');
+      if (a) document.getElementById('row-log').textContent = a.getAttribute('href');
+    });
+
+    // 4. sticky rows
+    document.getElementById('sticky-body').innerHTML = Array.from({ length: 25 }, (_, i) => `
+      <tr><td>${i + 1}</td><td>Deploy #${1400 + i}</td><td class="numeric">${(Math.random() * 90 + 10).toFixed(0)}s</td></tr>
+    `).join('');
+
+    // 5. fragment swap
+    const swapTable = document.getElementById('swap-table');
+    const swapLog = document.getElementById('swap-log');
+    let swapEvents = 0;
+    swapTable.addEventListener('materialSelectionChange', (e) => {
+      swapEvents += 1;
+      swapLog.textContent = `#${swapEvents}: count=${e.detail.count} all=${e.detail.allSelected}`;
+    });
+    document.getElementById('swap-btn').addEventListener('click', () => {
+      swapTable.loading = true;
+      setTimeout(() => {
+        document.getElementById('swap-body').innerHTML = `
+          <tr><td class="cell-select"><material-checkbox name="selected" value="t3" aria-label="Select Write docs"></material-checkbox></td><td>Write docs (page 2)</td></tr>
+          <tr><td class="cell-select"><material-checkbox name="selected" value="t4" aria-label="Select Fix flaky test"></material-checkbox></td><td>Fix flaky test (page 2)</td></tr>
+          <tr><td class="cell-select"><material-checkbox name="selected" value="t5" aria-label="Select Triage bugs"></material-checkbox></td><td>Triage bugs (page 2)</td></tr>`;
+        swapTable.loading = false;
+      }, 600);
+    });
+  </script>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

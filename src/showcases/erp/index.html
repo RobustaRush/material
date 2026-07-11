@@ -16,15 +16,15 @@
 
 <!--
   ERP / Purchase Orders showcase. Table-heavy enterprise pattern: KPI
-  cards, filter chip rail, sortable PO list (faked with material-list +
-  CSS grid columns until material-data-table lands), per-row context
-  menu, multi-section detail dialog with tabs (Header / Line items /
-  Approvals / Activity), and a multi-field "New PO" creation dialog.
+  cards, filter chip rail, sortable material-data-table with bulk
+  selection and a sticky header, per-row context menu, multi-section
+  detail dialog with tabs (Header / Line items / Approvals / Activity),
+  and a multi-field "New PO" creation dialog.
 
   Components exercised: search-app-bar, navigation-rail, card (KPI +
-  detail panels), list with grid-laid-out rows (table-like), chip
-  (status + filters), tabs, dialog, fab, menu, snackbar, divider,
-  textfield, select, textarea, button-group.
+  detail panels), material-data-table (sortable, bulk selection, sticky
+  header), chip (status + filters), tabs, dialog, fab, menu, snackbar,
+  divider, textfield, select, textarea, button-group.
 -->
 
 <body class="bg-background text-on-background min-h-screen flex">
@@ -159,22 +159,31 @@
 
     <!-- PO table -->
     <main class="flex-1 px-6 pb-6">
-      <div class="rounded-2xl bg-surface-container-low border border-outline-variant overflow-hidden">
-        <!-- Header row -->
-        <div class="grid grid-cols-[120px_1fr_120px_120px_140px_60px_56px] items-center gap-3 px-4 py-3 border-b border-outline-variant text-body-small text-on-surface-variant font-medium uppercase tracking-wide bg-surface-container">
-          <button class="text-left flex items-center gap-1 hover:text-on-surface" data-sort="number">
-            PO #
-            <span class="material-symbols text-[16px] opacity-60" aria-hidden="true">arrow_upward</span>
-          </button>
-          <button class="text-left flex items-center gap-1 hover:text-on-surface" data-sort="vendor">Vendor</button>
-          <button class="text-left flex items-center gap-1 hover:text-on-surface" data-sort="date">Date</button>
-          <button class="text-right flex items-center justify-end gap-1 hover:text-on-surface" data-sort="total">Total</button>
-          <div>Status</div>
-          <div>Owner</div>
-          <div></div>
-        </div>
-        <material-list id="po-list" variant="baseline" class="block"></material-list>
+      <div id="bulk-bar" class="flex items-center gap-3 pb-2" hidden>
+        <span id="bulk-count" class="text-body-medium text-on-surface-variant"></span>
+        <material-button variant="text" label="Clear" id="bulk-clear"></material-button>
+        <material-button variant="tonal" label="Approve selected" id="bulk-approve"></material-button>
       </div>
+      <material-data-table id="po-table" sticky-header class="max-h-[75vh]">
+        <table>
+          <thead>
+            <tr>
+              <th class="cell-select">
+                <material-checkbox data-select-all aria-label="Select all purchase orders"></material-checkbox>
+              </th>
+              <th data-sort="id" aria-sort="descending"><button type="button">PO #</button></th>
+              <th data-sort="vendor"><button type="button">Vendor</button></th>
+              <th data-sort="date"><button type="button">Date</button></th>
+              <th data-sort="total" class="numeric"><button type="button">Total</button></th>
+              <th>Status</th>
+              <th>Owner</th>
+              <th><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="po-rows"></tbody>
+        </table>
+        <footer><span id="po-count"></span></footer>
+      </material-data-table>
     </main>
   </div>
 
@@ -285,47 +294,88 @@
       { id: 'PO-2026-0124', vendor: 'Weyland-Yutani',    date: '2026-04-20', total: 67000, status: 'pending',   owner: 0, lines: 15 },
     ];
 
-    // ─── Render PO list (faked table via grid) ──────────────────────────
-    const list = document.getElementById('po-list');
+    // ─── Render PO table (material-data-table, client-side mode) ────────
+    const table = document.getElementById('po-table');
+    const rowsEl = document.getElementById('po-rows');
+    const countEl = document.getElementById('po-count');
     const fmt = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
     const fmtDate = (s) => new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    let currentFilter = null;
+    let sort = { column: 'id', direction: 'descending' };
 
     function rowHTML(po) {
       const s = STATUS[po.status];
       const o = OWNERS[po.owner];
       return `
-        <material-list-item value="${po.id}" data-po="${po.id}">
-          <div class="grid grid-cols-[120px_1fr_120px_120px_140px_60px_56px] items-center gap-3 w-full text-body-medium">
-            <span class="font-mono text-body-small">${po.id}</span>
-            <div class="min-w-0">
-              <div class="font-medium truncate">${po.vendor}</div>
-              <div class="text-body-small text-on-surface-variant">${po.lines} line${po.lines === 1 ? '' : 's'}</div>
-            </div>
-            <span class="text-on-surface-variant">${fmtDate(po.date)}</span>
-            <span class="text-right font-medium">${fmt(po.total)}</span>
-            <span>
-              <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${s.cls}">
-                <span class="material-symbols text-[14px]" aria-hidden="true">${s.icon}</span>
-                ${s.label}
-              </span>
+        <tr data-po="${po.id}" class="cursor-pointer">
+          <td class="cell-select">
+            <material-checkbox name="selected" value="${po.id}" aria-label="Select ${po.id}"></material-checkbox>
+          </td>
+          <td class="font-mono text-body-small">${po.id}</td>
+          <td class="min-w-0">
+            <div class="font-medium truncate">${po.vendor}</div>
+            <div class="text-body-small text-on-surface-variant">${po.lines} line${po.lines === 1 ? '' : 's'}</div>
+          </td>
+          <td class="text-on-surface-variant whitespace-nowrap">${fmtDate(po.date)}</td>
+          <td class="numeric font-medium">${fmt(po.total)}</td>
+          <td>
+            <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium whitespace-nowrap ${s.cls}">
+              <span class="material-symbols text-[14px]" aria-hidden="true">${s.icon}</span>
+              ${s.label}
             </span>
-            <span class="w-7 h-7 rounded-full bg-${o.avatar} text-${ON[o.avatar]} inline-flex items-center justify-center text-xs font-medium" title="${o.initials}">${o.initials}</span>
+          </td>
+          <td><span class="w-7 h-7 rounded-full bg-${o.avatar} text-${ON[o.avatar]} inline-flex items-center justify-center text-xs font-medium" title="${o.initials}">${o.initials}</span></td>
+          <td class="w-14">
             <material-icon-button icon="more_vert" variant="standard" size="s"
-                                  class="-mr-1 justify-self-end"
-                                  aria-label="More actions"
+                                  aria-label="More actions for ${po.id}"
                                   data-row-menu="${po.id}"
                                   popovertarget="row-menu"></material-icon-button>
-          </div>
-        </material-list-item>`;
+          </td>
+        </tr>`;
     }
 
     function renderList(filter) {
-      const items = filter ? POS.filter(filter) : POS;
-      list.innerHTML = items.map((po, i) =>
-        rowHTML(po).replace('<material-list-item ', `<material-list-item ${i > 0 ? 'divider="top"' : ''} `)
-      ).join('');
+      if (filter !== undefined) currentFilter = filter;
+      const items = currentFilter ? POS.filter(currentFilter) : [...POS];
+      const dir = sort.direction === 'ascending' ? 1 : -1;
+      items.sort((a, b) => {
+        const av = a[sort.column], bv = b[sort.column];
+        const cmp = typeof av === 'number' ? av - bv : String(av).localeCompare(String(bv));
+        return cmp * dir;
+      });
+      rowsEl.innerHTML = items.length
+        ? items.map(rowHTML).join('')
+        : '<tr><td class="empty" colspan="8">No purchase orders match this filter</td></tr>';
+      countEl.textContent = `${items.length} of ${POS.length} purchase orders`;
     }
-    renderList();
+    renderList(null);
+
+    // Client-side sorting: th[data-sort] buttons emit materialSort; the page
+    // owns the data, so it re-sorts and re-renders (a Django app would render
+    // <a href="?o=…"> links instead and skip all of this).
+    table.addEventListener('materialSort', (e) => {
+      sort = { column: e.detail.column, direction: e.detail.direction };
+      table.querySelectorAll('th[data-sort]').forEach((th) => {
+        if (th.dataset.sort === sort.column) th.setAttribute('aria-sort', sort.direction);
+        else th.removeAttribute('aria-sort');
+      });
+      renderList();
+    });
+
+    // ─── Bulk selection ─────────────────────────────────────────────────
+    const bulkBar = document.getElementById('bulk-bar');
+    const bulkCount = document.getElementById('bulk-count');
+    table.addEventListener('materialSelectionChange', (e) => {
+      bulkBar.hidden = e.detail.count === 0;
+      bulkCount.textContent = `${e.detail.count} selected`;
+    });
+    document.getElementById('bulk-clear').addEventListener('click', () => table.clearSelection());
+    document.getElementById('bulk-approve').addEventListener('click', async () => {
+      const ids = await table.getSelected();
+      host.enqueue({ message: `${ids.length} purchase order${ids.length === 1 ? '' : 's'} approved.`, actionLabel: 'Undo' });
+      table.clearSelection();
+    });
 
     // ─── Detail dialog: tabbed PO view ──────────────────────────────────
     const dialog = document.getElementById('po-dialog');
@@ -471,9 +521,11 @@
         </div>`;
     }
 
-    list.addEventListener('click', (e) => {
-      if (e.target.closest('[data-row-menu]')) return;
-      const item = e.target.closest('material-list-item[data-po]');
+    // Row click opens the detail dialog — controls inside the row (checkbox,
+    // row menu) keep their own behavior.
+    rowsEl.addEventListener('click', (e) => {
+      if (e.target.closest('material-checkbox, material-icon-button, a, button, input, label')) return;
+      const item = e.target.closest('tr[data-po]');
       if (!item) return;
       const po = POS.find(p => p.id === item.getAttribute('data-po'));
       if (!po) return;
