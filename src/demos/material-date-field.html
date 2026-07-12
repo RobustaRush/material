@@ -54,14 +54,27 @@
   <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
 
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">Default</h2>
+      <h2 class="text-lg font-semibold">Default (<code>picker="auto"</code> — docked on desktop)</h2>
       <p class="text-on-surface-variant text-sm">
-        Click the <code>calendar_month</code> icon to open the calendar dialog. Pick a day
-        and press OK; the field updates with the locale-formatted display string and the
-        hidden <code>name="due"</code> input gets the ISO date.
+        Click the <code>calendar_month</code> icon: on ≥600px viewports the
+        calendar drops down docked below the field — picking a date commits
+        and closes (no OK/Cancel, typing stays available). On compact
+        viewports the same trigger opens the modal dialog.
       </p>
       <div class="max-w-sm">
         <material-date-field name="due" label="Due date"></material-date-field>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Forced surfaces — <code>picker="modal"</code> / <code>picker="docked"</code></h2>
+      <div class="flex gap-6 flex-wrap">
+        <div class="max-w-sm flex-1 min-w-56">
+          <material-date-field name="modal-date" label="Always modal" picker="modal"></material-date-field>
+        </div>
+        <div class="max-w-sm flex-1 min-w-56">
+          <material-date-field name="docked-date" label="Always docked" picker="docked"></material-date-field>
+        </div>
       </div>
     </section>
 

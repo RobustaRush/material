@@ -2,3 +2,36 @@
 
 material-date-field { display: block; }
 material-date-field[hidden] { display: none; }
+
+/* Docked dropdown surface — positioned by trackAnchored (spec: docked
+   picker container on surface-container-high, elevation 2). */
+material-date-field .date-popup {
+  position: fixed;
+  inset: unset;
+  margin: 0;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: 1rem;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  box-shadow:
+    0 2px 6px 2px rgb(0 0 0 / 0.15),
+    0 1px 2px 0 rgb(0 0 0 / 0.3);
+}
+
+material-date-field .date-popup:popover-open {
+  animation: date-popup-in 120ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes date-popup-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  material-date-field .date-popup:popover-open {
+    animation: none;
+  }
+}

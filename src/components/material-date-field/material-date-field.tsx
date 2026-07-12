@@ -14,6 +14,7 @@ import {
   defaultDateInputFormat,
   gettext,
 } from '../../utils/i18n';
+import { trackAnchored } from '../../utils/anchor-position';
 import {
   formatDate,
   fromISO,
@@ -33,8 +34,15 @@ interface MaterialDialogLike extends HTMLElement {
   close(returnValue?: string): Promise<void> | void;
 }
 
-// MD3 modal date field — text-field with a trailing calendar icon-button that
-// opens an adaptive material-dialog containing a material-calendar.
+// MD3 date field — text-field with a trailing calendar trigger.
+//
+// Two picker surfaces (spec: date picker variants):
+//   - docked — dropdown calendar anchored just below the field; clicking a
+//     date commits and closes (spec recommends it for medium/expanded
+//     windows, near AND distant dates, since typing stays available);
+//   - modal  — adaptive material-dialog with OK/Cancel.
+// `picker="auto"` (default) docks on ≥600px viewports and goes modal on
+// compact ones.
 //
 // Light DOM, so a hidden <input name="…" type="hidden" value="ISO"> can ride
 // along with a surrounding <form> the same way material-file-field does.
@@ -68,6 +76,9 @@ export class MaterialDateField {
   @Prop({ reflect: true }) disabled = false;
   @Prop({ reflect: true }) required = false;
   @Prop({ reflect: true, attribute: 'readonly' }) readOnly = false;
+
+  /** Picker surface: docked dropdown, modal dialog, or auto by viewport. */
+  @Prop() picker: 'auto' | 'docked' | 'modal' = 'auto';
   @Prop() helpText?: string;
   @Prop() errorText?: string;
   @Prop({ mutable: true, reflect: true }) error = false;
@@ -98,6 +109,10 @@ export class MaterialDateField {
   private dialog?: MaterialDialogLike;
   private calendar?: MaterialCalendarLike;
   private hiddenInput?: HTMLInputElement;
+  private popupEl?: HTMLElement;
+  private dockedCalendar?: MaterialCalendarLike;
+  private textfieldEl?: HTMLElement;
+  private stopTracking?: () => void;
   private effectiveFormat(): string {
     return this.format || defaultDateInputFormat();
   }
@@ -129,12 +144,77 @@ export class MaterialDateField {
     }
   }
 
+  private isDocked(): boolean {
+    if (this.picker === 'docked') return true;
+    if (this.picker === 'modal') return false;
+    return typeof window !== 'undefined'
+      && window.matchMedia('(min-width: 600px)').matches;
+  }
+
   private openDialog = (e?: Event) => {
     e?.stopPropagation();
     if (this.disabled || this.readOnly) return;
     this.pending = this.value || todayISO();
+    if (this.isDocked()) {
+      this.openDocked();
+      return;
+    }
     if (this.calendar) this.calendar.value = this.pending;
     this.dialog?.show();
+  };
+
+  // --- docked dropdown -------------------------------------------------------
+
+  private openDocked() {
+    const popup = this.popupEl;
+    const anchor = this.textfieldEl;
+    if (!popup || !anchor || popup.matches(':popover-open')) return;
+    if (this.dockedCalendar) this.dockedCalendar.value = this.value || '';
+    popup.showPopover();
+    this.stopTracking = trackAnchored(popup, anchor, {
+      placement: 'bottom-start',
+      offset: 4,
+    });
+    document.addEventListener('pointerdown', this.onDocPointerDown, true);
+    document.addEventListener('keydown', this.onDocKeyDown, true);
+  }
+
+  private closeDocked = () => {
+    const popup = this.popupEl;
+    if (!popup || !popup.matches(':popover-open')) return;
+    popup.hidePopover();
+    this.stopTracking?.();
+    this.stopTracking = undefined;
+    document.removeEventListener('pointerdown', this.onDocPointerDown, true);
+    document.removeEventListener('keydown', this.onDocKeyDown, true);
+  };
+
+  private onDocPointerDown = (e: PointerEvent) => {
+    if (!this.el.contains(e.target as Node)) this.closeDocked();
+  };
+
+  private onDocKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      this.closeDocked();
+    }
+  };
+
+  disconnectedCallback() {
+    this.closeDocked();
+  }
+
+  private handleDockedSelect = (e: Event) => {
+    e.stopPropagation();
+    const detail = (e as CustomEvent<{ value: string }>).detail;
+    const iso = detail?.value ?? '';
+    if (!iso) return;
+    // Docked pattern: picking a date commits and closes — no OK/Cancel.
+    this.value = iso;
+    this.error = false;
+    this.liveError = '';
+    this.valueChange.emit({ value: iso });
+    this.closeDocked();
   };
 
   // Prevent the trigger from taking focus on mouse press. Without this the
@@ -218,6 +298,7 @@ export class MaterialDateField {
     return (
       <Host class="block w-full">
         <material-textfield
+          ref={(el) => (this.textfieldEl = el as HTMLElement)}
           variant={this.variant}
           label={this.label}
           value={this.display}
@@ -248,6 +329,22 @@ export class MaterialDateField {
           name={this.name}
           value={this.value}
         />
+
+        {/* Docked dropdown (spec: calendar appears just below the field). */}
+        <div
+          class="date-popup"
+          popover="manual"
+          ref={(el) => (this.popupEl = el)}
+        >
+          <material-calendar
+            ref={(el) => {
+              this.dockedCalendar = el as MaterialCalendarLike;
+            }}
+            min={this.min}
+            max={this.max}
+            onDateSelect={this.handleDockedSelect as unknown as (e: Event) => void}
+          />
+        </div>
 
         <material-dialog
           ref={this.setDialogRef}
