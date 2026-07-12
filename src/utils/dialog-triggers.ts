@@ -67,10 +67,12 @@ export function ensureDialogTriggersInstalled(): void {
       }
     }
 
-    // [data-dialog-close] — close the enclosing material-dialog.
+    // [data-dialog-close] — close the enclosing dialog-like host.
     const closer = target.closest<HTMLElement>('[data-dialog-close]');
     if (closer) {
-      const dlg = closer.closest('material-dialog') as DialogControl | null;
+      const dlg = closer.closest(
+        'material-dialog, material-bottom-sheet, material-side-sheet',
+      ) as DialogControl | null;
       if (looksLikeDialog(dlg)) {
         const value = closer.getAttribute('data-dialog-close') || '';
         dlg.close(value);

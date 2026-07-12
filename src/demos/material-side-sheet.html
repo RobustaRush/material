@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-side-sheet — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-side-sheet</h1>
+        <p class="text-on-surface-variant text-sm">
+          Trailing detail/filter panel. Modal slides over a scrim; standard
+          opens in-flow next to the content; adaptive picks standard on
+          ≥840px windows, modal below. RTL moves it to the left edge.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Modal — filters over a scrim</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>data-dialog-target</code> opens it; Esc, scrim, the close icon
+        or an <code>data-dialog-close</code> action dismiss.
+      </p>
+      <material-button variant="filled" label="Open filters" data-dialog-target="filters"></material-button>
+      <material-side-sheet id="filters" headline="Filters">
+        <div class="space-y-5 pt-2">
+          <material-select label="Status" name="status" class="w-full">
+            <material-option value="" selected>Any</material-option>
+            <material-option value="open">Open</material-option>
+            <material-option value="closed">Closed</material-option>
+          </material-select>
+          <material-textfield label="Assignee" class="w-full"></material-textfield>
+          <div>
+            <p class="text-sm font-medium mb-2">Priority</p>
+            <div class="flex flex-wrap gap-2">
+              <material-chip variant="filter" label="Low"></material-chip>
+              <material-chip variant="filter" label="Medium" selected></material-chip>
+              <material-chip variant="filter" label="High"></material-chip>
+            </div>
+          </div>
+          <material-switch label="Only mine" checked></material-switch>
+        </div>
+        <div slot="actions" class="flex gap-2">
+          <material-button variant="filled" label="Apply" data-dialog-close="apply"></material-button>
+          <material-button variant="text" label="Clear all" data-dialog-close="clear"></material-button>
+        </div>
+      </material-side-sheet>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Standard — in-flow next to the content</h2>
+      <p class="text-on-surface-variant text-sm">
+        The host sits as a flex sibling of the main region and animates its
+        inline size — the content shrinks, nothing overlaps, the page stays
+        interactive.
+      </p>
+      <div class="border border-outline-variant rounded-xl overflow-hidden flex h-96 bg-surface">
+        <div class="flex-1 min-w-0 p-5 overflow-auto">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-semibold">Inventory</h3>
+            <material-button variant="tonal" label="Details" id="std-toggle"></material-button>
+          </div>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-start text-on-surface-variant border-b border-outline-variant">
+                <th class="text-start py-2 pe-4">SKU</th>
+                <th class="text-start py-2 pe-4">Item</th>
+                <th class="text-end py-2">On hand</th>
+              </tr>
+            </thead>
+            <tbody id="inv-rows"></tbody>
+          </table>
+        </div>
+        <material-side-sheet id="std-sheet" variant="standard" headline="SKU-1042">
+          <dl class="space-y-3 text-sm pt-1">
+            <div><dt class="text-on-surface-variant text-xs">Item</dt><dd>Hex bolts M8×40, zinc</dd></div>
+            <div><dt class="text-on-surface-variant text-xs">Warehouse</dt><dd>Central — aisle 12, bin 4</dd></div>
+            <div><dt class="text-on-surface-variant text-xs">On hand / reserved</dt><dd>1 250 / 300</dd></div>
+            <div><dt class="text-on-surface-variant text-xs">Reorder point</dt><dd>500 units</dd></div>
+          </dl>
+          <div slot="actions" class="flex gap-2">
+            <material-button variant="filled" label="Edit"></material-button>
+            <material-button variant="outlined" label="Move stock"></material-button>
+          </div>
+        </material-side-sheet>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Adaptive — <code>variant="adaptive"</code></h2>
+      <p class="text-on-surface-variant text-sm">
+        Standard panel when the window is ≥840px, modal below — same markup.
+        Shrink the browser window to see it switch (state survives the swap).
+      </p>
+      <div class="border border-outline-variant rounded-xl overflow-hidden flex h-80 bg-surface">
+        <div class="flex-1 min-w-0 p-5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold">Orders</h3>
+            <material-button variant="tonal" label="Order #8112" id="adaptive-toggle"></material-button>
+          </div>
+          <p class="text-sm text-on-surface-variant mt-3">
+            current mode: <span id="adaptive-mode" class="font-mono">—</span>
+          </p>
+        </div>
+        <material-side-sheet id="adaptive-sheet" variant="adaptive" headline="Order #8112">
+          <div class="space-y-3 text-sm pt-1">
+            <p><span class="text-on-surface-variant">Customer:</span> Acme GmbH</p>
+            <p><span class="text-on-surface-variant">Total:</span> €4 812,00</p>
+            <p><span class="text-on-surface-variant">Status:</span> Awaiting payment</p>
+          </div>
+          <div slot="actions">
+            <material-button variant="filled" label="Mark paid" data-dialog-close="paid"></material-button>
+          </div>
+        </material-side-sheet>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Events</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- modal anywhere / standard in a flex layout / adaptive picks by width --&gt;
+&lt;div class="flex"&gt;
+  &lt;main class="flex-1 min-w-0"&gt;…&lt;/main&gt;
+  &lt;material-side-sheet id="detail" variant="adaptive" headline="Record"&gt;
+    …content…
+    &lt;div slot="actions"&gt;
+      &lt;material-button label="Save" data-dialog-close="save"&gt;&lt;/material-button&gt;
+    &lt;/div&gt;
+  &lt;/material-side-sheet&gt;
+&lt;/div&gt;
+
+&lt;material-button data-dialog-target="detail" label="Open"&gt;&lt;/material-button&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    // Inventory rows.
+    document.getElementById('inv-rows').innerHTML = Array.from({ length: 8 }, (_, i) => `
+      <tr class="border-b border-outline-variant/40">
+        <td class="py-2 pe-4 font-mono text-xs">SKU-${1040 + i}</td>
+        <td class="py-2 pe-4">Hex bolts M8×${20 + i * 5}</td>
+        <td class="py-2 text-end">${(1250 - i * 87).toLocaleString()}</td>
+      </tr>`).join('');
+
+    const std = document.getElementById('std-sheet');
+    document.getElementById('std-toggle').addEventListener('click',
+      () => { std.open = !std.open; });
+
+    const adaptive = document.getElementById('adaptive-sheet');
+    document.getElementById('adaptive-toggle').addEventListener('click',
+      () => { adaptive.open = !adaptive.open; });
+    const mode = document.getElementById('adaptive-mode');
+    const syncMode = () => mode.textContent =
+      adaptive.getAttribute('data-effective-variant') || '—';
+    new MutationObserver(syncMode).observe(adaptive, { attributes: true });
+    customElements.whenDefined('material-side-sheet').then(() => setTimeout(syncMode));
+
+    const log = document.getElementById('log');
+    document.addEventListener('materialSheetOpen', (e) =>
+      log.textContent = `[${e.target.id}] open`);
+    document.addEventListener('materialSheetClose', (e) =>
+      log.textContent = `[${e.target.id}] close returnValue="${e.detail.returnValue ?? ''}"`);
+  </script>
+</body>
+</html>

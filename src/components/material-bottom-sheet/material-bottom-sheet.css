@@ -1,0 +1,173 @@
+/* MD3 bottom sheet. Bottom-anchored <dialog>; modal via showModal() gets the
+   native scrim/top-layer, standard via show() coexists with the page. The
+   open/close slide and the peek<->full snap both animate max-height — a
+   bottom-anchored box growing/shrinking reads as sliding up/down. */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:host {
+  display: contents;
+}
+
+:host([hidden]) { display: none; }
+
+.sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0 auto;
+  border: none;
+  padding: 0;
+  width: 100%;
+  /* Spec: full width up to 640dp; wider windows get 56dp side margins. */
+  max-width: 40rem;
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  border-start-start-radius: 1.75rem;
+  border-start-end-radius: 1.75rem;
+  box-shadow: var(--md-sys-elevation-1,
+    0 1px 2px 0 rgb(0 0 0 / 0.30),
+    0 1px 3px 1px rgb(0 0 0 / 0.15));
+
+  /* `display` stays scoped to [open] (see below) so a closed dialog keeps
+     the UA display:none instead of invisibly capturing pointer events. */
+  flex-direction: column;
+  /* Peek: content height capped at 50% of the viewport (spec: initial
+     position <= 50% screen height). */
+  height: fit-content;
+  max-height: min(50dvh, calc(100dvh - 4.5rem));
+  overflow: hidden;
+
+  transform: translateY(100%);
+  transition:
+    transform var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    max-height var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized, cubic-bezier(0.2, 0, 0, 1)),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+
+.sheet[open] {
+  display: flex;
+  transform: translateY(0);
+  transition:
+    transform var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    max-height var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized, cubic-bezier(0.2, 0, 0, 1)),
+    overlay 300ms allow-discrete,
+    display 300ms allow-discrete;
+}
+
+@starting-style {
+  .sheet[open] { transform: translateY(100%); }
+}
+
+/* Expanded: full height minus the 72dp top margin (56dp above 640dp). */
+.sheet--expanded {
+  max-height: calc(100dvh - 4.5rem);
+  height: calc(100dvh - 4.5rem);
+}
+
+@media (min-width: 40.0625rem) {
+  .sheet { max-height: min(50dvh, calc(100dvh - 3.5rem)); }
+  .sheet--expanded {
+    max-height: calc(100dvh - 3.5rem);
+    height: calc(100dvh - 3.5rem);
+  }
+}
+
+/* While dragging the inline height wins and nothing animates. */
+.sheet--dragging {
+  transition: none;
+  max-height: none;
+}
+
+/* Standard variant: non-modal show() leaves the dialog out of the top
+   layer — keep it above page content, below the top-layer surfaces. */
+.sheet--standard {
+  z-index: 40;
+  box-shadow: var(--md-sys-elevation-1,
+    0 1px 2px 0 rgb(0 0 0 / 0.30),
+    0 1px 3px 1px rgb(0 0 0 / 0.15));
+}
+
+/* ---------- Scrim (modal only — standard show() has no ::backdrop) ------ */
+
+.sheet::backdrop {
+  background: rgb(0 0 0 / 0);
+  transition:
+    background var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+
+.sheet[open]::backdrop {
+  background: color-mix(in srgb, var(--md-sys-color-scrim) 32%, transparent);
+  transition:
+    background var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    overlay 300ms allow-discrete,
+    display 300ms allow-discrete;
+}
+
+@starting-style {
+  .sheet[open]::backdrop { background: rgb(0 0 0 / 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .sheet[open] { transition: none; transform: none; }
+  .sheet::backdrop, .sheet[open]::backdrop { transition: none; }
+}
+
+/* ---------- Drag handle ------------------------------------------------- */
+
+.handle-area {
+  /* 32x4dp handle centered in a 48dp-tall touch target (22dp padding). */
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 3rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+}
+
+.sheet--dragging .handle-area { cursor: grabbing; }
+
+.handle {
+  width: 2rem;
+  height: 0.25rem;
+  border-radius: 0.125rem;
+  background: var(--md-sys-color-on-surface-variant);
+  opacity: 0.4;
+}
+
+.handle-area:focus-visible {
+  outline: none;
+}
+
+.handle-area:focus-visible .handle {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+/* ---------- Body -------------------------------------------------------- */
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-inline: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* No handle — give the content the top rounding clearance instead. */
+.body:first-child {
+  padding-top: 1rem;
+}

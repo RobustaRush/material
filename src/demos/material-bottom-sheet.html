@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-bottom-sheet — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-bottom-sheet</h1>
+        <p class="text-on-surface-variant text-sm">
+          Modal (scrim, top layer, swipe-to-dismiss) and standard (co-exists
+          with the page) bottom sheets. Drag the handle to expand / dismiss;
+          click it to toggle peek ↔ full.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Modal — action list (menu alternative)</h2>
+      <p class="text-on-surface-variant text-sm">
+        Declarative trigger via <code>data-dialog-target</code>. Dismiss by
+        scrim tap, Esc, swipe-down on the handle, or picking an item
+        (<code>data-dialog-close</code>).
+      </p>
+      <material-button variant="filled" label="Share photo" data-dialog-target="share-sheet"></material-button>
+      <material-bottom-sheet id="share-sheet">
+        <material-list>
+          <material-list-item label="Copy link" leading-icon="link" data-dialog-close="copy"></material-list-item>
+          <material-list-item label="Send by email" leading-icon="mail" data-dialog-close="email"></material-list-item>
+          <material-list-item label="Download" leading-icon="download" data-dialog-close="download"></material-list-item>
+          <material-list-item label="Move to album" leading-icon="photo_album" data-dialog-close="album"></material-list-item>
+        </material-list>
+      </material-bottom-sheet>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Modal — tall content (peek at 50%, drag to full)</h2>
+      <p class="text-on-surface-variant text-sm">
+        Content exceeds half the screen: the sheet opens capped at 50% of
+        the viewport, the handle drags it to full height (72dp top margin,
+        56dp when the window is wider than 640px), the body scrolls
+        internally. Fast downward flick dismisses.
+      </p>
+      <material-button variant="tonal" label="Open filters" data-dialog-target="filter-sheet"></material-button>
+      <material-bottom-sheet id="filter-sheet">
+        <h3 class="text-base font-semibold mb-3">Filter results</h3>
+        <div class="space-y-5" id="filter-body"></div>
+        <div class="flex gap-2 py-4">
+          <material-button variant="filled" label="Apply" data-dialog-close="apply"></material-button>
+          <material-button variant="text" label="Reset" data-dialog-close="reset"></material-button>
+        </div>
+      </material-bottom-sheet>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Non-dismissible + no handle</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>dismissible="false"</code> ignores Esc/scrim/swipe;
+        <code>drag-handle="false"</code> hides the handle — only the explicit
+        button closes.
+      </p>
+      <material-button variant="outlined" label="Confirm choice" data-dialog-target="confirm-sheet"></material-button>
+      <material-bottom-sheet id="confirm-sheet" dismissible="false" drag-handle="false">
+        <div class="pt-2 pb-4 space-y-4">
+          <p class="text-sm">Save changes before leaving?</p>
+          <div class="flex gap-2 justify-end">
+            <material-button variant="text" label="Discard" data-dialog-close="discard"></material-button>
+            <material-button variant="filled" label="Save" data-dialog-close="save"></material-button>
+          </div>
+        </div>
+      </material-bottom-sheet>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Standard variant — page stays interactive</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>variant="standard"</code>: no scrim, no focus trap — like a
+        persistent player/cart bar. Toggle it and keep clicking the counter.
+      </p>
+      <div class="flex items-center gap-3">
+        <material-button variant="tonal" label="Toggle player" id="player-toggle"></material-button>
+        <material-button variant="outlined" label="Click me" id="counter-btn"></material-button>
+        <span class="text-sm text-on-surface-variant">clicks: <span id="counter">0</span></span>
+      </div>
+      <material-bottom-sheet id="player-sheet" variant="standard">
+        <div class="flex items-center gap-4 pb-4">
+          <material-icon-button variant="filled" icon="play_arrow" aria-label="Play"></material-icon-button>
+          <div class="min-w-0">
+            <p class="text-sm font-medium truncate">Take Five — Dave Brubeck</p>
+            <p class="text-xs text-on-surface-variant">Time Out · 1959</p>
+          </div>
+          <material-icon-button class="ms-auto" variant="standard" icon="close" aria-label="Close player"
+                                data-dialog-close=""></material-icon-button>
+        </div>
+      </material-bottom-sheet>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Events</h2>
+      <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-button data-dialog-target="sheet1" label="Open"&gt;&lt;/material-button&gt;
+
+&lt;material-bottom-sheet id="sheet1"&gt;
+  &lt;material-list&gt;
+    &lt;material-list-item label="Copy link" leading-icon="link"
+                        data-dialog-close="copy"&gt;&lt;/material-list-item&gt;
+  &lt;/material-list&gt;
+&lt;/material-bottom-sheet&gt;
+
+&lt;script&gt;
+  document.getElementById('sheet1').addEventListener('materialSheetClose',
+    e =&gt; console.log(e.detail.returnValue));
+&lt;/script&gt;
+</code></pre>
+    </details>
+
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    // Tall filter content.
+    const body = document.getElementById('filter-body');
+    const groups = ['Status', 'Assignee', 'Priority', 'Label', 'Project', 'Milestone'];
+    body.innerHTML = groups.map((g, i) => `
+      <fieldset class="border-0 p-0 m-0">
+        <legend class="text-sm font-medium mb-2">${g}</legend>
+        <div class="flex flex-wrap gap-2">
+          ${Array.from({ length: 5 }, (_, j) =>
+            `<material-chip variant="filter" label="${g} ${j + 1}"${(i + j) % 3 === 0 ? ' selected' : ''}></material-chip>`).join('')}
+        </div>
+      </fieldset>`).join('');
+
+    const log = document.getElementById('log');
+    document.addEventListener('materialSheetOpen', (e) =>
+      log.textContent = `[${e.target.id}] open`);
+    document.addEventListener('materialSheetClose', (e) =>
+      log.textContent = `[${e.target.id}] close returnValue="${e.detail.returnValue}"`);
+
+    // Standard player toggle + interactivity proof.
+    const player = document.getElementById('player-sheet');
+    document.getElementById('player-toggle').addEventListener('click',
+      () => { player.open = !player.open; });
+    let clicks = 0;
+    document.getElementById('counter-btn').addEventListener('click',
+      () => document.getElementById('counter').textContent = ++clicks);
+  </script>
+</body>
+</html>
