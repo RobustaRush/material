@@ -1,0 +1,27 @@
+{
+  "name": "viewflow",
+  "owner": {
+    "name": "Mikhail Podgurskiy",
+    "email": "mikhail@viewflow.io"
+  },
+  "metadata": {
+    "description": "Material 3 web component library as an AI skill — the agent knows every component, token, and pattern",
+    "pluginRoot": "./"
+  },
+  "plugins": [
+    {
+      "name": "material-web-components",
+      "source": "./",
+      "description": "Material 3 web components — server-first, form-associated, themeable via CSS custom properties, no build step required",
+      "version": "0.1.0",
+      "author": {
+        "name": "Mikhail Podgurskiy",
+        "email": "mikhail@viewflow.io"
+      },
+      "homepage": "https://github.com/RobustaRush/material",
+      "repository": "https://github.com/RobustaRush/material",
+      "license": "AGPL-3.0-or-later",
+      "keywords": ["material-design", "md3", "web-components", "ui-components", "ai-skill"]
+    }
+  ]
+}
