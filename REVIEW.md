@@ -16,18 +16,24 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
   (`src?parent=` JSON or `materialTreeLoad`), nested markup or flat
   mptt-style rows with `level`, aligned trailing cells, ARIA tree keyboard
   nav. Remaining ideas: drag-to-reorder, typeahead.
-- **material-transfer / dual listbox** — Django `filter_horizontal` analog for
-  M2M fields; two lists + move buttons, search within each side.
+- **material-transfer / dual listbox** — ✅ done (2026-07-12): two panels +
+  move buttons, per-side search, form-posts chosen values (getlist), keyboard
+  support, RTL.
 
 ## P2 — input coverage
 
-- **File dropzone** — extend/replace material-file-field: drag-and-drop area,
-  multiple files, upload progress per file, image previews, size/type
-  validation hooks. Server upload stays the consumer's job (Django view).
-- **Docked date picker** — calendar in an anchored popover at the field
-  (spec: date picker "docked" variant); modal + range already exist.
-- **Number formatting depth** — locale-aware grouping/decimal via `Intl` in
-  material-number-field (v1 ships basic grouping), currency mode presets.
+- **File dropzone** — ✅ done (2026-07-12): material-dropzone — DnD +
+  browse, native input posts with the form (FILES.getlist), image previews,
+  accept/max-size/max-files + cancelable add hook, setProgress() per-file
+  upload UI. material-file-field stays the compact ClearableFileInput
+  wrapper.
+- **Docked date picker** — ✅ done (2026-07-12): material-date-field
+  picker="auto|docked|modal" — docked dropdown commits on date click,
+  auto-modal on compact viewports. (Time pickers stay dialog-only — M3 has
+  no docked time variant.)
+- **Number formatting depth** — ✅ done (2026-07-12): currency="USD|EUR|…"
+  mode (Intl symbol/digits placement), Django DECIMAL_SEPARATOR /
+  THOUSAND_SEPARATOR win over Intl when jsi18n is loaded.
 
 ## P3 — surfaces and patterns (M3 catalog completion)
 
@@ -78,7 +84,9 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
   Demo pages have a persistent LTR/RTL toggle next to Theme/Density.
 - **Licensing** — currently AGPL-3.0; decide dual-licensing (AGPL +
   commercial) before promoting third-party commercial use.
-- **i18n catalog** — gettext() hooks exist; ship extracted message catalogs
-  (`.po` templates) and document the Django `jsi18n` integration.
+- **i18n** — ✅ done (2026-07-12), docs/i18n.md: deliberately NO shipped
+  catalogs — three-tier resolution (Django jsi18n → Intl → English msgid),
+  label props always win, Django `JavaScriptCatalog` + `get_format` wiring
+  and msgid-extraction recipe documented; non-Django shim example included.
 - **Density/theming docs** — the A−/A/A+ rem system and Material Theme
   Builder re-skin flow are implemented but undocumented for consumers.
