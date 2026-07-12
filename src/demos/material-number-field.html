@@ -94,6 +94,24 @@
         </div>
       </section>
 
+      <section>
+        <p class="text-sm text-on-surface-variant mb-3">
+          currency — <code>currency="USD"</code>: symbol placement, grouping
+          and fraction digits from Intl (JPY → 0); posts the plain decimal.
+          With Django's jsi18n loaded, <code>DECIMAL_SEPARATOR</code> /
+          <code>THOUSAND_SEPARATOR</code> win over Intl.
+        </p>
+        <div class="space-y-4">
+          <material-number-field id="nf-usd" label="Price" name="price" currency="USD"
+                                 value="12400.5" min="0" step="0.01" class="w-full"></material-number-field>
+          <material-number-field label="Preis" currency="EUR" locale="de"
+                                 value="9800.25" step="0.01" class="w-full"></material-number-field>
+          <material-number-field label="価格" currency="JPY" locale="ja"
+                                 value="152000" class="w-full"></material-number-field>
+        </div>
+        <p class="text-xs text-on-surface-variant mt-2">USD valueChange: <span id="usd-log">—</span></p>
+      </section>
+
       <section dir="rtl">
         <p class="text-sm text-on-surface-variant mb-3" dir="ltr">RTL — steppers and prefix mirror</p>
         <material-number-field label="الكمية" value="12" min="0" grouping class="w-full"></material-number-field>
@@ -114,6 +132,8 @@
   <script>
     document.getElementById('nf-basic').addEventListener('valueChange',
       (e) => document.getElementById('basic-log').textContent = JSON.stringify(e.detail));
+    document.getElementById('nf-usd').addEventListener('valueChange',
+      (e) => document.getElementById('usd-log').textContent = JSON.stringify(e.detail));
     const form = document.getElementById('demo-form');
     form.addEventListener('submit', (e) => {
       e.preventDefault();

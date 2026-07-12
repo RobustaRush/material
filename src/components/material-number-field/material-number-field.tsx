@@ -9,7 +9,7 @@ import {
   Watch,
   h,
 } from '@stencil/core';
-import { gettext } from '../../utils/i18n';
+import { getFormat, gettext } from '../../utils/i18n';
 
 export type MaterialNumberFieldVariant = 'filled' | 'outlined';
 
@@ -54,6 +54,15 @@ export class MaterialNumberField {
    *  locale). The posted value stays plain. */
   @Prop({ reflect: true }) grouping = false;
 
+  /** ISO 4217 code ("USD", "EUR", "JPY"). Displays the value as locale
+   *  currency — symbol placement, grouping and fraction digits all come
+   *  from Intl (JPY → 0 digits, BHD → 3, …); explicit `decimals` wins.
+   *  The posted value stays the plain dot-decimal string. */
+  @Prop() currency?: string;
+
+  /** BCP 47 tag. Empty = page locale (`<html lang>`, which Django's
+   *  LocaleMiddleware sets); with Django's jsi18n catalog loaded the
+   *  DECIMAL_SEPARATOR / THOUSAND_SEPARATOR formats win over Intl. */
   @Prop() locale = '';
 
   /** Static text inside the field, e.g. a currency sign or unit. */
@@ -76,17 +85,38 @@ export class MaterialNumberField {
   private hiddenInput?: HTMLInputElement;
 
   componentWillLoad() {
-    this.display = this.format(this.parse(this.value));
+    this.display = this.format(this.parseCanonical(this.value));
   }
 
   @Watch('value')
   onValueChange() {
-    this.display = this.format(this.parse(this.value));
+    this.display = this.format(this.parseCanonical(this.value));
     if (this.hiddenInput) this.hiddenInput.value = this.value;
+  }
+
+  /** The `value` prop is ALWAYS the canonical dot-decimal string — parse it
+   *  as such. The lenient locale-aware `parse()` is only for user-typed
+   *  text (in a de locale it would eat the dot in "9800.25" as a thousands
+   *  separator and read 980025). */
+  private parseCanonical(v: string): number | null {
+    const raw = (v ?? '').trim();
+    if (!raw) return null;
+    const n = Number(raw);
+    return Number.isNaN(n) ? NaN : n;
   }
 
   private effectiveDecimals(): number {
     if (typeof this.decimals === 'number') return this.decimals;
+    if (this.currency) {
+      try {
+        return new Intl.NumberFormat(this.effectiveLocale(), {
+          style: 'currency',
+          currency: this.currency,
+        }).resolvedOptions().maximumFractionDigits ?? 2;
+      } catch {
+        return 2;
+      }
+    }
     const s = String(this.step);
     const dot = s.indexOf('.');
     return dot < 0 ? 0 : s.length - dot - 1;
@@ -97,6 +127,16 @@ export class MaterialNumberField {
   }
 
   private separators(): { group: string; decimal: string } {
+    // Django's jsi18n formats win when the catalog is loaded — the page's
+    // localization settings stay the single source of truth.
+    const djDecimal = getFormat('DECIMAL_SEPARATOR');
+    if (typeof djDecimal === 'string' && djDecimal) {
+      const djGroup = getFormat('THOUSAND_SEPARATOR');
+      return {
+        decimal: djDecimal,
+        group: typeof djGroup === 'string' ? djGroup : '',
+      };
+    }
     const parts = new Intl.NumberFormat(this.effectiveLocale()).formatToParts(12345.6);
     return {
       group: parts.find((p) => p.type === 'group')?.value ?? ',',
@@ -107,11 +147,18 @@ export class MaterialNumberField {
   /** Lenient parse of user text: strips group separators and spaces,
    *  accepts both the locale decimal mark and a plain dot. */
   private parse(text: string): number | null {
-    const raw = (text ?? '').trim();
+    let raw = (text ?? '').trim();
     if (!raw) return null;
+    if (this.currency) {
+      // Drop the currency symbol/code and any other non-numeric chrome the
+      // formatted string carries ("$", "€", "USD", NBSP padding).
+      raw = raw.replace(/[^0-9+\-.,\s  ']/gu, '').trim();
+      if (!raw) return NaN;
+    }
     const { group, decimal } = this.separators();
-    let s = raw
-      .split(group).join('')
+    let s = raw;
+    if (group) s = s.split(group).join('');
+    s = s
       .replace(/[\s  ]/g, '')
       .replace(decimal, '.');
     // A lone comma decimal in a dot-locale (or vice versa) still parses.
@@ -123,6 +170,16 @@ export class MaterialNumberField {
   private format(n: number | null): string {
     if (n === null || Number.isNaN(n)) return '';
     const decimals = this.effectiveDecimals();
+    if (this.currency) {
+      try {
+        return new Intl.NumberFormat(this.effectiveLocale(), {
+          style: 'currency',
+          currency: this.currency,
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        }).format(n);
+      } catch { /* unknown code - fall through to plain */ }
+    }
     if (!this.grouping) return n.toFixed(decimals);
     return new Intl.NumberFormat(this.effectiveLocale(), {
       minimumFractionDigits: decimals,
@@ -169,7 +226,7 @@ export class MaterialNumberField {
 
   private nudge(direction: 1 | -1) {
     if (this.disabled || this.readOnly) return;
-    const current = this.parse(this.value);
+    const current = this.parseCanonical(this.value);
     const base = current === null || Number.isNaN(current)
       ? (direction > 0 ? (this.min ?? 0) - this.step : (this.max ?? 0) + this.step)
       : current;
@@ -194,8 +251,8 @@ export class MaterialNumberField {
 
   render() {
     const subText = this.error ? (this.errorText || this.liveError) : this.helpText;
-    const atMin = this.min !== undefined && (this.parse(this.value) ?? NaN) <= this.min;
-    const atMax = this.max !== undefined && (this.parse(this.value) ?? NaN) >= this.max;
+    const atMin = this.min !== undefined && (this.parseCanonical(this.value) ?? NaN) <= this.min;
+    const atMax = this.max !== undefined && (this.parseCanonical(this.value) ?? NaN) >= this.max;
 
     return (
       <Host class="block w-full" onKeyDown={this.handleKeyDown}>
