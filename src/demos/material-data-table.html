@@ -370,6 +370,11 @@
         window is displayed (two spacer rows keep the scrollbar honest); rows
         never leave the DOM so the checkbox selection and select-all sweep
         keep working. Pair with <code>sticky-header</code> + a max-height.
+        Row selection here uses native <code>&lt;input type="checkbox"&gt;</code>
+        (tinted via <code>accent-color</code>) deliberately: at this row count
+        3,000 <code>material-checkbox</code> elements cost ≈1s of main-thread
+        hydration, native inputs are free — the selection protocol supports
+        both.
       </p>
       <div class="mb-2 flex items-center gap-3 min-h-6 text-sm text-on-surface-variant">
         <span id="virt-count">0 selected</span>

@@ -180,6 +180,14 @@ material-data-table .cell-select input[type='checkbox'] {
   vertical-align: middle;
 }
 
+/* Native row checkboxes (the cheap option for `virtual` tables with
+   thousands of rows — no per-row hydration) still read as Material. */
+material-data-table input[type='checkbox'] {
+  accent-color: var(--md-sys-color-primary);
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
 /* Server renders <td class="empty" colspan="…"> when the queryset is empty. */
 material-data-table td.empty {
   height: auto;
