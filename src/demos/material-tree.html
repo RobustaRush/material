@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-tree — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-tree</h1>
+        <p class="text-on-surface-variant text-sm">
+          General-purpose tree — expand/collapse, tri-state checkbox selection,
+          lazy children. Nested markup or flat rows with <code>level</code>
+          (django-mptt's native shape). Form-associated: posts one
+          <code>name=&lt;value&gt;</code> entry per checked node.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Nested markup — categories</h2>
+      <p class="text-on-surface-variant text-sm">
+        Items contain their children; depth is derived from nesting. Click a
+        row to fire <code>materialTreeActivate</code>; arrows / Home / End /
+        Enter work from the keyboard.
+      </p>
+      <div class="rounded-lg border border-outline-variant p-2 max-w-md">
+        <material-tree id="t-nested" aria-label="Categories">
+          <material-tree-item value="electronics" label="Electronics" icon="devices" expanded>
+            <material-tree-item value="phones" label="Phones" icon="smartphone">
+              <material-tree-item value="android" label="Android"></material-tree-item>
+              <material-tree-item value="ios" label="iOS"></material-tree-item>
+            </material-tree-item>
+            <material-tree-item value="laptops" label="Laptops" icon="laptop_mac"></material-tree-item>
+            <material-tree-item value="audio" label="Audio" icon="headphones" disabled></material-tree-item>
+          </material-tree-item>
+          <material-tree-item value="furniture" label="Furniture" icon="chair">
+            <material-tree-item value="desks" label="Desks"></material-tree-item>
+            <material-tree-item value="chairs" label="Chairs"></material-tree-item>
+          </material-tree-item>
+          <material-tree-item value="services" label="Services" icon="handyman" supporting-text="No subcategories"></material-tree-item>
+        </material-tree>
+      </div>
+      <pre id="out-nested" class="text-sm bg-surface-container rounded p-3 min-h-8">(no events)</pre>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Flat markup with <code>level</code> — the django-mptt shape</h2>
+      <p class="text-on-surface-variant text-sm">
+        The same tree as an ordered list of rows, exactly what mptt iteration
+        yields: <code>&lt;material-tree-item level="{{ node.level }}"
+        {% if not node.is_leaf_node %}has-children{% endif %}&gt;</code>.
+        No nesting in the markup at all.
+      </p>
+      <div class="rounded-lg border border-outline-variant p-2 max-w-md">
+        <material-tree id="t-flat" aria-label="Org structure">
+          <material-tree-item level="0" value="ceo" label="CEO" icon="person" expanded></material-tree-item>
+          <material-tree-item level="1" value="cto" label="CTO" icon="person" expanded></material-tree-item>
+          <material-tree-item level="2" value="backend" label="Backend team"></material-tree-item>
+          <material-tree-item level="2" value="frontend" label="Frontend team"></material-tree-item>
+          <material-tree-item level="1" value="cfo" label="CFO" icon="person"></material-tree-item>
+          <material-tree-item level="2" value="accounting" label="Accounting"></material-tree-item>
+          <material-tree-item level="1" value="coo" label="COO" icon="person"></material-tree-item>
+        </material-tree>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Tri-state selection + form posting</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>selectable</code> adds cascading checkboxes: a parent drives its
+        subtree and shows indeterminate for partial selections. Checked values
+        post as <code>categories=…</code> per node —
+        <code>request.POST.getlist('categories')</code> on the Django side.
+      </p>
+      <form id="tree-form" class="space-y-3">
+        <div class="rounded-lg border border-outline-variant p-2 max-w-md">
+          <material-tree id="t-select" selectable name="categories" aria-label="Category filter">
+            <material-tree-item value="1" label="Electronics" expanded>
+              <material-tree-item value="2" label="Phones" checked></material-tree-item>
+              <material-tree-item value="3" label="Laptops"></material-tree-item>
+              <material-tree-item value="4" label="Audio" checked></material-tree-item>
+            </material-tree-item>
+            <material-tree-item value="5" label="Furniture" expanded>
+              <material-tree-item value="6" label="Desks"></material-tree-item>
+              <material-tree-item value="7" label="Chairs"></material-tree-item>
+            </material-tree-item>
+          </material-tree>
+        </div>
+        <div class="flex gap-3 items-center flex-wrap">
+          <material-button type="submit" variant="filled">Submit</material-button>
+          <material-button type="reset" variant="outlined">Reset</material-button>
+          <material-button id="clear-sel" variant="text">Clear selection</material-button>
+          <span id="sel-count" class="text-sm text-on-surface-variant"></span>
+        </div>
+        <pre id="form-out" class="text-sm bg-surface-container rounded p-3 min-h-8">(submit to see FormData)</pre>
+      </form>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Lazy children — <code>src</code> endpoint</h2>
+      <p class="text-on-surface-variant text-sm">
+        Nodes marked <code>has-children</code> fetch
+        <code>/demo-api/tree?parent=&lt;value&gt;</code> on first expand
+        (mocked, 500&nbsp;ms). Selection cascades into lazily loaded children.
+        Without <code>src</code> the tree emits <code>materialTreeLoad</code>
+        instead, and you insert items yourself.
+      </p>
+      <div class="rounded-lg border border-outline-variant p-2 max-w-md">
+        <material-tree id="t-lazy" selectable src="/demo-api/tree" aria-label="File system">
+          <material-tree-item value="root-src" label="src" icon="folder" has-children></material-tree-item>
+          <material-tree-item value="root-docs" label="docs" icon="folder" has-children></material-tree-item>
+          <material-tree-item value="root-readme" label="README.md" icon="description"></material-tree-item>
+        </material-tree>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Trailing cells — aligned columns (BOM)</h2>
+      <p class="text-on-surface-variant text-sm">
+        Fixed-width <code>slot="trailing"</code> cells line up one under
+        another on every depth — only the label side indents. <code>dense</code>
+        rows.
+      </p>
+      <div class="rounded-lg border border-outline-variant p-2 max-w-xl">
+        <div class="flex text-xs text-on-surface-variant px-3 pb-1">
+          <span class="flex-1">Component</span>
+          <span class="w-16 text-right">Qty</span>
+          <span class="w-24 text-right">Cost</span>
+        </div>
+        <material-divider></material-divider>
+        <material-tree id="t-bom" dense aria-label="Bill of materials">
+          <material-tree-item value="asm-1" label="Drive assembly" icon="settings" expanded>
+            <span slot="trailing" class="w-16 text-right">1</span>
+            <span slot="trailing" class="w-24 text-right">$412.00</span>
+            <material-tree-item value="p-101" label="Motor 24V" icon="bolt">
+              <span slot="trailing" class="w-16 text-right">1</span>
+              <span slot="trailing" class="w-24 text-right">$189.00</span>
+            </material-tree-item>
+            <material-tree-item value="asm-2" label="Gearbox" icon="settings" expanded>
+              <span slot="trailing" class="w-16 text-right">1</span>
+              <span slot="trailing" class="w-24 text-right">$164.00</span>
+              <material-tree-item value="p-201" label="Bearing set" icon="circle">
+                <span slot="trailing" class="w-16 text-right">4</span>
+                <span slot="trailing" class="w-24 text-right">$168.00</span>
+              </material-tree-item>
+              <material-tree-item value="p-202" label="Shaft" icon="straighten">
+                <span slot="trailing" class="w-16 text-right">2</span>
+                <span slot="trailing" class="w-24 text-right">$46.00</span>
+              </material-tree-item>
+            </material-tree-item>
+            <material-tree-item value="p-102" label="Mounting bracket" icon="hardware">
+              <span slot="trailing" class="w-16 text-right">8</span>
+              <span slot="trailing" class="w-24 text-right">$70.00</span>
+            </material-tree-item>
+          </material-tree-item>
+        </material-tree>
+      </div>
+    </section>
+
+    <section class="space-y-3" dir="rtl">
+      <h2 class="text-lg font-medium">RTL (hard-coded)</h2>
+      <p class="text-on-surface-variant text-sm" dir="ltr">
+        Indent, chevrons and arrow keys follow the reading direction.
+      </p>
+      <div class="rounded-lg border border-outline-variant p-2 max-w-md">
+        <material-tree selectable aria-label="شجرة">
+          <material-tree-item value="a" label="الإلكترونيات" expanded>
+            <material-tree-item value="b" label="الهواتف"></material-tree-item>
+            <material-tree-item value="c" label="الحواسيب"></material-tree-item>
+          </material-tree-item>
+          <material-tree-item value="d" label="الأثاث"></material-tree-item>
+        </material-tree>
+      </div>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage (Django + mptt)</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;form method="post"&gt;
+  &lt;material-tree selectable name="categories" src="{% url 'category-children' %}"&gt;
+    {% for node in nodes %}
+      &lt;material-tree-item level="{{ node.level }}" value="{{ node.pk }}"
+                          label="{{ node.name }}"
+                          {% if not node.is_leaf_node %}has-children{% endif %}
+                          {% if node.level &lt; 1 %}expanded{% endif %}
+                          {% if node.pk in selected_ids %}checked{% endif %}&gt;
+      &lt;/material-tree-item&gt;
+    {% endfor %}
+  &lt;/material-tree&gt;
+&lt;/form&gt;
+
+# views.py — lazy children + selection
+def category_children(request):
+    parent = Category.objects.get(pk=request.GET['parent'])
+    return JsonResponse({'results': [
+        {'value': c.pk, 'label': c.name, 'has_children': not c.is_leaf_node()}
+        for c in parent.get_children()
+    ]})
+
+def save(request):
+    ids = request.POST.getlist('categories')</code></pre>
+    </details>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    // ─── activate log (nested case) ───
+    const nested = document.getElementById('t-nested');
+    const outNested = document.getElementById('out-nested');
+    nested.addEventListener('materialTreeActivate', e => {
+      outNested.textContent = `activate: "${e.detail.value}"`;
+    });
+    nested.addEventListener('materialTreeToggle', e => {
+      outNested.textContent = `toggle: "${e.detail.value}" expanded=${e.detail.expanded}`;
+    });
+
+    // ─── selection counter + clear ───
+    const sel = document.getElementById('t-select');
+    const selCount = document.getElementById('sel-count');
+    sel.addEventListener('materialSelectionChange', e => {
+      selCount.textContent = `${e.detail.count} selected: ${e.detail.values.join(', ')}`;
+    });
+    document.getElementById('clear-sel').addEventListener('click', () => sel.clearSelection());
+
+    // ─── mock /demo-api/tree?parent= with latency ───
+    const FS = {
+      'root-src':   [
+        { value: 'src-components', label: 'components', icon: 'folder', has_children: true },
+        { value: 'src-utils', label: 'utils', icon: 'folder', has_children: true },
+        { value: 'src-index', label: 'index.ts', icon: 'code' },
+      ],
+      'root-docs':  [
+        { value: 'docs-wiki', label: 'wiki', icon: 'folder', has_children: true },
+        { value: 'docs-intro', label: 'intro.md', icon: 'description' },
+      ],
+      'src-components': [
+        { value: 'c-button', label: 'material-button', icon: 'folder_open' },
+        { value: 'c-tree', label: 'material-tree', icon: 'folder_open' },
+      ],
+      'src-utils': [
+        { value: 'u-anchor', label: 'anchor-position.ts', icon: 'code' },
+        { value: 'u-i18n', label: 'i18n.ts', icon: 'code' },
+      ],
+      'docs-wiki': [
+        { value: 'w-specs', label: 'specs', icon: 'folder' },
+      ],
+    };
+    const realFetch = window.fetch.bind(window);
+    window.fetch = (input, init) => {
+      const url = typeof input === 'string' ? input : input.url;
+      if (url.includes('/demo-api/tree')) {
+        const parent = new URL(url, location.origin).searchParams.get('parent');
+        const results = FS[parent] || [];
+        return new Promise((resolve) => setTimeout(
+          () => resolve(new Response(JSON.stringify({ results }), {
+            headers: { 'Content-Type': 'application/json' },
+          })),
+          500,
+        ));
+      }
+      return realFetch(input, init);
+    };
+
+    // ─── form case ───
+    serializeFormToOutput('tree-form', 'form-out');
+  </script>
+</body>
+</html>

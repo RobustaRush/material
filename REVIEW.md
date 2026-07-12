@@ -11,9 +11,11 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
   ERP": virtual scroll for thousands of rows, column resize + reorder, sticky
   first column, inline cell editing, row grouping/aggregation. Keep the
   progressive-enhancement contract (server-rendered `<table>`, Unpoly swaps).
-- **material-tree** — general-purpose tree view (categories, org structures,
-  BOM): expand/collapse, checkbox tri-state selection, lazy children loading.
-  Distinct from material-navigation-group (which is navigation-only).
+- **material-tree** — ✅ done (2026-07-12): expand/collapse, tri-state
+  cascade selection (form-posts one entry per checked value), lazy children
+  (`src?parent=` JSON or `materialTreeLoad`), nested markup or flat
+  mptt-style rows with `level`, aligned trailing cells, ARIA tree keyboard
+  nav. Remaining ideas: drag-to-reorder, typeahead.
 - **material-transfer / dual listbox** — Django `filter_horizontal` analog for
   M2M fields; two lists + move buttons, search within each side.
 
