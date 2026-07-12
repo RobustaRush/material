@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-app-bar — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-app-bar</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 Expressive top app bar — three variants. Scroll the inner panels to see container fill and medium/large collapse.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-10">
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Small (64dp)</h2>
+      <p class="text-on-surface-variant text-sm">Single-row layout. Title Large headline. Optional subtitle Label Medium.</p>
+      <div id="scroll-small" class="rounded-lg border border-outline-variant bg-background" style="height: 288px; overflow-y: auto;">
+        <material-app-bar scroll-target="#scroll-small" aria-label="Small example">
+          <material-icon-button slot="leading" variant="standard" icon="menu" aria-label="Open menu"></material-icon-button>
+          <span slot="headline">Inbox</span>
+          <material-icon-button slot="trailing" variant="standard" icon="search" aria-label="Search"></material-icon-button>
+          <material-icon-button slot="trailing" variant="standard" icon="more_vert" aria-label="More"></material-icon-button>
+        </material-app-bar>
+        <div class="p-6 space-y-3">
+          <p>Scroll this panel — the bar fills with <code>surface container</code>.</p>
+          <div class="bg-surface-container-low rounded p-4 text-on-surface-variant" style="height: 800px;">Tall content…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Small with subtitle</h2>
+      <div id="scroll-small-sub" class="rounded-lg border border-outline-variant bg-background" style="height: 288px; overflow-y: auto;">
+        <material-app-bar scroll-target="#scroll-small-sub" aria-label="Small with subtitle">
+          <material-icon-button slot="leading" variant="standard" icon="arrow_back" aria-label="Back"></material-icon-button>
+          <span slot="headline">Project Atlas</span>
+          <span slot="subtitle">Updated 2 minutes ago</span>
+          <material-icon-button slot="trailing" variant="filled" icon="edit" aria-label="Edit"></material-icon-button>
+        </material-app-bar>
+        <div class="p-6 space-y-3">
+          <p>Filled trailing icon for the primary edit action.</p>
+          <div class="bg-surface-container-low rounded p-4 text-on-surface-variant" style="height: 800px;">Tall content…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Medium flexible (112dp → 64dp on scroll)</h2>
+      <p class="text-on-surface-variant text-sm">Headline Medium. Collapses to small when the panel scrolls.</p>
+      <div id="scroll-medium" class="rounded-lg border border-outline-variant bg-background" style="height: 288px; overflow-y: auto;">
+        <material-app-bar variant="medium" scroll-target="#scroll-medium" aria-label="Medium example">
+          <material-icon-button slot="leading" variant="standard" icon="arrow_back" aria-label="Back"></material-icon-button>
+          <span slot="headline">Settings</span>
+          <span slot="subtitle">General preferences</span>
+          <material-icon-button slot="trailing" variant="standard" icon="search" aria-label="Search"></material-icon-button>
+          <material-icon-button slot="trailing" variant="standard" icon="more_vert" aria-label="More"></material-icon-button>
+        </material-app-bar>
+        <div class="p-6 space-y-3">
+          <p>Scroll to collapse — height shrinks 112 → 64, headline reverts to Title Large.</p>
+          <div class="bg-surface-container-low rounded p-4 text-on-surface-variant" style="height: 800px;">Tall content…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Large flexible (120dp → 64dp on scroll)</h2>
+      <p class="text-on-surface-variant text-sm">Display Small typography for emphasised page headlines.</p>
+      <div id="scroll-large" class="rounded-lg border border-outline-variant bg-background" style="height: 288px; overflow-y: auto;">
+        <material-app-bar variant="large" scroll-target="#scroll-large" aria-label="Large example">
+          <material-icon-button slot="leading" variant="standard" icon="arrow_back" aria-label="Back"></material-icon-button>
+          <span slot="headline">Library</span>
+          <span slot="subtitle">128 saved items</span>
+          <material-icon-button slot="trailing" variant="standard" icon="filter_list" aria-label="Filter"></material-icon-button>
+          <material-icon-button slot="trailing" variant="standard" icon="more_vert" aria-label="More"></material-icon-button>
+        </material-app-bar>
+        <div class="p-6 space-y-3">
+          <p>Scroll to compress into the small layout.</p>
+          <div class="bg-surface-container-low rounded p-4 text-on-surface-variant" style="height: 800px;">Tall content…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Centered alignment (small)</h2>
+      <div id="scroll-center" class="rounded-lg border border-outline-variant bg-background" style="height: 288px; overflow-y: auto;">
+        <material-app-bar align="centered" scroll-target="#scroll-center" aria-label="Centered example">
+          <material-icon-button slot="leading" variant="standard" icon="arrow_back" aria-label="Back"></material-icon-button>
+          <span slot="headline">Profile</span>
+          <material-icon-button slot="trailing" variant="standard" icon="more_vert" aria-label="More"></material-icon-button>
+        </material-app-bar>
+        <div class="p-6 space-y-3">
+          <div class="bg-surface-container-low rounded p-4 text-on-surface-variant" style="height: 800px;">Tall content…</div>
+        </div>
+      </div>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Small --&gt;
+&lt;material-app-bar aria-label="Inbox"&gt;
+  &lt;material-icon-button slot="leading" variant="standard" icon="menu" aria-label="Menu"&gt;&lt;/material-icon-button&gt;
+  &lt;span slot="headline"&gt;Inbox&lt;/span&gt;
+  &lt;material-icon-button slot="trailing" variant="standard" icon="search" aria-label="Search"&gt;&lt;/material-icon-button&gt;
+&lt;/material-app-bar&gt;
+
+&lt;!-- Medium with subtitle --&gt;
+&lt;material-app-bar variant="medium"&gt;
+  &lt;material-icon-button slot="leading" variant="standard" icon="arrow_back"&gt;&lt;/material-icon-button&gt;
+  &lt;span slot="headline"&gt;Settings&lt;/span&gt;
+  &lt;span slot="subtitle"&gt;General preferences&lt;/span&gt;
+  &lt;material-icon-button slot="trailing" variant="standard" icon="more_vert"&gt;&lt;/material-icon-button&gt;
+&lt;/material-app-bar&gt;
+
+&lt;!-- Large, with custom scroll target (a scrollable container) --&gt;
+&lt;material-app-bar variant="large" scroll-target="#main"&gt;...&lt;/material-app-bar&gt;</code></pre>
+    </details>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

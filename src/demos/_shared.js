@@ -87,7 +87,12 @@
     '<button type="button" data-dir="ltr" class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">LTR</button>' +
     '<button type="button" data-dir="rtl" class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">RTL</button>' +
     '</div>';
-  anchor.closest('label').after(label);
+  // Demo pages wrap the picker in a <label>; showcases place it bare inside
+  // an app-bar slot. Insert after whichever wrapper exists and inherit the
+  // slot assignment so shadow-DOM app bars actually render the toggle.
+  const slot = anchor.getAttribute('slot');
+  if (slot) label.setAttribute('slot', slot);
+  (anchor.closest('label') || anchor).after(label);
 
   const buttons = label.querySelectorAll('[data-dir]');
   function applyDir(dir) {
