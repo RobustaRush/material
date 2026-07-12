@@ -1,0 +1,176 @@
+material-dropzone {
+  display: block;
+  width: 100%;
+}
+
+material-dropzone[hidden] {
+  display: none;
+}
+
+material-dropzone .dz-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 7rem;
+  padding: 1.25rem;
+  border: 2px dashed var(--md-sys-color-outline-variant);
+  border-radius: 1rem;
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 120ms linear, background-color 120ms linear;
+}
+
+material-dropzone .dz-area:hover {
+  background: var(--md-sys-color-surface-container);
+}
+
+material-dropzone .dz-area:focus-visible {
+  outline: 2px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
+
+material-dropzone .dz-area.drag-over {
+  border-color: var(--md-sys-color-primary);
+  background: color-mix(in srgb, var(--md-sys-color-primary) 8%, var(--md-sys-color-surface-container-low));
+  color: var(--md-sys-color-primary);
+}
+
+material-dropzone .dz-area.has-error {
+  border-color: var(--md-sys-color-error);
+}
+
+material-dropzone .dz-area.disabled {
+  opacity: 0.38;
+  cursor: default;
+  pointer-events: none;
+}
+
+material-dropzone .dz-icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 2rem;
+  line-height: 1;
+  direction: ltr;
+}
+
+material-dropzone .dz-text {
+  font-size: 0.875rem;
+}
+
+material-dropzone .dz-browse {
+  color: var(--md-sys-color-primary);
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+material-dropzone .dz-help {
+  margin-top: 0.25rem;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+material-dropzone .dz-help.is-error {
+  color: var(--md-sys-color-error);
+}
+
+/* --- file rows ---------------------------------------------------------- */
+
+material-dropzone .dz-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.625rem;
+}
+
+material-dropzone .dz-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 0.75rem;
+  background: var(--md-sys-color-surface);
+}
+
+material-dropzone .dz-row.is-error {
+  border-color: var(--md-sys-color-error);
+}
+
+material-dropzone .dz-thumb {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  background: var(--md-sys-color-surface-container-high);
+}
+
+material-dropzone .dz-file-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  direction: ltr;
+}
+
+material-dropzone .dz-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+material-dropzone .dz-name {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+material-dropzone .dz-sub {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+
+material-dropzone .dz-row.is-error .dz-sub {
+  color: var(--md-sys-color-error);
+}
+
+material-dropzone .dz-progress {
+  margin-top: 0.25rem;
+}
+
+material-dropzone .dz-status {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  flex: none;
+  direction: ltr;
+}
+
+material-dropzone .dz-status.done {
+  color: var(--md-sys-color-primary);
+}
+
+material-dropzone .dz-status.error {
+  color: var(--md-sys-color-error);
+}
