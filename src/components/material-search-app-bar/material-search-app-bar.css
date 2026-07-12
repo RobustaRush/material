@@ -115,3 +115,24 @@
   outline: 2px solid var(--md-sys-color-secondary);
   outline-offset: 0.125rem;
 }
+
+/* A slotted material-search replaces the built-in input: drop the app bar's
+   own pill chrome (the search component draws its own bar, focus ring and
+   scroll-independent surface) and give the suggestions some room. */
+.search-container.custom {
+  background: transparent;
+  padding: 0;
+  height: auto;
+  max-width: 30rem;
+  /* Inherited into the slotted material-search: no focus-widening inside the
+     app bar — leading/trailing neighbors sit right next to the container. */
+  --search-focus-expand: 0;
+}
+
+.search-container.custom:focus-within {
+  outline: none;
+}
+
+::slotted([slot='search']) {
+  width: 100%;
+}

@@ -84,6 +84,32 @@
     </section>
 
     <section class="space-y-3">
+      <h2 class="text-lg font-medium">With material-search slotted — suggestions in the app bar</h2>
+      <p class="text-on-surface-variant text-sm">
+        A <code>material-search</code> in the <code>search</code> slot replaces
+        the built-in input: the app bar keeps the chrome (leading/trailing,
+        scroll color), the search brings the docked suggestion view. Focus
+        widening is disabled inside the bar (<code>--search-focus-expand: 0</code>).
+      </p>
+      <div id="scroll-combo" class="rounded-lg border border-outline-variant bg-background" style="height: 288px; overflow-y: auto;">
+        <material-search-app-bar scroll-target="#scroll-combo" class="sticky top-0 z-10">
+          <material-icon-button slot="leading" variant="standard" icon="menu" aria-label="Open menu"></material-icon-button>
+          <material-search slot="search" id="combo-search" placeholder="Search everything">
+            <material-option leading-icon="history" data-section="Recent" value="unpaid invoices">unpaid invoices</material-option>
+            <material-option leading-icon="history" data-section="Recent" value="warehouse stock">warehouse stock</material-option>
+            <material-option leading-icon="shopping_cart" data-section="Go to" data-href="#purchasing" value="Purchase orders">Purchase orders</material-option>
+            <material-option leading-icon="bar_chart" data-section="Go to" data-href="#reports" value="Reports">Reports</material-option>
+          </material-search>
+          <material-icon-button slot="trailing" variant="filled" icon="account_circle" aria-label="Account"></material-icon-button>
+        </material-search-app-bar>
+        <div class="p-6 space-y-3">
+          <pre id="out-combo" class="text-sm bg-surface-container rounded p-3 min-h-8">(no events)</pre>
+          <div class="bg-surface-container-low rounded p-4 text-on-surface-variant" style="height: 800px;">Tall content…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-3">
       <h2 class="text-lg font-medium">Form-associated</h2>
       <p class="text-on-surface-variant text-sm">Bar lives inside a <code>&lt;form&gt;</code>. Enter triggers form submit.</p>
       <form id="search-form" class="space-y-3">
@@ -130,6 +156,21 @@
     }
     // Wire the form-associated example.
     serializeFormToOutput('search-form', 'form-out');
+
+    // Wire the slotted material-search example (href picks logged, not followed).
+    const combo = document.getElementById('combo-search');
+    const comboOut = document.getElementById('out-combo');
+    combo.addEventListener('materialSelect', e => {
+      if (e.detail.item.href) {
+        e.preventDefault();
+        comboOut.textContent = `select (href): would navigate to ${e.detail.item.href}`;
+      } else {
+        comboOut.textContent = `select: "${e.detail.item.label}"`;
+      }
+    });
+    combo.addEventListener('materialSearchSubmit', e => {
+      comboOut.textContent = `submit: "${e.detail.query}"`;
+    });
   </script>
 </body>
 </html>

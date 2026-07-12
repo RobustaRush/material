@@ -50,7 +50,9 @@
 
   <div class="flex-1 flex flex-col min-w-0">
 
-    <material-search-app-bar id="search" placeholder="Search POs, vendors, items" class="shrink-0 sticky top-0 z-10">
+    <material-search-app-bar id="search" class="shrink-0 sticky top-0 z-10">
+      <material-search slot="search" id="global-search"
+                       placeholder="Search POs, vendors, items"></material-search>
       <select id="theme-picker" slot="trailing"
               class="bg-surface-container text-on-surface border border-outline-variant rounded px-2 py-1 text-xs mr-1"
               aria-label="Theme">
@@ -521,14 +523,7 @@
         </div>`;
     }
 
-    // Row click opens the detail dialog — controls inside the row (checkbox,
-    // row menu) keep their own behavior.
-    rowsEl.addEventListener('click', (e) => {
-      if (e.target.closest('material-checkbox, material-icon-button, a, button, input, label')) return;
-      const item = e.target.closest('tr[data-po]');
-      if (!item) return;
-      const po = POS.find(p => p.id === item.getAttribute('data-po'));
-      if (!po) return;
+    function openPo(po) {
       body.innerHTML = poDetailHTML(po);
       dialog.show();
 
@@ -542,6 +537,42 @@
           if (el) el.hidden = (p !== v);
         });
       });
+    }
+
+    // Row click opens the detail dialog — controls inside the row (checkbox,
+    // row menu) keep their own behavior.
+    rowsEl.addEventListener('click', (e) => {
+      if (e.target.closest('material-checkbox, material-icon-button, a, button, input, label')) return;
+      const item = e.target.closest('tr[data-po]');
+      if (!item) return;
+      const po = POS.find(p => p.id === item.getAttribute('data-po'));
+      if (po) openPo(po);
+    });
+
+    // ─── Global search (material-search slotted into the app bar) ───────
+    const globalSearch = document.getElementById('global-search');
+    globalSearch.items = [
+      ...POS.slice(0, 30).map(po => ({
+        label: po.id,
+        icon: 'receipt_long',
+        section: 'Purchase orders',
+        supportingText: `${po.vendor} · ${fmt(po.total)}`,
+      })),
+      ...[...new Set(POS.map(po => po.vendor))].map(v => ({
+        label: v,
+        icon: 'storefront',
+        section: 'Vendors',
+      })),
+    ];
+    globalSearch.addEventListener('materialSelect', (e) => {
+      e.preventDefault();
+      const item = e.detail.item;
+      const po = POS.find(p => p.id === item.label);
+      if (po) openPo(po);
+      else host.show({ text: `Search: ${item.label}` });
+    });
+    globalSearch.addEventListener('materialSearchSubmit', (e) => {
+      if (e.detail.query) host.show({ text: `Search everywhere: "${e.detail.query}"` });
     });
 
     // ─── Per-row menu ───────────────────────────────────────────────────

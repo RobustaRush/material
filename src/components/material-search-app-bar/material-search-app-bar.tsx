@@ -18,6 +18,15 @@ import {
 // Anatomy:
 //   [leading slot] [search container: leading-icon? input  inside-trailing slot] [trailing slot]
 //
+// The built-in input is a plain "Enter submits" entry point. For the
+// suggestions/search-view pattern (MD3 Search), slot a material-search into
+// `search` — it replaces the built-in input while the app bar keeps
+// providing the chrome (leading/trailing zones, scroll color):
+//
+//   <material-search-app-bar>
+//     <material-search slot="search" src="/api/suggest/">…</material-search>
+//   </material-search-app-bar>
+//
 // The search container changes color from `surface container` to
 // `surface container highest` on scroll; the outer container changes from
 // `surface` to `surface container`. The component participates in form
@@ -48,6 +57,7 @@ export class MaterialSearchAppBar {
   @Event() materialSearchSubmit!: EventEmitter<{ value: string }>;
 
   @State() hasInsideTrailing = false;
+  @State() hasCustomSearch = false;
 
   private scrollEl: Window | HTMLElement = window;
   private rafId = 0;
@@ -64,6 +74,11 @@ export class MaterialSearchAppBar {
     this.hasInsideTrailing = nodes.some(
       (n) => n.nodeType === Node.ELEMENT_NODE || !!n.textContent?.trim(),
     );
+  };
+
+  private onSearchSlotChange = (e: Event) => {
+    const slot = e.target as HTMLSlotElement;
+    this.hasCustomSearch = slot.assignedElements({ flatten: true }).length > 0;
   };
 
   componentWillLoad() {
@@ -161,28 +176,36 @@ export class MaterialSearchAppBar {
           <div class="leading">
             <slot name="leading" />
           </div>
-          <div class="search-container" role="search">
-            {this.searchIcon && (
-              <span class="search-icon" aria-hidden="true">
-                search
-              </span>
-            )}
-            <input
-              ref={(el) => (this.inputEl = el)}
-              type="search"
-              role="searchbox"
-              class="search-input"
-              name={this.name}
-              value={this.value}
-              placeholder={this.placeholder}
-              aria-label={this.ariaLabel ?? this.placeholder}
-              disabled={this.disabled}
-              onInput={this.handleInput}
-              onKeyDown={this.handleKeyDown}
-            />
-            <div class={{ 'inside-trailing': true, 'has-content': this.hasInsideTrailing }}>
-              <slot name="inside-trailing" onSlotchange={this.onInsideTrailingSlotChange} />
-            </div>
+          <div
+            class={{ 'search-container': true, custom: this.hasCustomSearch }}
+            role={this.hasCustomSearch ? undefined : 'search'}
+          >
+            {!this.hasCustomSearch && [
+              this.searchIcon && (
+                <span class="search-icon" aria-hidden="true">
+                  search
+                </span>
+              ),
+              <input
+                ref={(el) => (this.inputEl = el)}
+                type="search"
+                role="searchbox"
+                class="search-input"
+                name={this.name}
+                value={this.value}
+                placeholder={this.placeholder}
+                aria-label={this.ariaLabel ?? this.placeholder}
+                disabled={this.disabled}
+                onInput={this.handleInput}
+                onKeyDown={this.handleKeyDown}
+              />,
+              <div class={{ 'inside-trailing': true, 'has-content': this.hasInsideTrailing }}>
+                <slot name="inside-trailing" onSlotchange={this.onInsideTrailingSlotChange} />
+              </div>,
+            ]}
+            {/* A slotted material-search replaces the built-in input; the app
+                bar keeps the chrome, the search brings the suggestion view. */}
+            <slot name="search" onSlotchange={this.onSearchSlotChange} />
           </div>
           <div class="trailing">
             <slot name="trailing" />

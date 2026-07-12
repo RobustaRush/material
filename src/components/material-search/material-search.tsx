@@ -11,7 +11,7 @@ import {
   h,
 } from '@stencil/core';
 import { gettext } from '../../utils/i18n';
-import { trackAnchored } from '../../utils/anchor-position';
+import { positionAnchored, trackAnchored, AnchorPositionOptions } from '../../utils/anchor-position';
 
 // MD3 Search (contained style) — the standalone search bar + search view
 // pair from m3.material.io/components/search. The bar is a 56dp pill on
@@ -308,13 +308,21 @@ export class MaterialSearch {
     const shouldShow = this.open && !this.isFullscreen();
     const isOpen = popup.matches(':popover-open');
     if (shouldShow && !isOpen) {
-      popup.style.minWidth = `${Math.round(anchor.getBoundingClientRect().width)}px`;
-      popup.showPopover();
-      this.stopTracking = trackAnchored(popup, anchor, {
+      const opts: AnchorPositionOptions = {
         placement: 'bottom-start',
         offset: 2, // spec: 2dp bar-to-results gap
         maxHeight: Math.round((window.innerHeight * 2) / 3), // spec: 2/3 screen max
-      });
+      };
+      popup.style.minWidth = `${Math.round(anchor.getBoundingClientRect().width)}px`;
+      popup.showPopover();
+      this.stopTracking = trackAnchored(popup, anchor, opts);
+      // The bar widens over 250ms on focus (expressive motion); re-measure
+      // once the transition settles so the popup matches the final geometry.
+      window.setTimeout(() => {
+        if (!this.open || !popup.matches(':popover-open')) return;
+        popup.style.minWidth = `${Math.round(anchor.getBoundingClientRect().width)}px`;
+        positionAnchored(popup, anchor, opts);
+      }, 300);
     } else if (!shouldShow && isOpen) {
       popup.hidePopover();
       this.stopTracking?.();

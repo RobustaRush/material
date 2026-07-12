@@ -38,6 +38,23 @@
   background: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface-variant);
   cursor: text;
+  transition:
+    margin-inline 250ms cubic-bezier(0.2, 0, 0, 1),
+    width 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Expressive focus motion (spec: pane margins 24dp unfocused → 12dp focused,
+   i.e. the bar widens into the surrounding whitespace). Consumers whose
+   layout has no spare margin opt out with --search-focus-expand: 0. */
+:host(.view-open:not(.fullscreen)) .bar {
+  margin-inline: calc(-1 * var(--search-focus-expand, 0.75rem));
+  width: calc(100% + 2 * var(--search-focus-expand, 0.75rem));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
 }
 
 /* Hover/pressed state layer over the pill. */
