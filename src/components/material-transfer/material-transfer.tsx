@@ -355,8 +355,10 @@ export class MaterialTransfer {
               <span class="row-label">{o.label}</span>
             </div>
           ))}
+          {/* a listbox must own at least one option — the empty state is a
+              disabled informative one, not a presentational div */}
           {!visible.length && (
-            <div class="empty" role="presentation">
+            <div class="empty" role="option" aria-disabled="true" aria-selected="false">
               {this.queries[side].trim() ? gettext('No matches') : gettext('Empty')}
             </div>
           )}

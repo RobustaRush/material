@@ -36,6 +36,11 @@ export class MaterialCheckbox {
   @Prop({ reflect: true }) error = false;
   @Prop() errorText?: string;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  /** Visual-only mode for composed widgets (a selectable list row): the inner
+   *  button leaves the tab order — the enclosing widget drives the state and
+   *  carries the semantics (aria-selected on the option). Still posts with
+   *  the form. Set by material-list-item, rarely by hand. */
+  @Prop({ reflect: true }) nested = false;
 
   @Event() checkedChange!: EventEmitter<{ checked: boolean; indeterminate: boolean }>;
 
@@ -139,7 +144,27 @@ export class MaterialCheckbox {
     const descId = 'description';
     const subText = inError ? this.errorText : this.helpText;
 
-    const button = (
+    const visuals = [
+      <span class={stateLayerCls} aria-hidden="true"></span>,
+      <span class={boxCls}>
+        {/* Always rendered so the check can animate in — a conditionally
+            rendered mark can't transition. Revealed left-to-right via
+            clip-path at 200ms standard easing (MD3 selection-control motion). */}
+        <span class={isOn ? 'mark revealed' : 'mark'} aria-hidden="true">
+          {icon}
+        </span>
+      </span>,
+    ];
+
+    // nested: no widget at all — a focusable/role-bearing element inside a
+    // composed widget (listbox option) is a nested-interactive violation even
+    // with tabindex="-1". Pointer clicks still toggle; the enclosing widget
+    // owns keyboard and semantics.
+    const button = this.nested ? (
+      <span class="target" aria-hidden="true" onClick={() => !this.disabled && this.toggle()}>
+        {visuals}
+      </span>
+    ) : (
       <button
         type="button"
         role="checkbox"
@@ -154,15 +179,7 @@ export class MaterialCheckbox {
         onClick={() => this.toggle()}
         onKeyDown={this.handleKeyDown}
       >
-        <span class={stateLayerCls} aria-hidden="true"></span>
-        <span class={boxCls}>
-          {/* Always rendered so the check can animate in — a conditionally
-              rendered mark can't transition. Revealed left-to-right via
-              clip-path at 200ms standard easing (MD3 selection-control motion). */}
-          <span class={isOn ? 'mark revealed' : 'mark'} aria-hidden="true">
-            {icon}
-          </span>
-        </span>
+        {visuals}
       </button>
     );
 

@@ -10,6 +10,7 @@ import {
   Watch,
   h,
 } from '@stencil/core';
+import { gettext } from '../../utils/i18n';
 
 // Data table as progressive enhancement over a server-rendered <table>.
 //
@@ -279,16 +280,6 @@ export class MaterialDataTable {
     }
 
     this.handleRowLink(e, target);
-  }
-
-  @Listen('keydown')
-  handleKeyDown(e: KeyboardEvent) {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const group = (e.target as HTMLElement).closest?.('tr.row-group');
-    if (group && this.el.contains(group)) {
-      e.preventDefault();
-      this.toggleGroup(group as HTMLTableRowElement);
-    }
   }
 
   @Listen('pointerdown')
@@ -703,17 +694,27 @@ export class MaterialDataTable {
 
   /** Fold the member rows of every collapsed `tr.row-group` — the rows that
    *  follow it up to the next group row. Groups and their aggregate cells are
-   *  server-rendered; this only shows/hides. */
+   *  server-rendered; this injects only the toggle button (a tr may not carry
+   *  aria-expanded/tabindex itself outside a treegrid) and shows/hides. */
   private updateGroups() {
     let anyGroup = false;
     let collapsed = false;
     for (const row of Array.from(this.el.querySelectorAll<HTMLTableRowElement>('tbody tr'))) {
-      if (row.classList.contains('v-spacer')) continue;
+      if (row.classList.contains('v-spacer') || row.classList.contains('detail-row')) continue;
       if (row.classList.contains('row-group')) {
         anyGroup = true;
         collapsed = row.classList.contains('collapsed');
-        row.tabIndex = 0;
-        row.setAttribute('aria-expanded', String(!collapsed));
+        const cell = row.cells[0];
+        let btn = cell?.querySelector<HTMLButtonElement>(':scope > .group-toggle') ?? null;
+        if (!btn && cell) {
+          btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'group-toggle';
+          btn.setAttribute('aria-label', gettext('Toggle group'));
+          btn.textContent = 'keyboard_arrow_down';
+          cell.prepend(btn);
+        }
+        btn?.setAttribute('aria-expanded', String(!collapsed));
       } else if (anyGroup) {
         row.hidden = collapsed;
       }
@@ -817,8 +818,11 @@ export class MaterialDataTable {
   }
 
   render() {
+    // The host is the scroll container in sticky-header/virtual modes —
+    // a scrollable region must be keyboard-reachable.
+    const scrollable = this.stickyHeader || this.virtual;
     return (
-      <Host aria-busy={this.loading ? 'true' : undefined}>
+      <Host aria-busy={this.loading ? 'true' : undefined} tabindex={scrollable ? '0' : undefined}>
         <slot />
       </Host>
     );

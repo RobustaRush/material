@@ -91,8 +91,18 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
 - **Django integration package** — form widgets that render these components
   from `forms.Field` definitions; this is the adminui product on top of the
   library and the main commercial differentiator.
-- **A11y statement** — axe-core pass over every demo page wired into CI,
-  documented WCAG 2.2 AA status per component. Enterprise buyers ask first.
+- **A11y statement** — ✅ audit done (2026-07-12): axe-core (WCAG 2.2 AA
+  tags) swept all 56 demos + 4 showcases via playwright-cli — **0 violations
+  on every page** after fixing: nested-interactive in selectable lists
+  (material-checkbox `nested` mode renders a non-widget visual), select /
+  autocomplete chip roles + ≥24px remove targets, slider/list/select
+  accessible names, tooltip cross-shadow aria refs (+ inert), side-sheet
+  closed-state inert, data-table group rows (injected toggle button carries
+  aria-expanded) + focusable scroll region, calendar outside-day contrast,
+  disabled-link roles, carousel slide semantics, demo density/dir toggle
+  target size. Remaining for "commercial": wire the sweep into CI
+  (scratchpad script → repo script + exit code) and write the per-component
+  WCAG statement doc.
 - **RTL** — ✅ done (2026-07-12): library-wide sweep converted physical
   properties to logical ones, added `:dir(rtl)` transform/clip-path flips
   (slider, switch, tabs badges, split-button, icon-button badge), made

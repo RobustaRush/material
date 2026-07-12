@@ -250,7 +250,9 @@
 }
 
 .cal__day.is-outside {
-  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+  /* on-surface-variant, not a 38% mix — outside days are clickable (jump to
+     the adjacent month) so they must clear WCAG contrast */
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .cal__day.is-today {

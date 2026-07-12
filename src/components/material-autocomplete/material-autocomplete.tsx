@@ -685,7 +685,7 @@ export class MaterialAutocomplete {
     const chip = (v: string) => {
       const lbl = this.labelFor(v);
       return (
-        <span class="chip" role="listitem">
+        <span class="chip">
           <span class="chip-label">{lbl}</span>
           <button
             type="button"

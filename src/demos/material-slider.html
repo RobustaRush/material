@@ -57,69 +57,69 @@
 
         <code class="text-sm text-on-surface-variant">default</code>
         <div class="flex gap-6 items-center w-full">
-          <material-slider value="0" class="flex-1"></material-slider>
-          <material-slider value="50" class="flex-1"></material-slider>
-          <material-slider value="100" class="flex-1"></material-slider>
+          <material-slider aria-label="Demo slider 1" value="0" class="flex-1"></material-slider>
+          <material-slider aria-label="Demo slider 2" value="50" class="flex-1"></material-slider>
+          <material-slider aria-label="Demo slider 3" value="100" class="flex-1"></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant">sizes</code>
         <div class="flex flex-col gap-6">
-          <material-slider size="xs" value="40"></material-slider>
-          <material-slider size="s"  value="40"></material-slider>
-          <material-slider size="m"  value="40"></material-slider>
-          <material-slider size="l"  value="40"></material-slider>
-          <material-slider size="xl" value="40"></material-slider>
+          <material-slider aria-label="Demo slider 4" size="xs" value="40"></material-slider>
+          <material-slider aria-label="Demo slider 5" size="s"  value="40"></material-slider>
+          <material-slider aria-label="Demo slider 6" size="m"  value="40"></material-slider>
+          <material-slider aria-label="Demo slider 7" size="l"  value="40"></material-slider>
+          <material-slider aria-label="Demo slider 8" size="xl" value="40"></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant">discrete</code>
         <div class="flex flex-col gap-8">
-          <material-slider discrete step="10" value="40"></material-slider>
-          <material-slider id="pct-slider" discrete step="25" value="50"></material-slider>
-          <material-slider discrete tick-labels step="20" value="60"></material-slider>
+          <material-slider aria-label="Demo slider 9" discrete step="10" value="40"></material-slider>
+          <material-slider aria-label="Demo slider 10" id="pct-slider" discrete step="25" value="50"></material-slider>
+          <material-slider aria-label="Demo slider 11" discrete tick-labels step="20" value="60"></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant">centered</code>
         <div class="flex flex-col gap-6">
-          <material-slider min="-50" max="50" origin="0" value="-20"></material-slider>
-          <material-slider min="-50" max="50" origin="0" value="30"></material-slider>
+          <material-slider aria-label="Demo slider 12" min="-50" max="50" origin="0" value="-20"></material-slider>
+          <material-slider aria-label="Demo slider 13" min="-50" max="50" origin="0" value="30"></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant">range</code>
         <div class="flex flex-col gap-6">
-          <material-slider value-low="20" value-high="70"></material-slider>
-          <material-slider discrete step="10" value-low="20" value-high="60"></material-slider>
+          <material-slider aria-label="Demo slider 14" value-low="20" value-high="70"></material-slider>
+          <material-slider aria-label="Demo slider 15" discrete step="10" value-low="20" value-high="60"></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant">vertical</code>
         <div class="flex gap-12 h-48">
-          <material-slider orientation="vertical" value="30"></material-slider>
-          <material-slider orientation="vertical" discrete step="10" value="60"></material-slider>
-          <material-slider orientation="vertical" discrete tick-labels step="20" value="40"></material-slider>
-          <material-slider orientation="vertical" value-low="20" value-high="80"></material-slider>
+          <material-slider aria-label="Demo slider 16" orientation="vertical" value="30"></material-slider>
+          <material-slider aria-label="Demo slider 17" orientation="vertical" discrete step="10" value="60"></material-slider>
+          <material-slider aria-label="Demo slider 18" orientation="vertical" discrete tick-labels step="20" value="40"></material-slider>
+          <material-slider aria-label="Demo slider 19" orientation="vertical" value-low="20" value-high="80"></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant">with icon</code>
         <div class="flex flex-col gap-6">
-          <material-slider size="m" icon="volume_up" value="35"></material-slider>
-          <material-slider size="l" icon="brightness_5" value="60"></material-slider>
+          <material-slider aria-label="Demo slider 20" size="m" icon="volume_up" value="35"></material-slider>
+          <material-slider aria-label="Demo slider 21" size="l" icon="brightness_5" value="60"></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant">label / help / error</code>
         <div class="flex flex-col gap-6">
-          <material-slider value="40" label="Quality" help-text="Higher values use more bandwidth."></material-slider>
-          <material-slider value="80" label="Threshold" error error-text="Threshold cannot exceed the upper limit."></material-slider>
+          <material-slider aria-label="Demo slider 22" value="40" label="Quality" help-text="Higher values use more bandwidth."></material-slider>
+          <material-slider aria-label="Demo slider 23" value="80" label="Threshold" error error-text="Threshold cannot exceed the upper limit."></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant block max-w-[10ch] whitespace-normal leading-snug">required<br>readonly<br>disabled</code>
         <div class="flex flex-col gap-6">
-          <material-slider value="50" required label="Volume" help-text="Required field"></material-slider>
+          <material-slider aria-label="Demo slider 24" value="50" required label="Volume" help-text="Required field"></material-slider>
           <div class="flex gap-6 items-start">
-            <material-slider class="flex-1" size="xs" value="40" readonly label="Bitrate" help-text="Read-only: value submits but cannot be changed."></material-slider>
+            <material-slider aria-label="Demo slider 25" class="flex-1" size="xs" value="40" readonly label="Bitrate" help-text="Read-only: value submits but cannot be changed."></material-slider>
             <material-textfield class="flex-1" variant="outlined" label="Bitrate" value="40" help-text="Comparison: outlined text field"></material-textfield>
           </div>
-          <material-slider value="40" disabled></material-slider>
-          <material-slider discrete step="10" value="40" disabled></material-slider>
-          <material-slider value-low="20" value-high="70" disabled></material-slider>
+          <material-slider aria-label="Demo slider 26" value="40" disabled></material-slider>
+          <material-slider aria-label="Demo slider 27" discrete step="10" value="40" disabled></material-slider>
+          <material-slider aria-label="Demo slider 28" value-low="20" value-high="70" disabled></material-slider>
         </div>
 
         <code class="text-sm text-on-surface-variant">form</code>
@@ -130,11 +130,11 @@
                             new URLSearchParams(new FormData(event.target)).toString() || '(empty)';">
             <label class="flex flex-col gap-1">
               <span class="text-sm text-on-surface-variant">volume (single)</span>
-              <material-slider name="volume" min="0" max="100" value="75"></material-slider>
+              <material-slider aria-label="Demo slider 29" name="volume" min="0" max="100" value="75"></material-slider>
             </label>
             <label class="flex flex-col gap-1">
               <span class="text-sm text-on-surface-variant">price (range)</span>
-              <material-slider name="price" min="0" max="500" step="50"
+              <material-slider aria-label="Demo slider 30" name="price" min="0" max="500" step="50"
                                value-low="100" value-high="350" discrete></material-slider>
             </label>
             <div class="flex gap-3 items-center">

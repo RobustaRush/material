@@ -131,7 +131,7 @@
 
     <section class="space-y-3">
       <h2 class="text-lg font-semibold">Multi-select — leading checkboxes</h2>
-      <material-list id="filters" selection="multi" class="rounded-xl border border-outline-variant overflow-hidden">
+      <material-list id="filters" aria-label="Filters" selection="multi" class="rounded-xl border border-outline-variant overflow-hidden">
         <material-list-item value="unread" label="Unread">
           <material-checkbox slot="leading"></material-checkbox>
         </material-list-item>
@@ -149,7 +149,7 @@
 
     <section class="space-y-3">
       <h2 class="text-lg font-semibold">Single-select — expressive variant</h2>
-      <material-list id="theme-list" selection="single" variant="expressive" class="rounded-xl bg-surface-container-low p-2">
+      <material-list id="theme-list" aria-label="Theme" selection="single" variant="expressive" class="rounded-xl bg-surface-container-low p-2">
         <material-list-item value="system" label="System default" leading-icon="settings_suggest"></material-list-item>
         <material-list-item value="light" label="Light" leading-icon="light_mode" selected></material-list-item>
         <material-list-item value="dark" label="Dark" leading-icon="dark_mode"></material-list-item>

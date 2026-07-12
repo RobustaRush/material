@@ -267,6 +267,7 @@ export class MaterialSideSheet {
           class={{ sheet: true, 'sheet--standard': true, 'sheet--open': this.open }}
           aria-labelledby={headlineId}
           aria-hidden={this.open ? undefined : 'true'}
+          inert={this.open ? undefined : true}
         >
           <div class="standard-clip">
             {this.renderContent(headlineId)}

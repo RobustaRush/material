@@ -67,6 +67,11 @@ export class MaterialTooltip {
   private dismissBound = false;
 
   connectedCallback() {
+    // The trigger's aria-describedby/-details must reference a light-DOM id —
+    // an id inside this shadow root is unreachable from the trigger's tree.
+    // The host carries it; the browser computes the description from the
+    // host's flattened (shadow-inclusive) subtree.
+    if (!this.el.id) this.el.id = this.surfaceId;
     queueMicrotask(() => this.bindTrigger());
   }
 
@@ -192,7 +197,7 @@ export class MaterialTooltip {
       t.removeAttribute('title');
     }
     const aria = this.variant === 'rich' ? 'aria-details' : 'aria-describedby';
-    t.setAttribute(aria, this.surfaceId);
+    t.setAttribute(aria, this.el.id);
 
     if (this.persistent && this.variant === 'rich') {
       t.addEventListener('click', this.onTriggerClick);
@@ -215,7 +220,7 @@ export class MaterialTooltip {
       this.savedTitle = null;
     }
     const aria = this.variant === 'rich' ? 'aria-details' : 'aria-describedby';
-    if (t.getAttribute(aria) === this.surfaceId) t.removeAttribute(aria);
+    if (t.getAttribute(aria) === this.el.id) t.removeAttribute(aria);
     t.removeEventListener('click', this.onTriggerClick);
     t.removeEventListener('pointerenter', this.onTriggerPointerEnter);
     t.removeEventListener('pointerleave', this.onTriggerPointerLeave);
@@ -371,6 +376,7 @@ export class MaterialTooltip {
           id={this.surfaceId}
           role="tooltip"
           aria-hidden={this.open ? 'false' : 'true'}
+          inert={this.open ? undefined : true}
           ref={this.setSurfaceRef}
           onPointerEnter={this.onSurfacePointerEnter}
           onPointerLeave={this.onSurfacePointerLeave}

@@ -57,6 +57,7 @@ export class MaterialCarouselItem {
           <a
             part="surface"
             href={this.disabled ? undefined : this.href}
+            role={this.disabled ? 'link' : undefined}
             target={this.target}
             rel={rel}
             aria-label={this.ariaLabel}
@@ -87,7 +88,9 @@ export class MaterialCarouselItem {
 
     return (
       <Host tabindex={this.disabled ? -1 : 0}>
-        <div part="surface" aria-label={this.ariaLabel}>
+        {/* group + roledescription: the standard carousel-slide semantics,
+            and a role that may legitimately carry the aria-label */}
+        <div part="surface" role="group" aria-roledescription="slide" aria-label={this.ariaLabel}>
           {inner}
         </div>
       </Host>

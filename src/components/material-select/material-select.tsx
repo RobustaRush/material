@@ -519,7 +519,7 @@ export class MaterialSelect {
       const o = this.findOption(v);
       const lbl = o ? this.optionLabel(o) : v;
       return (
-        <span class="chip" role="listitem">
+        <span class="chip">
           <span class="chip-label">{lbl}</span>
           <button
             type="button"
@@ -572,6 +572,8 @@ export class MaterialSelect {
     const sharedShellAttrs = {
       ref: this.setShellRef,
       role: 'combobox',
+      'aria-labelledby': this.label ? 'label' : null,
+      'aria-label': !this.label ? (this.el.getAttribute('aria-label') ?? null) : null,
       tabindex: this.disabled ? -1 : 0,
       'aria-haspopup': 'listbox',
       'aria-expanded': this.open ? 'true' : 'false',
@@ -630,7 +632,7 @@ export class MaterialSelect {
               )}
             </div>
             {this.label && (
-              <label class={labelCls}>
+              <label class={labelCls} id="label">
                 {this.label}{this.required ? ' *' : ''}
               </label>
             )}
@@ -667,7 +669,7 @@ export class MaterialSelect {
             )}
           </div>
           {this.label && (
-            <label class={labelCls}>
+            <label class={labelCls} id="label">
               {this.label}{this.required ? ' *' : ''}
             </label>
           )}

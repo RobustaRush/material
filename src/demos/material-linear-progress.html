@@ -130,7 +130,7 @@
         Drag the slider to drive <code>value</code>. Wavy mode keeps phase animation running while the fill snaps to your input.
       </p>
       <div class="space-y-3">
-        <input id="val-slider" type="range" min="0" max="100" value="35" class="w-full" />
+        <input id="val-slider" type="range" aria-label="Progress value" min="0" max="100" value="35" class="w-full" />
         <div class="text-sm font-mono">value = <output id="val-out">35</output></div>
         <material-linear-progress id="lp-flat" value="35" label="Loading"></material-linear-progress>
         <material-linear-progress id="lp-wavy" value="35" wavy label="Loading"></material-linear-progress>

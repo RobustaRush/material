@@ -56,12 +56,16 @@
  - [material-date-range-field](../material-date-range-field)
  - [material-datetime-field](../material-datetime-field)
  - [material-dialog](../material-dialog)
+ - [material-dropzone](../material-dropzone)
  - [material-file-field](../material-file-field)
  - [material-number-field](../material-number-field)
+ - [material-search](../material-search)
  - [material-select](../material-select)
+ - [material-side-sheet](../material-side-sheet)
  - [material-textfield](../material-textfield)
  - [material-time-field](../material-time-field)
  - [material-time-picker](../material-time-picker)
+ - [material-transfer](../material-transfer)
 
 ### Graph
 ```mermaid
@@ -72,12 +76,16 @@ graph TD;
   material-date-range-field --> material-icon-button
   material-datetime-field --> material-icon-button
   material-dialog --> material-icon-button
+  material-dropzone --> material-icon-button
   material-file-field --> material-icon-button
   material-number-field --> material-icon-button
+  material-search --> material-icon-button
   material-select --> material-icon-button
+  material-side-sheet --> material-icon-button
   material-textfield --> material-icon-button
   material-time-field --> material-icon-button
   material-time-picker --> material-icon-button
+  material-transfer --> material-icon-button
   style material-icon-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

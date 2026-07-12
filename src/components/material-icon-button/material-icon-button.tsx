@@ -150,6 +150,9 @@ export class MaterialIconButton {
       return (
         <a
           href={this.disabled ? undefined : this.href}
+          // a disabled link drops its href — without a role the aria-label
+          // would sit on a generic element (WAI prohibits that)
+          role={this.disabled ? 'link' : undefined}
           target={this.target}
           rel={rel}
           download={this.download}

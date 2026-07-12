@@ -158,7 +158,7 @@ export class MaterialChip {
           href={this.disabled ? undefined : this.href}
           target={this.target}
           rel={rel}
-          aria-label={this.ariaLabel}
+          aria-label={this.ariaLabel ?? this.label ?? undefined}
           aria-disabled={this.disabled ? 'true' : undefined}
           tabindex={this.disabled ? -1 : undefined}
           part="chip"
@@ -179,7 +179,7 @@ export class MaterialChip {
             disabled={this.disabled}
             role={role}
             aria-checked={ariaChecked}
-            aria-label={this.ariaLabel}
+            aria-label={this.ariaLabel ?? this.label ?? undefined}
             onClick={this.toggle}
             onKeyDown={this.handleBodyKeyDown}
           >
@@ -211,7 +211,7 @@ export class MaterialChip {
         disabled={this.disabled}
         role={role}
         aria-checked={ariaChecked}
-        aria-label={this.ariaLabel}
+        aria-label={this.ariaLabel ?? this.label ?? undefined}
         part="chip"
         onClick={this.toggle}
         onKeyDown={this.handleBodyKeyDown}

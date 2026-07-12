@@ -1,3 +1,40 @@
+// Mobile fixes for the demo-page header (duplicated across ~60 pages, so
+// patched centrally): below 720px the header wraps — title block takes the
+// full first row with the description clamped to 2 lines, the theme /
+// density / direction controls flow onto their own row instead of
+// squeezing the title or overlapping.
+(function () {
+  const style = document.createElement('style');
+  style.textContent = `
+    /* WCAG 2.5.8 target size for the density / direction toggles */
+    [data-density-picker] button,
+    [data-dir-picker] button {
+      min-width: 1.75rem;
+      min-height: 1.75rem;
+    }
+    @media (max-width: 719px) {
+      body > header.bg-surface-container-low {
+        flex-wrap: wrap;
+        padding: 0.75rem 1rem;
+        row-gap: 0.5rem;
+        column-gap: 0.75rem;
+      }
+      body > header.bg-surface-container-low > div.min-w-0 {
+        flex-basis: 100%;
+      }
+      body > header.bg-surface-container-low > div.min-w-0 p {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      body > header.bg-surface-container-low h1 {
+        font-size: 1.125rem;
+      }
+    }`;
+  document.head.appendChild(style);
+})();
+
 // Theme switcher for demo pages — swaps one of six MD3 contrast classes on
 // <html>. CSS custom properties cascade into shadow DOM, so every component
 // follows. Persists the choice in localStorage so it carries across pages.

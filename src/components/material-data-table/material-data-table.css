@@ -354,29 +354,40 @@ material-data-table tr.row-group td {
   user-select: none;
 }
 
-material-data-table tr.row-group td:first-child::before {
-  content: 'keyboard_arrow_down';
+/* Injected toggle — a real button carries tabindex/aria-expanded (a tr may
+   not, outside a treegrid). The whole row still toggles on click. */
+material-data-table .group-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  margin-inline-end: 0.5rem;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  cursor: pointer;
+  vertical-align: middle;
   font-family: 'Material Symbols Outlined';
   font-weight: 400;
   font-size: 1.25rem;
   line-height: 1;
-  display: inline-block;
-  vertical-align: -0.3125rem;
-  margin-inline-end: 0.5rem;
+  color: inherit;
   transition: transform 0.15s;
 }
 
-material-data-table tr.row-group.collapsed td:first-child::before {
+material-data-table tr.row-group.collapsed .group-toggle {
   transform: rotate(-90deg);
 }
 
-material-data-table:dir(rtl) tr.row-group.collapsed td:first-child::before {
+material-data-table:dir(rtl) tr.row-group.collapsed .group-toggle {
   transform: rotate(90deg);
 }
 
-material-data-table tr.row-group:focus-visible {
+material-data-table .group-toggle:focus-visible {
   outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -2px;
+  outline-offset: 2px;
 }
 
 /* --- inline cell editing (v2) ----------------------------------------------- */

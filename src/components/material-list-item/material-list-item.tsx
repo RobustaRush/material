@@ -57,6 +57,21 @@ export class MaterialListItem {
       (n.nodeType === Node.TEXT_NODE && (n.textContent ?? '').trim() !== ''));
   }
 
+  // In a selectable list the row (role=option, aria-selected) is the single
+  // interactive stop; a slotted leading checkbox is its visual — it must not
+  // be a second tab stop / nested widget inside the option. It stays a real
+  // form control (posts with the form) and is driven by row click / Space.
+  componentDidRender() {
+    const list = this.el.closest('material-list');
+    const sel = list?.getAttribute('selection');
+    if (sel !== 'single' && sel !== 'multi') return;
+    const cb = this.el.querySelector<HTMLElement>(':scope > material-checkbox[slot="leading"]');
+    if (cb) {
+      cb.setAttribute('nested', '');
+      cb.setAttribute('aria-hidden', 'true');
+    }
+  }
+
   private parentVariant(): 'baseline' | 'expressive' {
     const list = this.el.closest('material-list') as HTMLElement | null;
     return (list?.getAttribute('variant') as 'baseline' | 'expressive') || 'baseline';
