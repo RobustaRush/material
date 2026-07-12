@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Field service — showcase — @robustarush/material</title>
+
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+
+  <style>
+    /* Hide scrollbar on the horizontally scrolling chip rail (mobile pattern). */
+    .chip-rail { scrollbar-width: none; }
+    .chip-rail::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+
+<!--
+  Field service showcase — a technician's work-order list built MOBILE-FIRST.
+  Resize to a phone width (<600px) for the real experience:
+
+  - compact: bottom material-navigation-bar, FAB floating above it, filters
+    and per-order actions in modal material-bottom-sheets, order detail in a
+    modal material-side-sheet, settings (theme/density/direction) in a
+    bottom sheet opened from Profile.
+  - expanded (>=840px): navigation rail replaces the bottom bar, the order
+    detail side sheet becomes a standard in-flow panel (variant="adaptive").
+
+  Components exercised: navigation-bar + navigation-rail (same items, one
+  visible at a time), search-app-bar, bottom-sheet (menu / filters /
+  settings), side-sheet (adaptive), list, chip, badge, fab, snackbar.
+-->
+
+<body class="bg-surface text-on-surface min-h-screen flex">
+
+  <!-- Navigation rail — expanded windows only -->
+  <material-navigation-rail class="max-[839px]:hidden shrink-0 sticky top-0 self-start h-screen z-20">
+    <material-navigation-item icon="today" label="Today" active aria-label="Today, 6 orders"></material-navigation-item>
+    <material-navigation-item icon="map" label="Map"></material-navigation-item>
+    <material-navigation-item icon="inventory_2" label="Parts">
+      <material-badge slot="badge" value="2"></material-badge>
+    </material-navigation-item>
+    <material-navigation-item icon="person" label="Profile" id="rail-profile"></material-navigation-item>
+  </material-navigation-rail>
+
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <material-search-app-bar id="appbar" class="shrink-0 sticky top-0 z-10"
+                             placeholder="Search work orders">
+      <span slot="trailing"
+            class="w-9 h-9 rounded-full bg-tertiary text-on-tertiary inline-flex items-center justify-center text-label-large shrink-0"
+            aria-label="Account">MP</span>
+    </material-search-app-bar>
+
+    <div class="flex-1 flex min-w-0">
+      <div class="flex-1 min-w-0 flex flex-col">
+
+        <!-- Filter rail: horizontal scroll on narrow screens -->
+        <div class="chip-rail shrink-0 px-4 py-3 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+          <material-chip variant="assist" label="Filters" icon="tune"
+                         data-dialog-target="filter-sheet" class="shrink-0"></material-chip>
+          <material-chip variant="filter" label="Urgent" id="f-urgent" class="shrink-0"></material-chip>
+          <material-chip variant="filter" label="Installs" id="f-install" class="shrink-0"></material-chip>
+          <material-chip variant="filter" label="Repairs" id="f-repair" class="shrink-0"></material-chip>
+          <material-chip variant="filter" label="Maintenance" id="f-maint" class="shrink-0"></material-chip>
+        </div>
+
+        <!-- Work orders -->
+        <main class="flex-1 px-2 pb-28 min-[840px]:pb-6">
+          <h1 class="sr-only">Today's work orders</h1>
+          <p class="px-3 pb-1 text-body-small text-on-surface-variant">
+            Sat, Jul 12 · <span id="visible-count">6</span> orders
+          </p>
+          <material-list id="orders"></material-list>
+        </main>
+      </div>
+
+      <!-- Order detail: modal on compact, in-flow panel on >=840px -->
+      <material-side-sheet id="detail-sheet" variant="adaptive" headline="Work order">
+        <div id="detail-body" class="pt-1"></div>
+        <div slot="actions" class="flex gap-2">
+          <material-button variant="filled" label="Start job" id="start-job"></material-button>
+          <material-button variant="outlined" label="Navigate" id="navigate-btn"></material-button>
+        </div>
+      </material-side-sheet>
+    </div>
+
+    <!-- Bottom navigation — compact windows only -->
+    <material-navigation-bar orientation="vertical"
+                             class="min-[840px]:hidden fixed bottom-0 inset-x-0 z-20">
+      <material-navigation-item icon="today" label="Today" active aria-label="Today, 6 orders"></material-navigation-item>
+      <material-navigation-item icon="map" label="Map"></material-navigation-item>
+      <material-navigation-item icon="inventory_2" label="Parts">
+        <material-badge slot="badge" value="2"></material-badge>
+      </material-navigation-item>
+      <material-navigation-item icon="person" label="Profile" id="nav-profile"></material-navigation-item>
+    </material-navigation-bar>
+  </div>
+
+  <!-- FAB: above the nav bar on compact, corner on expanded -->
+  <material-fab icon="add" aria-label="New work order" id="new-order"
+                class="fixed end-4 bottom-24 min-[840px]:bottom-6 z-20"></material-fab>
+
+  <!-- Per-order actions (menu alternative on mobile) -->
+  <material-bottom-sheet id="order-actions">
+    <p id="order-actions-title" class="text-title-small text-on-surface-variant px-3 pb-1 m-0">WO-0000</p>
+    <material-list>
+      <material-list-item label="Call customer" leading-icon="call" data-dialog-close="call"></material-list-item>
+      <material-list-item label="Reschedule" leading-icon="event_repeat" data-dialog-close="reschedule"></material-list-item>
+      <material-list-item label="Reassign" leading-icon="group" data-dialog-close="reassign"></material-list-item>
+      <material-list-item label="Cancel order" leading-icon="cancel" data-dialog-close="cancel"></material-list-item>
+    </material-list>
+  </material-bottom-sheet>
+
+  <!-- Filters -->
+  <material-bottom-sheet id="filter-sheet">
+    <h2 class="text-title-medium mt-0 mb-3 px-1">Filter orders</h2>
+    <div class="space-y-4 px-1">
+      <div>
+        <p class="text-label-large mb-2">Type</p>
+        <div class="flex flex-wrap gap-2">
+          <material-chip variant="filter" label="Install"></material-chip>
+          <material-chip variant="filter" label="Repair" selected></material-chip>
+          <material-chip variant="filter" label="Maintenance"></material-chip>
+          <material-chip variant="filter" label="Inspection"></material-chip>
+        </div>
+      </div>
+      <div>
+        <p class="text-label-large mb-2">Priority</p>
+        <div class="flex flex-wrap gap-2">
+          <material-chip variant="filter" label="Urgent"></material-chip>
+          <material-chip variant="filter" label="Normal" selected></material-chip>
+          <material-chip variant="filter" label="Low"></material-chip>
+        </div>
+      </div>
+      <material-switch label="Only unassigned" class="block"></material-switch>
+      <div class="flex gap-2 py-3">
+        <material-button variant="filled" label="Apply" data-dialog-close="apply"></material-button>
+        <material-button variant="text" label="Reset" data-dialog-close="reset"></material-button>
+      </div>
+    </div>
+  </material-bottom-sheet>
+
+  <!-- Settings — opened from Profile; theme/density pickers live here so the
+       app bar stays clean on a phone. -->
+  <material-bottom-sheet id="settings-sheet">
+    <h2 class="text-title-medium mt-0 mb-3 px-1">Settings</h2>
+    <div class="space-y-4 px-1 pb-4">
+      <label class="flex items-center justify-between gap-2 text-sm">
+        <span class="text-on-surface-variant">Theme</span>
+        <select id="theme-picker"
+                class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="light-medium-contrast">Light · medium contrast</option>
+          <option value="dark-medium-contrast">Dark · medium contrast</option>
+          <option value="light-high-contrast">Light · high contrast</option>
+          <option value="dark-high-contrast">Dark · high contrast</option>
+        </select>
+      </label>
+      <label class="flex items-center justify-between gap-2 text-sm">
+        <span class="text-on-surface-variant">Density</span>
+        <div data-density-picker role="group" aria-label="Density"
+             class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+          <button type="button" data-density="0.8" aria-pressed="false"
+                  class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+          <button type="button" data-density="0.9" aria-pressed="false"
+                  class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+          <button type="button" data-density="1" aria-pressed="false"
+                  class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+        </div>
+      </label>
+    </div>
+  </material-bottom-sheet>
+
+  <material-snackbar-host placement="bottom"></material-snackbar-host>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    const ORDERS = [
+      { id: 'WO-4821', type: 'Repair', urgent: true,  time: '09:00', customer: 'Bergmann Bäckerei',
+        address: 'Hauptstr. 12', task: 'Walk-in freezer not holding temperature', status: 'scheduled',
+        icon: 'ac_unit', parts: ['Compressor relay', 'Door gasket 190cm'] },
+      { id: 'WO-4822', type: 'Install', urgent: false, time: '10:30', customer: 'Café Krume',
+        address: 'Marktplatz 3', task: 'Install espresso machine + water filter', status: 'scheduled',
+        icon: 'coffee_maker', parts: ['Filter head 3/8"', 'Drain hose kit'] },
+      { id: 'WO-4823', type: 'Maintenance', urgent: false, time: '12:00', customer: 'Hotel Lindenhof',
+        address: 'Seeweg 8', task: 'Quarterly HVAC service, floors 1–3', status: 'scheduled',
+        icon: 'hvac', parts: ['Filter set F7 ×6'] },
+      { id: 'WO-4824', type: 'Repair', urgent: true,  time: '14:00', customer: 'REWE Nord',
+        address: 'Industriestr. 44', task: 'Dairy cabinet compressor short-cycling', status: 'scheduled',
+        icon: 'kitchen', parts: ['Start capacitor', 'Thermostat probe'] },
+      { id: 'WO-4825', type: 'Inspection', urgent: false, time: '15:30', customer: 'Stadtwerke Depot',
+        address: 'Am Kanal 2', task: 'Annual pressure-vessel inspection', status: 'scheduled',
+        icon: 'speed', parts: [] },
+      { id: 'WO-4826', type: 'Repair', urgent: false, time: '17:00', customer: 'Biergarten Alte Mühle',
+        address: 'Mühlenweg 1', task: 'Glycol chiller leak — quote follow-up', status: 'tentative',
+        icon: 'sports_bar', parts: ['Glycol 10L', 'Hose clamps'] },
+    ];
+
+    const list = document.getElementById('orders');
+    const detail = document.getElementById('detail-sheet');
+    const actionsSheet = document.getElementById('order-actions');
+    const snackbar = document.querySelector('material-snackbar-host');
+    let currentOrder = null;
+
+    function render() {
+      list.innerHTML = ORDERS.map(o => `
+        <material-list-item value="${o.id}"
+            label="${o.time} — ${o.customer}"
+            supporting-text="${o.task}"
+            leading-icon="${o.icon}">
+          <span slot="trailing" class="flex items-center gap-1">
+            <span class="text-label-small ${o.urgent ? 'text-error font-medium' : 'text-on-surface-variant'}">${o.urgent ? 'URGENT' : o.type}</span>
+            <material-icon-button variant="standard" size="xs" icon="more_vert"
+                data-more="${o.id}" aria-label="Actions for ${o.id}"></material-icon-button>
+          </span>
+        </material-list-item>`).join('');
+      document.getElementById('visible-count').textContent = ORDERS.length;
+    }
+    render();
+
+    function openOrder(o) {
+      currentOrder = o;
+      detail.headline = o.id;
+      document.getElementById('detail-body').innerHTML = `
+        <div class="space-y-3 text-sm">
+          <div class="flex items-center gap-2">
+            <material-chip variant="assist" label="${o.type}" icon="${o.icon}"></material-chip>
+            ${o.urgent ? '<material-chip variant="assist" label="Urgent" icon="priority_high"></material-chip>' : ''}
+          </div>
+          <div><p class="text-on-surface-variant text-xs m-0">Scheduled</p><p class="m-0">Today · ${o.time}</p></div>
+          <div><p class="text-on-surface-variant text-xs m-0">Customer</p><p class="m-0">${o.customer}</p><p class="m-0 text-on-surface-variant">${o.address}</p></div>
+          <div><p class="text-on-surface-variant text-xs m-0">Task</p><p class="m-0">${o.task}</p></div>
+          <div>
+            <p class="text-on-surface-variant text-xs m-0 mb-1">Parts on van</p>
+            ${o.parts.length
+              ? o.parts.map(p => `<p class="m-0 flex items-center gap-1"><span class="material-symbols text-sm text-primary">check</span>${p}</p>`).join('')
+              : '<p class="m-0 text-on-surface-variant">No parts required</p>'}
+          </div>
+        </div>`;
+      detail.show();
+    }
+
+    // Tap an order → detail sheet. Long actions live behind the actions sheet.
+    list.addEventListener('materialListItemActivate', (e) => {
+      const o = ORDERS.find(x => x.id === e.detail.value);
+      if (o) openOrder(o);
+    });
+
+    // more_vert → per-order bottom sheet (capture so the row doesn't also
+    // activate and open the detail sheet underneath).
+    list.addEventListener('click', (e) => {
+      const btn = e.target.closest?.('[data-more]');
+      if (!btn) return;
+      e.stopPropagation();
+      currentOrder = ORDERS.find(x => x.id === btn.dataset.more);
+      document.getElementById('order-actions-title').textContent =
+        `${currentOrder.id} · ${currentOrder.customer}`;
+      actionsSheet.show();
+    }, true);
+
+    document.getElementById('start-job').addEventListener('click', () => {
+      detail.close();
+      snackbar.enqueue({ message: `${currentOrder?.id} started — timer running`, actionLabel: 'Undo' });
+    });
+    document.getElementById('navigate-btn').addEventListener('click', () => {
+      snackbar.enqueue({ message: `Route to ${currentOrder?.address} sent to maps` });
+    });
+
+    // Per-order actions bottom sheet (would be a long-press / overflow menu).
+    actionsSheet.addEventListener('materialSheetClose', (e) => {
+      if (e.detail.returnValue) {
+        snackbar.enqueue({ message: `${currentOrder?.id}: ${e.detail.returnValue}` });
+      }
+    });
+
+    // Filters
+    document.getElementById('filter-sheet').addEventListener('materialSheetClose', (e) => {
+      if (e.detail.returnValue === 'apply') snackbar.enqueue({ message: 'Filters applied' });
+      if (e.detail.returnValue === 'reset') snackbar.enqueue({ message: 'Filters reset' });
+    });
+
+    // Profile opens the settings sheet instead of navigating — keep the nav
+    // in manual activation and only move `active` for real destinations.
+    const settings = document.getElementById('settings-sheet');
+    for (const nav of document.querySelectorAll('material-navigation-bar, material-navigation-rail')) {
+      nav.setAttribute('activation', 'manual');
+      nav.addEventListener('click', (e) => {
+        const item = e.target.closest?.('material-navigation-item');
+        if (!item) return;
+        if (item.id === 'nav-profile' || item.id === 'rail-profile') {
+          settings.show();
+          return;
+        }
+        for (const it of nav.querySelectorAll('material-navigation-item')) it.active = it === item;
+      });
+    }
+
+    document.getElementById('new-order').addEventListener('click', () =>
+      snackbar.enqueue({ message: 'New work order — form goes here' }));
+
+    // Search filters the list live.
+    document.getElementById('appbar').addEventListener('materialSearchInput', (e) => {
+      const q = (e.detail?.value || '').toLowerCase();
+      let shown = 0;
+      for (const item of list.querySelectorAll('material-list-item')) {
+        const o = ORDERS.find(x => x.id === item.getAttribute('value'));
+        const hit = !q || [o.id, o.customer, o.task, o.type].join(' ').toLowerCase().includes(q);
+        item.style.display = hit ? '' : 'none';
+        if (hit) shown++;
+      }
+      document.getElementById('visible-count').textContent = shown;
+    });
+  </script>
+</body>
+</html>

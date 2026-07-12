@@ -49,6 +49,14 @@ export class MaterialListItem {
   @Event({ bubbles: true, composed: true })
   materialListItemActivate!: EventEmitter<{ value?: string; checked?: boolean }>;
 
+  /** True when the light DOM has real headline content for the default
+   *  slot — an unslotted element or non-whitespace text. */
+  private hasDefaultContent(): boolean {
+    return Array.from(this.el.childNodes).some((n) =>
+      (n.nodeType === Node.ELEMENT_NODE && !(n as Element).hasAttribute('slot')) ||
+      (n.nodeType === Node.TEXT_NODE && (n.textContent ?? '').trim() !== ''));
+  }
+
   private parentVariant(): 'baseline' | 'expressive' {
     const list = this.el.closest('material-list') as HTMLElement | null;
     return (list?.getAttribute('variant') as 'baseline' | 'expressive') || 'baseline';
@@ -167,7 +175,11 @@ export class MaterialListItem {
             </span>
           )}
           <span class="label">
-            <slot>{this.label}</slot>
+            {/* Not slot fallback: whitespace between slotted children (e.g. a
+                trailing icon-button on its own line) counts as assigned text
+                and would suppress the fallback, silently eating `label`. */}
+            <slot />
+            {!this.hasDefaultContent() && this.label}
           </span>
           {twoLine && (
             <span class="supporting-text">

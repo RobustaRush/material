@@ -37,11 +37,14 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
 
 ## P3 — surfaces and patterns (M3 catalog completion)
 
-- **Bottom sheet** — modal + standard, drag handle, swipe-to-dismiss. Mobile
-  replacement for dialogs/menus.
-- **Side sheet** — trailing detail panel; in CRM/ERP this is the record
-  detail next to a list (the ERP showcase fakes it with a full-screen
-  dialog today).
+- **Bottom sheet** — ✅ done (2026-07-12): material-bottom-sheet — modal
+  (native dialog scrim/top-layer) + standard (page stays interactive);
+  drag handle peek↔full↔dismiss, flick-to-dismiss, click/Enter toggles,
+  640dp max width; same data-dialog-target triggers.
+- **Side sheet** — ✅ done (2026-07-12): material-side-sheet — modal
+  trailing-edge dialog, standard in-flow panel (host animates inline-size),
+  adaptive (standard ≥840px) with open state surviving the swap; RTL via
+  logical properties. Field-service showcase uses it as the record detail.
 - **Search view** — ✅ done (2026-07-12): `material-search` ships the full
   MD3 Search pair — contained pill bar + search view (docked popover on
   desktop, full-screen overlay on compact), slotted/JS/remote suggestion

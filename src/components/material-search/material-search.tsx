@@ -142,14 +142,17 @@ export class MaterialSearch {
   componentWillLoad() {
     this.defaultValue = this.value;
     this.readSlottedItems();
-    if (typeof window !== 'undefined' && 'matchMedia' in window) {
-      this.compactMq = window.matchMedia(COMPACT_MQ);
-      this.compact = this.compactMq.matches;
-    }
   }
 
   connectedCallback() {
     this.syncFormValue();
+    // Create the MQL here, not in componentWillLoad: connectedCallback runs
+    // FIRST, so attaching the listener before creating the list left the
+    // component blind to viewport changes (stuck docked on a shrunk window).
+    if (!this.compactMq && typeof window !== 'undefined' && 'matchMedia' in window) {
+      this.compactMq = window.matchMedia(COMPACT_MQ);
+      this.compact = this.compactMq.matches;
+    }
     this.compactMq?.addEventListener('change', this.onCompactChange);
   }
 
