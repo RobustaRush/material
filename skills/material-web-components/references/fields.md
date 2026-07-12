@@ -1,4 +1,4 @@
-# Specialized fields — material-number-field, material-masked-field, material-date-field, material-date-range-field, material-time-field, material-datetime-field, material-time-picker, material-calendar, material-file-field, material-dropzone, material-rich-text
+# Specialized fields — material-number-field, material-masked-field, material-date-field, material-date-range-field, material-time-field, material-datetime-field, material-time-picker, material-calendar, material-file-field, material-dropzone, material-rich-text, material-json-field
 
 Formatted, picker-backed, and file inputs. All are form-associated (a `name` posts a real value; `required` / `error` / `error-text` / `help-text` / `label` / `variant` work as in `references/forms.md`). Date/time and number formats follow the page locale automatically — see `references/i18n.md`; the props below only override when you need to. The **posted value is always a plain machine string** (ISO date, dot-decimal number, digits), regardless of how it's displayed.
 
@@ -133,3 +133,25 @@ Minimal rich-text editor; posts HTML as the field value.
 
 - `value` (HTML string), `readonly`, `error` / `error-text`.
 - Events: `valueChange` (`{value}`, on commit) and `valueInput` (`{value}`, live).
+
+## material-json-field
+
+Compact JSON editor rendered as a Material tree — no syntax-highlighter, ~5 KB gz. Objects/arrays are collapsible rows; every leaf is edited in place. Full structural editing: add/remove/rename keys, add/remove/reorder array items, and change a value's type. The output is always valid JSON (edits mutate a model, not text) and posts as **one** form field.
+
+```html
+<form>
+  <material-json-field name="config" label="Config"
+                       value='{"theme":"dark","retries":3,"enabled":true}'></material-json-field>
+</form>
+<script>
+  const jf = document.querySelector('material-json-field');
+  jf.addEventListener('valueChange', (e) => console.log(e.detail.value)); // serialized string
+  jf.getJson().then((obj) => console.log(obj));                            // parsed value
+</script>
+```
+
+- `value` — the JSON string (in/out, and what posts under `name`). Set large documents from JS (`el.value = JSON.stringify(obj)`) rather than a huge attribute.
+- `readonly` — collapsible viewer, no editors (good for API payloads / audit data). `disabled`, `required` (invalid when the document is empty — `{}`, `[]`, `""`), `error` / `error-text` / `help-text`, `label`.
+- Per-row editing: hover (or focus) a row for **add child** (`+`), **move up/down**, and **remove**; the type selector converts a value (string ↔ number ↔ boolean ↔ null ↔ object ↔ array); object keys are editable text in place.
+- Event: `valueChange` (`{value}`, serialized) on every edit. Method: `getJson()` → the parsed value.
+- Invalid JSON passed in `value` shows an error state instead of throwing; fix it via `value` or by re-setting it.
