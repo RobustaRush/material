@@ -3,6 +3,7 @@ import {
   Element,
   Event,
   EventEmitter,
+  Method,
   Prop,
   State,
   Watch,
@@ -92,6 +93,47 @@ export class MaterialTextfield {
     if (this.inputEl && this.inputEl.value !== next) {
       this.inputEl.value = next;
     }
+  }
+
+  // Mirror the inner input's constraint validation onto the host's
+  // ElementInternals so form.checkValidity(), submit gating and the stepper
+  // see required/type/pattern violations. Runs after every render — the
+  // inner input is always the source of truth.
+  componentDidRender() {
+    const input = this.inputEl;
+    if (!input) return;
+    if (this.disabled || input.validity.valid) {
+      this.internals.setValidity({});
+      return;
+    }
+    const v = input.validity;
+    this.internals.setValidity(
+      {
+        valueMissing: v.valueMissing,
+        typeMismatch: v.typeMismatch,
+        patternMismatch: v.patternMismatch,
+        tooLong: v.tooLong,
+        tooShort: v.tooShort,
+        rangeUnderflow: v.rangeUnderflow,
+        rangeOverflow: v.rangeOverflow,
+        stepMismatch: v.stepMismatch,
+        badInput: v.badInput,
+      },
+      input.validationMessage,
+      input,
+    );
+  }
+
+  /** Constraint validation, like a native input. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    return this.internals.checkValidity();
+  }
+
+  /** Constraint validation with the native error bubble on the inner input. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    return this.internals.reportValidity();
   }
 
   formDisabledCallback(disabled: boolean) {

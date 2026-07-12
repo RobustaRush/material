@@ -38,6 +38,29 @@
 | `valueInput`  |             | `CustomEvent<{ value: string; }>` |
 
 
+## Methods
+
+### `checkValidity() => Promise<boolean>`
+
+Constraint validation, like a native textarea.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Constraint validation with the native error bubble on the inner textarea.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

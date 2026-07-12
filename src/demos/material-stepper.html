@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-stepper — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-stepper</h1>
+        <p class="text-on-surface-variant text-sm">
+          Multi-step forms / wizard — M2 anatomy with M3 tokens (M3 has no
+          stepper spec). Client-side with constraint-validation gating, or a
+          server-driven indicator for django-formtools WizardView.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-8 py-10 space-y-10">
+
+    <!-- 1. Client-side wizard with validation gating -->
+    <section>
+      <p class="text-sm text-on-surface-variant mb-2">
+        client-side wizard — one form, all steps in the DOM (values survive
+        Back), <code>data-stepper-next</code> gates on the active step's
+        constraint validation (native bubble on the first invalid field, the
+        step turns red until it passes); the last step's button is an ordinary
+        <code>type="submit"</code>
+      </p>
+      <form id="wiz-form" class="rounded-xl border border-outline-variant bg-surface p-6 max-w-2xl">
+        <material-stepper id="wiz">
+          <material-step label="Contact" value="contact" active>
+            <div class="grid gap-4 max-w-md">
+              <material-textfield label="Full name" name="name" required></material-textfield>
+              <material-textfield label="Email" name="email" type="email" required></material-textfield>
+            </div>
+          </material-step>
+          <material-step label="Shipping" value="shipping">
+            <div class="grid gap-4 max-w-md">
+              <material-textfield label="Address" name="address" required></material-textfield>
+              <material-textfield label="City" name="city" required></material-textfield>
+            </div>
+          </material-step>
+          <material-step label="Review" value="review">
+            <p class="text-sm text-on-surface-variant m-0">
+              Everything filled in — submit posts the whole form
+              (<code>request.POST</code> sees all steps' fields).
+            </p>
+          </material-step>
+        </material-stepper>
+        <div class="mt-5 flex gap-2">
+          <material-button variant="text" label="Back" data-stepper-back type="button"></material-button>
+          <material-button id="wiz-next" variant="filled" label="Next" data-stepper-next type="button"></material-button>
+          <material-button id="wiz-submit" variant="filled" label="Place order" type="submit" class="hidden"></material-button>
+        </div>
+      </form>
+      <p class="text-xs text-on-surface-variant mt-2">events: <span id="wiz-log">—</span></p>
+    </section>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+
+      <!-- 2. Vertical -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          <code>orientation="vertical"</code> — content folds out under each
+          header, the connector runs through collapsed steps
+        </p>
+        <material-stepper orientation="vertical" class="rounded-xl border border-outline-variant bg-surface p-4 block">
+          <material-step label="Select campaign settings" supporting-text="Budget and audience" completed>
+            <p class="text-sm text-on-surface-variant m-0">Settings summary…</p>
+          </material-step>
+          <material-step label="Create an ad group" active>
+            <div class="grid gap-3 max-w-xs">
+              <material-textfield label="Ad group name" required></material-textfield>
+              <div class="flex gap-2">
+                <material-button variant="text" label="Back" data-stepper-back type="button"></material-button>
+                <material-button variant="tonal" label="Continue" data-stepper-next type="button"></material-button>
+              </div>
+            </div>
+          </material-step>
+          <material-step label="Create an ad" supporting-text="Optional">
+            <p class="text-sm text-on-surface-variant m-0">Ad creative…</p>
+          </material-step>
+        </material-stepper>
+      </section>
+
+      <!-- 3. Server-driven indicator (formtools) -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          server-driven indicator (django-formtools) — steps carry no content;
+          the template marks <code>active</code>/<code>completed</code>/<code>error</code>,
+          a click on a visited step emits cancelable <code>materialStepClick</code>
+          → post <code>wizard_goto_step</code>
+        </p>
+        <div class="rounded-xl border border-outline-variant bg-surface p-4 space-y-6">
+          <material-stepper id="ft">
+            <material-step label="Account" value="account" completed></material-step>
+            <material-step label="Profile" value="profile" completed></material-step>
+            <material-step label="Billing" value="billing" active></material-step>
+            <material-step label="Confirm" value="confirm"></material-step>
+          </material-stepper>
+          <material-stepper>
+            <material-step label="Upload" completed></material-step>
+            <material-step label="Validate" error active supporting-text="3 rows rejected"></material-step>
+            <material-step label="Import" disabled></material-step>
+          </material-stepper>
+          <p class="text-xs text-on-surface-variant m-0">
+            wizard_goto_step: <span id="ft-log">—</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- 4. Non-linear -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          <code>linear="false"</code> — any header is clickable, steps complete
+          in any order
+        </p>
+        <material-stepper linear="false" class="rounded-xl border border-outline-variant bg-surface p-4 block">
+          <material-step label="Basics" active>
+            <p class="text-sm text-on-surface-variant m-0">Basics form…</p>
+          </material-step>
+          <material-step label="Attachments" supporting-text="Optional">
+            <p class="text-sm text-on-surface-variant m-0">Attachments form…</p>
+          </material-step>
+          <material-step label="Permissions">
+            <p class="text-sm text-on-surface-variant m-0">Permissions form…</p>
+          </material-step>
+        </material-stepper>
+      </section>
+
+      <!-- 5. RTL -->
+      <section dir="rtl">
+        <p class="text-sm text-on-surface-variant mb-2" dir="ltr">
+          RTL — circles, connectors and the vertical content border mirror
+          with the reading direction
+        </p>
+        <material-stepper class="rounded-xl border border-outline-variant bg-surface p-4 block">
+          <material-step label="الحساب" completed></material-step>
+          <material-step label="الملف الشخصي" active></material-step>
+          <material-step label="تأكيد"></material-step>
+        </material-stepper>
+      </section>
+    </div>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage (django-formtools WizardView)</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;material-stepper id="wizard-steps"&gt;
+  {% for step in wizard.steps.all %}
+  &lt;material-step label="{{ step|capfirst }}" value="{{ step }}"
+    {% if step == wizard.steps.current %}active{% endif %}
+    {% if forloop.counter0 &lt; wizard.steps.step0 %}completed{% endif %}&gt;
+  &lt;/material-step&gt;
+  {% endfor %}
+&lt;/material-stepper&gt;
+
+&lt;form method="post"&gt;{% csrf_token %}
+  {{ wizard.management_form }}
+  {{ wizard.form }}
+  {% if wizard.steps.prev %}
+  &lt;button name="wizard_goto_step" value="{{ wizard.steps.prev }}"&gt;Back&lt;/button&gt;
+  {% endif %}
+  &lt;button type="submit"&gt;{% if wizard.steps.next %}Continue{% else %}Finish{% endif %}&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  // header click on a visited step → jump the wizard server-side
+  document.getElementById('wizard-steps').addEventListener('materialStepClick', (e) =&gt; {
+    e.preventDefault();
+    const input = Object.assign(document.createElement('input'),
+      { type: 'hidden', name: 'wizard_goto_step', value: e.detail.value });
+    const form = document.querySelector('form');
+    form.appendChild(input);
+    form.submit();
+  });
+&lt;/script&gt;</code></pre>
+    </details>
+  </main>
+
+  <script>
+    // 1. client-side wizard
+    const wiz = document.getElementById('wiz');
+    const wizLog = document.getElementById('wiz-log');
+    const nextBtn = document.getElementById('wiz-next');
+    const submitBtn = document.getElementById('wiz-submit');
+    wiz.addEventListener('materialStepChange', (e) => {
+      wizLog.textContent = `step ${e.detail.fromValue} → ${e.detail.toValue}`;
+      const last = e.detail.to === 2;
+      nextBtn.classList.toggle('hidden', last);
+      submitBtn.classList.toggle('hidden', !last);
+    });
+    document.getElementById('wiz-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      wizLog.textContent = 'submitted: ' + JSON.stringify(Object.fromEntries(new FormData(e.target)));
+    });
+
+    // 3. formtools jump
+    document.getElementById('ft').addEventListener('materialStepClick', (e) => {
+      e.preventDefault(); // server-driven: no local navigation
+      document.getElementById('ft-log').textContent = e.detail.value;
+    });
+  </script>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

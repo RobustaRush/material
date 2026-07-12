@@ -3,6 +3,7 @@ import {
   Element,
   Event,
   EventEmitter,
+  Method,
   Prop,
   Watch,
   AttachInternals,
@@ -78,6 +79,35 @@ export class MaterialTextarea {
       this.textareaEl.value = this.value ?? '';
       this.applyAutoResize();
     }
+  }
+
+  // Mirror the inner textarea's constraint validation onto ElementInternals —
+  // see material-textfield for rationale.
+  componentDidRender() {
+    const ta = this.textareaEl;
+    if (!ta) return;
+    if (this.disabled || ta.validity.valid) {
+      this.internals.setValidity({});
+      return;
+    }
+    const v = ta.validity;
+    this.internals.setValidity(
+      { valueMissing: v.valueMissing, tooLong: v.tooLong, tooShort: v.tooShort, badInput: v.badInput },
+      ta.validationMessage,
+      ta,
+    );
+  }
+
+  /** Constraint validation, like a native textarea. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    return this.internals.checkValidity();
+  }
+
+  /** Constraint validation with the native error bubble on the inner textarea. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    return this.internals.reportValidity();
   }
 
   formDisabledCallback(disabled: boolean) {

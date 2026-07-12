@@ -40,6 +40,29 @@
 | `valueInput`  |             | `CustomEvent<{ value: string; }>` |
 
 
+## Methods
+
+### `checkValidity() => Promise<boolean>`
+
+Constraint validation, like a native input.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Constraint validation with the native error bubble on the inner input.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+
 ## Dependencies
 
 ### Used by

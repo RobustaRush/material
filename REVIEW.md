@@ -66,8 +66,15 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
   with avatar, timestamp, grouped by day.
 - **Kanban / drag-and-drop** — CRM pipeline boards; ship a sortable-list
   primitive first (keyboard-accessible DnD), board on top.
-- **Stepper / wizard** — multi-step forms with validation gating (no M3 spec;
-  design from M2 + Expressive tokens like the data table).
+- **Stepper / wizard** — ✅ done (2026-07-12): material-stepper +
+  material-step — M2 anatomy, M3 tokens; horizontal/vertical, linear or
+  free-order; client-side next/back (document-delegated
+  data-stepper-next/back) gated on constraint validation, or a pure
+  server-driven indicator for django-formtools (`active`/`completed`/`error`
+  from the template, cancelable materialStepClick → wizard_goto_step).
+  material-textfield/textarea now mirror inner-input validity onto
+  ElementInternals (checkValidity/reportValidity), so required fields
+  actually gate submits.
 - **Charts** — do NOT build a chart engine; ship an MD3 token bridge for
   ECharts (colors, typography, tooltip surface) + 2–3 ready KPI widgets
   (stat card with trend, sparkline) like the ERP showcase draws by hand.
