@@ -34,8 +34,10 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
 - **Side sheet** — trailing detail panel; in CRM/ERP this is the record
   detail next to a list (the ERP showcase fakes it with a full-screen
   dialog today).
-- **Search view** — full-screen/docked search overlay with suggestion list
-  (search-app-bar exists; the view part does not).
+- **Search view** — ✅ done (2026-07-12): `material-search` ships the full
+  MD3 Search pair — contained pill bar + search view (docked popover on
+  desktop, full-screen overlay on compact), slotted/JS/remote suggestion
+  sources, sections, clear ×, form-associated, Unpoly-visible href items.
 - **Rich tooltip** — MD3 variant with subhead + actions (plain exists).
 
 ## P4 — product polish patterns (outside M3, expected in enterprise UI)

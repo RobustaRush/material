@@ -1,0 +1,310 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Spec: bar 360dp min / 720dp max wide — the max is enforced here, the min
+   is the consumer's layout concern. */
+:host {
+  display: block;
+  width: 100%;
+  max-width: 45rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host(.disabled) {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.frame {
+  display: block;
+  width: 100%;
+}
+
+/* --- search bar (contained style: 56dp pill on surface-container-high) --- */
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  height: 3.5rem;
+  padding-inline: 1rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: text;
+}
+
+/* Hover/pressed state layer over the pill. */
+.bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: transparent;
+  transition: background-color 120ms linear;
+}
+
+:host(:not(.view-open)) .bar:hover::after {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+:host(:not(.view-open)) .bar:active::after {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
+}
+
+/* Keyboard focus lands on the input, which has no visible outline of its
+   own — draw the spec's focus indicator around the pill instead. */
+.bar:has(.input:focus-visible) {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
+
+.lead-icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.5rem;
+  line-height: 1;
+  flex: none;
+  color: var(--md-sys-color-on-surface);
+  direction: ltr;
+  margin-inline-end: 0.25rem;
+}
+
+.back {
+  flex: none;
+  margin-inline-start: -0.5rem;
+}
+
+/* arrow_back is a navigation arrow — it points toward "back", so mirror the
+   glyph in RTL (the icon button renders it direction-agnostic). */
+.back:dir(rtl) {
+  scale: -1 1;
+}
+
+.input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  letter-spacing: 0.03125em;
+  color: var(--md-sys-color-on-surface);
+  caret-color: var(--md-sys-color-primary);
+}
+
+.input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Chrome draws its own clearer in type=search inputs — ours replaces it. */
+.input::-webkit-search-cancel-button,
+.input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.clear {
+  flex: none;
+}
+
+.trailing {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* --- suggestion / result list (shared by docked popup and fullscreen) ----- */
+
+.list {
+  padding-block: 0.5rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3rem;
+  padding-inline: 1rem;
+  padding-block: 0.375rem;
+  font-size: 1rem;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+}
+
+.row.highlighted {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.row:active {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
+}
+
+.row.disabled {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.row-icon {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.5rem;
+  line-height: 1;
+  flex: none;
+  color: var(--md-sys-color-on-surface-variant);
+  direction: ltr;
+}
+
+.row-avatar {
+  flex: none;
+}
+
+.row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.row-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-label .match {
+  font-weight: 600;
+  color: var(--md-sys-color-primary);
+}
+
+.row-supporting {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "Navigates away" affordance on href rows; the arrow points toward the
+   reading start, so mirror it in RTL. */
+.row-go {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  flex: none;
+  color: var(--md-sys-color-on-surface-variant);
+  direction: ltr;
+}
+
+.row-go:dir(rtl) {
+  scale: -1 1;
+}
+
+.section {
+  padding-inline: 1rem;
+  padding-block: 0.5rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Spec guideline: gaps separate list groups. */
+.section.gap {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  padding-top: 0.75rem;
+}
+
+.status {
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  padding-inline: 1rem;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.875rem;
+}
+
+.status.loading-more {
+  min-height: 2rem;
+}
+
+/* --- docked view: results container tracks 2dp below the bar -------------- */
+
+.popup {
+  position: fixed;
+  inset: unset;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: min(45rem, calc(100vw - 1rem));
+  overflow-y: auto;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  border-radius: 1rem; /* spec: docked results shape = rounded */
+  box-shadow:
+    0 2px 6px 2px rgb(0 0 0 / 0.15),
+    0 1px 2px 0 rgb(0 0 0 / 0.3);
+}
+
+.popup:popover-open {
+  animation: search-pop-in 120ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes search-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup:popover-open {
+    animation: none;
+  }
+}
+
+/* --- fullscreen view (compact windows) ------------------------------------ */
+
+/* The frame — bar included — becomes a fixed overlay. The input element
+   never moves in the DOM, so focus survives the switch. */
+:host(.fullscreen) .frame {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  background: var(--md-sys-color-surface-container-low);
+  padding: 0.75rem; /* spec: 12dp focused margins */
+  max-width: none;
+}
+
+:host(.fullscreen) .bar {
+  flex: none;
+}
+
+:host(.fullscreen) .sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  margin-top: 0.125rem; /* spec: 2dp bar-to-results gap */
+  border-radius: 1rem;
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.option-source {
+  display: none;
+}

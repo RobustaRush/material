@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-search — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-search</h1>
+        <p class="text-on-surface-variant text-sm">
+          MD3 Search — contained bar + search view. Docked results on desktop,
+          full-screen overlay on compact windows. Suggestions from slotted
+          options, an <code>items</code> array, or a remote <code>src</code>
+          endpoint. Form-associated: Enter posts <code>name=&lt;query&gt;</code>.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-12">
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Recent searches — slotted options</h2>
+      <p class="text-on-surface-variant text-sm">
+        Server-rendered <code>&lt;material-option&gt;</code>s show before typing
+        (the "Recent" pattern) and filter client-side as you type. Trailing
+        avatar slot. Escape or the back arrow closes the view.
+      </p>
+      <material-search id="s-basic" placeholder="Search mail" name="q">
+        <material-option leading-icon="history" data-section="Recent" value="quarterly report">quarterly report</material-option>
+        <material-option leading-icon="history" data-section="Recent" value="invoice 2026">invoice 2026</material-option>
+        <material-option leading-icon="history" data-section="Recent" value="design review">design review</material-option>
+        <material-option leading-icon="label" data-section="Labels" value="label:finance" supporting-text="128 conversations">finance</material-option>
+        <material-option leading-icon="label" data-section="Labels" value="label:travel" supporting-text="41 conversations">travel</material-option>
+        <material-avatar slot="trailing" name="Mikhail Podgurskiy" size="s"></material-avatar>
+      </material-search>
+      <pre id="out-basic" class="text-sm bg-surface-container rounded p-3 min-h-8">(no events)</pre>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">JS items — sections, avatars, href navigation</h2>
+      <p class="text-on-surface-variant text-sm">
+        The <code>items</code> property mixes contacts (auto-colored avatars)
+        with "Go to" entries carrying <code>href</code> — picking one clicks a
+        real light-DOM anchor (Unpoly-visible, <code>up-target</code> honored).
+        <code>materialSelect</code> is cancelable for full JS control.
+      </p>
+      <material-search id="s-items" placeholder="Search people and pages" up-target="main"></material-search>
+      <pre id="out-items" class="text-sm bg-surface-container rounded p-3 min-h-8">(no events)</pre>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Remote source — <code>src</code> endpoint</h2>
+      <p class="text-on-surface-variant text-sm">
+        Typing queries a mocked <code>/demo-api/directory</code> (400&nbsp;ms
+        latency, server-side filtering, select2-style JSON accepted). Slotted
+        recents still show for the empty query. <code>min-chars="2"</code>.
+      </p>
+      <material-search id="s-remote" src="/demo-api/directory" min-chars="2"
+                       placeholder="Search directory" debounce="200">
+        <material-option leading-icon="history" data-section="Recent" value="Anna Petersen">Anna Petersen</material-option>
+        <material-option leading-icon="history" data-section="Recent" value="Purchasing">Purchasing</material-option>
+      </material-search>
+      <pre id="out-remote" class="text-sm bg-surface-container rounded p-3 min-h-8">(no events)</pre>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Form-associated</h2>
+      <p class="text-on-surface-variant text-sm">
+        Inside a <code>&lt;form&gt;</code>: Enter (or picking a text suggestion)
+        submits; the query posts as <code>q=…</code>. Reset restores the initial
+        value.
+      </p>
+      <form id="search-form" class="space-y-3">
+        <material-search name="q" value="draft report" placeholder="Search documents">
+          <material-option leading-icon="description" value="Q2 financial summary">Q2 financial summary</material-option>
+          <material-option leading-icon="description" value="Vendor contract v3">Vendor contract v3</material-option>
+        </material-search>
+        <div class="flex gap-3">
+          <material-button type="submit" variant="filled">Submit</material-button>
+          <material-button type="reset" variant="outlined">Reset</material-button>
+        </div>
+        <pre id="form-out" class="text-sm bg-surface-container rounded p-3 min-h-8">(submit to see FormData)</pre>
+      </form>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-medium">Forced full-screen view</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>layout="fullscreen"</code> always opens the compact-window
+        overlay (with <code>layout="auto"</code> — the default — it switches on
+        viewport width &lt; 600px; resize the window to try). Back arrow or
+        Escape restores the page.
+      </p>
+      <material-search layout="fullscreen" placeholder="Search everything">
+        <material-option leading-icon="history" data-section="Recent" value="unpaid invoices">unpaid invoices</material-option>
+        <material-option leading-icon="history" data-section="Recent" value="warehouse stock">warehouse stock</material-option>
+        <material-option leading-icon="trending_up" data-section="Suggested" value="overdue receipts">overdue receipts</material-option>
+      </material-search>
+    </section>
+
+    <section class="space-y-3" dir="rtl">
+      <h2 class="text-lg font-medium">RTL (hard-coded)</h2>
+      <p class="text-on-surface-variant text-sm" dir="ltr">
+        Section-local <code>dir="rtl"</code>; the header Direction toggle flips
+        the whole page instead.
+      </p>
+      <material-search placeholder="بحث">
+        <material-option leading-icon="history" data-section="الأخيرة" value="التقارير">التقارير</material-option>
+        <material-option leading-icon="history" data-section="الأخيرة" value="الفواتير">الفواتير</material-option>
+      </material-search>
+    </section>
+
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Server-rendered recents; Enter posts q= via the surrounding form --&gt;
+&lt;form action="/search/"&gt;
+  &lt;material-search name="q" placeholder="Search mail" src="/api/search-suggest/" up-target="main"&gt;
+    &lt;material-option leading-icon="history" data-section="Recent" value="invoices"&gt;invoices&lt;/material-option&gt;
+    &lt;material-avatar slot="trailing" name="Mikhail" size="s"&gt;&lt;/material-avatar&gt;
+  &lt;/material-search&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  // items from JS; href entries navigate (Unpoly-compatible anchor click)
+  document.querySelector('material-search').items = [
+    { label: 'Anna Petersen', avatarName: 'Anna Petersen', section: 'Contacts', supportingText: 'anna@corp.io' },
+    { label: 'Purchase orders', icon: 'shopping_cart', section: 'Go to', href: '/purchasing/' },
+  ];
+&lt;/script&gt;</code></pre>
+    </details>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+  <script>
+    // ─── event logs ───
+    function wireLog(id, outId) {
+      const el = document.getElementById(id);
+      const out = document.getElementById(outId);
+      if (!el || !out) return;
+      el.addEventListener('materialSearchInput', e => { out.textContent = `input: "${e.detail.query}"`; });
+      el.addEventListener('materialSearchSubmit', e => { out.textContent = `submit: "${e.detail.query}"`; });
+      el.addEventListener('materialSelect', e => {
+        out.textContent = `select: ${JSON.stringify(e.detail.item)}`;
+      });
+    }
+    wireLog('s-basic', 'out-basic');
+    wireLog('s-items', 'out-items');
+    wireLog('s-remote', 'out-remote');
+
+    // ─── JS items case ───
+    document.getElementById('s-items').items = [
+      { label: 'Anna Petersen', avatarName: 'Anna Petersen', section: 'Contacts', supportingText: 'anna@corp.io' },
+      { label: 'Robert Chen', avatarName: 'Robert Chen', section: 'Contacts', supportingText: 'robert@corp.io' },
+      { label: 'Carol Diaz', avatarName: 'Carol Diaz', section: 'Contacts', supportingText: 'carol@corp.io' },
+      { label: 'Purchase orders', icon: 'shopping_cart', section: 'Go to', href: '#purchasing' },
+      { label: 'Inventory', icon: 'inventory_2', section: 'Go to', href: '#inventory' },
+      { label: 'Reports', icon: 'bar_chart', section: 'Go to', href: '#reports' },
+    ];
+    // Prevent actual hash navigation in the demo, but show what would happen.
+    document.getElementById('s-items').addEventListener('materialSelect', e => {
+      if (e.detail.item.href) {
+        e.preventDefault();
+        document.getElementById('out-items').textContent =
+          `select (href, prevented in demo): would navigate to ${e.detail.item.href}`;
+      }
+    });
+
+    // ─── mock /demo-api/directory with latency + server-side filtering ───
+    const DIRECTORY = [
+      { id: 'u1', text: 'Anna Petersen', avatar_name: 'Anna Petersen', section: 'People', supporting_text: 'Design' },
+      { id: 'u2', text: 'Robert Chen', avatar_name: 'Robert Chen', section: 'People', supporting_text: 'Finance' },
+      { id: 'u3', text: 'Carol Diaz', avatar_name: 'Carol Diaz', section: 'People', supporting_text: 'Sales' },
+      { id: 'u4', text: 'Dmitri Volkov', avatar_name: 'Dmitri Volkov', section: 'People', supporting_text: 'Engineering' },
+      { id: 'd1', text: 'Purchasing', icon: 'shopping_cart', section: 'Departments', url: '#purchasing' },
+      { id: 'd2', text: 'Inventory', icon: 'inventory_2', section: 'Departments', url: '#inventory' },
+      { id: 'd3', text: 'Human resources', icon: 'badge', section: 'Departments', url: '#hr' },
+      { id: 'f1', text: 'Q2 financial summary.pdf', icon: 'picture_as_pdf', section: 'Files' },
+      { id: 'f2', text: 'Vendor contract v3.docx', icon: 'description', section: 'Files' },
+      { id: 'f3', text: 'Warehouse audit.xlsx', icon: 'table', section: 'Files' },
+    ];
+    const realFetch = window.fetch.bind(window);
+    window.fetch = (input, init) => {
+      const url = typeof input === 'string' ? input : input.url;
+      if (url.includes('/demo-api/directory')) {
+        const q = (new URL(url, location.origin).searchParams.get('q') || '').toLowerCase();
+        const results = DIRECTORY.filter(x => x.text.toLowerCase().includes(q));
+        return new Promise((resolve) => setTimeout(
+          () => resolve(new Response(JSON.stringify({ results }), {
+            headers: { 'Content-Type': 'application/json' },
+          })),
+          400,
+        ));
+      }
+      return realFetch(input, init);
+    };
+
+    // ─── form case ───
+    serializeFormToOutput('search-form', 'form-out');
+  </script>
+</body>
+</html>

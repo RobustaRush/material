@@ -22,11 +22,13 @@
 ### Used by
 
  - [material-avatar-group](../material-avatar-group)
+ - [material-search](../material-search)
 
 ### Graph
 ```mermaid
 graph TD;
   material-avatar-group --> material-avatar
+  material-search --> material-avatar
   style material-avatar fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
