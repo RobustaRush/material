@@ -69,6 +69,43 @@
   });
 })();
 
+// Direction toggle (LTR / RTL) — injected next to the density picker so no
+// demo page needs its own markup. Sets dir on <html>; demo sections that
+// hard-code their own dir="rtl" keep it (they demo the opposite direction).
+// Persists like theme/density so a full-library RTL sweep survives page hops.
+(function () {
+  const root = document.documentElement;
+  const anchor = document.querySelector('[data-density-picker]');
+  if (!anchor) return;
+
+  const label = document.createElement('label');
+  label.className = 'flex items-center gap-2 text-sm shrink-0';
+  label.innerHTML =
+    '<span class="text-on-surface-variant">Direction</span>' +
+    '<div data-dir-picker role="group" aria-label="Text direction" ' +
+    'class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">' +
+    '<button type="button" data-dir="ltr" class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">LTR</button>' +
+    '<button type="button" data-dir="rtl" class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">RTL</button>' +
+    '</div>';
+  anchor.closest('label').after(label);
+
+  const buttons = label.querySelectorAll('[data-dir]');
+  function applyDir(dir) {
+    root.dir = dir;
+    buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.dir === dir)));
+  }
+
+  const saved = localStorage.getItem('material-dir');
+  applyDir(saved === 'rtl' ? 'rtl' : 'ltr');
+
+  label.addEventListener('click', e => {
+    const btn = e.target.closest('[data-dir]');
+    if (!btn) return;
+    applyDir(btn.dataset.dir);
+    localStorage.setItem('material-dir', btn.dataset.dir);
+  });
+})();
+
 // Helper for form-demo blocks: serialize the form's FormData on submit into
 // a target output element. Used by checkbox / textfield demos.
 window.serializeFormToOutput = function (formId, outputId) {

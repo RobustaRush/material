@@ -57,8 +57,12 @@ export function positionAnchored(
   const f = { width: floater.offsetWidth, height: floater.offsetHeight };
 
   const wantsBottom = placement.startsWith('bottom');
-  const wantsEnd = placement.endsWith('end');
   const wantsCenter = placement.endsWith('center');
+  let wantsEnd = placement.endsWith('end');
+  // Alignment is logical: in RTL, `start` hugs the anchor's right edge.
+  if (!wantsCenter && getComputedStyle(floater).direction === 'rtl') {
+    wantsEnd = !wantsEnd;
+  }
 
   // Vertical: try requested side, flip if it doesn't fit and the other side has more room.
   const roomBelow = vh - a.bottom - viewportPadding;

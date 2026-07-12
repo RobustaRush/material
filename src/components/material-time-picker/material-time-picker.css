@@ -100,7 +100,7 @@
 .tp__period {
   display: flex;
   flex-direction: column;
-  margin-left: 0.75rem;
+  margin-inline-start: 0.75rem;
   border: 1px solid var(--md-sys-color-outline);
   border-radius: 0.5rem;
   overflow: hidden;
@@ -251,7 +251,7 @@
 .tp__inputs .tp__period {
   /* In input view the AM/PM column matches the 72dp input height, not 80dp. */
   height: 4.5rem;
-  margin-left: 0;
+  margin-inline-start: 0;
 }
 
 .tp__input-col {

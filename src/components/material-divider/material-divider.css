@@ -28,10 +28,10 @@
 }
 
 :host([inset="inset"]:not([orientation="vertical"])) .line {
-  margin-left: 1rem;
+  margin-inline-start: 1rem;
 }
 
 :host([inset="middle"]:not([orientation="vertical"])) .line {
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin-inline-start: 1rem;
+  margin-inline-end: 1rem;
 }

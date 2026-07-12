@@ -67,10 +67,11 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
   library and the main commercial differentiator.
 - **A11y statement** — axe-core pass over every demo page wired into CI,
   documented WCAG 2.2 AA status per component. Enterprise buyers ask first.
-- **RTL** — full audit: physical properties in older component CSS
-  (material-select's shell is left/right based), `translateX` signs,
-  gradient directions. Newer components (autocomplete, data-table,
-  date-range band) are already logical-properties based.
+- **RTL** — ✅ done (2026-07-12): library-wide sweep converted physical
+  properties to logical ones, added `:dir(rtl)` transform/clip-path flips
+  (slider, switch, tabs badges, split-button, icon-button badge), made
+  anchored-popover alignment logical, and fixed carousel math + arrow keys.
+  Demo pages have a persistent LTR/RTL toggle next to Theme/Density.
 - **Licensing** — currently AGPL-3.0; decide dual-licensing (AGPL +
   commercial) before promoting third-party commercial use.
 - **i18n catalog** — gettext() hooks exist; ship extracted message catalogs

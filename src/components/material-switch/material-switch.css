@@ -105,7 +105,7 @@
 .handle {
   position: absolute;
   top: 50%;
-  left: var(--handle-x);
+  inset-inline-start: var(--handle-x);
   width: var(--handle-size);
   height: var(--handle-size);
   border-radius: 50%;
@@ -147,7 +147,7 @@
   position: absolute;
   top: 50%;
   /* center on handle */
-  left: calc(var(--handle-x) + var(--handle-size) / 2);
+  inset-inline-start: calc(var(--handle-x) + var(--handle-size) / 2);
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
@@ -231,7 +231,7 @@
 }
 :host([error]) .label { color: var(--md-sys-color-error); }
 .required-mark {
-  margin-left: 0.125rem;
+  margin-inline-start: 0.125rem;
   color: var(--md-sys-color-error);
 }
 
@@ -243,3 +243,8 @@
   color: var(--md-sys-color-on-surface-variant);
 }
 .subtext.error { color: var(--md-sys-color-error); }
+
+/* The state layer recenters with logical positioning in RTL. */
+.state-layer:dir(rtl) {
+  transform: translate(50%, -50%);
+}

@@ -30,7 +30,7 @@
 
 :host([scrollable]) .inner {
   width: max-content;
-  padding-left: 52px;
+  padding-inline-start: 52px;
 }
 
 /* Single active indicator, hoisted from the tabs so it can slide between them.
@@ -38,6 +38,8 @@
 .tab-indicator {
   position: absolute;
   bottom: 0;
+  /* Deliberately physical: the JS positions it via getBoundingClientRect
+     deltas + translateX, which are physical too — consistent in RTL. */
   left: 0;
   height: 3px;
   width: 0;

@@ -124,8 +124,8 @@
 
 /* Padding shrinks to 8dp on the side that has an icon/avatar/trailing. */
 :host(:not([variant="input"])[icon]) [part="chip"],
-:host([variant="filter"][selected]) [part="chip"] { padding-left: 0.5rem; }
-:host(:not([variant="input"])[trailing-icon]) [part="chip"] { padding-right: 0.5rem; }
+:host([variant="filter"][selected]) [part="chip"] { padding-inline-start: 0.5rem; }
+:host(:not([variant="input"])[trailing-icon]) [part="chip"] { padding-inline-end: 0.5rem; }
 
 /* Variant: assist — outlined, on-surface label, primary leading icon. */
 :host([variant="assist"]) [part="chip"] {
@@ -197,7 +197,7 @@
   height: 1.5rem;
   border-radius: 0.75rem;
   overflow: hidden;
-  margin-left: -0.25rem;
+  margin-inline-start: -0.25rem;
 }
 .avatar ::slotted(*) {
   width: 100%;

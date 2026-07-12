@@ -90,11 +90,14 @@ export class MaterialCarousel {
       return;
     }
 
-    const viewport = this.scrollEl.clientWidth;
-    const viewportCenter = this.scrollEl.scrollLeft + viewport / 2;
+    // Viewport-relative rects: physical on both axes, so the math is
+    // direction-agnostic (offsetLeft/scrollLeft semantics differ in RTL).
+    const vpRect = this.scrollEl.getBoundingClientRect();
+    const viewportCenter = vpRect.left + vpRect.width / 2;
 
     this.getItems().forEach((item) => {
-      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+      const rect = item.getBoundingClientRect();
+      const itemCenter = rect.left + rect.width / 2;
       const offset = itemCenter - viewportCenter;
       const limit = item.offsetWidth * 0.075;
       const parallax = Math.max(-limit, Math.min(limit, -offset * 0.08));
@@ -112,9 +115,14 @@ export class MaterialCarousel {
       : null) as HTMLElement | null;
     const idx = active ? items.indexOf(active) : -1;
 
+    // Arrow keys follow the reading direction.
+    const rtl = getComputedStyle(this.host).direction === 'rtl';
+    const forwardKey = rtl ? 'ArrowLeft' : 'ArrowRight';
+    const backKey = rtl ? 'ArrowRight' : 'ArrowLeft';
+
     let target = -1;
-    if (e.key === 'ArrowRight') target = Math.min(items.length - 1, idx + 1);
-    else if (e.key === 'ArrowLeft') target = Math.max(0, idx - 1);
+    if (e.key === forwardKey) target = Math.min(items.length - 1, idx + 1);
+    else if (e.key === backKey) target = Math.max(0, idx - 1);
     else if (e.key === 'Home') target = 0;
     else if (e.key === 'End') target = items.length - 1;
 

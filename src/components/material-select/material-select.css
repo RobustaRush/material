@@ -29,8 +29,8 @@
 }
 
 .surface.filled {
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
+  border-start-start-radius: 0.25rem;
+  border-start-end-radius: 0.25rem;
   background: var(--md-sys-color-surface-container-highest);
   transition: background-color 120ms linear;
 }
@@ -68,19 +68,19 @@
 }
 
 .shell.leading {
-  padding-left: 3rem;
+  padding-inline-start: 3rem;
 }
 
 .shell.no-leading {
-  padding-left: 0.75rem;
+  padding-inline-start: 0.75rem;
 }
 
 .shell.wide {
-  padding-right: 6rem;
+  padding-inline-end: 6rem;
 }
 
 .shell.narrow {
-  padding-right: 3rem;
+  padding-inline-end: 3rem;
 }
 
 .placeholder {
@@ -93,8 +93,8 @@
   align-items: center;
   gap: 0.25rem;
   height: 1.75rem;
-  padding-left: 0.625rem;
-  padding-right: 0.25rem;
+  padding-inline-start: 0.625rem;
+  padding-inline-end: 0.25rem;
   border-radius: 0.5rem;
   background: var(--md-sys-color-secondary-container);
   color: var(--md-sys-color-on-secondary-container);
@@ -147,7 +147,7 @@
 
 .trailing {
   position: absolute;
-  right: 0.25rem;
+  inset-inline-end: 0.25rem;
   top: 0.25rem;
   display: inline-flex;
   align-items: center;
@@ -160,12 +160,12 @@
 }
 
 .clear-btn {
-  margin-right: -1.25rem;
+  margin-inline-end: -1.25rem;
 }
 
 .leading-icon {
   position: absolute;
-  left: 0.75rem;
+  inset-inline-start: 0.75rem;
   top: 0.75rem;
   z-index: 10;
   display: inline-flex;
@@ -201,15 +201,15 @@
 
 .field-label {
   position: absolute;
-  left: 1rem;
+  inset-inline-start: 1rem;
   pointer-events: none;
-  transform-origin: left;
+  transform-origin: 0 50%;
   transition: all 150ms;
   font-size: 1rem;
 }
 
 .field-label.leading {
-  left: 3rem;
+  inset-inline-start: 3rem;
 }
 
 .field-label.error {
@@ -242,15 +242,14 @@
 
 .field-label.outlined.shrunk {
   top: 0;
-  left: 1rem;
+  inset-inline-start: 1rem;
   transform: translateY(-50%);
   font-size: 0.75rem;
 }
 
 .indicator {
   position: absolute;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   bottom: 0;
   pointer-events: none;
   height: 1px;
@@ -277,7 +276,7 @@
   padding-top: 0;
   pointer-events: none;
   border-radius: 0.25rem;
-  text-align: left;
+  text-align: start;
   border: 1px solid var(--md-sys-color-outline);
 }
 
@@ -297,11 +296,11 @@
   padding: 0;
   font-size: 0.75rem;
   line-height: 1;
-  margin-left: -1px;
+  margin-inline-start: -1px;
 }
 
 .legend.active {
-  margin-left: -2px;
+  margin-inline-start: -2px;
 }
 
 .legend-text {
@@ -315,4 +314,9 @@
 .legend-text.expanded {
   max-width: 100%;
   padding: 0 0.25rem;
+}
+
+/* Float-label shrink animation scales from the reading-direction start. */
+.field-label:dir(rtl) {
+  transform-origin: 100% 50%;
 }

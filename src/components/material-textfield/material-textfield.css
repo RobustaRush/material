@@ -142,8 +142,8 @@
   pointer-events: none;
 }
 
-.icon.leading { left: 0.75rem; }
-.icon.trailing { right: 0.75rem; }
+.icon.leading { inset-inline-start: 0.75rem; }
+.icon.trailing { inset-inline-end: 0.75rem; }
 
 .icon.disabled,
 .leading-slot.disabled { color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
@@ -154,7 +154,7 @@
 
 .leading-slot {
   position: absolute;
-  left: 0.75rem;
+  inset-inline-start: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
@@ -164,7 +164,7 @@
 
 .trailing-action {
   position: absolute;
-  right: 0.25rem;
+  inset-inline-end: 0.25rem;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
@@ -177,8 +177,8 @@
   font-size: 1rem;
 }
 
-.label.leading { left: 3rem; }
-.label.no-leading { left: 1rem; }
+.label.leading { inset-inline-start: 3rem; }
+.label.no-leading { inset-inline-start: 1rem; }
 
 .label.disabled { color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent); }
 .label.error { color: var(--md-sys-color-error); }
@@ -191,7 +191,7 @@
    translateY resting targets shift when font-size/line-height interpolate). */
 .label.filled {
   top: 1rem;
-  transform-origin: top left;
+  transform-origin: 0 0;
 }
 
 .shell:focus-within .label.filled,
@@ -204,7 +204,7 @@
 .label.outlined {
   top: 50%;
   transform: translateY(-50%);
-  transform-origin: left;
+  transform-origin: 0 50%;
 }
 
 .shell:focus-within .label.outlined,
@@ -219,13 +219,12 @@
 .shell:focus-within .label.outlined.leading,
 .shell:has(input:not(:placeholder-shown)) .label.outlined.leading,
 .shell.is-filled .label.outlined.leading {
-  left: 1rem;
+  inset-inline-start: 1rem;
 }
 
 .indicator {
   position: absolute;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   bottom: 0;
   pointer-events: none;
   height: 1px;
@@ -246,7 +245,7 @@
   padding-top: 0;
   pointer-events: none;
   border-radius: 0.25rem;
-  text-align: left;
+  text-align: start;
   border: 1px solid var(--md-sys-color-outline);
 }
 
@@ -263,11 +262,11 @@
   padding: 0;
   font-size: 0.75rem;
   line-height: 1;
-  margin-left: -1px;
+  margin-inline-start: -1px;
 }
 
-.legend.error { margin-left: -2px; }
-.shell:focus-within .legend.idle { margin-left: -2px; }
+.legend.error { margin-inline-start: -2px; }
+.shell:focus-within .legend.idle { margin-inline-start: -2px; }
 
 .legend-text {
   display: inline-block;
@@ -300,6 +299,15 @@
 
 .counter {
   color: var(--md-sys-color-on-surface-variant);
-  margin-left: auto;
+  margin-inline-start: auto;
   font-variant-numeric: tabular-nums;
+}
+
+/* Float-label shrink animations scale from the reading-direction start. */
+.label:dir(rtl) {
+  transform-origin: 100% 0;
+}
+
+.label.outlined:dir(rtl) {
+  transform-origin: 100% 50%;
 }

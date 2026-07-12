@@ -68,13 +68,13 @@
 .input.filled {
   padding-top: 1.5rem;
   padding-bottom: 0.5rem;
-  padding-left: 1rem;
+  padding-inline-start: 1rem;
 }
 
 .input.outlined {
   padding-top: 1.5rem;
   padding-bottom: 1rem;
-  padding-left: 1rem;
+  padding-inline-start: 1rem;
   clip-path: inset(24px 0 0 0);
 }
 
@@ -83,8 +83,7 @@
 .mask {
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   height: 1.5rem;
   border-radius: 0.25rem 0.25rem 0 0;
   pointer-events: none;
@@ -102,7 +101,7 @@
 
 .trailing {
   position: absolute;
-  right: 0.75rem;
+  inset-inline-end: 0.75rem;
   top: 0.75rem;
   z-index: 10;
   display: inline-flex;
@@ -136,9 +135,9 @@
    than swapping font-size, so the layout box stays constant and the label
    doesn't dip before snapping to its resting spot. */
 .label.filled {
-  left: 1rem;
+  inset-inline-start: 1rem;
   top: 1rem;
-  transform-origin: top left;
+  transform-origin: 0 0;
   z-index: 10;
 }
 
@@ -150,9 +149,9 @@
 }
 
 .label.outlined {
-  left: 1rem;
+  inset-inline-start: 1rem;
   top: 1.5rem;
-  transform-origin: left;
+  transform-origin: 0 50%;
 }
 
 .shell:focus-within .label.outlined,
@@ -165,8 +164,7 @@
 
 .indicator {
   position: absolute;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   bottom: 0;
   pointer-events: none;
   height: 1px;
@@ -187,7 +185,7 @@
   padding-top: 0;
   pointer-events: none;
   border-radius: 0.25rem;
-  text-align: left;
+  text-align: start;
   border: 1px solid var(--md-sys-color-outline);
 }
 
@@ -204,11 +202,11 @@
   padding: 0;
   font-size: 0.75rem;
   line-height: 1;
-  margin-left: -1px;
+  margin-inline-start: -1px;
 }
 
-.legend.error { margin-left: -2px; }
-.shell:focus-within .legend.idle { margin-left: -2px; }
+.legend.error { margin-inline-start: -2px; }
+.shell:focus-within .legend.idle { margin-inline-start: -2px; }
 
 .legend-text {
   display: inline-block;
@@ -241,6 +239,15 @@
 
 .counter {
   color: var(--md-sys-color-on-surface-variant);
-  margin-left: auto;
+  margin-inline-start: auto;
   font-variant-numeric: tabular-nums;
+}
+
+/* Float-label shrink animations scale from the reading-direction start. */
+.label.filled:dir(rtl) {
+  transform-origin: 100% 0;
+}
+
+.label.outlined:dir(rtl) {
+  transform-origin: 100% 50%;
 }

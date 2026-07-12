@@ -87,7 +87,7 @@
 
 .bar[data-variant="medium"]:not([data-collapsed]) .headline-block {
   justify-content: flex-end;
-  padding-left: 1rem;
+  padding-inline-start: 1rem;
   padding-bottom: 0.75rem;
 }
 
@@ -114,7 +114,7 @@
 
 .bar[data-variant="large"]:not([data-collapsed]) .headline-block {
   justify-content: flex-end;
-  padding-left: 1rem;
+  padding-inline-start: 1rem;
   padding-bottom: 0.75rem;
 }
 

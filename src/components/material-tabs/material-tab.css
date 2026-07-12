@@ -97,10 +97,14 @@
 .badge-slot {
   position: absolute;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   transform: translate(6px, -50%);
   pointer-events: none;
   z-index: 10;
+}
+
+.badge-slot:dir(rtl) {
+  transform: translate(-6px, -50%);
 }
 
 .label {

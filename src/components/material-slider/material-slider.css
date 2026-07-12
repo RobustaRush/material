@@ -90,29 +90,29 @@
 }
 
 .seg.leading {
-  left: 0;
+  inset-inline-start: 0;
   width: max(0%, calc(var(--vl, 0%) - var(--seg-gap)));
-  border-top-left-radius: var(--track-r);
-  border-bottom-left-radius: var(--track-r);
+  border-start-start-radius: var(--track-r);
+  border-end-start-radius: var(--track-r);
 }
 
 .seg.active {
-  left: calc(var(--vl, 0%) + var(--seg-gap));
-  right: calc(100% - var(--vr, 0%) + var(--seg-gap));
+  inset-inline-start: calc(var(--vl, 0%) + var(--seg-gap));
+  inset-inline-end: calc(100% - var(--vr, 0%) + var(--seg-gap));
   background: var(--slider-active);
 }
 .seg.active.round-l {
   /* Standard slider: active touches the track start, round that side. */
-  left: 0;
-  border-top-left-radius: var(--track-r);
-  border-bottom-left-radius: var(--track-r);
+  inset-inline-start: 0;
+  border-start-start-radius: var(--track-r);
+  border-end-start-radius: var(--track-r);
 }
 
 .seg.trailing {
-  left: calc(var(--vr, 0%) + var(--seg-gap));
-  right: 0;
-  border-top-right-radius: var(--track-r);
-  border-bottom-right-radius: var(--track-r);
+  inset-inline-start: calc(var(--vr, 0%) + var(--seg-gap));
+  inset-inline-end: 0;
+  border-start-end-radius: var(--track-r);
+  border-end-end-radius: var(--track-r);
 }
 
 /* Vertical mapping. In vertical, max is at the top. */
@@ -131,7 +131,7 @@
 :host([orientation="vertical"]) .seg.active {
   bottom: calc(var(--vl, 0%) + var(--seg-gap));
   top: calc(100% - var(--vr, 0%) + var(--seg-gap));
-  left: 0; right: 0;
+  inset-inline: 0;
   border-radius: var(--seg-r-flat);
 }
 :host([orientation="vertical"]) .seg.active.round-l {
@@ -151,7 +151,7 @@
 .icon {
   position: absolute;
   top: 50%;
-  left: 1rem;
+  inset-inline-start: 1rem;
   transform: translateY(-50%);
   font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
   font-weight: normal;
@@ -163,6 +163,9 @@
 }
 .icon.active   { color: var(--slider-icon-on);  clip-path: inset(0 calc(100% - var(--vr, 0%)) 0 0); }
 .icon.inactive { color: var(--slider-icon-off); clip-path: inset(0 0 0 var(--vr, 0%)); }
+/* clip-path inset() sides are physical — swap for RTL. */
+.icon.active:dir(rtl)   { clip-path: inset(0 0 0 calc(100% - var(--vr, 0%))); }
+.icon.inactive:dir(rtl) { clip-path: inset(0 var(--vr, 0%) 0 0); }
 
 :host([orientation="vertical"]) .icon {
   top: auto;
@@ -181,7 +184,7 @@
 .stop {
   position: absolute;
   top: 50%;
-  left: var(--p, 0%);
+  inset-inline-start: var(--p, 0%);
   width: 0.25rem;
   height: 0.25rem;
   border-radius: 50%;
@@ -190,6 +193,10 @@
   pointer-events: none;
 }
 .stop.active { background: var(--slider-stop-on); }
+
+.stop:dir(rtl) {
+  transform: translate(50%, -50%);
+}
 
 :host([orientation="vertical"]) .stop {
   left: 50%;
@@ -213,22 +220,26 @@
   /* Horizontal: label sits below the track, clearing the handle that
      extends past the track edges by (handle-h - track-h) / 2. */
   top: calc(100% + (var(--handle-h) - var(--track-h)) / 2 + 6px);
-  left: var(--p, 0%);
+  inset-inline-start: var(--p, 0%);
   transform: translateX(-50%);
+}
+
+.tick-label:dir(rtl) {
+  transform: translateX(50%);
 }
 :host([orientation="vertical"]) .tick-label {
   top: auto;
   bottom: var(--p, 0%);
   /* Track is narrower than the container; the handle extends past the track
      edges. Push the label past the handle, not just past the track. */
-  left: calc(100% + (var(--handle-h) - var(--track-h)) / 2 + 0.5rem);
+  inset-inline-start: calc(100% + (var(--handle-h) - var(--track-h)) / 2 + 0.5rem);
   transform: translateY(50%);
 }
 /* Reserve space below the track (horizontal) or to the right (vertical). */
 :host([tick-labels]) [part="container"] { margin-bottom: 1.375rem; }
 :host([tick-labels][orientation="vertical"]) [part="container"] {
   margin-bottom: 0;
-  margin-right: calc((var(--handle-h) - var(--track-h)) / 2 + 2rem);
+  margin-inline-end: calc((var(--handle-h) - var(--track-h)) / 2 + 2rem);
 }
 
 
@@ -236,7 +247,7 @@
 .thumb {
   position: absolute;
   top: 50%;
-  left: var(--p, 0%);
+  inset-inline-start: var(--p, 0%);
   width: 0.25rem;
   height: var(--handle-h);
   border-radius: 9999px;
@@ -244,6 +255,7 @@
   transform: translate(-50%, -50%);
   cursor: grab;
   outline: none;
+  /* transform flips in RTL via the :dir rule below */
   transition:
     width 180ms cubic-bezier(.2, 0, 0, 1),
     background-color 120ms linear,
@@ -298,8 +310,8 @@
 
 :host([orientation="vertical"]) .indicator {
   bottom: 50%;
-  left: auto;
-  right: calc(100% + 0.75rem);
+  inset-inline-start: auto;
+  inset-inline-end: calc(100% + 0.75rem);
   transform: translateY(50%);
 }
 
@@ -323,7 +335,7 @@
 }
 :host([error]) .label { color: var(--md-sys-color-error); }
 .required-mark {
-  margin-left: 0.125rem;
+  margin-inline-start: 0.125rem;
   color: var(--md-sys-color-error);
 }
 
@@ -355,3 +367,13 @@
 
 /* Readonly: visually identical to enabled, but no cursor or interactions. */
 :host([readonly]) .thumb { cursor: default; }
+
+/* Handle centers on its logical position; translate sign flips in RTL.
+   Vertical sliders keep the physical centering (left: 50%). */
+.thumb:dir(rtl) {
+  transform: translate(50%, -50%);
+}
+
+:host([orientation="vertical"]) .thumb:dir(rtl) {
+  transform: translate(-50%, -50%);
+}
