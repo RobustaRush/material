@@ -1,0 +1,102 @@
+/* material-skeleton — shimmer placeholder.
+ *
+ * em-based sizes: a text skeleton inherits the surrounding font-size, so the
+ * same tag reads as body copy, a headline or a caption depending on context.
+ */
+
+:host {
+  display: block;
+}
+
+:host([variant='text']) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding-block: 0.25em;
+}
+
+:host([variant='circular']) {
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+:host([variant='rectangular']) {
+  block-size: 3.5rem;
+}
+
+.bone {
+  position: relative;
+  overflow: hidden;
+  background: var(--md-sys-color-surface-container-high);
+  border-radius: 0.25em;
+}
+
+:host([variant='text']) .bone {
+  height: 0.7em;
+}
+
+.bone.short {
+  width: 60%;
+}
+
+:host([variant='circular']) .bone {
+  block-size: 100%;
+  border-radius: 9999px;
+}
+
+:host([variant='rectangular']) .bone {
+  block-size: 100%;
+  border-radius: 0.75rem;
+}
+
+/* The shimmer: a full-width highlight band swept across each bone. */
+.bone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  translate: -100% 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--md-sys-color-on-surface) 6%, transparent),
+    transparent
+  );
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+.bone:dir(rtl)::after {
+  translate: 100% 0;
+  animation-name: shimmer-rtl;
+}
+
+@keyframes shimmer {
+  to {
+    translate: 100% 0;
+  }
+}
+
+@keyframes shimmer-rtl {
+  to {
+    translate: -100% 0;
+  }
+}
+
+/* Sweeping motion off → gentle opacity pulse. */
+@media (prefers-reduced-motion: reduce) {
+  .bone::after {
+    animation: none;
+    translate: 0 0;
+    background: none;
+  }
+
+  .bone {
+    animation: skeleton-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-pulse {
+    50% {
+      opacity: 0.6;
+    }
+  }
+}

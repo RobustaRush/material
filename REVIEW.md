@@ -7,10 +7,12 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
 
 ## P1 — data layer (the ERP core)
 
-- **data-table v2** — the biggest gap between "has a table" and "can build an
-  ERP": virtual scroll for thousands of rows, column resize + reorder, sticky
-  first column, inline cell editing, row grouping/aggregation. Keep the
-  progressive-enhancement contract (server-rendered `<table>`, Unpoly swaps).
+- **data-table v2** — ✅ done (2026-07-12), same component/contract, +2.2 KB gz:
+  `virtual` windowed rows over the server-rendered tbody (spacer rows, DOM and
+  form state untouched), `resizable`/`reorderable` header drags with
+  materialColumnResize/Reorder for server persistence, `sticky-start="N"`
+  pinned columns, `tr.row-group` fold/unfold of server-computed aggregates,
+  `.cell-edit` inline editing over plain form controls (materialCellEdit).
 - **material-tree** — ✅ done (2026-07-12): expand/collapse, tri-state
   cascade selection (form-posts one entry per checked value), lazy children
   (`src?parent=` JSON or `materialTreeLoad`), nested markup or flat
@@ -53,8 +55,10 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
 
 ## P4 — product polish patterns (outside M3, expected in enterprise UI)
 
-- **Skeleton loader** — shimmer placeholders for cards/rows/text; pairs with
-  Unpoly fragment loading.
+- **Skeleton loader** — ✅ done (2026-07-12): material-skeleton — three
+  primitives (text lines / circular / rectangular, em-based sizes),
+  composites are plain markup; RTL-aware shimmer, reduced-motion pulse
+  fallback, Unpoly `up-placeholder` recipe. 0.8 KB gz.
 - **Empty state** — icon/illustration + headline + action pattern component.
 - **Timeline / activity feed** — record history, the heart of a CRM; entries
   with avatar, timestamp, grouped by day.
