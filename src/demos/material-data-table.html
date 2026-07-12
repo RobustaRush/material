@@ -21,8 +21,9 @@
         <p class="text-on-surface-variant text-sm">
           Progressive enhancement over a server-rendered <code>&lt;table&gt;</code>
           (Django / Unpoly fragment swaps / any framework). Server-driven sort
-          links, form-posting row selection, sticky header, row links.
-          M2 anatomy redrawn with M3 tokens.
+          links, form-posting row selection, sticky header, row links —
+          plus v2: virtual rows, column resize/reorder, pinned columns,
+          row grouping, inline cell editing. M2 anatomy redrawn with M3 tokens.
         </p>
       </div>
     </div>
@@ -260,7 +261,77 @@
         </material-data-table>
       </section>
 
-      <!-- 7. RTL -->
+      <!-- 7. Row grouping -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          row grouping — the server renders <code>tr.row-group</code> headers
+          with the aggregates already computed; clicking (or Enter) folds the
+          member rows and emits <code>materialGroupToggle</code>
+        </p>
+        <material-data-table id="group-table">
+          <table>
+            <thead>
+              <tr><th>Order</th><th>Customer</th><th class="numeric">Total</th></tr>
+            </thead>
+            <tbody>
+              <tr class="row-group" data-group="west">
+                <td colspan="2">West region · 2 orders</td>
+                <td class="numeric">$15,580.50</td>
+              </tr>
+              <tr><td>SO-1041</td><td>Acme Corp</td><td class="numeric">$12,400.00</td></tr>
+              <tr><td>SO-1038</td><td>Globex Ltd</td><td class="numeric">$3,180.50</td></tr>
+              <tr class="row-group collapsed" data-group="east">
+                <td colspan="2">East region · 3 orders</td>
+                <td class="numeric">$68,240.00</td>
+              </tr>
+              <tr><td>SO-1043</td><td>Initech</td><td class="numeric">$940.00</td></tr>
+              <tr><td>SO-1042</td><td>Stark Industries</td><td class="numeric">$67,000.00</td></tr>
+              <tr><td>SO-1036</td><td>Wayne Ent.</td><td class="numeric">$300.00</td></tr>
+            </tbody>
+          </table>
+        </material-data-table>
+        <p class="text-xs text-on-surface-variant mt-2">toggled: <span id="group-log">—</span></p>
+      </section>
+
+      <!-- 8. Inline cell editing -->
+      <section>
+        <p class="text-sm text-on-surface-variant mb-2">
+          inline editing — ordinary form controls with class
+          <code>cell-edit</code> read as text until focused and post with the
+          page form (Django formsets); changes are relayed as
+          <code>materialCellEdit</code>
+        </p>
+        <material-data-table id="edit-table">
+          <table>
+            <thead>
+              <tr><th>SKU</th><th class="numeric">Qty</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SKU-001</td>
+                <td class="numeric"><input class="cell-edit" name="qty-1" type="number" value="14" aria-label="Quantity for SKU-001"></td>
+                <td>
+                  <select class="cell-edit" name="status-1" aria-label="Status for SKU-001">
+                    <option selected>In stock</option><option>Backorder</option><option>Discontinued</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>SKU-002</td>
+                <td class="numeric"><input class="cell-edit" name="qty-2" type="number" value="3" aria-label="Quantity for SKU-002"></td>
+                <td>
+                  <select class="cell-edit" name="status-2" aria-label="Status for SKU-002">
+                    <option>In stock</option><option selected>Backorder</option><option>Discontinued</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </material-data-table>
+        <p class="text-xs text-on-surface-variant mt-2">edited: <span id="edit-log">—</span></p>
+      </section>
+
+      <!-- 9. RTL -->
       <section dir="rtl">
         <p class="text-sm text-on-surface-variant mb-2" dir="ltr">
           RTL — text alignment, selection column, numeric cells and sort arrows
@@ -291,6 +362,83 @@
         </material-data-table>
       </section>
     </div>
+
+    <!-- 10. Virtual rows -->
+    <section>
+      <p class="text-sm text-on-surface-variant mb-2">
+        <code>virtual</code> — 3,000 server-rendered rows, only the on-screen
+        window is displayed (two spacer rows keep the scrollbar honest); rows
+        never leave the DOM so the checkbox selection and select-all sweep
+        keep working. Pair with <code>sticky-header</code> + a max-height.
+      </p>
+      <div class="mb-2 flex items-center gap-3 min-h-6 text-sm text-on-surface-variant">
+        <span id="virt-count">0 selected</span>
+        <span id="virt-rows"></span>
+      </div>
+      <material-data-table id="virt-table" virtual sticky-header class="max-h-96">
+        <table>
+          <thead>
+            <tr>
+              <th class="cell-select"><material-checkbox data-select-all aria-label="Select all rows"></material-checkbox></th>
+              <th>Invoice</th>
+              <th>Customer</th>
+              <th class="numeric">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="virt-body"></tbody>
+        </table>
+      </material-data-table>
+    </section>
+
+    <!-- 11. Resize + reorder + pinned columns -->
+    <section>
+      <p class="text-sm text-on-surface-variant mb-2">
+        <code>resizable reorderable sticky-start="2"</code> — drag a header
+        edge to resize, drag a header sideways to reorder (a plain click still
+        sorts), first two columns stay pinned during horizontal scroll.
+        <code>materialColumnResize</code> / <code>materialColumnReorder</code>
+        let the server persist the layout.
+      </p>
+      <material-data-table id="grid-table" resizable reorderable sticky-start="2" class="max-w-3xl">
+        <table class="min-w-[68rem]">
+          <thead>
+            <tr>
+              <th data-column="number"><a href="#o=number">PO #</a></th>
+              <th data-column="vendor"><a href="#o=vendor">Vendor</a></th>
+              <th data-column="date">Date</th>
+              <th data-column="buyer">Buyer</th>
+              <th data-column="terms">Terms</th>
+              <th data-column="warehouse">Warehouse</th>
+              <th data-column="status">Status</th>
+              <th data-column="total" class="numeric">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="#po-142">PO-0142</a></td><td>Acme Corp</td><td>2026-05-05</td>
+              <td>M. Fowler</td><td>Net 30</td><td>WH-North</td><td>Pending</td>
+              <td class="numeric">$12,400.00</td>
+            </tr>
+            <tr>
+              <td><a href="#po-141">PO-0141</a></td><td>Globex Ltd</td><td>2026-05-04</td>
+              <td>D. Kim</td><td>Net 60</td><td>WH-South</td><td>Approved</td>
+              <td class="numeric">$3,180.50</td>
+            </tr>
+            <tr>
+              <td><a href="#po-140">PO-0140</a></td><td>Initech</td><td>2026-05-02</td>
+              <td>P. Gibbons</td><td>Prepaid</td><td>WH-North</td><td>Received</td>
+              <td class="numeric">$940.00</td>
+            </tr>
+            <tr>
+              <td><a href="#po-139">PO-0139</a></td><td>Stark Industries</td><td>2026-04-28</td>
+              <td>V. Potts</td><td>Net 30</td><td>WH-East</td><td>Draft</td>
+              <td class="numeric">$67,000.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </material-data-table>
+      <p class="text-xs text-on-surface-variant mt-2">layout events: <span id="grid-log">—</span></p>
+    </section>
 
     <details class="rounded-lg bg-surface-container-low border border-outline-variant">
       <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage (Django / Unpoly)</summary>
@@ -324,9 +472,32 @@
   &lt;button&gt;Archive selected&lt;/button&gt;  &lt;!-- request.POST.getlist('selected') --&gt;
 &lt;/form&gt;
 
+&lt;!-- v2: virtual rows / resize / reorder / pinned columns / groups / editing --&gt;
+&lt;material-data-table virtual sticky-header class="max-h-[70vh]"
+                     resizable reorderable sticky-start="2"&gt;
+  &lt;table&gt;
+    &lt;thead&gt;…&lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr class="row-group{% if g.folded %} collapsed{% endif %}" data-group="{{ g.key }}"&gt;
+        &lt;td colspan="3"&gt;{{ g.title }} · {{ g.count }}&lt;/td&gt;
+        &lt;td class="numeric"&gt;{{ g.total }}&lt;/td&gt;  &lt;!-- aggregates: server-side --&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;…
+        &lt;td class="numeric"&gt;
+          &lt;input class="cell-edit" name="qty-{{ item.pk }}" value="{{ item.qty }}"&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/material-data-table&gt;
+
 &lt;script&gt;
   table.addEventListener('materialSelectionChange', (e) =&gt; e.detail); // {values, count, allSelected}
   table.addEventListener('materialSort', (e) =&gt; e.detail);            // {column, direction} (client-side mode)
+  table.addEventListener('materialColumnResize', (e) =&gt; e.detail);    // {column, width} — persist per user
+  table.addEventListener('materialColumnReorder', (e) =&gt; e.detail);   // {column, from, to}
+  table.addEventListener('materialGroupToggle', (e) =&gt; e.detail);     // {group, collapsed}
+  table.addEventListener('materialCellEdit', (e) =&gt; e.detail);        // {name, value}
 &lt;/script&gt;</code></pre>
     </details>
   </main>
@@ -379,6 +550,42 @@
     document.getElementById('sticky-body').innerHTML = Array.from({ length: 25 }, (_, i) => `
       <tr><td>${i + 1}</td><td>Deploy #${1400 + i}</td><td class="numeric">${(Math.random() * 90 + 10).toFixed(0)}s</td></tr>
     `).join('');
+
+    // 7. group toggle log
+    document.getElementById('group-table').addEventListener('materialGroupToggle', (e) => {
+      document.getElementById('group-log').textContent =
+        `${e.detail.group} → ${e.detail.collapsed ? 'collapsed' : 'expanded'}`;
+    });
+
+    // 8. cell edit log
+    document.getElementById('edit-table').addEventListener('materialCellEdit', (e) => {
+      document.getElementById('edit-log').textContent = `${e.detail.name} = ${e.detail.value}`;
+    });
+
+    // 10. virtual rows — 3,000 rows with native checkboxes (cheap to render)
+    const VENDORS = ['Acme Corp', 'Globex Ltd', 'Initech', 'Stark Industries', 'Wayne Ent.', 'Umbrella Inc'];
+    document.getElementById('virt-body').innerHTML = Array.from({ length: 3000 }, (_, i) => `
+      <tr>
+        <td class="cell-select"><input type="checkbox" name="selected" value="${i + 1}" aria-label="Select INV-${10000 + i}"></td>
+        <td>INV-${10000 + i}</td>
+        <td>${VENDORS[i % VENDORS.length]}</td>
+        <td class="numeric">$${(((i * 2654435761) % 900000 + 100000) / 100).toFixed(2)}</td>
+      </tr>`).join('');
+    document.getElementById('virt-rows').textContent = '· 3,000 rows';
+    document.getElementById('virt-table').addEventListener('materialSelectionChange', (e) => {
+      document.getElementById('virt-count').textContent =
+        `${e.detail.count} selected${e.detail.allSelected ? ' (all)' : ''}`;
+    });
+
+    // 11. layout events log
+    const gridLog = document.getElementById('grid-log');
+    const gridTable = document.getElementById('grid-table');
+    gridTable.addEventListener('materialColumnResize', (e) => {
+      gridLog.textContent = `resize: ${e.detail.column} → ${e.detail.width}px`;
+    });
+    gridTable.addEventListener('materialColumnReorder', (e) => {
+      gridLog.textContent = `reorder: ${e.detail.column} ${e.detail.from} → ${e.detail.to}`;
+    });
 
     // 5. fragment swap
     const swapTable = document.getElementById('swap-table');

@@ -52,19 +52,27 @@ Markup contract:
 
 ## Properties
 
-| Property       | Attribute       | Description                                                                                                                      | Type      | Default |
-| -------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- |
-| `dense`        | `dense`         | Tighter row heights (40dp rows / 44dp header) for dense listings.                                                                | `boolean` | `false` |
-| `loading`      | `loading`       | Dim the body and ignore pointer input while a fragment loads.                                                                    | `boolean` | `false` |
-| `stickyHeader` | `sticky-header` | Keep <thead> pinned while the body scrolls — pair with a max-height (class or style) on the host, which is the scroll container. | `boolean` | `false` |
+| Property       | Attribute       | Description                                                                                                                                                                            | Type      | Default |
+| -------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- |
+| `dense`        | `dense`         | Tighter row heights (40dp rows / 44dp header) for dense listings.                                                                                                                      | `boolean` | `false` |
+| `loading`      | `loading`       | Dim the body and ignore pointer input while a fragment loads.                                                                                                                          | `boolean` | `false` |
+| `reorderable`  | `reorderable`   | Drag a header cell sideways to reorder columns.                                                                                                                                        | `boolean` | `false` |
+| `resizable`    | `resizable`     | Drag a header cell's edge to resize its column.                                                                                                                                        | `boolean` | `false` |
+| `stickyHeader` | `sticky-header` | Keep <thead> pinned while the body scrolls — pair with a max-height (class or style) on the host, which is the scroll container.                                                       | `boolean` | `false` |
+| `stickyStart`  | `sticky-start`  | Pin the first N columns while the table scrolls horizontally.                                                                                                                          | `number`  | `0`     |
+| `virtual`      | `virtual`       | Windowed display for large tbodies (thousands of rows): rows outside the viewport are display:none behind two spacer rows. Pair with a max-height on the host and uniform row heights. | `boolean` | `false` |
 
 
 ## Events
 
-| Event                     | Description                                                                                                                                                                                                                    | Type                                    |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
-| `materialSelectionChange` | Emitted whenever the set of checked rows changes — user toggles, a select-all sweep, or a fragment swap replacing the rows.                                                                                                    | `CustomEvent<DataTableSelectionDetail>` |
-| `materialSort`            | Emitted on click inside `th[data-sort]` that contains no link (links mean server-driven sorting and are left to the browser/Unpoly). The consumer reorders its data and re-renders; this component never reorders rows itself. | `CustomEvent<DataTableSortDetail>`      |
+| Event                     | Description                                                                                                                                                                                                                    | Type                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `materialCellEdit`        | Relays `change` from a `.cell-edit` control.                                                                                                                                                                                   | `CustomEvent<DataTableCellEditDetail>`      |
+| `materialColumnReorder`   | Emitted after a column-reorder drop actually moved a column.                                                                                                                                                                   | `CustomEvent<DataTableColumnReorderDetail>` |
+| `materialColumnResize`    | Emitted on pointerup after a column-resize drag.                                                                                                                                                                               | `CustomEvent<DataTableColumnResizeDetail>`  |
+| `materialGroupToggle`     | Emitted when a `tr.row-group` is folded/unfolded.                                                                                                                                                                              | `CustomEvent<DataTableGroupToggleDetail>`   |
+| `materialSelectionChange` | Emitted whenever the set of checked rows changes — user toggles, a select-all sweep, or a fragment swap replacing the rows.                                                                                                    | `CustomEvent<DataTableSelectionDetail>`     |
+| `materialSort`            | Emitted on click inside `th[data-sort]` that contains no link (links mean server-driven sorting and are left to the browser/Unpoly). The consumer reorders its data and re-renders; this component never reorders rows itself. | `CustomEvent<DataTableSortDetail>`          |
 
 
 ## Methods

@@ -21,6 +21,9 @@ material-data-table {
 
 material-data-table table {
   width: 100%;
+  /* when column widths get frozen to px (resize / virtual), a narrow sum
+     still stretches to fill the container */
+  min-width: 100%;
   /* `separate` (not collapse) so the sticky header keeps its border while
      the rows scroll under it; dividers are per-cell border-bottoms. */
   border-collapse: separate;
@@ -202,6 +205,206 @@ material-data-table[dense] th {
 
 material-data-table[dense] td {
   height: 2.5rem;
+}
+
+/* --- column resize / reorder (v2) ----------------------------------------- */
+
+/* Grips and drop markers are absolute inside the th; th is otherwise static.
+   Lower specificity than the [sticky-header]/.pinned rules below, so a
+   positioned-for-sticky th stays sticky. */
+material-data-table[resizable] th,
+material-data-table[reorderable] th {
+  position: relative;
+}
+
+/* Horizontal pointer moves drive the column drag; vertical stays a scroll. */
+material-data-table[reorderable] thead th {
+  touch-action: pan-y;
+}
+
+/* Fully inside its th — an overhang into the next th would lose the hit-test
+   under a pinned neighbour's stacking context. */
+material-data-table .col-resize {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 0.75rem;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+  z-index: 2;
+}
+
+material-data-table .col-resize::before {
+  content: '';
+  position: absolute;
+  inset-block: 25%;
+  inset-inline-end: 1px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--md-sys-color-primary);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+material-data-table .col-resize:hover::before,
+material-data-table .col-resize.active::before {
+  opacity: 1;
+}
+
+material-data-table th.drag-col {
+  opacity: 0.5;
+}
+
+material-data-table[data-reordering] {
+  user-select: none;
+  cursor: grabbing;
+}
+
+material-data-table th.drop-before::before,
+material-data-table th.drop-after::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  width: 3px;
+  background: var(--md-sys-color-primary);
+  z-index: 3;
+}
+
+material-data-table th.drop-before::before {
+  inset-inline-start: -1.5px;
+}
+
+material-data-table th.drop-after::before {
+  inset-inline-end: -1.5px;
+}
+
+/* --- sticky columns (v2) --------------------------------------------------- */
+
+material-data-table .pinned {
+  position: sticky;
+  z-index: 1;
+  background: var(--md-sys-color-surface);
+}
+
+material-data-table thead th.pinned {
+  position: sticky;
+  z-index: 2;
+}
+
+/* Hover/selected tints are translucent; pinned cells need them opaque so
+   scrolled-under content can't bleed through. */
+material-data-table tbody tr:not(:has(td.empty)):hover td.pinned {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, var(--md-sys-color-surface));
+}
+
+material-data-table tbody tr.selected td.pinned {
+  background: color-mix(in srgb, var(--md-sys-color-secondary-container) 40%, var(--md-sys-color-surface));
+}
+
+material-data-table tbody tr.selected:hover td.pinned {
+  background: color-mix(in srgb, var(--md-sys-color-secondary-container) 60%, var(--md-sys-color-surface));
+}
+
+/* Edge shadow once the table is scrolled sideways. */
+material-data-table .pinned-last::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 100%;
+  width: 0.625rem;
+  pointer-events: none;
+  background: linear-gradient(to var(--_pin-shadow-dir, right),
+    color-mix(in srgb, var(--md-sys-color-shadow) 12%, transparent), transparent);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+material-data-table:dir(rtl) .pinned-last::after {
+  --_pin-shadow-dir: left;
+}
+
+material-data-table[data-inline-scrolled] .pinned-last::after {
+  opacity: 1;
+}
+
+/* --- row grouping (v2) ------------------------------------------------------ */
+
+material-data-table tr.row-group td {
+  background: var(--md-sys-color-surface-container-low);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+material-data-table tr.row-group td:first-child::before {
+  content: 'keyboard_arrow_down';
+  font-family: 'Material Symbols Outlined';
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: -0.3125rem;
+  margin-inline-end: 0.5rem;
+  transition: transform 0.15s;
+}
+
+material-data-table tr.row-group.collapsed td:first-child::before {
+  transform: rotate(-90deg);
+}
+
+material-data-table:dir(rtl) tr.row-group.collapsed td:first-child::before {
+  transform: rotate(90deg);
+}
+
+material-data-table tr.row-group:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+/* --- inline cell editing (v2) ----------------------------------------------- */
+
+/* An ordinary form control that reads as cell text until pointed at. The
+   negative margin keeps its text aligned with plain cells. */
+material-data-table td .cell-edit {
+  width: 100%;
+  min-width: 3rem;
+  padding: 0.375rem 0.5rem;
+  margin-inline: -0.5rem;
+  background: none;
+  border: 0;
+  border-radius: 0.375rem;
+  font: inherit;
+  color: inherit;
+}
+
+material-data-table td .cell-edit:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+material-data-table td .cell-edit:focus {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+  background: var(--md-sys-color-surface-container-lowest, var(--md-sys-color-surface));
+}
+
+material-data-table td.numeric .cell-edit {
+  text-align: end;
+}
+
+/* --- virtual rows (v2) ------------------------------------------------------- */
+
+material-data-table tr.v-spacer td {
+  height: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* With the bottom spacer as :last-child, the closing-divider suppression
+   must reach the last data row instead. Only visible when scrolled to the
+   very bottom, where the spacer is 0 high. */
+material-data-table tbody tr:nth-last-child(2):has(+ .v-spacer) td {
+  border-bottom: 0;
 }
 
 /* Pagination / status bar slot: a plain <footer> after the table. Its
