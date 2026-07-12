@@ -400,6 +400,72 @@ material-data-table td.numeric .cell-edit {
   text-align: end;
 }
 
+/* --- responsive columns (v2) ------------------------------------------------- */
+
+material-data-table .col-hidden {
+  display: none;
+}
+
+material-data-table th.cell-more,
+material-data-table td.cell-more {
+  width: 2.75rem;
+  padding-inline: 0.25rem;
+  text-align: center;
+}
+
+material-data-table .row-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  cursor: pointer;
+  font-family: 'Material Symbols Outlined';
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+material-data-table .row-more:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+material-data-table .row-more:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+material-data-table .row-more[aria-expanded='true'] {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+material-data-table tr.detail-row td {
+  height: auto;
+  padding-block: 0.625rem;
+  background: var(--md-sys-color-surface-container-low);
+}
+
+material-data-table tr.detail-row dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.375rem 1.25rem;
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+material-data-table tr.detail-row dt {
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+material-data-table tr.detail-row dd {
+  margin: 0;
+}
+
 /* --- virtual rows (v2) ------------------------------------------------------- */
 
 material-data-table tr.v-spacer td {

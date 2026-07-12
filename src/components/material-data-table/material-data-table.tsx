@@ -75,6 +75,14 @@ import {
 //                      as text until focused; posts with the page form
 //                      (Django formsets). Changes are relayed as
 //                      `materialCellEdit`.
+//   th[data-hide-below="720"]
+//                    — responsive columns: hidden while the HOST (container,
+//                      not viewport) is narrower than the px threshold. While
+//                      any column is hidden every row gets a trailing "…"
+//                      button that folds out an inline detail row with the
+//                      hidden fields (never one-column card stacking). Form
+//                      controls in the detail copy are display-only — keep
+//                      .cell-edit columns always visible.
 
 export interface DataTableSelectionDetail {
   /** `value` of every checked row checkbox, in DOM order. */
@@ -248,6 +256,12 @@ export class MaterialDataTable {
   handleClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
 
+    const more = target.closest?.('button.row-more') as HTMLElement | null;
+    if (more && this.el.contains(more)) {
+      this.toggleRowDetail(more, more.closest('tr') as HTMLTableRowElement);
+      return;
+    }
+
     const group = target.closest?.('tr.row-group');
     if (group && this.el.contains(group)) {
       this.toggleGroup(group as HTMLTableRowElement);
@@ -288,7 +302,8 @@ export class MaterialDataTable {
     }
     if (this.reorderable) {
       const th = target.closest?.('thead th') as HTMLTableCellElement | null;
-      if (th && this.el.contains(th) && !th.classList.contains('cell-select')) {
+      if (th && this.el.contains(th) &&
+          !th.classList.contains('cell-select') && !th.classList.contains('cell-more')) {
         this.startReorder(e, th);
       }
     }
@@ -380,13 +395,22 @@ export class MaterialDataTable {
   private sync(emit: boolean) {
     this.syncSelection(emit);
     this.updateGroups();
+    this.applyResponsive();
     this.injectResizeHandles();
     this.applySticky();
     this.virtualize();
   }
 
+  /** Data columns — the injected "…" column is not one of them. */
   private headerCells(): HTMLTableCellElement[] {
-    return Array.from(this.el.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th'));
+    return Array.from(this.el.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th'))
+      .filter((th) => !th.classList.contains('cell-more'));
+  }
+
+  /** A row carrying one cell per column (skips colspan rows: group headers,
+   *  empty state, spacers, detail rows). */
+  private isFullRow(row: HTMLTableRowElement): boolean {
+    return row.cells.length === this.headerCells().length + (this.moreActive ? 1 : 0);
   }
 
   private colName(th: HTMLTableCellElement): string {
@@ -401,7 +425,8 @@ export class MaterialDataTable {
   private freezeColumns() {
     const table = this.el.querySelector('table');
     if (!table || table.style.tableLayout === 'fixed') return;
-    const ths = this.headerCells();
+    const ths = Array.from(this.el.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th'))
+      .filter((th) => !th.classList.contains('col-hidden'));
     if (!ths.length) return;
     const widths = ths.map((th) => th.offsetWidth);
     ths.forEach((th, i) => (th.style.width = `${widths[i]}px`));
@@ -525,9 +550,8 @@ export class MaterialDataTable {
   private moveColumn(from: number, to: number) {
     const table = this.el.querySelector('table');
     if (!table) return;
-    const cols = this.headerCells().length;
     for (const row of Array.from(table.rows)) {
-      if (row.cells.length !== cols) continue; // colspan rows: groups, empty, spacers
+      if (!this.isFullRow(row)) continue; // colspan rows: groups, empty, spacers
       row.insertBefore(row.cells[from], row.cells[from < to ? to + 1 : to] ?? null);
     }
   }
@@ -552,7 +576,7 @@ export class MaterialDataTable {
       acc += ths[i]?.offsetWidth ?? 0;
     }
     for (const row of Array.from(table.rows)) {
-      if (row.cells.length !== ths.length) continue;
+      if (!this.isFullRow(row)) continue;
       for (let i = 0; i < n; i++) {
         const cell = row.cells[i];
         cell.classList.add('pinned');
@@ -560,6 +584,112 @@ export class MaterialDataTable {
         cell.style.insetInlineStart = `${offsets[i]}px`;
       }
     }
+  }
+
+  // --- responsive columns ---------------------------------------------------
+
+  private moreActive = false;
+  private hiddenKey = '';
+
+  /** Hide every column whose th[data-hide-below] exceeds the host width —
+   *  container-based, so a table in a split pane collapses independently of
+   *  the viewport. While anything is hidden, rows carry a "…" detail toggle. */
+  private applyResponsive() {
+    const table = this.el.querySelector('table');
+    if (!table) return;
+    const ths = this.headerCells();
+    const w = this.el.clientWidth;
+    const hidden = ths.map((th) => {
+      const below = parseFloat(th.dataset.hideBelow ?? '');
+      return !Number.isNaN(below) && w > 0 && w < below;
+    });
+    this.syncMoreCells(table, hidden.some(Boolean));
+    // the hidden set changed → open fold-outs are stale, close them
+    const key = hidden.join(',');
+    if (key !== this.hiddenKey) {
+      this.hiddenKey = key;
+      table.querySelectorAll('tr.detail-row').forEach((r) => r.remove());
+      table.querySelectorAll('.row-more[aria-expanded="true"]')
+        .forEach((b) => b.setAttribute('aria-expanded', 'false'));
+    }
+    for (const row of Array.from(table.rows)) {
+      if (row.classList.contains('detail-row')) {
+        row.cells[0].colSpan = ths.length + 1;
+        continue;
+      }
+      if (!this.isFullRow(row)) continue;
+      hidden.forEach((hide, i) => row.cells[i].classList.toggle('col-hidden', hide));
+    }
+    // frozen widths: keep the explicit table width in step with visibility
+    if (table.style.tableLayout === 'fixed') {
+      const visible = ths.filter((_, i) => !hidden[i]);
+      const more = table.querySelector<HTMLElement>('thead .cell-more');
+      table.style.width = `${visible.reduce((a, th) => a + th.offsetWidth, 0) + (more?.offsetWidth ?? 0)}px`;
+    }
+  }
+
+  /** Add/remove the trailing "…" column (idempotent, swept by the observer). */
+  private syncMoreCells(table: HTMLTableElement, active: boolean) {
+    this.moreActive = active;
+    if (!active) {
+      table.querySelectorAll('.cell-more').forEach((c) => c.remove());
+      table.querySelectorAll('tr.detail-row').forEach((r) => r.remove());
+      return;
+    }
+    const headRow = table.tHead?.rows[0];
+    if (headRow && !headRow.querySelector(':scope > .cell-more')) {
+      const th = document.createElement('th');
+      th.className = 'cell-more';
+      th.setAttribute('aria-hidden', 'true');
+      headRow.appendChild(th);
+    }
+    for (const row of Array.from(table.tBodies[0]?.rows ?? [])) {
+      if (row.cells.length !== this.headerCells().length) continue; // has one already / colspan row
+      const td = document.createElement('td');
+      td.className = 'cell-more';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'row-more';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'More fields');
+      btn.textContent = 'more_horiz';
+      td.appendChild(btn);
+      row.appendChild(td);
+    }
+  }
+
+  /** Fold out an inline detail row with the currently hidden fields. The
+   *  copies are display-only: name/id are stripped so hidden form controls
+   *  (which still post while display:none) aren't duplicated. */
+  private toggleRowDetail(btn: HTMLElement, tr: HTMLTableRowElement) {
+    const existing = tr.nextElementSibling;
+    if (existing?.classList.contains('detail-row')) {
+      existing.remove();
+      btn.setAttribute('aria-expanded', 'false');
+      return;
+    }
+    const ths = this.headerCells();
+    const dl = document.createElement('dl');
+    ths.forEach((th, i) => {
+      if (!th.classList.contains('col-hidden')) return;
+      const dt = document.createElement('dt');
+      dt.textContent = th.textContent?.trim() ?? '';
+      const dd = document.createElement('dd');
+      dd.append(...Array.from(tr.cells[i].cloneNode(true).childNodes));
+      dl.append(dt, dd);
+    });
+    dl.querySelectorAll('[name], [id]').forEach((n) => {
+      n.removeAttribute('name');
+      n.removeAttribute('id');
+    });
+    const detail = document.createElement('tr');
+    detail.className = 'detail-row';
+    const td = document.createElement('td');
+    td.colSpan = ths.length + 1;
+    td.appendChild(dl);
+    detail.appendChild(td);
+    tr.after(detail);
+    btn.setAttribute('aria-expanded', 'true');
   }
 
   // --- row grouping ---------------------------------------------------------

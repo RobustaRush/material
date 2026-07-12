@@ -12,7 +12,9 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
   form state untouched), `resizable`/`reorderable` header drags with
   materialColumnResize/Reorder for server persistence, `sticky-start="N"`
   pinned columns, `tr.row-group` fold/unfold of server-computed aggregates,
-  `.cell-edit` inline editing over plain form controls (materialCellEdit).
+  `.cell-edit` inline editing over plain form controls (materialCellEdit),
+  responsive columns (`th[data-hide-below]`, container-based) with a per-row
+  "…" inline fold-out for the hidden fields — no card stacking.
 - **material-tree** — ✅ done (2026-07-12): expand/collapse, tri-state
   cascade selection (form-posts one entry per checked value), lazy children
   (`src?parent=` JSON or `materialTreeLoad`), nested markup or flat

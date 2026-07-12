@@ -445,6 +445,54 @@
       <p class="text-xs text-on-surface-variant mt-2">layout events: <span id="grid-log">—</span></p>
     </section>
 
+    <!-- 12. Responsive columns -->
+    <section>
+      <p class="text-sm text-on-surface-variant mb-2">
+        mobile-friendly columns — <code>th[data-hide-below="720"]</code> hides a
+        column while the <em>container</em> (not the viewport) is narrower than
+        the threshold; a "…" button per row folds out the hidden fields inline.
+        No card stacking, no horizontal scroll needed.
+      </p>
+      <div class="mb-2 flex gap-2 items-center text-sm">
+        <span class="text-on-surface-variant">Container:</span>
+        <material-button-group id="resp-width" role="group" aria-label="Container width">
+          <material-button variant="tonal" label="Wide" data-w=""></material-button>
+          <material-button variant="text" label="Tablet · 640px" data-w="640px"></material-button>
+          <material-button variant="text" label="Phone · 400px" data-w="400px"></material-button>
+        </material-button-group>
+      </div>
+      <div id="resp-wrap">
+        <material-data-table id="resp-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th data-hide-below="620">Owner</th>
+                <th data-hide-below="720">Date</th>
+                <th data-hide-below="480" class="numeric">Total</th>
+                <th data-hide-below="620">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="#so-1041">SO-1041</a></td><td>Acme Corp</td><td>M. Fowler</td>
+                <td>2026-05-05</td><td class="numeric">$12,400.00</td><td>Pending</td>
+              </tr>
+              <tr>
+                <td><a href="#so-1038">SO-1038</a></td><td>Globex Ltd</td><td>D. Kim</td>
+                <td>2026-05-04</td><td class="numeric">$3,180.50</td><td>Approved</td>
+              </tr>
+              <tr>
+                <td><a href="#so-1036">SO-1036</a></td><td>Wayne Ent.</td><td>V. Potts</td>
+                <td>2026-04-28</td><td class="numeric">$300.00</td><td>Draft</td>
+              </tr>
+            </tbody>
+          </table>
+        </material-data-table>
+      </div>
+    </section>
+
     <details class="rounded-lg bg-surface-container-low border border-outline-variant">
       <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage (Django / Unpoly)</summary>
 <pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;form method="post" action="{% url 'po-bulk' %}"&gt;
@@ -481,7 +529,11 @@
 &lt;material-data-table virtual sticky-header class="max-h-[70vh]"
                      resizable reorderable sticky-start="2"&gt;
   &lt;table&gt;
-    &lt;thead&gt;…&lt;/thead&gt;
+    &lt;thead&gt;&lt;tr&gt;
+      &lt;th&gt;Order&lt;/th&gt;
+      &lt;th data-hide-below="720"&gt;Date&lt;/th&gt;  &lt;!-- responsive: hidden in narrow containers,
+                                               reachable via the per-row "…" fold-out --&gt;
+    &lt;/tr&gt;&lt;/thead&gt;
     &lt;tbody&gt;
       &lt;tr class="row-group{% if g.folded %} collapsed{% endif %}" data-group="{{ g.key }}"&gt;
         &lt;td colspan="3"&gt;{{ g.title }} · {{ g.count }}&lt;/td&gt;
@@ -580,6 +632,15 @@
     document.getElementById('virt-table').addEventListener('materialSelectionChange', (e) => {
       document.getElementById('virt-count').textContent =
         `${e.detail.count} selected${e.detail.allSelected ? ' (all)' : ''}`;
+    });
+
+    // 12. responsive container width toggle
+    document.getElementById('resp-width').addEventListener('click', (e) => {
+      const btn = e.target.closest('material-button[data-w]');
+      if (!btn) return;
+      document.getElementById('resp-wrap').style.maxWidth = btn.dataset.w;
+      document.querySelectorAll('#resp-width material-button').forEach((b) =>
+        b.variant = b === btn ? 'tonal' : 'text');
     });
 
     // 11. layout events log
