@@ -370,11 +370,11 @@
         window is displayed (two spacer rows keep the scrollbar honest); rows
         never leave the DOM so the checkbox selection and select-all sweep
         keep working. Pair with <code>sticky-header</code> + a max-height.
-        Row selection here uses native <code>&lt;input type="checkbox"&gt;</code>
-        (tinted via <code>accent-color</code>) deliberately: at this row count
-        3,000 <code>material-checkbox</code> elements cost ≈1s of main-thread
-        hydration, native inputs are free — the selection protocol supports
-        both.
+        Rows use <code>material-checkbox</code>; the selection protocol equally
+        accepts native <code>&lt;input type="checkbox"&gt;</code> (tinted via
+        <code>accent-color</code>) — worth switching to beyond a few thousand
+        rows, where hydrating one custom element per row starts to cost
+        noticeable load time.
       </p>
       <div class="mb-2 flex items-center gap-3 min-h-6 text-sm text-on-surface-variant">
         <span id="virt-count">0 selected</span>
@@ -619,11 +619,12 @@
       document.getElementById('edit-log').textContent = `${e.detail.name} = ${e.detail.value}`;
     });
 
-    // 10. virtual rows — 3,000 rows with native checkboxes (cheap to render)
+    // 10. virtual rows — 3,000 rows; swap material-checkbox for a native
+    // <input type="checkbox"> when row counts grow past a few thousand
     const VENDORS = ['Acme Corp', 'Globex Ltd', 'Initech', 'Stark Industries', 'Wayne Ent.', 'Umbrella Inc'];
     document.getElementById('virt-body').innerHTML = Array.from({ length: 3000 }, (_, i) => `
       <tr>
-        <td class="cell-select"><input type="checkbox" name="selected" value="${i + 1}" aria-label="Select INV-${10000 + i}"></td>
+        <td class="cell-select"><material-checkbox name="selected" value="${i + 1}" aria-label="Select INV-${10000 + i}"></material-checkbox></td>
         <td>INV-${10000 + i}</td>
         <td>${VENDORS[i % VENDORS.length]}</td>
         <td class="numeric">$${(((i * 2654435761) % 900000 + 100000) / 100).toFixed(2)}</td>

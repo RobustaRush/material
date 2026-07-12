@@ -167,11 +167,20 @@ material-data-table td.numeric {
   font-variant-numeric: tabular-nums;
 }
 
-/* Selection column hugs its checkbox. */
+/* Selection column hugs its checkbox. No start padding: material-checkbox's
+   own touch-target halo (~0.7rem around the visual box) is the inset. The
+   width must really fit the 2.5rem touch target: under a frozen table-layout
+   (virtual/resize) the hint is taken literally, and freezing can happen
+   before the checkbox hydrates to its full size. */
 material-data-table th.cell-select,
 material-data-table td.cell-select {
-  width: 2.5rem;
-  padding-inline: 0.75rem 0;
+  width: 2.75rem;
+  padding-inline: 0;
+}
+
+/* Native inputs have no halo — give them the inset themselves. */
+material-data-table .cell-select input[type='checkbox'] {
+  margin-inline-start: 0.75rem;
 }
 
 material-data-table .cell-select material-checkbox,
