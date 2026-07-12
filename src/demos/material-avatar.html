@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-avatar — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-avatar</h1>
+        <p class="text-on-surface-variant text-sm">
+          Image / initials / icon avatar with size scale and hash-stable auto
+          colors, plus <code>material-avatar-group</code> with a +N overflow chip.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-10">
+    <section>
+      <p class="text-sm text-on-surface-variant mb-3">
+        initials derived from <code>name</code> (first + last word), auto
+        color is a stable hash of the name; explicit <code>color</code>,
+        image with initials fallback on error, icon fallback without a name
+      </p>
+      <div class="flex items-center gap-4 flex-wrap">
+        <material-avatar name="Grace Hopper"></material-avatar>
+        <material-avatar name="Ada Lovelace"></material-avatar>
+        <material-avatar name="Dieter Rams"></material-avatar>
+        <material-avatar name="Barbara Liskov" color="tertiary"></material-avatar>
+        <material-avatar name="Linus" color="primary"></material-avatar>
+        <material-avatar name="Broken image" src="/no-such-image.jpg"></material-avatar>
+        <material-avatar icon="support_agent"></material-avatar>
+        <material-avatar icon="smart_toy" color="secondary-container"></material-avatar>
+      </div>
+    </section>
+
+    <section>
+      <p class="text-sm text-on-surface-variant mb-3">sizes xs · s · m · l · xl (rem-based — density picker scales them)</p>
+      <div class="flex items-center gap-4">
+        <material-avatar name="Grace Hopper" size="xs"></material-avatar>
+        <material-avatar name="Grace Hopper" size="s"></material-avatar>
+        <material-avatar name="Grace Hopper" size="m"></material-avatar>
+        <material-avatar name="Grace Hopper" size="l"></material-avatar>
+        <material-avatar name="Grace Hopper" size="xl"></material-avatar>
+      </div>
+    </section>
+
+    <section>
+      <p class="text-sm text-on-surface-variant mb-3">
+        <code>material-avatar-group max="3"</code> — forces its size onto the
+        avatars, collapses the rest into +N (hover for names)
+      </p>
+      <div class="flex items-center gap-8">
+        <material-avatar-group max="3" size="s">
+          <material-avatar name="Grace Hopper"></material-avatar>
+          <material-avatar name="Ada Lovelace"></material-avatar>
+          <material-avatar name="Dieter Rams"></material-avatar>
+          <material-avatar name="Barbara Liskov"></material-avatar>
+          <material-avatar name="Alan Turing"></material-avatar>
+        </material-avatar-group>
+        <material-avatar-group max="4" size="m">
+          <material-avatar name="Grace Hopper"></material-avatar>
+          <material-avatar name="Ada Lovelace"></material-avatar>
+          <material-avatar name="Dieter Rams"></material-avatar>
+        </material-avatar-group>
+      </div>
+    </section>
+
+    <section dir="rtl">
+      <p class="text-sm text-on-surface-variant mb-3" dir="ltr">RTL — the group stacks mirror</p>
+      <material-avatar-group max="3" size="m">
+        <material-avatar name="سارة أحمد"></material-avatar>
+        <material-avatar name="محمد علي"></material-avatar>
+        <material-avatar name="ليلى حسن"></material-avatar>
+        <material-avatar name="عمر خالد"></material-avatar>
+      </material-avatar-group>
+    </section>
+  </main>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

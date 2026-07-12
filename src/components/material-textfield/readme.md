@@ -48,6 +48,8 @@
  - [material-date-range-field](../material-date-range-field)
  - [material-datetime-field](../material-datetime-field)
  - [material-file-field](../material-file-field)
+ - [material-masked-field](../material-masked-field)
+ - [material-number-field](../material-number-field)
  - [material-select](../material-select)
  - [material-time-field](../material-time-field)
 
@@ -63,6 +65,8 @@ graph TD;
   material-date-range-field --> material-textfield
   material-datetime-field --> material-textfield
   material-file-field --> material-textfield
+  material-masked-field --> material-textfield
+  material-number-field --> material-textfield
   material-select --> material-textfield
   material-time-field --> material-textfield
   style material-textfield fill:#f9f,stroke:#333,stroke-width:4px

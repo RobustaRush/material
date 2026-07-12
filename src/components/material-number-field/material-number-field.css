@@ -1,0 +1,9 @@
+/* Light-DOM container — visual look comes from material-textfield. */
+
+material-number-field { display: block; }
+material-number-field[hidden] { display: none; }
+
+material-number-field .stepper {
+  display: inline-flex;
+  align-items: center;
+}

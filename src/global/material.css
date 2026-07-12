@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
-/* Light-DOM component styles. material-data-table enhances a server-rendered
-   <table> that never enters a shadow root, so its CSS ships in this document
-   stylesheet (it is NOT a Stencil styleUrl). `layer(components)` slots it
-   below `utilities` — Tailwind classes on the markup always win. */
+/* Light-DOM component styles. These enhance server-rendered markup that
+   never enters a shadow root, so their CSS ships in this document stylesheet
+   (NOT Stencil styleUrls). `layer(components)` slots them below `utilities`
+   — Tailwind classes on the markup always win. */
 @import "../components/material-data-table/material-data-table.css" layer(components);
+@import "../components/material-breadcrumbs/material-breadcrumbs.css" layer(components);
 
 /* Tailwind v4 scans source files for class usage. The CSS file lives at
    src/global/, so reach back up to cover components and the demo page. */

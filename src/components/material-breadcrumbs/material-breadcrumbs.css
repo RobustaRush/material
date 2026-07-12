@@ -1,0 +1,55 @@
+/* material-breadcrumbs — light-DOM styles (NOT a Stencil styleUrl).
+ * @import-ed by src/global/material.css into the `components` layer so the
+ * server-rendered crumbs are styled before hydration and Tailwind utilities
+ * on the markup still win. */
+
+material-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+material-breadcrumbs > * {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Chevron separator between crumbs; mirrors with the reading direction. */
+material-breadcrumbs > * + *::before {
+  content: 'chevron_right';
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.125rem;
+  line-height: 1;
+  margin-inline: 0.375rem;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 70%, transparent);
+  direction: ltr;
+}
+
+material-breadcrumbs:dir(rtl) > * + *::before {
+  content: 'chevron_left';
+}
+
+material-breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+  border-radius: 0.25rem;
+}
+
+material-breadcrumbs a:hover {
+  color: var(--md-sys-color-on-surface);
+  text-decoration: underline;
+}
+
+material-breadcrumbs a:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+material-breadcrumbs [aria-current='page'] {
+  color: var(--md-sys-color-on-surface);
+  font-weight: 500;
+}

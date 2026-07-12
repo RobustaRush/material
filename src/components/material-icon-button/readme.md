@@ -57,6 +57,7 @@
  - [material-datetime-field](../material-datetime-field)
  - [material-dialog](../material-dialog)
  - [material-file-field](../material-file-field)
+ - [material-number-field](../material-number-field)
  - [material-select](../material-select)
  - [material-textfield](../material-textfield)
  - [material-time-field](../material-time-field)
@@ -72,6 +73,7 @@ graph TD;
   material-datetime-field --> material-icon-button
   material-dialog --> material-icon-button
   material-file-field --> material-icon-button
+  material-number-field --> material-icon-button
   material-select --> material-icon-button
   material-textfield --> material-icon-button
   material-time-field --> material-icon-button

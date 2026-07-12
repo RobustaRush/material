@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-rich-text — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-rich-text</h1>
+        <p class="text-on-surface-variant text-sm">
+          Rich text for CRM notes — marks, lists, links, undo/redo over
+          contenteditable; form-associated, posts HTML under <code>name</code>.
+          <strong>The server must sanitize</strong> (nh3/bleach) before
+          storing or re-rendering.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10 space-y-10">
+    <section>
+      <p class="text-sm text-on-surface-variant mb-3">
+        toolbar toggles reflect the selection (put the caret in the bold text);
+        ⌘/Ctrl+B/I/U work natively; the link button opens a URL bar
+      </p>
+      <material-rich-text id="rt-basic" label="Note" name="note"
+        value="&lt;p&gt;Call with &lt;b&gt;Acme Corp&lt;/b&gt; went well — they want the &lt;i&gt;Q3 proposal&lt;/i&gt; by Friday.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;send pricing&lt;/li&gt;&lt;li&gt;book follow-up&lt;/li&gt;&lt;/ul&gt;"
+        help-text="Visible to the whole team" class="w-full block">
+      </material-rich-text>
+      <p class="text-xs text-on-surface-variant mt-2">valueChange (on blur): <code id="basic-log" class="break-all">—</code></p>
+    </section>
+
+    <section class="grid sm:grid-cols-2 gap-8">
+      <div>
+        <p class="text-sm text-on-surface-variant mb-3">empty with placeholder · required</p>
+        <material-rich-text label="Comment" name="comment" required
+                            placeholder="Write a comment…" class="w-full block"></material-rich-text>
+      </div>
+      <div>
+        <p class="text-sm text-on-surface-variant mb-3">readonly · error</p>
+        <div class="space-y-4">
+          <material-rich-text label="History entry" readonly
+            value="&lt;p&gt;Status changed to &lt;b&gt;Approved&lt;/b&gt; by D. Kim.&lt;/p&gt;"
+            class="w-full block"></material-rich-text>
+          <material-rich-text label="Description" error error-text="Description is required"
+                              class="w-full block"></material-rich-text>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="text-sm text-on-surface-variant mb-3">form post — FormData carries the HTML string</p>
+      <form id="demo-form" class="space-y-4">
+        <material-rich-text label="Summary" name="summary"
+          value="&lt;p&gt;Initial &lt;b&gt;summary&lt;/b&gt;.&lt;/p&gt;" class="w-full block"></material-rich-text>
+        <material-button variant="filled" label="Submit" type="submit"></material-button>
+      </form>
+      <p class="text-xs text-on-surface-variant mt-2">posted: <code id="form-log" class="break-all">—</code></p>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('rt-basic').addEventListener('valueChange',
+      (e) => document.getElementById('basic-log').textContent = e.detail.value);
+    const form = document.getElementById('demo-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('form-log').textContent =
+        [...new FormData(form).entries()].map(([k, v]) => `${k}=${v}`).join('&') || '(empty)';
+    });
+  </script>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

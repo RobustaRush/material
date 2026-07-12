@@ -1,0 +1,29 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+/* Overlap: each avatar (and the +N chip) tucks under the previous one,
+   with a background-colored ring for separation. Logical margin so RTL
+   stacks mirror. */
+::slotted(material-avatar),
+material-avatar.overflow {
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px var(--md-sys-color-surface);
+}
+
+::slotted(material-avatar:not(:first-child)),
+material-avatar.overflow {
+  margin-inline-start: -0.5rem;
+}
+
+:host([size='xs']) ::slotted(material-avatar:not(:first-child)),
+:host([size='xs']) material-avatar.overflow,
+:host([size='s']) ::slotted(material-avatar:not(:first-child)),
+:host([size='s']) material-avatar.overflow {
+  margin-inline-start: -0.375rem;
+}

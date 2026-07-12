@@ -1,0 +1,72 @@
+/* Light-DOM component — selectors are document-global (date-field pattern). */
+
+material-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+material-pagination[hidden] {
+  display: none;
+}
+
+material-pagination .item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 80ms linear;
+}
+
+material-pagination .item:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+material-pagination .item:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+material-pagination .item.current {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+material-pagination .item.current:hover {
+  background: color-mix(in srgb, var(--md-sys-color-on-primary) 8%, var(--md-sys-color-primary));
+}
+
+material-pagination .item:disabled {
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+  pointer-events: none;
+}
+
+material-pagination .gap {
+  min-width: 2.5rem;
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+  user-select: none;
+}
+
+material-pagination .chevron {
+  font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  direction: ltr;
+}
+
+/* Chevrons point along the reading direction. */
+material-pagination .chevron:dir(rtl) {
+  scale: -1 1;
+}

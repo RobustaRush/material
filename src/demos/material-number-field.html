@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>material-number-field — @robustarush/material</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
+      <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+      <div>
+        <h1 class="text-xl font-bold">material-number-field</h1>
+        <p class="text-on-surface-variant text-sm">
+          Number entry with steppers, min/max/step, decimal precision,
+          locale-aware thousands grouping and prefix/suffix. Hidden input
+          posts the canonical dot-decimal string for Django.
+        </p>
+      </div>
+    </div>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Theme</span>
+      <select id="theme-picker"
+              class="bg-surface-container text-on-surface border border-outline-variant rounded px-3 py-1.5 text-sm">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="light-medium-contrast">Light · medium contrast</option>
+        <option value="dark-medium-contrast">Dark · medium contrast</option>
+        <option value="light-high-contrast">Light · high contrast</option>
+        <option value="dark-high-contrast">Dark · high contrast</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 text-sm shrink-0">
+      <span class="text-on-surface-variant">Density</span>
+      <div data-density-picker role="group" aria-label="Density"
+           class="inline-flex bg-surface-container border border-outline-variant rounded overflow-hidden">
+        <button type="button" data-density="0.8" aria-pressed="false"
+                class="px-2 py-1 text-xs aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A−</button>
+        <button type="button" data-density="0.9" aria-pressed="false"
+                class="px-2 py-1 text-sm aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A</button>
+        <button type="button" data-density="1" aria-pressed="false"
+                class="px-2 py-1 text-base aria-pressed:bg-secondary-container aria-pressed:text-on-secondary-container">A+</button>
+      </div>
+    </label>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-8 py-10">
+    <div class="grid sm:grid-cols-2 gap-x-8 gap-y-10">
+      <section>
+        <p class="text-sm text-on-surface-variant mb-3">
+          basic — step 1, min 0, ArrowUp/Down and steppers clamp; typed
+          out-of-range keeps the text and flags an error
+        </p>
+        <material-number-field id="nf-basic" label="Quantity" name="qty"
+                               value="3" min="0" max="99" class="w-full">
+        </material-number-field>
+        <p class="text-xs text-on-surface-variant mt-2">valueChange: <span id="basic-log">—</span></p>
+      </section>
+
+      <section>
+        <p class="text-sm text-on-surface-variant mb-3">
+          money — step 0.01 (→ 2 decimals), grouping, prefix; posts "12400.5"
+          while showing "12,400.50"
+        </p>
+        <material-number-field label="Total" name="total" value="12400.5"
+                               min="0" step="0.01" grouping prefix="$" class="w-full">
+        </material-number-field>
+      </section>
+
+      <section>
+        <p class="text-sm text-on-surface-variant mb-3">suffix unit · filled variant · empty with placeholder</p>
+        <div class="space-y-4">
+          <material-number-field variant="filled" label="Weight" suffix="kg"
+                                 value="7.5" step="0.5" class="w-full"></material-number-field>
+          <material-number-field label="Discount" suffix="%" min="0" max="100"
+                                 placeholder="0–100" class="w-full"></material-number-field>
+        </div>
+      </section>
+
+      <section>
+        <p class="text-sm text-on-surface-variant mb-3">disabled · readonly · error</p>
+        <div class="space-y-4">
+          <material-number-field label="Locked" value="42" disabled class="w-full"></material-number-field>
+          <material-number-field label="Computed" value="1200" readonly grouping class="w-full"></material-number-field>
+          <material-number-field label="Budget" value="-5" min="0" error
+                                 error-text="Must be zero or more" class="w-full"></material-number-field>
+        </div>
+      </section>
+
+      <section dir="rtl">
+        <p class="text-sm text-on-surface-variant mb-3" dir="ltr">RTL — steppers and prefix mirror</p>
+        <material-number-field label="الكمية" value="12" min="0" grouping class="w-full"></material-number-field>
+      </section>
+
+      <section>
+        <p class="text-sm text-on-surface-variant mb-3">form post — hidden input carries the canonical value</p>
+        <form id="demo-form" class="space-y-4">
+          <material-number-field label="Amount" name="amount" value="1234.5"
+                                 step="0.01" grouping class="w-full"></material-number-field>
+          <material-button variant="filled" label="Submit" type="submit"></material-button>
+        </form>
+        <p class="text-xs text-on-surface-variant mt-2">posted: <span id="form-log">—</span></p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('nf-basic').addEventListener('valueChange',
+      (e) => document.getElementById('basic-log').textContent = JSON.stringify(e.detail));
+    const form = document.getElementById('demo-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('form-log').textContent =
+        [...new FormData(form).entries()].map(([k, v]) => `${k}=${v}`).join('&') || '(empty)';
+    });
+  </script>
+
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

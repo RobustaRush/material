@@ -1,0 +1,4 @@
+/* Light-DOM container — visual look comes from material-textfield. */
+
+material-masked-field { display: block; }
+material-masked-field[hidden] { display: none; }

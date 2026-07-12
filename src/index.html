@@ -233,10 +233,35 @@
           </p>
         </material-card>
 
+        <material-card variant="outlined" href="/demos/material-masked-field.html" aria-label="material-masked-field demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">password</span><span>material-masked-field</span></h3>
+          <p slot="supporting">
+            Pattern-masked entry (<code>#</code> digit, <code>A</code> letter,
+            <code>*</code> alnum) — phones, tax IDs; posts formatted or raw
+            (<code>unmask</code>).
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-number-field.html" aria-label="material-number-field demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">pin</span><span>material-number-field</span></h3>
+          <p slot="supporting">
+            Number entry — steppers, min/max/step, decimals, locale grouping,
+            prefix/suffix; posts a canonical dot-decimal string.
+          </p>
+        </material-card>
+
         <material-card variant="outlined" href="/demos/material-radio.html" aria-label="material-radio demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">radio_button_checked</span><span>material-radio</span></h3>
           <p slot="supporting">
             20dp ring, 48dp target; <code>material-radio-group</code> coordinates value, ARIA, arrow keys; form-associated.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-rich-text.html" aria-label="material-rich-text demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">edit_note</span><span>material-rich-text</span></h3>
+          <p slot="supporting">
+            Rich text for notes — marks, lists, links, undo over
+            contenteditable; form-associated, posts HTML (sanitize server-side).
           </p>
         </material-card>
 
@@ -309,6 +334,14 @@
       </header>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
+        <material-card variant="outlined" href="/demos/material-avatar.html" aria-label="material-avatar demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">account_circle</span><span>material-avatar</span></h3>
+          <p slot="supporting">
+            Image / initials / icon avatar — size scale, hash-stable auto
+            colors; <code>material-avatar-group</code> stacks with a +N chip.
+          </p>
+        </material-card>
+
         <material-card variant="outlined" href="/demos/material-card.html" aria-label="material-card demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">dashboard</span><span>material-card</span></h3>
           <p slot="supporting">
@@ -378,6 +411,23 @@
           </p>
         </material-card>
 
+        <material-card variant="outlined" href="/demos/material-breadcrumbs.html" aria-label="material-breadcrumbs demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">route</span><span>material-breadcrumbs</span></h3>
+          <p slot="supporting">
+            Server-rendered breadcrumb links with CSS chevron separators
+            (RTL-mirrored); marks the last crumb <code>aria-current</code>.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-command-palette.html" aria-label="material-command-palette demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">keyboard_command_key</span><span>material-command-palette</span></h3>
+          <p slot="supporting">
+            ⌘K quick actions — fuzzy search, sections, keyboard nav;
+            href items navigate Unpoly-friendly, others emit
+            <code>materialCommand</code>.
+          </p>
+        </material-card>
+
         <material-card variant="outlined" href="/demos/material-navigation-bar.html" aria-label="material-navigation-bar demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">bottom_navigation</span><span>material-navigation-bar</span></h3>
           <p slot="supporting">
@@ -399,6 +449,15 @@
           <p slot="supporting">
             MD3 Expressive nav rail — collapsed (96dp) / expanded (220–360dp), with
             shared <code>material-navigation-item</code>.
+          </p>
+        </material-card>
+
+        <material-card variant="outlined" href="/demos/material-pagination.html" aria-label="material-pagination demo">
+          <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">last_page</span><span>material-pagination</span></h3>
+          <p slot="supporting">
+            Page navigation with ellipsis windowing — server-driven links via
+            <code>href-template</code> (Unpoly) or client
+            <code>materialPageChange</code>.
           </p>
         </material-card>
 
