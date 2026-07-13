@@ -122,20 +122,36 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
 - **Density/theming docs** — the A−/A/A+ rem system and Material Theme
   Builder re-skin flow are implemented but undocumented for consumers.
 
-## P6 — GIS / spatial fields (SEPARATE bundle) — proposed, not started
+## P6 — GIS / spatial fields (engine-agnostic, bring-your-own-map) — proposed, not started
 
 Map-based editors for the OpenGIS geometry types Django's `contrib.gis`
 exposes (PointField … GeometryCollectionField, plus RasterField). Pure
 client-side geometry manipulation — Django form-widget integration is a
 **separate project**; here we invent the UX and ship the JS.
 
-**Why a separate bundle (the hard constraint).** Any real map needs a map
-engine + tiles. Leaflet is ~40 KB gz; MapLibre GL ~200 KB gz — either dwarfs
-the whole current library (~149 KB gz / 65 chunks). It must NOT land in the
-default lazy-load set. Ship it as an opt-in entry (e.g.
-`@robustarush/material/geo`, its own `<script>` / import) that pages pull in
-only when a geometry field is present; the component lazy-imports the engine
-on first upgrade. Nothing in core may `import` it.
+**Engine-agnostic via an adapter — the consumer brings the map (preferred
+over bundling one).** Core `material-geometry-field` carries ZERO map
+dependency and can live in the MAIN bundle (a few KB): it owns the value,
+form association, validation, undo/redo, the parts model, the Material
+toolbar / parts-list UI, a11y, and a raw lat/lng fallback editor. All map
+rendering + projection + vertex hit-testing sits behind a small
+`GeometryEditorAdapter` interface (`mount`, `project`/`unproject`,
+`renderGeometry(geojson, editState)`, drawing-mode events, `fitBounds`,
+`destroy`). The consumer attaches an adapter for whatever engine they already
+run — `el.adapter = new SomeAdapter(map)` — so the map engine (Leaflet ~40 KB
+gz, MapLibre ~200 KB gz), tiles, version, and API keys are entirely theirs;
+nothing map-related enters our bundle. Without an adapter the field still
+works headless (posts/validates the value, raw-coordinate editing); the
+visual map appears once an adapter is attached.
+
+**Don't reimplement vertex editing.** The interface relocates the hard 60 %
+(draw / edit / hit-test) into the adapter — it doesn't remove it. Writing an
+adapter per engine from scratch = writing the whole map integration. So lean
+on **Terra Draw** (engine-agnostic across Leaflet / MapLibre / OpenLayers,
+covers all these geometry types) for the reference adapter — one thin adapter
+then serves multiple engines. Ship it as an optional package
+(`@robustarush/material/geo-terradraw`) and document the interface so others
+can bring a different engine.
 
 **One component, `type` prop — not eight.** A single `material-geometry-field`
 with `type="point|linestring|polygon|multipoint|multilinestring|multipolygon
@@ -176,8 +192,11 @@ Per-type UX to design/build:
   is server-side; at most a read-only extent/thumbnail preview if given a URL.
   Not an editor for v1.
 
-**Open decisions.** (a) Engine: Leaflet (smaller, raster tiles, no WebGL) vs
-MapLibre (vector, heavier). (b) Draw/edit layer: **Terra Draw** is
-engine-agnostic (Leaflet/MapLibre/OpenLayers) and covers all these geometry
-types — strong default; alternatives are Leaflet-Geoman or mapbox-gl-draw.
-Decide before starting; both drive the bundle number.
+**Open decisions.** (a) Which reference adapter(s) to publish — Terra Draw
+(one adapter, multi-engine) is the strong default; whether to also ship
+engine-native adapters (Leaflet-Geoman, mapbox-gl-draw) for consumers who
+already depend on those. Engine choice itself is now the CONSUMER's — we
+bundle none. (b) `GeometryEditorAdapter` interface shape — freeze it before
+building the first adapter, since third-party engines depend on its
+stability. Value format is settled: GeoJSON (JS-native default) + WKT/EWKT
+(Django parity) via `format`.
