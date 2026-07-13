@@ -61,6 +61,9 @@ The six MD3 contrast themes, the A−/A/A+ rem density system, re-skinning via M
 **`references/i18n.md` — internationalization**
 How component strings and date/number formats resolve (locale globals → `Intl` → English), and label props that override everything.
 
+**`references/integrations.md` — what you wire up (consumer-side)**
+The boundary between what the library ships and what you provide: remote endpoints (autocomplete/search/tree `src`), server persistence of data-table/pagination/stepper events, async file upload, i18n globals, and the bring-your-own-engine model for maps (geometry field) and charts. Read this before assuming a component talks to your backend by itself.
+
 ## Choosing a component (common needs)
 
 - Text input → `material-textfield`; multi-line → `material-textarea`; number/currency → `material-number-field`; phone/card mask → `material-masked-field`.
