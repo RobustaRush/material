@@ -38,6 +38,11 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
 - **Number formatting depth** — ✅ done (2026-07-12): currency="USD|EUR|…"
   mode (Intl symbol/digits placement), Django DECIMAL_SEPARATOR /
   THOUSAND_SEPARATOR win over Intl when jsi18n is loaded.
+- **JSON editor** — ✅ done (2026-07-13): material-json-field — compact JSON
+  tree editor (no syntax-highlighter, plain-DOM `.cell-edit` leaves, ~5.2 KB
+  gz). Full structural editing (add/remove/rename keys, reorder array items,
+  change value type), form-associated (posts one JSON string, always valid),
+  readonly viewer mode. 0 axe WCAG 2.2 AA violations.
 
 ## P3 — surfaces and patterns (M3 catalog completion)
 
@@ -116,3 +121,63 @@ delivered alongside this file). Grouped by priority for CRM/ERP use.
   and msgid-extraction recipe documented; non-Django shim example included.
 - **Density/theming docs** — the A−/A/A+ rem system and Material Theme
   Builder re-skin flow are implemented but undocumented for consumers.
+
+## P6 — GIS / spatial fields (SEPARATE bundle) — proposed, not started
+
+Map-based editors for the OpenGIS geometry types Django's `contrib.gis`
+exposes (PointField … GeometryCollectionField, plus RasterField). Pure
+client-side geometry manipulation — Django form-widget integration is a
+**separate project**; here we invent the UX and ship the JS.
+
+**Why a separate bundle (the hard constraint).** Any real map needs a map
+engine + tiles. Leaflet is ~40 KB gz; MapLibre GL ~200 KB gz — either dwarfs
+the whole current library (~149 KB gz / 65 chunks). It must NOT land in the
+default lazy-load set. Ship it as an opt-in entry (e.g.
+`@robustarush/material/geo`, its own `<script>` / import) that pages pull in
+only when a geometry field is present; the component lazy-imports the engine
+on first upgrade. Nothing in core may `import` it.
+
+**One component, `type` prop — not eight.** A single `material-geometry-field`
+with `type="point|linestring|polygon|multipoint|multilinestring|multipolygon
+|geometry|geometrycollection"` selecting the active tool set, mirroring the
+material-date-field/number-field "one element, many modes" pattern. Keeps the
+geo bundle lean and the API small.
+
+**Value contract.** Form-associated; posts geometry as text under `name`.
+`format="geojson|wkt|ewkt"` (default GeoJSON — trivial `JSON.parse` in JS;
+WKT/EWKT for Django parity, since its widgets default to WKT). `srid` prop
+(default 4326). `value` in/out; `readonly` = viewer; `required`/`disabled`.
+Tiles are consumer-supplied (`tile-url` + attribution slot) — bundle no tile
+provider (API keys / attribution / cost aren't ours to embed).
+
+**Shared chrome.** Toolbar (pan / draw / edit-vertices / delete / clear /
+fit-to-data), undo/redo, empty state, keyboard-accessible vertex editing,
+lat/lng type-in fallback for point. Emits `valueChange` (serialized) +
+`materialGeometryChange` (parsed).
+
+Per-type UX to design/build:
+
+- **PointField** — click to drop one marker, drag to move; synced lat/lng
+  inputs. (Geocode/search = Django-integration territory, skip.)
+- **LineStringField** — click to add vertices in order; drag to move, click a
+  vertex to delete, midpoint handles to insert; double-click/Enter finishes.
+  Show length.
+- **PolygonField** — like line but closes the ring; drag/insert/delete
+  vertices; secondary "add hole" mode for interior rings; show area.
+- **MultiPointField** — many independent markers + a parts list.
+- **MultiLineStringField** — "new line" starts another part; parts list.
+- **MultiPolygonField** — several polygons, each with its own holes; parts
+  list.
+- **GeometryField** (base) — a geometry-type picker, then the matching single
+  tool; accepts any one geometry.
+- **GeometryCollectionField** — "add geometry" menu (point/line/polygon/…);
+  heterogeneous parts coexist as layers in a parts list.
+- **RasterField** — DEFER. PostGIS-only, no interchange standard, GDALRaster
+  is server-side; at most a read-only extent/thumbnail preview if given a URL.
+  Not an editor for v1.
+
+**Open decisions.** (a) Engine: Leaflet (smaller, raster tiles, no WebGL) vs
+MapLibre (vector, heavier). (b) Draw/edit layer: **Terra Draw** is
+engine-agnostic (Leaflet/MapLibre/OpenLayers) and covers all these geometry
+types — strong default; alternatives are Leaflet-Geoman or mapbox-gl-draw.
+Decide before starting; both drive the bundle number.
