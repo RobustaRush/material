@@ -9,11 +9,13 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 // MD3 spec: container 18dp / corner 2dp / icon 18dp / target 48dp / state-layer 40dp.
 // The button is a 1×1 inline-grid; the 40px state-layer and 18px box share the
 // single cell so both auto-center without absolute positioning. State-layer
-// opacities follow the spec's 8% (hover) / 10% (focus, pressed) tokens.
+// opacities follow the spec's 8% (hover) / 10% (focus) tokens; pressed is the
+// shared ripple's 12% held state layer (utils/ripple.css), not a local rule.
 
 @Component({
   tag: 'material-checkbox',
@@ -129,6 +131,17 @@ export class MaterialCheckbox {
     }
   };
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   render() {
     const isOn = this.checked || this.indeterminate;
     const icon = this.indeterminate ? 'remove' : 'check';
@@ -145,7 +158,9 @@ export class MaterialCheckbox {
     const subText = inError ? this.errorText : this.helpText;
 
     const visuals = [
-      <span class={stateLayerCls} aria-hidden="true"></span>,
+      <span class={stateLayerCls} aria-hidden="true">
+        {!this.nested && <span class="md-ripple" aria-hidden="true"></span>}
+      </span>,
       <span class={boxCls}>
         {/* Always rendered so the check can animate in — a conditionally
             rendered mark can't transition. Revealed left-to-right via
@@ -176,6 +191,7 @@ export class MaterialCheckbox {
         aria-required={this.required ? 'true' : null}
         aria-invalid={inError ? 'true' : null}
         aria-describedby={subText ? descId : null}
+        data-ripple
         onClick={() => this.toggle()}
         onKeyDown={this.handleKeyDown}
       >

@@ -1,4 +1,5 @@
 import { Component, Element, Event, EventEmitter, Method, Prop, Watch, h, Host } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 // MD3 Expressive navigation item — shared by navigation-rail (collapsed/expanded)
 // and (future) navigation-bar / navigation-drawer. Anatomy is identical across
@@ -66,6 +67,17 @@ export class MaterialNavigationItem {
     this.materialSelect.emit({ value: this.value });
   };
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   // Material Symbols are loaded with FILL@0; toggle FILL=1 inline for active.
   // Falls back to a separate `activeIcon` glyph name when one is provided.
   private iconStyle() {
@@ -102,6 +114,7 @@ export class MaterialNavigationItem {
         <span class="badge-anchor">
           <span class="indicator">
             {this.stateLayer()}
+            <span class="md-ripple" aria-hidden="true"></span>
             {this.iconName() && (
               <span class="icon" style={this.iconStyle()} aria-hidden="true">
                 {this.iconName()}
@@ -124,6 +137,7 @@ export class MaterialNavigationItem {
     return (
       <span key="expanded" class={'item-expanded' + this.morphClass()}>
         {this.stateLayer()}
+        <span class="md-ripple" aria-hidden="true"></span>
         {this.iconName() && (
           <span class="icon" style={this.iconStyle()} aria-hidden="true">
             {this.iconName()}
@@ -148,6 +162,7 @@ export class MaterialNavigationItem {
       <span key="bar-horizontal" class={'item-bar-horizontal' + this.morphClass()}>
         <span class="pill">
           {this.stateLayer(true)}
+          <span class="md-ripple" aria-hidden="true"></span>
           <span class="badge-anchor">
             {this.iconName() && (
               <span class="icon" style={this.iconStyle()} aria-hidden="true">
@@ -174,6 +189,7 @@ export class MaterialNavigationItem {
       class: 'root',
       'aria-label': this.ariaLabel ?? this.label,
       'aria-current': this.active ? 'page' : undefined,
+      'data-ripple': true,
       onClick: this.handleClick,
     };
     if (isLink) {

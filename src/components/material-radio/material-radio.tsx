@@ -6,6 +6,7 @@ import {
   Prop,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 // MD3 spec: icon 20dp / target 48dp / state-layer 40dp.
 // Selection state, focus order and form value are owned by <material-radio-group>.
@@ -51,6 +52,17 @@ export class MaterialRadio {
     }
   };
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   render() {
     const isOn = this.checked;
     const inError = this.error;
@@ -68,10 +80,13 @@ export class MaterialRadio {
         tabindex={this.focusable ? 0 : -1}
         aria-checked={String(isOn)}
         aria-label={this.ariaLabel ?? (this.label ? undefined : 'radio')}
+        data-ripple
         onClick={this.select}
         onKeyDown={this.handleKeyDown}
       >
-        <span class={stateLayerCls} aria-hidden="true"></span>
+        <span class={stateLayerCls} aria-hidden="true">
+          <span class="md-ripple" aria-hidden="true"></span>
+        </span>
         <span class={ringCls}>
           {/* Always rendered so the dot can scale in — a conditionally rendered
               dot can't transition. 200ms standard easing per MD3 selection-control motion. */}

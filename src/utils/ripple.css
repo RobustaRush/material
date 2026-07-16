@@ -1,0 +1,76 @@
+/* Shared MD3 press ripple — pairs with utils/ripple.ts (installRipple).
+ *
+ * The `.md-ripple` span clips the wave to the control's shape; the wave itself
+ * is the ::after pseudo. `growing` (added per press, kept until the next press
+ * so `fill: forwards` geometry survives the fade) drives the 450ms expansion;
+ * `pressed` holds opacity at the MD3 pressed state-layer level until release,
+ * then the opacity transition fades it over 375ms. All geometry arrives via
+ * custom properties set by ripple.ts.
+ */
+
+.md-ripple {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.md-ripple::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--md-ripple-size, 0);
+  height: var(--md-ripple-size, 0);
+  border-radius: 50%;
+  /* Soft edge per md-ripple: solid core, feathered rim. */
+  background: radial-gradient(
+    closest-side,
+    currentColor max(calc(100% - 70px), 65%),
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 375ms linear;
+}
+
+.md-ripple.growing::after {
+  animation: md-ripple-grow var(--md-sys-motion-duration-long2, 450ms)
+    var(--md-sys-motion-easing-standard, cubic-bezier(0.2, 0, 0, 1)) forwards;
+}
+
+.md-ripple.pressed::after {
+  opacity: var(--md-ripple-pressed-opacity, 0.12);
+  transition-duration: 105ms;
+}
+
+@keyframes md-ripple-grow {
+  from {
+    transform: translate(var(--md-ripple-translate-start, 0, 0)) scale(1);
+  }
+  to {
+    transform: translate(var(--md-ripple-translate-end, 0, 0))
+      scale(var(--md-ripple-scale, 1));
+  }
+}
+
+/* Reduced motion: no expanding wave — degrade to a plain pressed state layer
+   covering the control, driven by the same opacity fade. */
+@media (prefers-reduced-motion: reduce) {
+  .md-ripple::after {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: currentColor;
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Windows High Contrast: state layers are invisible noise — drop them. */
+@media (forced-colors: active) {
+  .md-ripple {
+    display: none;
+  }
+}

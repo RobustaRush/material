@@ -7,6 +7,7 @@ import {
   Prop,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 // MD3 vertical menu item. 48dp height (single-line) / 64dp (with supporting
 // text). Leading icon + label + trailing icon-or-text, or named slots for
@@ -65,6 +66,17 @@ export class MaterialMenuItem {
 
   private handleClick = (e: MouseEvent) => this.activate(e);
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   render() {
     const twoLine = !!this.supportingText;
     return (
@@ -83,8 +95,11 @@ export class MaterialMenuItem {
             this.disabled ? 'disabled' : '',
             this.selected ? 'selected' : '',
           ].filter(Boolean).join(' ')}
+          data-ripple
+          aria-disabled={this.disabled ? 'true' : null}
         >
           <span class="state-layer" aria-hidden="true"></span>
+          <span class="md-ripple" aria-hidden="true"></span>
 
           <span class="leading">
             <slot name="leading">

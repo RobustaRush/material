@@ -1,6 +1,7 @@
 /* Measurements per m3.material.io/components/fab-menu/specs.
    Item shares medium-button measurements: 56dp height, 24dp leading/trailing,
    8dp icon-label gap, title-medium label (16px). */
+@import "../../utils/ripple.css";
 
 :host {
   display: inline-flex;
@@ -77,8 +78,7 @@
   background: currentColor;
   opacity: 0;
   border-radius: inherit;
-  transition: opacity 120ms linear;
+  transition: opacity 15ms linear;
 }
 .item:hover         .state-layer { opacity: .08; }
 .item:focus-visible .state-layer { opacity: .10; }
-.item:active        .state-layer { opacity: .10; }

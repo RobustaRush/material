@@ -57,7 +57,7 @@
   pointer-events: none;
   background: currentColor;
   opacity: 0;
-  transition: opacity 120ms linear;
+  transition: opacity 15ms linear;
 }
 
 .root:hover .state-layer { opacity: .08; }

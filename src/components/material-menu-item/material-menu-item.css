@@ -1,3 +1,5 @@
+@import "../../utils/ripple.css";
+
 /* Preflight normally provides this; restore it now that the component no
    longer adopts the shared Tailwind stylesheet — several rules below combine
    width/padding on the same box and need border-box to size correctly. */
@@ -96,11 +98,12 @@
   pointer-events: none;
   background: var(--md-sys-color-on-surface);
   opacity: 0;
-  transition: opacity 120ms linear;
+  transition: opacity 15ms linear;
 }
 
+/* Press feedback comes from the shared ripple (held 12% layer); hover-only
+   state layer here. */
 .row:hover .state-layer { opacity: .08; }
-.row:active .state-layer { opacity: .10; }
 
 .leading {
   display: flex;

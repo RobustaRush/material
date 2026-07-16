@@ -1,4 +1,5 @@
 import { Component, Element, Event, EventEmitter, Host, Prop, h } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 // MD3 tab — child of <material-tabs>. The parent owns selection coordination,
 // keyboard nav, and roving tabindex; this component renders the visual tab cell
@@ -52,6 +53,17 @@ export class MaterialTab {
     }
     this.activate();
   };
+
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === ' ' || e.key === 'Enter') {
@@ -121,6 +133,7 @@ export class MaterialTab {
 
     const body = [
       <span class="state-layer" aria-hidden="true"></span>,
+      <span class="md-ripple" aria-hidden="true"></span>,
       inner,
     ];
 
@@ -135,6 +148,7 @@ export class MaterialTab {
       'aria-label': this.ariaLabel,
       'aria-controls': this.panel,
       tabindex: this.tabbable && !this.disabled ? 0 : -1,
+      'data-ripple': true,
       onClick: this.handleClick,
       onKeyDown: this.handleKeyDown,
     };

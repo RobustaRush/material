@@ -1,4 +1,5 @@
 /* Measurements per m3.material.io/components/icon-buttons/specs. */
+@import "../../utils/ripple.css";
 
 :host {
   display: inline-flex;
@@ -159,11 +160,12 @@
   background: currentColor;
   opacity: 0;
   border-radius: inherit;
-  transition: opacity 120ms linear;
+  transition: opacity 15ms linear;
 }
-[part="button"]:not(:disabled):not([aria-disabled="true"]):hover         [part="state-layer"] { opacity: .08; }
-[part="button"]:not(:disabled):not([aria-disabled="true"]):focus-visible [part="state-layer"] { opacity: .10; }
-[part="button"]:not(:disabled):not([aria-disabled="true"]):active        [part="state-layer"] { opacity: .10; }
+/* Hover state layer (8%). Press feedback comes from the shared ripple, which
+   holds the 12% pressed layer while held — no separate :active tint. Focus is
+   signalled by the outline ring alone (see [part="button"]:focus-visible above). */
+[part="button"]:not(:disabled):not([aria-disabled="true"]):hover [part="state-layer"] { opacity: .08; }
 
 .icon {
   font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;

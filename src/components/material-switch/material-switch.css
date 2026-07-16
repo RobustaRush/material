@@ -1,4 +1,5 @@
 /* Measurements per m3.material.io/components/switch/specs. */
+@import "../../utils/ripple.css";
 
 :host {
   display: inline-block;
@@ -117,7 +118,7 @@
   transition:
     width 180ms cubic-bezier(.2, 0, 0, 1),
     height 180ms cubic-bezier(.2, 0, 0, 1),
-    left 180ms cubic-bezier(.2, 0, 0, 1),
+    inset-inline-start 180ms cubic-bezier(.2, 0, 0, 1),
     background-color 120ms linear;
 }
 
@@ -155,15 +156,14 @@
   background: transparent;
   pointer-events: none;
   transition:
-    background-color 120ms linear,
-    left 180ms cubic-bezier(.2, 0, 0, 1);
+    background-color 15ms linear,
+    inset-inline-start 180ms cubic-bezier(.2, 0, 0, 1);
 }
 
 [part="switch"]:not(:disabled):hover .state-layer {
   background: color-mix(in srgb, currentColor 8%, transparent);
 }
-[part="switch"]:not(:disabled):focus-visible .state-layer,
-[part="switch"]:not(:disabled):active .state-layer {
+[part="switch"]:not(:disabled):focus-visible .state-layer {
   background: color-mix(in srgb, currentColor 10%, transparent);
 }
 

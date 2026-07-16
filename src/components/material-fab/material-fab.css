@@ -1,4 +1,5 @@
 /* Measurements per m3.material.io/components/floating-action-button/specs. */
+@import "../../utils/ripple.css";
 
 :host {
   display: inline-flex;
@@ -100,11 +101,9 @@
   background: currentColor;
   opacity: 0;
   border-radius: inherit;
-  transition: opacity 120ms linear;
+  transition: opacity 15ms linear;
 }
 [part="button"]:not(:disabled):not([aria-disabled="true"]):hover         [part="state-layer"] { opacity: .08; }
-[part="button"]:not(:disabled):not([aria-disabled="true"]):focus-visible [part="state-layer"] { opacity: .10; }
-[part="button"]:not(:disabled):not([aria-disabled="true"]):active        [part="state-layer"] { opacity: .10; }
 
 /* Hover elevation bump (level 4). */
 [part="button"]:not(:disabled):not([aria-disabled="true"]):hover [part="visual"] {
@@ -119,24 +118,4 @@
   line-height: 1;
   font-size: var(--fab-icon, 1.5rem);
   position: relative;
-}
-
-/* Ripple on press. */
-[part="button"]:not(:disabled):not([aria-disabled="true"]):active [part="visual"]::after {
-  content: "";
-  position: absolute;
-  left: var(--ripple-x, 50%);
-  top: var(--ripple-y, 50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  background: currentColor;
-  opacity: .25;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(1);
-  animation: material-fab-ripple var(--md-sys-motion-duration-long1, 450ms) var(--md-sys-motion-easing-standard-decelerate, cubic-bezier(0, 0, 0, 1));
-  pointer-events: none;
-}
-
-@keyframes material-fab-ripple {
-  to { transform: translate(-50%, -50%) scale(20); opacity: 0; }
 }

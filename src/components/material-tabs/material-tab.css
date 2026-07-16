@@ -1,3 +1,5 @@
+@import "../../utils/ripple.css";
+
 :host {
   display: block;
   flex: 1 1 0%;
@@ -62,12 +64,11 @@
   pointer-events: none;
   background: currentColor;
   opacity: 0;
-  transition: opacity 120ms linear;
+  transition: opacity 15ms linear;
 }
 
 .root:hover .state-layer { opacity: .08; }
 .root:focus-visible .state-layer { opacity: .10; }
-.root:active .state-layer { opacity: .10; }
 
 .stack {
   position: relative;

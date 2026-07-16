@@ -8,6 +8,7 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 export type MaterialButtonVariant = 'filled' | 'tonal' | 'elevated' | 'outlined' | 'text';
 export type MaterialButtonType = 'submit' | 'reset' | 'button';
@@ -149,15 +150,20 @@ export class MaterialButton {
     }
   };
 
-  private handlePointerDown = (e: PointerEvent) => {
-    const btn = e.currentTarget as HTMLElement;
-    const rect = btn.getBoundingClientRect();
-    btn.style.setProperty('--ripple-x', `${e.clientX - rect.left}px`);
-    btn.style.setProperty('--ripple-y', `${e.clientY - rect.top}px`);
-  };
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
 
   render() {
     const inner = [
+      <span class="md-ripple" aria-hidden="true"></span>,
       this.icon && (
         <span class="icon" aria-hidden="true">{this.icon}</span>
       ),
@@ -182,8 +188,8 @@ export class MaterialButton {
           aria-disabled={this.disabled ? 'true' : undefined}
           tabindex={this.disabled ? -1 : undefined}
           part="button"
+          data-ripple
           onClick={this.handleClick}
-          onPointerDown={this.handlePointerDown}
         >
           {inner}
         </a>
@@ -197,8 +203,8 @@ export class MaterialButton {
         aria-pressed={this.toggle ? String(this.selected) : undefined}
         aria-label={this.ariaLabel}
         part="button"
+        data-ripple
         onClick={this.handleClick}
-        onPointerDown={this.handlePointerDown}
       >
         {inner}
       </button>

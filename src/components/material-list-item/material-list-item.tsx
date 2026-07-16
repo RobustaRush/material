@@ -7,6 +7,7 @@ import {
   Prop,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 // MD3 list item. Heights follow the baseline spec:
 //   1-line  56dp  (text-only / leading icon)
@@ -70,6 +71,17 @@ export class MaterialListItem {
       cb.setAttribute('nested', '');
       cb.setAttribute('aria-hidden', 'true');
     }
+  }
+
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
   }
 
   private parentVariant(): 'baseline' | 'expressive' {
@@ -170,8 +182,9 @@ export class MaterialListItem {
     ].filter(Boolean).join(' ');
 
     const inner = (
-      <div class={rowCls}>
+      <div class={rowCls} data-ripple aria-disabled={this.disabled ? 'true' : null}>
         <span class="state-layer" aria-hidden="true"></span>
+        <span class="md-ripple" aria-hidden="true"></span>
 
         <span class="leading">
           <slot name="leading">

@@ -7,6 +7,7 @@ import {
   Prop,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 @Component({
   tag: 'material-fab-menu-item',
@@ -57,9 +58,21 @@ export class MaterialFabMenuItem {
     }
   };
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   render() {
     const inner = [
       <span class="state-layer" aria-hidden="true"></span>,
+      <span class="md-ripple" aria-hidden="true"></span>,
       <span class="icon" aria-hidden="true">{this.icon}</span>,
       <span class="label">{this.label}</span>,
     ];
@@ -77,6 +90,7 @@ export class MaterialFabMenuItem {
             aria-label={this.ariaLabel}
             part="item"
             class="item"
+            data-ripple
             onClick={this.handleClick}
             onKeyDown={this.handleKeyDown}
           >
@@ -94,6 +108,7 @@ export class MaterialFabMenuItem {
           aria-label={this.ariaLabel}
           part="item"
           class="item"
+          data-ripple
           onClick={this.handleClick}
           onKeyDown={this.handleKeyDown}
         >

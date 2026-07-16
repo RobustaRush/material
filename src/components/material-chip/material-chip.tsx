@@ -8,6 +8,7 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 export type MaterialChipVariant = 'assist' | 'filter' | 'input' | 'suggestion';
 
@@ -68,6 +69,17 @@ export class MaterialChip {
     this.selected = state === this.value;
   }
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   private isSelectable() {
     return this.variant === 'filter' || this.variant === 'input';
   }
@@ -124,6 +136,7 @@ export class MaterialChip {
     const hasAvatar = !!this.el.querySelector('[slot="avatar"]');
 
     return [
+      <span class="md-ripple" aria-hidden="true"></span>,
       hasAvatar && (
         <span class="avatar" aria-hidden="true">
           <slot name="avatar" />
@@ -162,6 +175,7 @@ export class MaterialChip {
           aria-disabled={this.disabled ? 'true' : undefined}
           tabindex={this.disabled ? -1 : undefined}
           part="chip"
+          data-ripple
           onClick={(e) => { if (this.disabled) e.preventDefault(); }}
         >
           {inner}
@@ -180,6 +194,7 @@ export class MaterialChip {
             role={role}
             aria-checked={ariaChecked}
             aria-label={this.ariaLabel ?? this.label ?? undefined}
+            data-ripple
             onClick={this.toggle}
             onKeyDown={this.handleBodyKeyDown}
           >
@@ -190,9 +205,11 @@ export class MaterialChip {
             class="trailing-btn"
             disabled={this.disabled}
             aria-label={this.removeLabel()}
+            data-ripple
             onClick={this.handleTrailingClick}
             onKeyDown={this.handleTrailingKeyDown}
           >
+            <span class="md-ripple" aria-hidden="true"></span>
             <span class="icon" aria-hidden="true">{trailingName}</span>
           </button>
         </div>
@@ -213,6 +230,7 @@ export class MaterialChip {
         aria-checked={ariaChecked}
         aria-label={this.ariaLabel ?? this.label ?? undefined}
         part="chip"
+        data-ripple
         onClick={this.toggle}
         onKeyDown={this.handleBodyKeyDown}
       >

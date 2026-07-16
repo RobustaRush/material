@@ -8,6 +8,7 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 export type MaterialSplitButtonVariant = 'filled' | 'tonal' | 'elevated' | 'outlined';
 export type MaterialSplitButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -85,12 +86,16 @@ export class MaterialSplitButton {
     else this.menuEl.show(this.trailingEl);
   };
 
-  private handlePointerDown = (e: PointerEvent) => {
-    const btn = e.currentTarget as HTMLElement;
-    const rect = btn.getBoundingClientRect();
-    btn.style.setProperty('--ripple-x', `${e.clientX - rect.left}px`);
-    btn.style.setProperty('--ripple-y', `${e.clientY - rect.top}px`);
-  };
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
 
   render() {
     const leadingInner = [
@@ -111,11 +116,11 @@ export class MaterialSplitButton {
         tabindex={this.disabled ? -1 : undefined}
         part="leading"
         class="leading"
+        data-ripple
         onClick={this.handleLeadingClick}
-        onPointerDown={this.handlePointerDown}
       >
         <span class="state-layer" aria-hidden="true"></span>
-        <span class="fx" aria-hidden="true"></span>
+        <span class="md-ripple" aria-hidden="true"></span>
         {leadingInner}
       </a>
     ) : (
@@ -125,11 +130,11 @@ export class MaterialSplitButton {
         aria-label={this.ariaLabel}
         part="leading"
         class="leading"
+        data-ripple
         onClick={this.handleLeadingClick}
-        onPointerDown={this.handlePointerDown}
       >
         <span class="state-layer" aria-hidden="true"></span>
-        <span class="fx" aria-hidden="true"></span>
+        <span class="md-ripple" aria-hidden="true"></span>
         {leadingInner}
       </button>
     );
@@ -147,12 +152,12 @@ export class MaterialSplitButton {
           aria-haspopup="menu"
           aria-expanded={String(this.expanded)}
           aria-controls={this.menuId}
+          data-ripple
           ref={(el) => (this.trailingEl = el)}
           onClick={this.handleTrailingClick}
-          onPointerDown={this.handlePointerDown}
         >
           <span class="state-layer" aria-hidden="true"></span>
-          <span class="fx" aria-hidden="true"></span>
+          <span class="md-ripple" aria-hidden="true"></span>
           <span class="chevron" aria-hidden="true">arrow_drop_down</span>
         </button>
         <material-menu

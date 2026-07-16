@@ -8,6 +8,7 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 export type MaterialIconButtonVariant = 'filled' | 'tonal' | 'outlined' | 'standard';
 export type MaterialIconButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -81,6 +82,17 @@ export class MaterialIconButton {
     this.selected = state === this.value;
   }
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   private handleClick = (e: MouseEvent) => {
     if (this.disabled) {
       e.preventDefault();
@@ -137,6 +149,7 @@ export class MaterialIconButton {
     const inner = (
       <span part="visual">
         <span part="state-layer" aria-hidden="true"></span>
+        <span class="md-ripple" aria-hidden="true"></span>
         <span class="icon-wrap">
           <span class="icon" aria-hidden="true">{icon}</span>
           <span class="badge"><slot name="badge" /></span>
@@ -161,6 +174,7 @@ export class MaterialIconButton {
           aria-disabled={this.disabled ? 'true' : undefined}
           tabindex={this.disabled ? -1 : undefined}
           part="button"
+          data-ripple
           onClick={this.handleClick}
         >
           {inner}
@@ -175,6 +189,7 @@ export class MaterialIconButton {
         aria-label={this.ariaLabel}
         disabled={this.disabled}
         part="button"
+        data-ripple
         onClick={this.handleClick}
       >
         {inner}

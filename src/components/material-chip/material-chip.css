@@ -1,4 +1,5 @@
 /* Measurements per m3.material.io/components/chips/specs. */
+@import "../../utils/ripple.css";
 
 :host {
   display: inline-flex;
@@ -43,6 +44,7 @@
 }
 
 .body {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -175,19 +177,14 @@
 }
 :host([elevated][disabled]) [part="chip"] { box-shadow: none; }
 
-/* State layer — hover/active tint over the variant background. */
+/* Hover state layer (8%). Press feedback comes from the shared ripple, which
+   holds its own pressed opacity layer while held — no separate :active tint. */
 :host(:not([variant="input"])) [part="chip"]:not(:disabled):not([aria-disabled="true"]):hover {
   background-color: color-mix(in srgb, currentColor 8%, var(--chip-bg, transparent));
-}
-:host(:not([variant="input"])) [part="chip"]:not(:disabled):not([aria-disabled="true"]):active {
-  background-color: color-mix(in srgb, currentColor 10%, var(--chip-bg, transparent));
 }
 
 :host([variant="input"]) .body:not(:disabled):hover {
   background-color: color-mix(in srgb, currentColor 8%, transparent);
-}
-:host([variant="input"]) .body:not(:disabled):active {
-  background-color: color-mix(in srgb, currentColor 10%, transparent);
 }
 
 /* Avatar — 24dp circular, flush to the 4dp left edge. */
@@ -228,7 +225,4 @@
 }
 .trailing-btn:not(:disabled):hover {
   background-color: color-mix(in srgb, currentColor 8%, transparent);
-}
-.trailing-btn:not(:disabled):active {
-  background-color: color-mix(in srgb, currentColor 12%, transparent);
 }

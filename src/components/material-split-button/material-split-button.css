@@ -1,4 +1,5 @@
 /* Measurements per m3.material.io/components/split-button/specs. */
+@import "../../utils/ripple.css";
 
 :host {
   display: inline-flex;
@@ -93,7 +94,7 @@
 .trailing {
   position: relative;
   /* No `overflow: hidden` here — the XS/S touch-target pseudo (below) must
-     extend past the visible pill. The ripple is clipped by `.fx` instead. */
+     extend past the visible pill. The `.md-ripple` span clips its own wave. */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -222,42 +223,10 @@
   background: currentColor;
   opacity: 0;
   border-radius: inherit;
-  transition: opacity 120ms linear;
+  transition: opacity 15ms linear;
 }
 .leading:not(:disabled):not([aria-disabled="true"]):hover         .state-layer,
 .trailing:not(:disabled):hover                                    .state-layer { opacity: .08; }
-.leading:not(:disabled):not([aria-disabled="true"]):focus-visible .state-layer,
-.trailing:not(:disabled):focus-visible                            .state-layer { opacity: .10; }
-.leading:not(:disabled):not([aria-disabled="true"]):active        .state-layer,
-.trailing:not(:disabled):active                                   .state-layer { opacity: .10; }
-
-/* Ripple clip layer — an always-opaque inset box that contains the ripple so
-   the buttons themselves can stay `overflow: visible` (for the touch target). */
-.fx {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* Ripple on press — matches material-button. --ripple-x/y are set on the button
-   and inherited into .fx. */
-.leading:not(:disabled):not([aria-disabled="true"]):active .fx::after,
-.trailing:not(:disabled):active .fx::after {
-  content: "";
-  position: absolute;
-  left: var(--ripple-x, 50%);
-  top: var(--ripple-y, 50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  background: currentColor;
-  opacity: .25;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(1);
-  animation: material-split-ripple var(--md-sys-motion-duration-long1, 450ms) var(--md-sys-motion-easing-standard-decelerate, cubic-bezier(0, 0, 0, 1));
-  pointer-events: none;
-}
 
 /* 48dp touch target for XS/S (visible pill stays 32/40dp). A transparent,
    overflow-escaping pseudo extends the hit area vertically — mirrors the 48dp
@@ -273,10 +242,6 @@
   top: 50%;
   height: 3rem;
   transform: translateY(-50%);
-}
-
-@keyframes material-split-ripple {
-  to { transform: translate(-50%, -50%) scale(50); opacity: 0; }
 }
 
 /* Variants — same color tokens as material-button. */

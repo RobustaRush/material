@@ -32,7 +32,7 @@
   border-start-start-radius: 0.25rem;
   border-start-end-radius: 0.25rem;
   background: var(--md-sys-color-surface-container-highest);
-  transition: background-color 120ms linear;
+  transition: background-color 15ms linear;
 }
 
 .surface.filled:hover {

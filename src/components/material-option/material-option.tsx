@@ -7,6 +7,7 @@ import {
   Prop,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 // MD3-styled option for `material-select`. Visually mirrors a
 // `material-menu-item` (48dp single-line, 64dp two-line) but emits its own
@@ -63,6 +64,17 @@ export class MaterialOption {
     e.preventDefault();
   };
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   render() {
     const twoLine = !!this.supportingText;
     // In multi mode, render a 20dp checkbox glyph. If a leading-icon is
@@ -92,8 +104,11 @@ export class MaterialOption {
             this.disabled ? 'disabled' : '',
             this.selected ? 'selected' : '',
           ].filter(Boolean).join(' ')}
+          data-ripple
+          aria-disabled={this.disabled ? 'true' : null}
         >
           <span class="state-layer" aria-hidden="true"></span>
+          <span class="md-ripple" aria-hidden="true"></span>
 
           <span class="leading">
             <slot name="leading">

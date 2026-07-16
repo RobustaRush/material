@@ -1,4 +1,5 @@
 import { Component, Element, Prop, Watch, AttachInternals, h } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 export type MaterialFabSize = 'small' | 'medium' | 'large';
 export type MaterialFabVariant =
@@ -50,6 +51,8 @@ export class MaterialFab {
 
   disconnectedCallback() {
     this.detachScrollListener();
+    this.ripple?.destroy();
+    this.ripple = undefined;
   }
 
   @Watch('hideNearEnd')
@@ -117,16 +120,16 @@ export class MaterialFab {
     else if (this.type === 'reset') form.reset();
   };
 
-  private handlePointerDown = (e: PointerEvent) => {
-    const btn = e.currentTarget as HTMLElement;
-    const rect = btn.getBoundingClientRect();
-    btn.style.setProperty('--ripple-x', `${e.clientX - rect.left}px`);
-    btn.style.setProperty('--ripple-y', `${e.clientY - rect.top}px`);
-  };
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
 
   render() {
     const inner = (
       <span part="visual">
+        <span class="md-ripple" aria-hidden="true"></span>
         <span part="state-layer" aria-hidden="true"></span>
         <span class="icon" aria-hidden="true">{this.icon}</span>
       </span>
@@ -145,8 +148,8 @@ export class MaterialFab {
           aria-disabled={this.disabled ? 'true' : undefined}
           tabindex={this.disabled ? -1 : undefined}
           part="button"
+          data-ripple
           onClick={this.handleClick}
-          onPointerDown={this.handlePointerDown}
         >
           {inner}
         </a>
@@ -159,8 +162,8 @@ export class MaterialFab {
         disabled={this.disabled}
         aria-label={this.ariaLabel}
         part="button"
+        data-ripple
         onClick={this.handleClick}
-        onPointerDown={this.handlePointerDown}
       >
         {inner}
       </button>

@@ -8,6 +8,7 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
+import { installRipple, RippleHandle } from '../../utils/ripple';
 
 @Component({
   tag: 'material-switch',
@@ -103,6 +104,17 @@ export class MaterialSwitch {
     }
   };
 
+  private ripple?: RippleHandle;
+
+  componentDidLoad() {
+    this.ripple = installRipple(this.el.shadowRoot!);
+  }
+
+  disconnectedCallback() {
+    this.ripple?.destroy();
+    this.ripple = undefined;
+  }
+
   render() {
     const subText = this.error ? this.errorText : this.helpText;
     const subId = subText ? 'sub' : undefined;
@@ -123,11 +135,14 @@ export class MaterialSwitch {
         aria-readonly={this.readonly ? 'true' : null}
         aria-describedby={subId}
         disabled={this.disabled}
+        data-ripple
         onClick={this.toggle}
         onKeyDown={this.handleKeyDown}
       >
         <span class="track" aria-hidden="true">
-          <span class="state-layer"></span>
+          <span class="state-layer">
+            <span class="md-ripple" aria-hidden="true"></span>
+          </span>
           <span class="handle">
             {iconShown && <span class="icon">{iconShown}</span>}
           </span>
