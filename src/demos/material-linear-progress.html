@@ -125,6 +125,20 @@
     </section>
 
     <section class="space-y-4">
+      <h2 class="text-lg font-semibold">RTL</h2>
+      <p class="text-on-surface-variant text-sm">
+        Drawing math is always LTR; the whole indicator mirrors via <code>:host(:dir(rtl))</code> so the active fill and indeterminate sweep
+        move in the correct reading direction under <code>dir="rtl"</code>.
+      </p>
+      <div dir="rtl" class="space-y-3">
+        <p class="text-xs text-on-surface-variant">Determinate 60% — fill grows from the right</p>
+        <material-linear-progress value="60" label="60%"></material-linear-progress>
+        <p class="text-xs text-on-surface-variant pt-3">Indeterminate — bars sweep right to left</p>
+        <material-linear-progress label="Loading"></material-linear-progress>
+      </div>
+    </section>
+
+    <section class="space-y-4">
       <h2 class="text-lg font-semibold">Live demo — determinate slider</h2>
       <p class="text-on-surface-variant text-sm">
         Drag the slider to drive <code>value</code>. Wavy mode keeps phase animation running while the fill snaps to your input.

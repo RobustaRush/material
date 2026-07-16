@@ -70,14 +70,32 @@ export class MaterialCircularProgress {
   @Watch('size')
   handlePropChange() {
     this.recomputePaths(performance.now());
+    this.ensureLoop();
+  }
+
+  @Watch('paused')
+  handlePausedChange(now: boolean) {
+    if (now) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = 0;
+    } else {
+      this.ensureLoop();
+    }
   }
 
   private handleReducedMotion = (e: MediaQueryListEvent) => {
     this.prefersReducedMotion = e.matches;
+    // Entering reduced-motion is handled by the next tick (it idles); leaving it
+    // needs an explicit restart.
+    if (!e.matches) this.ensureLoop();
   };
 
   private get isDeterminate(): boolean {
     return this.value != null && !Number.isNaN(this.value);
+  }
+
+  private get isAnimated(): boolean {
+    return !this.isDeterminate || this.wavy;
   }
 
   // Resolved diameter — wavy indicators default to 48dp, flat to 40dp (spec).
@@ -99,15 +117,23 @@ export class MaterialCircularProgress {
     this.rafId = requestAnimationFrame(this.tick);
   }
 
+  // Start the rAF loop only when there is motion to render and it isn't already
+  // running. Prop/paused/reduced-motion changes call this to (re)start after
+  // the loop has idled. Unlike the linear indicator, size is a plain prop
+  // here — there's no measured width to gate on.
+  private ensureLoop() {
+    if (this.rafId || this.paused || this.prefersReducedMotion) return;
+    if (this.isAnimated) this.startLoop();
+  }
+
   private tick = (now: number) => {
-    if (!this.paused && !this.prefersReducedMotion) {
-      // Animate every frame when motion is required (indeterminate sweep
-      // and/or wavy phase). Determinate flat is static — only re-renders
-      // when props change via the @Watch handlers.
-      if (!this.isDeterminate || this.wavy) {
-        this.recomputePaths(now);
-      }
+    // Idle when nothing animates (determinate flat), or while paused / reduced
+    // motion — instead of spinning a no-op rAF every frame.
+    if (!this.isAnimated || this.paused || this.prefersReducedMotion) {
+      this.rafId = 0;
+      return;
     }
+    this.recomputePaths(now);
     this.rafId = requestAnimationFrame(this.tick);
   };
 

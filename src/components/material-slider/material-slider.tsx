@@ -106,6 +106,12 @@ export class MaterialSlider {
   @Watch('error')
   @Watch('errorText')
   syncValidity() {
+    // `required` intentionally never reports `valueMissing`: a slider always
+    // has a committed numeric value (defaults to 0, or to the low/high
+    // bounds for a range), so there is no "empty" state to withhold commit
+    // on — same as a native <input type="range">, which does not support
+    // `required` at all. The prop still drives the visible required mark
+    // and `aria-required` for assistive tech.
     if (this.error) {
       this.internals.setValidity(
         { customError: true },
@@ -126,19 +132,28 @@ export class MaterialSlider {
     this.valueHigh = this.defaultHigh;
   }
 
-  formStateRestoreCallback(state: string | FormData | null) {
+  formStateRestoreCallback(
+    state: string | FormData | Array<[string, FormDataEntryValue]> | null,
+  ) {
     if (state == null) return;
     if (typeof state === 'string') {
       const n = parseFloat(state);
       if (!isNaN(n)) this.value = n;
       return;
     }
-    if (this.name) {
-      const all = state.getAll(this.name).map(v => parseFloat(String(v)));
-      if (all.length >= 2 && all.every(n => !isNaN(n))) {
-        this.valueLow = all[0];
-        this.valueHigh = all[1];
-      }
+    // Multi-entry state may arrive as FormData or as an Array<[name, value]>
+    // of entries (both holding just this control's own entries), depending
+    // on the browser.
+    const all = (
+      Array.isArray(state)
+        ? state.map(([, v]) => v)
+        : this.name
+          ? state.getAll(this.name)
+          : []
+    ).map(v => parseFloat(String(v)));
+    if (all.length >= 2 && all.every(n => !isNaN(n))) {
+      this.valueLow = all[0];
+      this.valueHigh = all[1];
     }
   }
 
@@ -277,7 +292,19 @@ export class MaterialSlider {
       default: return;
     }
     e.preventDefault();
-    this.writeValue(this.clamp(this.snap(next)), thumb);
+    const target = this.clamp(this.snap(next));
+    // Squelch: a key held at a clamped boundary (e.g. ArrowUp at max, or a
+    // range thumb pushed against its sibling) computes the same effective
+    // value as before — don't emit spurious valueChange/valueCommit for a
+    // no-op move. Mirror writeValue's own cross-thumb clamp so this check
+    // sees the value that will actually land.
+    const effective = this.isRange()
+      ? thumb === 'high'
+        ? Math.max(target, this.valueLow ?? this.min)
+        : Math.min(target, this.valueHigh ?? this.max)
+      : target;
+    if (effective === cur) return;
+    this.writeValue(target, thumb);
     this.emitChange();
   };
 

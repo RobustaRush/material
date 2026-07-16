@@ -100,6 +100,10 @@
   border-radius: 1.75rem;
   min-width: 17.5rem;
   max-width: 35rem;
+  /* Leave breathing room from the viewport edges (spec-style margins) so a
+     tall dialog scrolls its own content instead of overflowing the screen. */
+  max-height: calc(100vh - 6rem);
+  max-height: calc(100dvh - 6rem);
   padding: 1.5rem;
   /* MD3 basic dialog rests at elevation level 3. */
   box-shadow: var(--md-sys-elevation-3,
@@ -159,6 +163,9 @@
   letter-spacing: 0.015625rem;
   color: var(--md-sys-color-on-surface-variant);
   width: 100%;
+  /* Scroll long content within the body only, so the headline and actions
+     stay pinned while the dialog itself is capped at max-height above. */
+  overflow-y: auto;
 }
 
 .dlg--basic .dlg__actions {

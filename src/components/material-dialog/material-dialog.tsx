@@ -84,10 +84,16 @@ export class MaterialDialog {
 
   connectedCallback() {
     this.el.addEventListener('command', this.handleCommand as EventListener);
+    // Slotted content lives in the host's light DOM, not inside the shadow
+    // <dialog>, so a `<form method="dialog">` submit has no ancestor
+    // <dialog> to close and would otherwise navigate. Listen on the host
+    // and route it through the same close path ourselves.
+    this.el.addEventListener('submit', this.handleFormSubmit as EventListener);
   }
 
   disconnectedCallback() {
     this.el.removeEventListener('command', this.handleCommand as EventListener);
+    this.el.removeEventListener('submit', this.handleFormSubmit as EventListener);
     this.teardownMql();
     if (this.dialog) {
       this.dialog.removeEventListener('close', this.handleClose);
@@ -157,6 +163,15 @@ export class MaterialDialog {
         this.close();
         break;
     }
+  };
+
+  private handleFormSubmit = (ev: SubmitEvent) => {
+    const form = ev.target as HTMLFormElement;
+    if (!form || form.getAttribute('method') !== 'dialog') return;
+    ev.preventDefault();
+    // Close reason is the submitter's value attribute, or the dialog's
+    // current returnValue if there is none.
+    this.close(ev.submitter?.getAttribute('value') ?? this.returnValue);
   };
 
   private handleClose = () => {

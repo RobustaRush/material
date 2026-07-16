@@ -152,11 +152,16 @@ export class MaterialRadioGroup {
     if (!keys.includes(e.key)) return;
     const radios = this.getRadios().filter((r) => !r.disabled);
     if (!radios.length) return;
-    const active = document.activeElement as HTMLElement | null;
+    const active = (this.el.getRootNode() as Document | ShadowRoot).activeElement as HTMLElement | null;
     const current = active?.closest('material-radio') as RadioEl | null;
     const idx = current ? radios.indexOf(current) : -1;
+    // In RTL, left/right visually flip; up/down are unaffected.
+    const isRtl = getComputedStyle(this.el).direction === 'rtl';
+    let key = e.key;
+    if (isRtl && key === 'ArrowLeft') key = 'ArrowRight';
+    else if (isRtl && key === 'ArrowRight') key = 'ArrowLeft';
     let next = idx;
-    switch (e.key) {
+    switch (key) {
       case 'ArrowDown':
       case 'ArrowRight':
         next = idx < 0 ? 0 : (idx + 1) % radios.length;

@@ -8,6 +8,15 @@
   display: block;
   width: 100%;
   /* height set inline from the component height calc — see render() */
+  contain: strict;
+  content-visibility: auto;
+}
+
+/* Paths are always drawn in LTR coordinates; mirror the whole host in RTL
+   instead of flipping the math. Safe because there's no text content —
+   aria-label is not rendered, only exposed to AT. */
+:host(:dir(rtl)) {
+  transform: scale(-1);
 }
 
 .track {
