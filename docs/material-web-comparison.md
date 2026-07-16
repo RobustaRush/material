@@ -18,7 +18,13 @@ itself doesn't implement**. The systematic gaps are in interaction micro-detail
 labels, `SubmitEvent.submitter`), and a11y hardening (focus rings, 48dp
 targets, `forced-colors`, roving tabindex). A handful of real bugs surfaced.
 
-## Real bugs
+> **Status (2026-07-16):** all 13 bugs below fixed in `abe0c33`/`d2d02bb`;
+> shared ripple primitive shipped in `d2d02bb` (backlog #1 and #3 done, plus a
+> hover fix not in the original list: state-layer hover transitions were
+> 120ms linear vs the reference's 15ms — visible as hover lag in long option
+> lists; swept to 15ms everywhere). Remaining backlog items unchanged.
+
+## Real bugs — all fixed ✓
 
 1. **Switch RTL slide** — handle positioned via `inset-inline-start`
    (material-switch.css:107) but transitions `left` (css:117-121, 158-159):
@@ -105,8 +111,14 @@ targets, `forced-colors`, roving tabindex). A handful of real bugs surfaced.
 - **Host aria-label duplicated** — copied to inner button but left on host
   (material-button.tsx:51); reference strips it (`mixinDelegatesAria`).
 
-### Ripple
-Only button/split-button/fab have one, as a one-shot `:active` keyframe
+### Ripple — fixed ✓ (`d2d02bb`)
+Shipped `src/utils/ripple.ts` + `src/utils/ripple.css` — a port of the
+reference state machine (touch delay, min press, held 12% layer, cancels,
+keyboard-center, soft edge, reduced-motion/forced-colors fallbacks) — and
+rolled it out to 17 components; old `:active` press tints removed, hover
+layers kept at 8%/15ms. Original findings for the record:
+
+Only button/split-button/fab had one, as a one-shot `:active` keyframe
 (3 duplicated copies). Reference (REF/ripple/internal/ripple.ts) vs ours:
 - **150ms touch delay** before showing (scroll/swipe over a control never
   ripples). Requires moving off `:active` — CSS alone can't express it.
@@ -206,18 +218,24 @@ Only button/split-button/fab have one, as a one-shot `:active` keyframe
 
 ## Ranked adoption backlog
 
-1. Fix the outright bugs (§ Real bugs) — switch RTL transition, radio RTL/
-   activeElement, checkbox/radio focus outline, linear-progress RTL, circular
-   rAF idle + containment, dialog scroll + `method="dialog"`, ripple keyboard
-   origin, slider restore/required/commit, elevation token use.
+1. ~~Fix the outright bugs (§ Real bugs)~~ **done ✓** (`abe0c33`, `d2d02bb`) —
+   switch RTL transition, radio RTL/activeElement, checkbox/radio focus
+   outline, linear-progress RTL, circular rAF idle + containment, dialog
+   scroll + `method="dialog"`, ripple keyboard origin, slider
+   restore/required/commit, elevation token use.
 2. Native `change`/`input` re-dispatch + external-label activation across all
    form controls (small shared utils; biggest integration win).
-3. Shared ripple primitive: `attachRipple(el)` util + CSS partial implementing
-   touch-delay/min-press/pressed-class lifecycle, 0.12 opacity, soft edge,
-   standard easing; roll out beyond button/fab/split-button.
+3. ~~Shared ripple primitive~~ **done ✓** (`d2d02bb`) — `installRipple(root)`
+   in `src/utils/ripple.ts` + `src/utils/ripple.css`: touch-delay/min-press/
+   pressed-class lifecycle, 0.12 held opacity, soft edge, standard easing,
+   reduced-motion + forced-colors fallbacks; rolled out to 17 components.
+   Bonus: hover state layers swept 120ms → 15ms linear (reference value).
 4. Unified focus ring tokens (`--md-focus-ring-*` in system.css) + two-phase
-   animation; sweep all `:focus-visible` rules.
-5. `forced-colors: active` blocks across interactive components.
+   animation; sweep all `:focus-visible` rules. *(Partial: checkbox/radio got
+   visible outlines in `abe0c33`; unification/animation still open.)*
+5. `forced-colors: active` blocks across interactive components. *(Partial:
+   the shared ripple layer disables itself under forced colors (`d2d02bb`);
+   component fill/border fallbacks still open.)*
 6. reportValidity → inline MD3 error text (cancel `invalid`, render
    `internals.validationMessage`, `role="alert"` re-announce) +
    `setCustomValidity` + i18n'd messages via detached-native-input trick.
