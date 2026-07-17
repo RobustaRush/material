@@ -35,34 +35,6 @@
   height: fit-content;
   max-width: 100vw;
   max-height: 100vh;
-
-  /* Animate across the discrete display + top-layer swap (matches menu).
-     Exit uses emphasized-accelerate; a dialog is a large surface, so the
-     timings are longer than the menu's (enter ~300ms / exit ~200ms). */
-  opacity: 0;
-  transform: scale(0.85);
-  transition:
-    opacity var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
-    transform var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
-    overlay 200ms allow-discrete,
-    display 200ms allow-discrete;
-}
-
-.dlg[open] {
-  opacity: 1;
-  transform: scale(1);
-  transition:
-    opacity var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
-    transform var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
-    overlay 300ms allow-discrete,
-    display 300ms allow-discrete;
-}
-
-@starting-style {
-  .dlg[open] {
-    opacity: 0;
-    transform: scale(0.85);
-  }
 }
 
 .dlg::backdrop {
@@ -74,20 +46,98 @@
 }
 
 .dlg[open]::backdrop {
-  /* MD3 scrim token at 32% rather than a hardcoded black. */
+  /* MD3 scrim token at 32% rather than a hardcoded black. Open-side retimed
+     to 500ms linear to match the basic-variant open choreography below —
+     both start the instant showModal() runs, so they stay in sync. The
+     close side is intentionally left at its original duration: for the
+     basic variant the real dialog.close() (and so this transition) doesn't
+     fire until *after* the JS exit choreography already finished — see
+     runClose() — so there's no single close duration to sync to, and
+     full-screen's own close timing is unaffected either way. */
   background: color-mix(in srgb, var(--md-sys-color-scrim) 32%, transparent);
   transition:
-    background var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
-    overlay 300ms allow-discrete,
-    display 300ms allow-discrete;
+    background var(--md-sys-motion-duration-long2, 500ms) linear,
+    overlay var(--md-sys-motion-duration-long2, 500ms) allow-discrete,
+    display var(--md-sys-motion-duration-long2, 500ms) allow-discrete;
 }
 
 @starting-style {
   .dlg[open]::backdrop { background: color-mix(in srgb, var(--md-sys-color-scrim) 0%, transparent); }
 }
 
+/* ---------- Basic variant motion ----------
+   Open/close choreography (dialog slide + clip-reveal height grow +
+   staggered headline/content/actions fade) runs entirely via WAAPI in the
+   component — see animateOpen()/animateClose() in the component. For the
+   *close* side, the component awaits the whole animation before calling the
+   real dialog.close() (see runClose()), so the box is still genuinely open
+   — and thus a normal, laid-out element to animate — for the whole thing.
+
+   Scrim fade-out is driven WHILE the dialog is still open — the component
+   adds `.is-closing` at the start of the exit, which fades this ::backdrop
+   to transparent over the exit duration. The dialog is genuinely modal (in
+   the top layer, on every browser) throughout that fade, then dialog.close()
+   removes the box immediately.
+
+   This deliberately does NOT use a post-close `overlay`/`display`
+   allow-discrete hold to keep a closed dialog around for a ::backdrop fade.
+   That worked on Chromium (where the `overlay` transition keeps the closed
+   box in the top layer) but broke on Safari, which doesn't support the
+   `overlay` transition: only the `display` hold took effect there, so the
+   closed dialog lingered ~200ms in normal flow, no longer modal and with no
+   scrim — a visible close-only flicker. Fading the scrim before close sees
+   the same result cross-browser without any lingering box. */
+.dlg--basic.is-closing[open]::backdrop {
+  background: rgb(0 0 0 / 0);
+  transition: background var(--md-sys-motion-duration-short2, 150ms) linear;
+}
+
+/* ---------- Full-screen variant motion ----------
+   Kept as the original whole-surface scale+fade, called synchronously as
+   before (animateOpen/animateClose no-op for this variant) — the staggered
+   choreography above only applies to the basic/centered dialog. */
+.dlg--full-screen {
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    transform var(--md-sys-motion-duration-short4, 200ms) var(--md-sys-motion-easing-emphasized-accelerate, cubic-bezier(0.3, 0, 0.8, 0.15)),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+
+.dlg--full-screen[open] {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    transform var(--md-sys-motion-duration-medium2, 300ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)),
+    overlay 300ms allow-discrete,
+    display 300ms allow-discrete;
+}
+
+@starting-style {
+  .dlg--full-screen[open] {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+/* `quick` skips the WAAPI choreography in the component (basic variant);
+   here it also skips full-screen's plain CSS scale+fade, the basic
+   variant's post-close top-layer hold, and the scrim fade. */
+:host([quick]) .dlg,
+:host([quick]) .dlg[open],
+:host([quick]) .dlg::backdrop,
+:host([quick]) .dlg[open]::backdrop {
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .dlg, .dlg[open] {
+  /* .dlg alone would lose to .dlg--full-screen[open] on specificity —
+     keep the variant selectors in the list. */
+  .dlg, .dlg[open],
+  .dlg--full-screen, .dlg--full-screen[open] {
     transition: none;
     transform: none;
   }

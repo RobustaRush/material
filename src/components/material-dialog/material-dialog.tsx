@@ -18,6 +18,12 @@ export type MaterialDialogPosition =
   | 'top' | 'top-start' | 'top-end'
   | 'bottom' | 'bottom-start' | 'bottom-end';
 
+// MD3 emphasized easings (see --md-sys-motion-easing-emphasized(-accelerate)
+// in src/theme/system.css). WAAPI keyframes can't consume CSS custom
+// properties, so the values are duplicated here — keep them in sync.
+const EASE_EMPHASIZED = 'cubic-bezier(0.2, 0, 0, 1)';
+const EASE_EMPHASIZED_ACCELERATE = 'cubic-bezier(0.3, 0, 0.8, 0.15)';
+
 // MD3 dialog. Wraps a real <dialog> in shadow DOM so we get top layer,
 // scrim (::backdrop), focus trap, Esc handling, and focus return for free.
 //
@@ -61,6 +67,11 @@ export class MaterialDialog {
   /** When true, the inner dialog uses role="alertdialog". */
   @Prop({ reflect: true }) alert = false;
 
+  /** Skip the open/close animations entirely — instant show/hide. Covers
+   *  the basic variant's WAAPI choreography, full-screen's CSS scale+fade,
+   *  and the scrim fade (see :host([quick]) in the stylesheet). */
+  @Prop({ reflect: true }) quick = false;
+
   /** Mirrors the native dialog.returnValue after close. */
   @Prop({ mutable: true }) returnValue = '';
 
@@ -76,6 +87,16 @@ export class MaterialDialog {
   private dialog?: HTMLDialogElement;
   private mql?: MediaQueryList;
   private mqlHandler?: (e: MediaQueryListEvent) => void;
+
+  // Open/close choreography (basic variant only — see animateOpen/animateClose).
+  private headlineEl?: HTMLElement;
+  private bodyEl?: HTMLElement;
+  private actionsEl?: HTMLElement;
+  private activeAnimations: Animation[] = [];
+  // Bumped by cancelAnimations() every time a new open/close phase starts —
+  // lets a pending runClose() detect it's been superseded (a reopen, or a
+  // second close) and skip its now-stale dialog.close() call.
+  private animationGeneration = 0;
 
   componentWillLoad() {
     ensureDialogTriggersInstalled();
@@ -95,6 +116,7 @@ export class MaterialDialog {
     this.el.removeEventListener('command', this.handleCommand as EventListener);
     this.el.removeEventListener('submit', this.handleFormSubmit as EventListener);
     this.teardownMql();
+    this.cancelAnimations();
     if (this.dialog) {
       this.dialog.removeEventListener('close', this.handleClose);
       this.dialog.removeEventListener('cancel', this.handleCancel);
@@ -115,8 +137,9 @@ export class MaterialDialog {
     if (open && !dlg.open) {
       dlg.showModal();
       this.materialDialogOpen.emit();
+      this.animateOpen();
     } else if (!open && dlg.open) {
-      dlg.close(this.returnValue);
+      this.runClose(this.returnValue);
     }
   }
 
@@ -186,8 +209,12 @@ export class MaterialDialog {
       ev.preventDefault();
       return;
     }
+    // Always take over the close ourselves (see runClose()) instead of
+    // letting the browser's native cancel→close cascade run, so Esc gets
+    // the same exit choreography as every other close path.
+    ev.preventDefault();
     const proceed = this.materialDialogCancel.emit();
-    if (proceed.defaultPrevented) ev.preventDefault();
+    if (!proceed.defaultPrevented) this.runClose();
   };
 
   // Native <dialog> doesn't dismiss on backdrop click. The click event
@@ -204,7 +231,7 @@ export class MaterialDialog {
     // Route backdrop dismiss through the same cancelable path as Esc so
     // "unsaved changes" guards can veto it.
     const proceed = this.materialDialogCancel.emit();
-    if (!proceed.defaultPrevented) this.dialog.close();
+    if (!proceed.defaultPrevented) this.runClose();
   };
 
   private setDialogRef = (el?: HTMLDialogElement) => {
@@ -218,6 +245,7 @@ export class MaterialDialog {
         if (this.open && this.dialog && !this.dialog.open) {
           this.dialog.showModal();
           this.materialDialogOpen.emit();
+          this.animateOpen();
         }
       });
     }
@@ -226,6 +254,154 @@ export class MaterialDialog {
   private effectiveVariant(): 'basic' | 'full-screen' {
     if (this.variant === 'adaptive') return this.isCompact ? 'full-screen' : 'basic';
     return this.variant;
+  }
+
+  private setHeadlineRef = (el?: HTMLElement) => { this.headlineEl = el; };
+  private setBodyRef = (el?: HTMLElement) => { this.bodyEl = el; };
+  private setActionsRef = (el?: HTMLElement) => { this.actionsEl = el; };
+
+  private prefersReducedMotion(): boolean {
+    return typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  // Cancel whatever's still running before starting a new phase — handles
+  // the quick-reopen/quick-reclose race, and clears any `fill: forwards`
+  // left over from a previous run (e.g. a non-quick close followed by a
+  // quick reopen must not leave content stuck at opacity 0).
+  private cancelAnimations() {
+    this.animationGeneration++;
+    for (const anim of this.activeAnimations) anim.cancel();
+    this.activeAnimations = [];
+  }
+
+  // MD3 dialog open choreography, basic variant only (full-screen keeps its
+  // plain CSS scale+fade — see .dlg--full-screen in the stylesheet). Runs
+  // via WAAPI so the surface, headline, content and actions can stagger
+  // independently: dialog slides down while its own height grows from 35%
+  // to 100% of its natural size (clip-reveal), and headline/content/actions
+  // fade in with increasing offsets.
+  private animateOpen() {
+    this.cancelAnimations();
+    const dlg = this.dialog;
+    if (!dlg) return;
+    // Clear the close-state scrim class from a prior cycle, else a reopen
+    // renders with a transparent backdrop.
+    dlg.classList.remove('is-closing');
+    // Always release a clip left over from a previous cycle (e.g. a
+    // non-quick close followed by a quick or reduced-motion reopen must not
+    // stay clipped forever with nothing left to clear it).
+    dlg.style.overflow = '';
+    if (this.quick || this.prefersReducedMotion() || this.effectiveVariant() !== 'basic') return;
+
+    const naturalHeight = dlg.offsetHeight;
+    if (!naturalHeight) return;
+
+    dlg.style.overflow = 'hidden';
+    const grow = dlg.animate(
+      [{ height: `${naturalHeight * 0.35}px` }, { height: `${naturalHeight}px` }],
+      { duration: 500, easing: EASE_EMPHASIZED, fill: 'forwards' },
+    );
+    // `fill: forwards` pins the px height so a subpixel mismatch against
+    // `height: fit-content` can't cause a snap; release it once the growth
+    // is done so later content/window changes resize normally again.
+    const release = () => {
+      grow.cancel();
+      if (this.dialog === dlg) dlg.style.overflow = '';
+    };
+    grow.addEventListener('finish', release, { once: true });
+
+    const anims: Animation[] = [
+      dlg.animate(
+        [{ transform: 'translateY(-50px)' }, { transform: 'translateY(0)' }],
+        { duration: 500, easing: EASE_EMPHASIZED },
+      ),
+      grow,
+      // Quick surface fade-in, mirrors the reference's container fade.
+      dlg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 50, easing: 'linear' }),
+    ];
+    if (this.headlineEl) {
+      anims.push(this.headlineEl.animate(
+        [{ opacity: 0 }, { opacity: 0, offset: 0.2 }, { opacity: 1 }],
+        { duration: 250, easing: 'linear' },
+      ));
+    }
+    if (this.bodyEl) {
+      anims.push(this.bodyEl.animate(
+        [{ opacity: 0 }, { opacity: 0, offset: 0.2 }, { opacity: 1 }],
+        { duration: 250, easing: 'linear' },
+      ));
+    }
+    if (this.actionsEl) {
+      anims.push(this.actionsEl.animate(
+        [{ opacity: 0 }, { opacity: 0, offset: 0.5 }, { opacity: 1 }],
+        { duration: 300, easing: 'linear' },
+      ));
+    }
+    this.activeAnimations = anims;
+  }
+
+  // Close the dialog: for the basic variant (and not quick/reduced-motion),
+  // run the exit choreography and only call the real dialog.close() once it
+  // finishes, so the box is still genuinely open (and thus a real, laid-out
+  // element to animate) for the whole thing — mirrors the reference
+  // dialog's close(), which awaits its animation before calling close().
+  // Full-screen (and quick/reduced-motion) close synchronously as before,
+  // unchanged — full-screen still gets its plain CSS scale+fade exit via
+  // the existing `overlay`/`display` allow-discrete transition.
+  private runClose(returnValue?: string) {
+    const dlg = this.dialog;
+    if (!dlg || !dlg.open) return;
+    if (returnValue !== undefined) this.returnValue = returnValue;
+    if (this.quick || this.prefersReducedMotion() || this.effectiveVariant() !== 'basic') {
+      dlg.close(this.returnValue);
+      return;
+    }
+    const promise = this.animateClose();
+    // animateClose() bumps animationGeneration synchronously (via
+    // cancelAnimations()) before returning, so this reads the generation for
+    // *this* close call. If another runClose() lands before this promise
+    // settles, its own animateClose() bumps the generation again and cancels
+    // these animations — which resolves this promise early too, so without
+    // this check both calls would race to call the real dialog.close().
+    const gen = this.animationGeneration;
+    promise.then(() => {
+      if (this.dialog === dlg && dlg.open && this.animationGeneration === gen) {
+        dlg.close(this.returnValue);
+      }
+    });
+  }
+
+  // MD3 dialog close, basic variant only — see runClose(). Returns a promise
+  // that resolves once the exit finishes (or immediately if nothing to run).
+  //
+  // Compositor-only exit: a subtle scale-down + fade on the whole surface,
+  // NO `height` animation. The open side keeps its clip-reveal height grow
+  // (it reads well and only runs while settling in), but collapsing `height`
+  // on close re-lays-out the centred box every frame — content visibly
+  // squashes and Chromium shows a faint layout jitter. transform+opacity run
+  // off the main thread and stay smooth everywhere. `.is-closing` (added
+  // here, cleared in animateOpen) fades the scrim in CSS while the dialog is
+  // still modal — see material-dialog.css.
+  private animateClose(): Promise<void> {
+    this.cancelAnimations();
+    const dlg = this.dialog;
+    if (!dlg) return Promise.resolve();
+    dlg.style.overflow = '';
+    if (this.quick || this.prefersReducedMotion() || this.effectiveVariant() !== 'basic') return Promise.resolve();
+
+    dlg.classList.add('is-closing');
+    const anims: Animation[] = [
+      dlg.animate(
+        [
+          { transform: 'scale(1)', opacity: 1 },
+          { transform: 'scale(0.95)', opacity: 0 },
+        ],
+        { duration: 150, easing: EASE_EMPHASIZED_ACCELERATE, fill: 'forwards' },
+      ),
+    ];
+    this.activeAnimations = anims;
+    return Promise.all(anims.map((a) => a.finished.catch(() => {}))).then(() => {});
   }
 
   private onIconSlotChange = (ev: Event) => {
@@ -270,13 +446,13 @@ export class MaterialDialog {
           ) : null}
         </slot>
       </div>,
-      <h2 id={headlineId} class="dlg__headline" hidden={!showHeadline}>
+      <h2 id={headlineId} class="dlg__headline" hidden={!showHeadline} ref={this.setHeadlineRef}>
         <slot name="headline" onSlotchange={this.onHeadlineSlotChange}>
           {this.headline}
         </slot>
       </h2>,
-      <div class="dlg__body"><slot /></div>,
-      <div class="dlg__actions"><slot name="actions" /></div>,
+      <div class="dlg__body" ref={this.setBodyRef}><slot /></div>,
+      <div class="dlg__actions" ref={this.setActionsRef}><slot name="actions" /></div>,
     ];
   }
 

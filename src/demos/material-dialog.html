@@ -227,6 +227,35 @@
       </material-dialog>
     </section>
 
+    <!-- ────────────────────── Motion ────────────────────── -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Basic — open/close choreography, and <code>quick</code></h2>
+      <p class="text-on-surface-variant text-sm">
+        Default: dialog slides down while it grows into place (~500ms) and headline/content/actions fade in staggered;
+        close mirrors it in ~150ms. <code>quick</code> skips all of that — instant show/hide.
+      </p>
+      <div class="flex gap-3">
+        <material-button variant="filled" label="Open (animated)" data-dialog-target="d-motion"></material-button>
+        <material-button variant="outlined" label="Open (quick)" data-dialog-target="d-motion-quick"></material-button>
+      </div>
+
+      <material-dialog id="d-motion" headline="Save changes?" icon="save">
+        This dialog uses the default MD3 open/close choreography.
+        <div slot="actions">
+          <material-button variant="text" label="Discard" data-dialog-close></material-button>
+          <material-button variant="filled" label="Save" data-dialog-close="save"></material-button>
+        </div>
+      </material-dialog>
+
+      <material-dialog id="d-motion-quick" quick headline="Save changes?" icon="save">
+        This dialog has <code>quick</code> set — it opens and closes instantly, no choreography.
+        <div slot="actions">
+          <material-button variant="text" label="Discard" data-dialog-close></material-button>
+          <material-button variant="filled" label="Save" data-dialog-close="save"></material-button>
+        </div>
+      </material-dialog>
+    </section>
+
     <!-- ────────────────────── form method="dialog" ────────────────────── -->
     <section class="space-y-4">
       <h2 class="text-lg font-semibold">Basic — slotted <code>&lt;form method="dialog"&gt;</code></h2>
@@ -295,6 +324,9 @@
 
 &lt;!-- Custom position (basic only). All edge positions keep 56dp margin. --&gt;
 &lt;material-dialog position="top-end" headline="Inbox"&gt;…&lt;/material-dialog&gt;
+
+&lt;!-- Skip the open/close choreography entirely (instant show/hide) --&gt;
+&lt;material-dialog quick headline="Quick dialog"&gt;…&lt;/material-dialog&gt;
 </code></pre>
     </details>
 
