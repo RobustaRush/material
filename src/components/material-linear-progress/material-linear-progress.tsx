@@ -25,7 +25,7 @@ const STOP_SIZE = 4;             // 4dp diameter
 const WAVE_AMPLITUDE = 3;        // spec § Wavy linear: 3dp
 const WAVE_WAVELENGTH = 40;      // spec § Wavy linear: 40dp
 const WAVE_PHASE_PERIOD_MS = 1500; // visual flow speed of the wavy pattern
-const INDETERMINATE_CYCLE_MS = 1800; // ~MD3 two-bar overlap cycle
+const INDETERMINATE_CYCLE_MS = 2000; // MDC two-bar sweep cycle
 
 @Component({
   tag: 'material-linear-progress',
@@ -174,22 +174,24 @@ export class MaterialLinearProgress {
         ? [{ d: `M${this.fmt(trackStart)} ${this.fmt(cy)} L${this.fmt(trackEnd)} ${this.fmt(cy)}` }]
         : [];
     } else {
-      // Indeterminate: two bars sweeping across the track with phase offset.
+      // Indeterminate: MDC two-bar sweep — a small primary and secondary bar
+      // each traverse the track left→right and exit, timed so one is always
+      // crossing. Faithful port of material-web's translate/scale keyframes
+      // (transform-origin: left, so a bar spans [left, left + scaleX]).
       const trackStart = PADDING;
       const trackEnd = W - PADDING;
       const trackLen = trackEnd - trackStart;
-      const t1 = ((now - this.startedAt) % INDETERMINATE_CYCLE_MS) / INDETERMINATE_CYCLE_MS;
-      const t2 = ((now - this.startedAt + INDETERMINATE_CYCLE_MS / 2) % INDETERMINATE_CYCLE_MS) / INDETERMINATE_CYCLE_MS;
-      for (const t of [t1, t2]) {
-        // Bar grows from leading edge in first half, shrinks from trailing in second.
-        // start sits at 0 until t=0.5, then accelerates to 1.
-        // end accelerates to 1 in first half, then sits at 1.
-        const startFrac = t < 0.5 ? 0 : easeInOutCubic((t - 0.5) / 0.5);
-        const endFrac = t < 0.5 ? easeInOutCubic(t / 0.5) : 1;
-        if (endFrac > startFrac) {
-          segments.push([trackStart + startFrac * trackLen, trackStart + endFrac * trackLen]);
-        }
+      const p = ((now - this.startedAt) % INDETERMINATE_CYCLE_MS) / INDETERMINATE_CYCLE_MS;
+      const bars: [number, number][] = [
+        barExtent(p, PRIMARY_INSET, PRIMARY_TRANSLATE, PRIMARY_SCALE),
+        barExtent(p, SECONDARY_INSET, SECONDARY_TRANSLATE, SECONDARY_SCALE),
+      ];
+      for (const [l, r] of bars) {
+        const cl = Math.max(0, Math.min(1, l));
+        const cr = Math.max(0, Math.min(1, r));
+        if (cr > cl) segments.push([trackStart + cl * trackLen, trackStart + cr * trackLen]);
       }
+      segments.sort((a, b) => a[0] - b[0]);
       // Expressive look: the track is drawn only in the gaps around the active
       // bars (retracted by the 4dp SPACING) — not a full-length line the bars
       // sit on top of.
@@ -316,8 +318,78 @@ export class MaterialLinearProgress {
   }
 }
 
-function easeInOutCubic(t: number): number {
-  if (t <= 0) return 0;
-  if (t >= 1) return 1;
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+// ---- MDC two-bar indeterminate sweep ------------------------------------
+// Faithful port of material-web's primary/secondary translate + scale
+// keyframes (progress/internal/_linear-progress.scss). Each bar is 100% of
+// the track wide, offset by inset-inline-start, translated + scaled from its
+// left edge. Values below are fractions of the track length.
+
+type Stop = [t: number, v: number, ease?: (u: number) => number];
+
+// CSS cubic-bezier timing function: maps segment time u∈[0,1] → eased value.
+function bezier(p1x: number, p1y: number, p2x: number, p2y: number): (u: number) => number {
+  const cx = 3 * p1x, bx = 3 * (p2x - p1x) - cx, ax = 1 - cx - bx;
+  const cy = 3 * p1y, by = 3 * (p2y - p1y) - cy, ay = 1 - cy - by;
+  const sx = (t: number) => ((ax * t + bx) * t + cx) * t;
+  const sy = (t: number) => ((ay * t + by) * t + cy) * t;
+  const dx = (t: number) => (3 * ax * t + 2 * bx) * t + cx;
+  return (u) => {
+    if (u <= 0) return 0;
+    if (u >= 1) return 1;
+    let t = u;
+    for (let i = 0; i < 8; i++) {
+      const x = sx(t) - u;
+      if (Math.abs(x) < 1e-5) break;
+      const d = dx(t);
+      if (Math.abs(d) < 1e-6) break;
+      t -= x / d;
+    }
+    return sy(t);
+  };
+}
+
+// Piecewise keyframe track: each stop's easing applies to the segment after it.
+function evalStops(stops: Stop[], p: number): number {
+  for (let i = 0; i < stops.length - 1; i++) {
+    const [t0, v0, ease] = stops[i];
+    const [t1, v1] = stops[i + 1];
+    if (p <= t1 || i === stops.length - 2) {
+      const u = t1 === t0 ? 0 : Math.max(0, Math.min(1, (p - t0) / (t1 - t0)));
+      return v0 + (v1 - v0) * (ease ? ease(u) : u);
+    }
+  }
+  return stops[stops.length - 1][1];
+}
+
+const PRIMARY_TRANSLATE: Stop[] = [
+  [0, 0],
+  [0.20, 0, bezier(0.5, 0, 0.701732, 0.495819)],
+  [0.5915, 0.836714, bezier(0.302435, 0.381352, 0.55, 0.956352)],
+  [1, 2.00611],
+];
+const PRIMARY_SCALE: Stop[] = [
+  [0, 0.08],
+  [0.3665, 0.08, bezier(0.334731, 0.12482, 0.785844, 1)],
+  [0.6915, 0.661479, bezier(0.06, 0.11, 0.6, 1)],
+  [1, 0.08],
+];
+const SECONDARY_TRANSLATE: Stop[] = [
+  [0, 0, bezier(0.15, 0, 0.515058, 0.409685)],
+  [0.25, 0.376519, bezier(0.31033, 0.284058, 0.8, 0.733712)],
+  [0.4835, 0.843862, bezier(0.4, 0.627035, 0.6, 0.902026)],
+  [1, 1.60278],
+];
+const SECONDARY_SCALE: Stop[] = [
+  [0, 0.08, bezier(0.205028, 0.057051, 0.57661, 0.453971)],
+  [0.1915, 0.457104, bezier(0.152313, 0.196432, 0.648374, 1.00432)],
+  [0.4415, 0.72796, bezier(0.257759, -0.003163, 0.211762, 1.38179)],
+  [1, 0.08],
+];
+const PRIMARY_INSET = -1.45167;
+const SECONDARY_INSET = -0.548889;
+
+// [left, right] extent of a bar in track fractions (unclipped).
+function barExtent(p: number, inset: number, translate: Stop[], scale: Stop[]): [number, number] {
+  const left = inset + evalStops(translate, p);
+  return [left, left + evalStops(scale, p)];
 }
