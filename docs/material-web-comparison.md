@@ -43,7 +43,13 @@ targets, `forced-colors`, roving tabindex). A handful of real bugs surfaced.
 5. **Linear progress has no RTL handling** — paths drawn in physical
    coordinates. Reference: `:host(:dir(rtl)) { transform: scale(-1) }`
    (REF/progress/internal/_linear-progress.scss:172-174).
-6. **Circular progress rAF never idles** (material-circular-progress.tsx:102-112) —
+6. *(Correction: `contain: strict; content-visibility: auto` was later
+   REVERTED on linear-progress — it stopped the bars from painting in the
+   demo (host height is inline-computed, SVG measured at load; the strict
+   containment + auto visibility combination broke rendering). Circular
+   keeps it: fully explicit host size, verified rendering. The real perf
+   win was the rAF idling either way.)*
+   **Circular progress rAF never idles** (material-circular-progress.tsx:102-112) —
    re-arms every frame even for static determinate and when `paused`; also
    rebuilds SVG path strings per frame (the approach reference abandoned for
    perf — their CSS border trick is 4.5× faster). Linear component already has

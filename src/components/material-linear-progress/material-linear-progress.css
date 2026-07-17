@@ -8,8 +8,6 @@
   display: block;
   width: 100%;
   /* height set inline from the component height calc — see render() */
-  contain: strict;
-  content-visibility: auto;
 }
 
 /* Paths are always drawn in LTR coordinates; mirror the whole host in RTL
