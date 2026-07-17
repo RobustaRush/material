@@ -142,6 +142,21 @@
 &lt;/script&gt;</code></pre>
       </details>
     </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Forced colors (Windows High Contrast)</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>forced-colors: active</code> (DevTools ▸ Rendering ▸ Emulate CSS media feature <code>forced-colors</code>)
+        swaps the outline/fill to system colors — <code>CanvasText</code> unchecked, checked fill/mark via
+        <code>CanvasText</code>/<code>Canvas</code>, <code>GrayText</code> disabled.
+      </p>
+      <div class="flex items-center gap-4">
+        <material-checkbox label="Unchecked"></material-checkbox>
+        <material-checkbox label="Checked" checked></material-checkbox>
+        <material-checkbox label="Disabled" disabled></material-checkbox>
+        <material-checkbox label="Checked, disabled" checked disabled></material-checkbox>
+      </div>
+    </section>
   </main>
 
   <script src="/demos/_shared.js"></script>

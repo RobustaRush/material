@@ -188,3 +188,32 @@
 .badge:dir(rtl) {
   transform: translate(-50%, -50%);
 }
+
+/* ---- Windows High Contrast (forced-colors: active) -------------------------
+   Authored backgrounds are suppressed to Canvas, so filled/tonal lose their
+   fill — add a border to keep the shape visible; it doesn't change on
+   disable, purely a visibility aid. Outlined's border is remapped onto a
+   system color and, as in normal mode, dims to GrayText when disabled.
+   Selected toggle buttons lose their color-only cue (this hits "standard"
+   hardest — it never has a border), so get a Highlight border via the full
+   shorthand. */
+@media (forced-colors: active) {
+  :host([variant="filled"]) [part="visual"],
+  :host([variant="tonal"]) [part="visual"] {
+    border: 1px solid CanvasText;
+  }
+  :host([variant="outlined"]) [part="visual"] {
+    border-color: CanvasText;
+  }
+  [part="button"]:disabled [part="visual"],
+  [part="button"][aria-disabled="true"] [part="visual"] {
+    color: GrayText;
+  }
+  :host([variant="outlined"]) [part="button"]:disabled [part="visual"],
+  :host([variant="outlined"]) [part="button"][aria-disabled="true"] [part="visual"] {
+    border-color: GrayText;
+  }
+  :host([toggle][selected]:not([disabled])) [part="visual"] {
+    border: 1px solid Highlight;
+  }
+}

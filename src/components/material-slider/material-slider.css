@@ -413,3 +413,46 @@
 :host([orientation="vertical"]) .thumb:dir(rtl) {
   transform: translate(-50%, -50%);
 }
+
+/* Windows High Contrast (forced-colors): active track + handle fill via
+   Highlight; inactive segments get an outline since their tinted background
+   disappears (outline doesn't affect the position/width math above). Skips
+   material-web's SVG-redrawn tick marks (forced-colors-styles.scss) — the
+   two discrete-stop colors are swapped for system keywords instead, no
+   reshaping. */
+@media (forced-colors: active) {
+  :host {
+    --slider-active: Highlight;
+    --slider-inactive: Canvas;
+    --slider-handle: Highlight;
+    --slider-stop-on: HighlightText;
+    --slider-stop-off: CanvasText;
+  }
+
+  .seg {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+
+  /* Same specificity as the error-token rule above (0,2,0), later in source
+     — forced-colors collapses semantic error red into the same Highlight
+     mapping as a normal active track, matching the on-err/off-err treatment
+     in material-checkbox.css/material-radio.css. Without this the error
+     token survives and can leave active/inactive segments indistinguishable
+     once the browser flattens it. */
+  :host([error]) {
+    --slider-active: Highlight;
+    --slider-handle: Highlight;
+  }
+
+  :host([disabled]) {
+    --slider-active: GrayText;
+    --slider-inactive: Canvas;
+    --slider-handle: GrayText;
+    --slider-stop-on: GrayText;
+    --slider-stop-off: GrayText;
+  }
+  :host([disabled]) .seg {
+    outline-color: GrayText;
+  }
+}

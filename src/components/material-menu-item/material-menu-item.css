@@ -159,3 +159,29 @@
   font-size: 0.75rem;
   color: var(--md-sys-color-on-surface-variant);
 }
+
+/* Windows High Contrast: `.row.selected`'s tint is color-only (the tertiary
+   container/state-layer backgrounds both collapse to Canvas under forced
+   colors) — add a CanvasText double-border affordance so a selected row
+   still reads as selected. Hover/focus get an explicit Highlight ring too,
+   since the browser would otherwise force the row's default outline to the
+   same CanvasText as any idle border, erasing the distinction. */
+@media (forced-colors: active) {
+  .row.selected::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    border: 3px double CanvasText;
+  }
+
+  .row:hover {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  :host(:focus-visible) > div {
+    outline-color: Highlight;
+  }
+}

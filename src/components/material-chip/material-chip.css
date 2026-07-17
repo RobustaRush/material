@@ -246,3 +246,44 @@
 .trailing-btn:not(:disabled):hover {
   background-color: color-mix(in srgb, currentColor 8%, transparent);
 }
+
+/* Windows High Contrast (forced-colors): a border restores the container
+   edge on filled/elevated chips, whose fill/shadow otherwise flattens away.
+   Selected filter/input chips read via Highlight; disabled via GrayText.
+   --chip-bg/--chip-fg/--chip-leading cascade into .icon / .trailing-btn
+   (color: inherit) the same way the variant blocks above do. */
+@media (forced-colors: active) {
+  [part="chip"] {
+    border-color: CanvasText;
+  }
+
+  :host([elevated]) [part="chip"] {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  :host([variant="filter"][selected]) [part="chip"],
+  :host([variant="input"][selected]) [part="chip"] {
+    --chip-bg: Highlight;
+    --chip-fg: HighlightText;
+    --chip-leading: HighlightText;
+    border-color: Highlight;
+  }
+
+  [part="chip"]:disabled,
+  [part="chip"][aria-disabled="true"],
+  :host([disabled]) [part="chip"] {
+    --chip-fg: GrayText;
+    border-color: GrayText;
+  }
+  /* Ties the selected block above on specificity and comes later, so it wins
+     all four properties — otherwise a disabled+selected filter/input chip
+     would keep HighlightText-on-Canvas from the selected rule (near-
+     invisible text) instead of falling back to GrayText. */
+  :host([disabled][selected]) [part="chip"] {
+    --chip-bg: Canvas;
+    --chip-fg: GrayText;
+    --chip-leading: GrayText;
+    border-color: GrayText;
+  }
+}

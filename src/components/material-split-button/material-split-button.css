@@ -280,3 +280,34 @@
 :host([size="m"])  .trailing:not([aria-expanded="true"]) .chevron:dir(rtl) { transform: translateX(0.125rem); }
 :host([size="l"])  .trailing:not([aria-expanded="true"]) .chevron:dir(rtl) { transform: translateX(0.1875rem); }
 :host([size="xl"]) .trailing:not([aria-expanded="true"]) .chevron:dir(rtl) { transform: translateX(0.375rem); }
+
+/* Windows High Contrast: filled/tonal/elevated lose their fill — add a
+   border to keep the shape visible (it doesn't change on disable, purely a
+   visibility aid). Outlined's border is remapped onto a system color and, as
+   in normal mode, dims to GrayText when disabled. The open/closed affordance
+   is shape-driven (inner-corner morph), not color-only, so it needs no
+   further HCM treatment. */
+@media (forced-colors: active) {
+  :host([variant="filled"]) .leading,
+  :host([variant="filled"]) .trailing,
+  :host([variant="tonal"]) .leading,
+  :host([variant="tonal"]) .trailing,
+  :host([variant="elevated"]) .leading,
+  :host([variant="elevated"]) .trailing {
+    border: 1px solid CanvasText;
+  }
+  :host([variant="outlined"]) .leading,
+  :host([variant="outlined"]) .trailing {
+    border-color: CanvasText;
+  }
+  .leading:disabled,
+  .leading[aria-disabled="true"],
+  .trailing:disabled {
+    --sb-fg: GrayText;
+  }
+  :host([variant="outlined"]) .leading:disabled,
+  :host([variant="outlined"]) .leading[aria-disabled="true"],
+  :host([variant="outlined"]) .trailing:disabled {
+    border-color: GrayText;
+  }
+}

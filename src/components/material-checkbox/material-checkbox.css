@@ -192,3 +192,37 @@
 .sub-text.normal {
   color: var(--md-sys-color-on-surface-variant);
 }
+
+/* Windows High Contrast (forced-colors): outline + fill read via system
+   colors instead of the primary/error palette. State-layer tints already
+   vanish (utils/ripple.css hides .md-ripple). */
+@media (forced-colors: active) {
+  .box.off,
+  .box.off-err {
+    border-color: CanvasText;
+  }
+
+  .box.on::before,
+  .box.on-err::before {
+    background: CanvasText;
+  }
+
+  .mark {
+    color: Canvas;
+  }
+
+  .target:disabled .box.off,
+  .target:disabled .box.off-err {
+    border-color: GrayText;
+  }
+
+  .target:disabled .box.on::before,
+  .target:disabled .box.on-err::before {
+    background: GrayText;
+  }
+
+  /* Cancel the .4 dim — GrayText already communicates disabled. */
+  .target:disabled {
+    opacity: 1;
+  }
+}

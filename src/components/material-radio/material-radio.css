@@ -134,3 +134,35 @@
   font-size: 1rem;
   color: var(--md-sys-color-on-surface);
 }
+
+/* Windows High Contrast (forced-colors): ring + dot read via system colors
+   instead of the primary/error palette. State-layer tints already vanish
+   (utils/ripple.css hides .md-ripple). */
+@media (forced-colors: active) {
+  .ring.off,
+  .ring.on,
+  .ring.err {
+    border-color: CanvasText;
+  }
+
+  .dot.primary,
+  .dot.error {
+    background: CanvasText;
+  }
+
+  .target:disabled .ring.off,
+  .target:disabled .ring.on,
+  .target:disabled .ring.err {
+    border-color: GrayText;
+  }
+
+  .target:disabled .dot.primary,
+  .target:disabled .dot.error {
+    background: GrayText;
+  }
+
+  /* Cancel the .4 dim — GrayText already communicates disabled. */
+  .target:disabled {
+    opacity: 1;
+  }
+}

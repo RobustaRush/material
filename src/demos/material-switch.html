@@ -150,6 +150,21 @@
 &lt;!-- checkedChange: { checked: boolean } on toggle --&gt;</code></pre>
       </details>
     </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Forced colors (Windows High Contrast)</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>forced-colors: active</code> (DevTools ▸ Rendering ▸ Emulate CSS media feature <code>forced-colors</code>)
+        swaps the track border to <code>CanvasText</code>, selected to <code>Highlight</code>, disabled to
+        <code>GrayText</code>. The handle keeps an explicit outline so it stays visible against the track.
+      </p>
+      <div class="flex items-center gap-4">
+        <material-switch aria-label="Off"></material-switch>
+        <material-switch aria-label="On" checked></material-switch>
+        <material-switch aria-label="Off, disabled" disabled></material-switch>
+        <material-switch aria-label="On, disabled" checked disabled></material-switch>
+      </div>
+    </section>
   </main>
 
   <script src="/demos/_shared.js"></script>

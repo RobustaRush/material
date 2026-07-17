@@ -85,3 +85,13 @@
     transform: none;
   }
 }
+
+/* Windows High Contrast: the popover has no border and its elevation shadow
+   is dropped by the browser under forced colors, so the surface-container
+   background (itself forced to Canvas) blends invisibly into the page. Give
+   it a CanvasText edge so it separates from whatever is behind it. */
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+  }
+}

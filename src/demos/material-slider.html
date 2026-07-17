@@ -184,6 +184,19 @@
 &lt;!-- valueCommit: fires once on pointer release / each keystroke --&gt;</code></pre>
       </details>
     </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Forced colors (Windows High Contrast)</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>forced-colors: active</code> (DevTools ▸ Rendering ▸ Emulate CSS media feature <code>forced-colors</code>)
+        fills the active track/handle with <code>Highlight</code> and outlines the inactive segments in
+        <code>CanvasText</code>; disabled swaps both to <code>GrayText</code>.
+      </p>
+      <div class="flex items-center gap-6">
+        <material-slider aria-label="Forced-colors demo" value="40" class="flex-1"></material-slider>
+        <material-slider aria-label="Forced-colors demo, disabled" value="60" disabled class="flex-1"></material-slider>
+      </div>
+    </section>
   </main>
 
   <script>

@@ -168,6 +168,23 @@
      the chip removes itself from the DOM (no manual e.target.remove() needed) --&gt;</code></pre>
       </details>
     </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Forced colors (Windows High Contrast)</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>forced-colors: active</code> (DevTools ▸ Rendering ▸ Emulate CSS media feature <code>forced-colors</code>)
+        restores a <code>CanvasText</code> border on elevated chips (the shadow disappears), fills selected
+        filter/input chips with <code>Highlight</code>, and reads disabled via <code>GrayText</code>.
+      </p>
+      <div class="flex flex-wrap items-center gap-3">
+        <material-chip variant="assist" label="Assist"></material-chip>
+        <material-chip variant="filter" elevated label="Elevated"></material-chip>
+        <material-chip variant="filter" label="Selected" selected></material-chip>
+        <material-chip variant="input" label="Selected" selected></material-chip>
+        <material-chip variant="assist" label="Disabled" disabled></material-chip>
+        <material-chip variant="filter" label="Selected, disabled" selected disabled></material-chip>
+      </div>
+    </section>
   </main>
 
   <script>

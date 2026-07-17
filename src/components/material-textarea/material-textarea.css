@@ -251,3 +251,25 @@
 .label.outlined:dir(rtl) {
   transform-origin: 100% 50%;
 }
+
+/* Windows High Contrast: same rationale as material-textfield — the browser
+   already forces .fieldset's border-color to CanvasText, so idle/error stay
+   visible for free. The filled variant's underline is a `background-color`,
+   not a border, so forced-colors would collapse it to Canvas (invisible)
+   without an explicit override. Disabled/focused get distinct colors so they
+   don't collapse into the same forced idle color. */
+@media (forced-colors: active) {
+  .indicator { background: CanvasText; }
+  .indicator.error { background: CanvasText; }
+  .indicator.disabled { background: GrayText; }
+  .shell:hover .indicator.idle { background: CanvasText; }
+  .shell:focus-within .indicator.idle { background: Highlight; }
+
+  .fieldset.disabled { border-color: GrayText; }
+  .shell:focus-within .fieldset.idle { border-color: Highlight; }
+
+  .label.disabled { color: GrayText; }
+  .shell:focus-within .label.idle { color: Highlight; }
+
+  .input:disabled { color: GrayText; }
+}

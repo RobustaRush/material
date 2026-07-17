@@ -171,6 +171,20 @@
 &lt;/script&gt;</code></pre>
       </details>
     </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Forced colors (Windows High Contrast)</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>forced-colors: active</code> (DevTools ▸ Rendering ▸ Emulate CSS media feature <code>forced-colors</code>)
+        swaps the ring/dot to system colors — <code>CanvasText</code> normally, <code>GrayText</code> disabled.
+      </p>
+      <div class="flex items-center gap-4">
+        <material-radio label="Unselected"></material-radio>
+        <material-radio label="Selected" checked></material-radio>
+        <material-radio label="Disabled" disabled></material-radio>
+        <material-radio label="Selected, disabled" checked disabled></material-radio>
+      </div>
+    </section>
   </main>
 
   <script src="/demos/_shared.js"></script>

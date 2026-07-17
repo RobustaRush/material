@@ -9,3 +9,13 @@
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
 }
+
+/* Windows High Contrast: the surface background is forced to Canvas, same
+   as the page behind it, so a list used as a floating/overlay surface (e.g.
+   inside a popover) blends in with nothing to separate it. A CanvasText edge
+   keeps it legible as its own surface. */
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+  }
+}

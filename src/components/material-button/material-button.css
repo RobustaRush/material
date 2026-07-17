@@ -168,3 +168,39 @@
   --btn-fg: var(--md-sys-color-on-secondary-container);
 }
 
+/* ---- Windows High Contrast (forced-colors: active) -------------------------
+   Authored backgrounds are suppressed to Canvas, so filled/tonal/elevated
+   lose their fill — add a border to keep the shape visible. That border is
+   purely a visibility aid and, per the reference, does not change on disable.
+   Outlined's border is remapped onto a system color and, as in normal mode,
+   dims to GrayText when disabled — it's the one variant whose border already
+   carries state. Selected toggle buttons lose their color-only fill cue, so
+   get a Highlight border (full shorthand — text/toggle variants have no
+   border to inherit a color from otherwise). */
+@media (forced-colors: active) {
+  :host([variant="filled"]) [part="button"],
+  :host([variant="tonal"]) [part="button"],
+  :host([variant="elevated"]) [part="button"] {
+    border: 1px solid CanvasText;
+  }
+  :host([variant="outlined"]) [part="button"] {
+    border-color: CanvasText;
+  }
+  [part="button"]:disabled,
+  [part="button"][aria-disabled="true"] {
+    --btn-fg: GrayText;
+  }
+  :host([variant="outlined"]) [part="button"]:disabled,
+  :host([variant="outlined"]) [part="button"][aria-disabled="true"] {
+    border-color: GrayText;
+  }
+  :host([toggle][selected]:not([disabled])) [part="button"] {
+    border: 1px solid Highlight;
+  }
+  /* Outlined-selected sets border-color:transparent at higher specificity in
+     normal mode; re-assert Highlight here (matching that selector's specificity,
+     placed later) so the selected border isn't erased to transparent in HCM. */
+  :host([variant="outlined"][toggle][selected]:not([disabled])) [part="button"] {
+    border-color: Highlight;
+  }
+}

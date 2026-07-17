@@ -243,9 +243,13 @@ Only button/split-button/fab had one, as a one-shot `:active` keyframe
 4. Unified focus ring tokens (`--md-focus-ring-*` in system.css) + two-phase
    animation; sweep all `:focus-visible` rules. *(Partial: checkbox/radio got
    visible outlines in `abe0c33`; unification/animation still open.)*
-5. `forced-colors: active` blocks across interactive components. *(Partial:
-   the shared ripple layer disables itself under forced colors (`d2d02bb`);
-   component fill/border fallbacks still open.)*
+5. ~~`forced-colors: active` blocks across interactive components~~
+   **done ✓** — @media (forced-colors: active) added across buttons/fab/
+   icon-button/split-button, checkbox/radio/switch/slider, chips, and
+   fields/menu/list/option: CanvasText borders where fills vanish, Highlight
+   for selected affordances, GrayText disabled. Ripple layer already
+   self-disabled (`d2d02bb`). HCM demo sections added (emulate via DevTools ▸
+   Rendering). Dialog excluded (its scrim tail is separate).
 6. ~~reportValidity → inline MD3 error text~~ **done ✓** —
    `src/utils/native-validation.ts` + host `invalid` listener on textfield,
    textarea, select, checkbox, radio-group; native bubble suppressed,
@@ -270,9 +274,17 @@ Only button/split-button/fab had one, as a one-shot `:active` keyframe
 11. ~~Typeahead upgrade~~ **done ✓** — `src/utils/typeahead.ts` (rebase around
     active, repeat-letter cycling, Space handling, 200ms buffer, capture-phase
     in menu, `aria-live` on closed-select commit); menu + select.
-    (autocomplete keeps its own filter model — left as noted.)
-12. Textfield `delegatesFocus` + selection API passthrough; select combobox
-    ARIA on the focused element.
+    **autocomplete: N/A by design** — it's a filter model (typing filters the
+    option list, client-side `label.includes(q)` + server `?q=`), not
+    jump-to-match typeahead. Different interaction; not a conversion target.
+12. ~~Textfield `delegatesFocus` + selection API; select combobox ARIA~~
+    **done ✓** — textfield: `delegatesFocus` + `focus()` override, @Method
+    `select()`/`setSelectionRange()`/`setRangeText()`/`getSelectionRange()`
+    (async getter — Stencil can't expose sync accessors). select: role=
+    combobox + aria-expanded/haspopup/controls moved onto the focused input
+    (chevron `aria-hidden` + `tabindex=-1`), Home/End/ArrowUp open the menu
+    focusing first/last/selected, and a request-selection channel so
+    programmatic `option.selected = true` syncs the select (loop-guarded).
 13. soft-disabled support; extended FAB (label collapse); tabs polish
     (focusout reset, scroll margin, cancelable select); themeable elevation
     shadow color via `color-mix(var(--md-sys-color-shadow))`.

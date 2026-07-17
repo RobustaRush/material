@@ -321,3 +321,25 @@
 .field-label:dir(rtl) {
   transform-origin: 100% 50%;
 }
+
+/* Windows High Contrast: same rationale as material-textfield — the browser
+   already forces .fieldset's border-color and .indicator's line to visible
+   system colors by default, so idle/error need no extra help; focused needs
+   its own color to stay distinguishable. Disabled here is a single blanket
+   `.surface.disabled { opacity: .4 }` rather than per-part classes, but a
+   faded opacity reads poorly against forced system colors — restore full
+   opacity and recolor the chrome to GrayText instead. */
+@media (forced-colors: active) {
+  .indicator { background: CanvasText; }
+  .indicator.error { background: CanvasText; }
+  .indicator.focused { background: Highlight; }
+
+  .fieldset.focused { border-color: Highlight; }
+
+  .field-label.focused { color: Highlight; }
+
+  .surface.disabled { opacity: 1; }
+  .surface.disabled .indicator { background: GrayText; }
+  .surface.disabled .fieldset { border-color: GrayText; }
+  .surface.disabled .field-label { color: GrayText; }
+}

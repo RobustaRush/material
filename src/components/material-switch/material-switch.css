@@ -295,3 +295,63 @@
     transition: none;
   }
 }
+
+/* Windows High Contrast (forced-colors): track + handle fills swap to
+   guaranteed-contrast system pairs (Canvas/CanvasText unselected,
+   Highlight/HighlightText selected, GrayText/Canvas disabled) instead of the
+   themed palette, so the handle always reads against its track by
+   construction. It also gets an explicit outline as extra insurance (it
+   normally has none) — outline doesn't add to the box model, so the
+   1rem/1.5rem/1.75rem handle sizing is untouched. Disabled goes through
+   direct .track/.handle overrides rather than the --track-bg/--handle-bg
+   vars, matching the higher-specificity color-mix() rules above that already
+   bypass those vars for the disabled case. State-layer tints already vanish
+   (utils/ripple.css hides .md-ripple, unused here — the hover/focus tint
+   below is a plain background, low-risk to leave as is). Doesn't cover
+   [error] — an error switch keeps its themed red track/handle instead of
+   collapsing to a system color, unlike material-slider.css's equivalent
+   fix below; still fully legible (a solid color, not neutralized), just
+   not monochrome. Accepted as a narrower gap than the slider's, where the
+   same omission can make active/inactive segments hard to tell apart. */
+@media (forced-colors: active) {
+  :host {
+    --track-bg: Canvas;
+    --track-border: CanvasText;
+    --handle-bg: CanvasText;
+  }
+  :host([checked]) {
+    --track-bg: Highlight;
+    --track-border: Highlight;
+    --handle-bg: HighlightText;
+  }
+
+  .handle {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+
+  /* Icon glyph (icon / icon-unchecked attrs) must contrast its own handle
+     fill, not the themed --icon-color it'd otherwise keep — paired with
+     the handle backgrounds above (Canvas/CanvasText unselected,
+     Highlight/HighlightText selected). Doesn't cover the disabled+icon
+     combo — deemed a narrow enough edge to skip here. */
+  .icon-off { color: Canvas; }
+  .icon-on { color: Highlight; }
+
+  :host([disabled]) .track {
+    background: Canvas;
+    border-color: GrayText;
+  }
+  :host([disabled]) .handle {
+    background: GrayText;
+    outline-color: GrayText;
+  }
+  :host([disabled][checked]) .track {
+    background: GrayText;
+    border-color: GrayText;
+  }
+  :host([disabled][checked]) .handle {
+    background: Canvas;
+    outline-color: GrayText;
+  }
+}

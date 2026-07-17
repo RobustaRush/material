@@ -119,3 +119,16 @@
   font-size: var(--fab-icon, 1.5rem);
   position: relative;
 }
+
+/* Windows High Contrast: the fill (all FAB variants are filled-type) is
+   suppressed to Canvas — add a border to keep the shape visible. It's a
+   visibility aid, not a state cue, so it doesn't change on disable; only the
+   icon dims to GrayText (--fab-fg already drives [part="visual"]'s color). */
+@media (forced-colors: active) {
+  [part="visual"] {
+    border: 1px solid CanvasText;
+  }
+  :host([disabled]) [part="visual"] {
+    --fab-fg: GrayText;
+  }
+}

@@ -176,3 +176,32 @@
 .trailing-icon {
   color: var(--md-sys-color-on-surface-variant);
 }
+
+/* Windows High Contrast: `.row.selected`/`.row.active` tints are color-only
+   (secondary/primary container backgrounds collapse to Canvas under forced
+   colors) — add a CanvasText double-border affordance so the row still
+   reads as selected/active (mutually exclusive, so the shared rule never
+   double-applies). Hover/focus get an explicit Highlight ring too, since the
+   browser would otherwise force the row's default outline to the same
+   CanvasText as any idle border, erasing the distinction. */
+@media (forced-colors: active) {
+  .row.selected::after,
+  .row.active::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    border: 3px double CanvasText;
+  }
+
+  .row:hover {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  :host(:focus-visible) > div,
+  :host(:focus-visible) > a > div {
+    outline-color: Highlight;
+  }
+}
