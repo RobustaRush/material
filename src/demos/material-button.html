@@ -100,6 +100,22 @@
           <material-button variant="filled" size="xl" label="X-Large"></material-button>
         </div>
 
+        <code class="text-sm text-on-surface-variant">touch target</code>
+        <div class="flex flex-col gap-2">
+          <p class="text-sm text-on-surface-variant max-w-md">
+            XS (32dp) and S (40dp) buttons keep the small visible pill but the
+            tap/click hit area is 48dp tall, extending invisibly above and
+            below — inspect the box model to see it.
+          </p>
+          <div class="flex gap-3 flex-wrap items-center">
+            <material-button variant="filled" size="xs" label="One"></material-button>
+            <material-button variant="filled" size="xs" label="Two"></material-button>
+            <material-button variant="filled" size="xs" label="Three"></material-button>
+            <material-button variant="tonal" size="s" icon="add" label="Four"></material-button>
+            <material-button variant="tonal" size="s" icon="favorite" label="Five"></material-button>
+          </div>
+        </div>
+
         <code class="text-sm text-on-surface-variant">toggle</code>
         <div class="flex gap-3 flex-wrap items-center">
           <material-button toggle variant="filled" label="Bold"></material-button>

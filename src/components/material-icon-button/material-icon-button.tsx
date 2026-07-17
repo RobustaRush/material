@@ -9,6 +9,7 @@ import {
   h,
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
+import { dispatchNativeEvents } from '../../utils/form-events';
 
 export type MaterialIconButtonVariant = 'filled' | 'tonal' | 'outlined' | 'standard';
 export type MaterialIconButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -104,6 +105,7 @@ export class MaterialIconButton {
       e.preventDefault();
       this.selected = !this.selected;
       this.selectedChange.emit({ selected: this.selected });
+      dispatchNativeEvents(this.el, { input: true, change: true });
       return;
     }
     if (this.href) return;

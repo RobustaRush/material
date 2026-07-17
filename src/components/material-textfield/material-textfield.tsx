@@ -3,6 +3,7 @@ import {
   Element,
   Event,
   EventEmitter,
+  Listen,
   Method,
   Prop,
   State,
@@ -10,6 +11,8 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
+import { dispatchNativeEvents, activateOnLabelClick } from '../../utils/form-events';
+import { handleInvalidEvent } from '../../utils/native-validation';
 
 export type MaterialTextfieldVariant = 'filled' | 'outlined';
 export type MaterialTextfieldType =
@@ -60,6 +63,17 @@ export class MaterialTextfield {
   @Prop() wideTrailing = false;
 
   @State() private passwordVisible = false;
+  // Inline-validation state — see the `invalid`-listener rationale on
+  // `handleInvalid` below. `customValidityMessage` mirrors the native
+  // `setCustomValidity()` contract: non-empty always wins over constraint
+  // checks and makes the control invalid until cleared with `''`.
+  @State() private nativeError = false;
+  @State() private nativeErrorText = '';
+  @State() private customValidityMessage = '';
+  // Re-render the supporting text's `role="alert"` off, then on again next
+  // frame, so an unchanged error message still gets re-announced (reference
+  // field.ts:170-176).
+  @State() private refreshErrorAlert = false;
   @Prop() leadingText?: string;
   @Prop() trailingText?: string;
   @Prop() maxLength?: number;
@@ -98,12 +112,32 @@ export class MaterialTextfield {
   // Mirror the inner input's constraint validation onto the host's
   // ElementInternals so form.checkValidity(), submit gating and the stepper
   // see required/type/pattern violations. Runs after every render — the
-  // inner input is always the source of truth.
+  // inner input is always the source of truth. Also where `nativeError`
+  // clears once the control becomes valid again (item 3 — there's no
+  // dedicated "form said we're valid now" hook without patching the form,
+  // so this per-render mirror is the sync point instead). Also called
+  // directly from setCustomValidity() so the standard native pattern —
+  // `setCustomValidity(msg); reportValidity()` — sees the new message
+  // synchronously, without waiting for a render to come back around.
   componentDidRender() {
+    this.syncValidity();
+  }
+
+  private syncValidity() {
     const input = this.inputEl;
     if (!input) return;
-    if (this.disabled || input.validity.valid) {
+    if (this.disabled) {
       this.internals.setValidity({});
+      this.nativeError = false;
+      return;
+    }
+    if (this.customValidityMessage) {
+      this.internals.setValidity({ customError: true }, this.customValidityMessage, input);
+      return;
+    }
+    if (input.validity.valid) {
+      this.internals.setValidity({});
+      this.nativeError = false;
       return;
     }
     const v = input.validity;
@@ -124,16 +158,63 @@ export class MaterialTextfield {
     );
   }
 
+  // Guards checkValidity()'s internals.checkValidity() probe from painting
+  // the inline error UI — only a real report (reportValidity() / form
+  // submit) should do that (item 2; reference on-report-validity.ts:152-157).
+  private suppressInvalid = false;
+
   /** Constraint validation, like a native input. */
   @Method()
   async checkValidity(): Promise<boolean> {
-    return this.internals.checkValidity();
+    this.suppressInvalid = true;
+    const valid = this.internals.checkValidity();
+    this.suppressInvalid = false;
+    return valid;
   }
 
-  /** Constraint validation with the native error bubble on the inner input. */
+  /** Constraint validation. Unlike a native input, an invalid result renders
+   *  the MD3 inline error (error + errorText) instead of the native bubble —
+   *  see the `invalid` listener below. */
   @Method()
   async reportValidity(): Promise<boolean> {
     return this.internals.reportValidity();
+  }
+
+  /** Sets a custom validity message, like a native input's
+   *  `setCustomValidity()`. Non-empty always wins over constraint checks and
+   *  keeps the control invalid — until cleared by calling this again with
+   *  `''`. Only takes effect in the UI on the next report (reportValidity()
+   *  or a form submit attempt), matching native behavior. */
+  @Method()
+  async setCustomValidity(message: string): Promise<void> {
+    this.customValidityMessage = message ?? '';
+    // Fold into internals synchronously — @State → render → componentDidRender
+    // would otherwise only catch up a microtask later, after this method's
+    // own Promise has already resolved, so a caller's immediately-following
+    // reportValidity() would still see the previous validity.
+    this.syncValidity();
+  }
+
+  // ElementInternals dispatches `invalid` on the host (not the inner input,
+  // which isn't itself a listed form control). Suppress the native popup and
+  // paint our own inline error/errorText instead (item 1; reference
+  // on-report-validity.ts + text-field.ts:799-810). The full "first invalid
+  // control in the form" focus behavior requires patching
+  // form.reportValidity()/requestSubmit() (reference :225-373) — out of
+  // scope here; `shouldFocusInvalid` is a same-pass approximation instead
+  // (see utils/native-validation.ts).
+  @Listen('invalid')
+  handleInvalid(e: Event) {
+    const report = handleInvalidEvent(e, this.el, this.internals, this.suppressInvalid);
+    if (!report) return;
+    const prevText = this.errorText || this.nativeErrorText;
+    this.nativeError = true;
+    this.nativeErrorText = report.message;
+    if (prevText && prevText === (this.errorText || this.nativeErrorText)) {
+      this.refreshErrorAlert = true;
+      requestAnimationFrame(() => { this.refreshErrorAlert = false; });
+    }
+    if (report.shouldFocus) this.inputEl?.focus();
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -143,6 +224,11 @@ export class MaterialTextfield {
   formResetCallback() {
     this.value = this.defaultValue;
     if (this.inputEl) this.inputEl.value = this.defaultValue;
+    // A native input's reported-invalid state doesn't survive a form reset
+    // either (reference text-field.ts's reset()) — setCustomValidity()
+    // deliberately isn't cleared here, matching native setCustomValidity().
+    this.nativeError = false;
+    this.nativeErrorText = '';
   }
 
   formStateRestoreCallback(state: string | null) {
@@ -157,15 +243,43 @@ export class MaterialTextfield {
 
   private handleChange = () => {
     this.valueChange.emit({ value: this.value });
+    // The inner input's own 'input' event is already composed and escapes
+    // the shadow root unmodified — don't double-fire it. Its 'change' is
+    // bubbles-only (not composed), so it dies at the shadow boundary; re-fire
+    // it from the host.
+    dispatchNativeEvents(this.el, { change: true });
   };
 
   private togglePassword = (e: CustomEvent<{ selected: boolean }>) => {
     this.passwordVisible = e.detail.selected;
   };
 
+  private teardownLabelActivation?: () => void;
+
+  componentDidLoad() {
+    // External <label for="…"> / internals.labels click activation: the
+    // inner <label htmlFor="input"> only wires clicks within the shadow
+    // tree — an outside label needs this to reach the inner input.
+    this.teardownLabelActivation = activateOnLabelClick(this.el, () => {
+      this.inputEl?.focus();
+    });
+  }
+
+  disconnectedCallback() {
+    this.teardownLabelActivation?.();
+    this.teardownLabelActivation = undefined;
+  }
+
   render() {
-    const { variant, label, helpText, errorText, error,
+    const { variant, label, helpText,
             leadingText, trailingText, leadingIcon, trailingIcon, maxLength } = this;
+
+    // `error`/`errorText` fold in native-invalid state so reportValidity()
+    // and setCustomValidity() paint through the same mechanism a caller-set
+    // `error` prop does (item 1). An empty errorText falls back to helpText
+    // rather than showing nothing (reference field.ts:63-65).
+    const error = this.error || this.nativeError;
+    const errorText = this.errorText || this.nativeErrorText;
 
     const showPwdToggle = this.passwordToggle && this.type === 'password';
     const hasTrailingSlot = !!this.el.querySelector(':scope > [slot="trailing"]');
@@ -178,7 +292,7 @@ export class MaterialTextfield {
     const reserveTrailing = !!trailingIcon || hasTrailingAction;
 
     const disabled = this.disabled;
-    const subText = error ? errorText : helpText;
+    const subText = (error && errorText) ? errorText : helpText;
     const showCounter = typeof maxLength === 'number';
     // Tone drives color across icon/label/indicator/fieldset — disabled wins
     // over error, error wins over the idle (hover/focus-reactive) state.
@@ -213,6 +327,11 @@ export class MaterialTextfield {
             disabled={this.disabled}
             aria-label={this.passwordVisible ? 'Hide password' : 'Show password'}
             onSelectedChange={this.togglePassword as any}
+            // The toggle icon-button now dispatches its own native
+            // input/change on selection — stop them here so a show/hide
+            // click isn't mistaken for the textfield's own value changing.
+            onInput={(e: Event) => e.stopPropagation()}
+            onChange={(e: Event) => e.stopPropagation()}
           />
         ) : (
           <slot name="trailing" />
@@ -245,7 +364,7 @@ export class MaterialTextfield {
     const renderSupporting = () => (subText || showCounter) && (
       <div class="supporting">
         <span id="description" class={tone}
-              role={error ? 'alert' : undefined}>
+              role={error && !this.refreshErrorAlert ? 'alert' : undefined}>
           {subText}
         </span>
         {showCounter && (

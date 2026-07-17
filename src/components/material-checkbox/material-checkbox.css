@@ -72,7 +72,7 @@
   width: 18px;
   height: 18px;
   border-radius: 2px;
-  transition: background-color 120ms linear, border-color 120ms linear;
+  transition: border-color 120ms linear;
 }
 
 .box.off {
@@ -80,36 +80,79 @@
   background: transparent;
 }
 
-.box.on {
-  background: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-}
-
 .box.off-err {
   border: 2px solid var(--md-sys-color-error);
   background: transparent;
 }
 
-.box.on-err {
-  background: var(--md-sys-color-error);
-  color: var(--md-sys-color-on-error);
+.box.on { color: var(--md-sys-color-on-primary); }
+.box.on-err { color: var(--md-sys-color-on-error); }
+
+/* The fill is a separate layer from the border-outline box above, so the
+   outline never itself scales — only the fill scales 0.6→1 with a fade,
+   asymmetric per MD3 selection-control motion (mirrors .mark below). */
+.box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--md-sys-color-primary);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: transform 150ms cubic-bezier(0.3, 0, 0.8, 0.15), opacity 50ms linear;
+}
+/* off-err keeps the error tint too, so unchecking an error checkbox fades
+   out red — background-color isn't transitioned and would otherwise snap
+   to primary for the fade-out. */
+.box.on-err::before,
+.box.off-err::before { background: var(--md-sys-color-error); }
+
+.box.on::before,
+.box.on-err::before {
+  opacity: 1;
+  transform: scale(1);
+  transition: transform 350ms cubic-bezier(0.05, 0.7, 0.1, 1), opacity 50ms linear;
 }
 
 .mark {
+  /* Positioned so it paints above the positioned .box::before fill layer
+     (a static child would be painted under an abs-positioned pseudo). */
+  position: relative;
   font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', sans-serif;
   font-weight: normal;
   font-size: 18px;
   line-height: 1;
-  transition: clip-path 200ms cubic-bezier(0.2, 0, 0, 1);
+  /* Exit (uncheck): quick accelerate. */
+  transition: clip-path 150ms cubic-bezier(0.3, 0, 0.8, 0.15);
   clip-path: inset(0 100% 0 0);
 }
 
 .mark.revealed {
   clip-path: inset(0);
+  /* Enter (check): slower decelerate — asymmetric per MD3 spec. */
+  transition: clip-path 350ms cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+/* Don't animate to/from disabled states, or when disabled changed in the
+   same update as checked — avoids a FOUC-style animate on a programmatic
+   flip while disabled. See componentWillUpdate() in the .tsx. */
+:host([disabled]) .box,
+:host([disabled]) .box::before,
+:host([disabled]) .mark,
+.box.prev-disabled,
+.box.prev-disabled::before,
+.mark.prev-disabled {
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mark { transition: none; }
+  .mark,
+  .mark.revealed,
+  .box::before,
+  .box.on::before,
+  .box.on-err::before {
+    transition: none;
+  }
 }
 
 .row {

@@ -3,12 +3,16 @@ import {
   Element,
   Event,
   EventEmitter,
+  Listen,
   Method,
   Prop,
+  State,
   Watch,
   AttachInternals,
   h,
 } from '@stencil/core';
+import { dispatchNativeEvents, activateOnLabelClick } from '../../utils/form-events';
+import { handleInvalidEvent } from '../../utils/native-validation';
 
 export type MaterialTextareaVariant = 'filled' | 'outlined';
 
@@ -45,6 +49,13 @@ export class MaterialTextarea {
   @Prop() maxRows?: number;
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
+  // Inline-validation state — see material-textfield for the rationale
+  // (same mechanism, mirrored here).
+  @State() private nativeError = false;
+  @State() private nativeErrorText = '';
+  @State() private customValidityMessage = '';
+  @State() private refreshErrorAlert = false;
+
   @Event() valueChange!: EventEmitter<{ value: string }>;
   @Event() valueInput!: EventEmitter<{ value: string }>;
 
@@ -55,8 +66,21 @@ export class MaterialTextarea {
     this.defaultValue = this.value;
   }
 
+  private teardownLabelActivation?: () => void;
+
   componentDidLoad() {
     this.applyAutoResize();
+    // External <label for="…"> / internals.labels click activation: the
+    // inner <label htmlFor="input"> only wires clicks within the shadow
+    // tree — an outside label needs this to reach the inner textarea.
+    this.teardownLabelActivation = activateOnLabelClick(this.el, () => {
+      this.textareaEl?.focus();
+    });
+  }
+
+  disconnectedCallback() {
+    this.teardownLabelActivation?.();
+    this.teardownLabelActivation = undefined;
   }
 
   connectedCallback() {
@@ -82,12 +106,28 @@ export class MaterialTextarea {
   }
 
   // Mirror the inner textarea's constraint validation onto ElementInternals —
-  // see material-textfield for rationale.
+  // see material-textfield for rationale, including where `nativeError`
+  // clears on the next valid sync, and why setCustomValidity() also calls
+  // this directly instead of waiting for the next render.
   componentDidRender() {
+    this.syncValidity();
+  }
+
+  private syncValidity() {
     const ta = this.textareaEl;
     if (!ta) return;
-    if (this.disabled || ta.validity.valid) {
+    if (this.disabled) {
       this.internals.setValidity({});
+      this.nativeError = false;
+      return;
+    }
+    if (this.customValidityMessage) {
+      this.internals.setValidity({ customError: true }, this.customValidityMessage, ta);
+      return;
+    }
+    if (ta.validity.valid) {
+      this.internals.setValidity({});
+      this.nativeError = false;
       return;
     }
     const v = ta.validity;
@@ -98,16 +138,47 @@ export class MaterialTextarea {
     );
   }
 
+  // See material-textfield for rationale (items 1/2/4).
+  private suppressInvalid = false;
+
   /** Constraint validation, like a native textarea. */
   @Method()
   async checkValidity(): Promise<boolean> {
-    return this.internals.checkValidity();
+    this.suppressInvalid = true;
+    const valid = this.internals.checkValidity();
+    this.suppressInvalid = false;
+    return valid;
   }
 
-  /** Constraint validation with the native error bubble on the inner textarea. */
+  /** Constraint validation. An invalid result renders the MD3 inline error
+   *  instead of the native bubble — see the `invalid` listener below. */
   @Method()
   async reportValidity(): Promise<boolean> {
     return this.internals.reportValidity();
+  }
+
+  /** Sets a custom validity message, like a native textarea's
+   *  `setCustomValidity()`. See material-textfield for the contract. */
+  @Method()
+  async setCustomValidity(message: string): Promise<void> {
+    this.customValidityMessage = message ?? '';
+    // Fold into internals synchronously — see material-textfield's
+    // setCustomValidity() for why this can't wait for componentDidRender.
+    this.syncValidity();
+  }
+
+  @Listen('invalid')
+  handleInvalid(e: Event) {
+    const report = handleInvalidEvent(e, this.el, this.internals, this.suppressInvalid);
+    if (!report) return;
+    const prevText = this.errorText || this.nativeErrorText;
+    this.nativeError = true;
+    this.nativeErrorText = report.message;
+    if (prevText && prevText === (this.errorText || this.nativeErrorText)) {
+      this.refreshErrorAlert = true;
+      requestAnimationFrame(() => { this.refreshErrorAlert = false; });
+    }
+    if (report.shouldFocus) this.textareaEl?.focus();
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -120,6 +191,10 @@ export class MaterialTextarea {
       this.textareaEl.value = this.defaultValue;
       this.applyAutoResize();
     }
+    // A native reported-invalid state doesn't survive a form reset either
+    // (see material-textfield's formResetCallback).
+    this.nativeError = false;
+    this.nativeErrorText = '';
   }
 
   formStateRestoreCallback(state: string | null) {
@@ -151,11 +226,20 @@ export class MaterialTextarea {
 
   private handleChange = () => {
     this.valueChange.emit({ value: this.value });
+    // The inner textarea's own 'input' event is already composed and
+    // escapes the shadow root unmodified — don't double-fire it. Its
+    // 'change' is bubbles-only (not composed), so re-fire it from the host.
+    dispatchNativeEvents(this.el, { change: true });
   };
 
   render() {
-    const { variant, label, helpText, errorText, error,
+    const { variant, label, helpText,
             trailingIcon, maxLength, rows } = this;
+
+    // See material-textfield's render() for the error/errorText fold-in and
+    // empty-errorText-falls-back-to-helpText rationale.
+    const error = this.error || this.nativeError;
+    const errorText = this.errorText || this.nativeErrorText;
 
     const hasTrailingSlot = !!this.el.querySelector(':scope > [slot="trailing"]');
     const hasTrailingAction = hasTrailingSlot;
@@ -163,7 +247,7 @@ export class MaterialTextarea {
     const reserveTrailing = !!trailingIcon || hasTrailingAction;
 
     const disabled = this.disabled;
-    const subText = error ? errorText : helpText;
+    const subText = (error && errorText) ? errorText : helpText;
     const showCounter = typeof maxLength === 'number';
     const tone = disabled ? 'disabled' : error ? 'error' : 'idle';
 
@@ -211,7 +295,7 @@ export class MaterialTextarea {
     const renderSupporting = () => (subText || showCounter) && (
       <div class="supporting">
         <span id="description" class={tone}
-              role={error ? 'alert' : undefined}>
+              role={error && !this.refreshErrorAlert ? 'alert' : undefined}>
           {subText}
         </span>
         {showCounter && (

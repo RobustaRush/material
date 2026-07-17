@@ -9,6 +9,7 @@ import {
   AttachInternals,
   h,
 } from '@stencil/core';
+import { dispatchNativeEvents } from '../../utils/form-events';
 
 export type MaterialSliderSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 export type MaterialSliderOrientation = 'horizontal' | 'vertical';
@@ -207,6 +208,7 @@ export class MaterialSlider {
       this.value = next;
       this.valueChange.emit({ value: this.value });
     }
+    dispatchNativeEvents(this.el, { input: true });
   }
 
   private emitChange() {
@@ -218,6 +220,7 @@ export class MaterialSlider {
     } else {
       this.valueCommit.emit({ value: this.value });
     }
+    dispatchNativeEvents(this.el, { change: true });
   }
 
   private nearestThumb(target: number): Thumb {

@@ -435,12 +435,18 @@ export class MaterialDatetimeField {
               onClick={this.toggleView}
             />
             <span class="dtf__actions-spacer" />
+            {/* type="button": this component renders into light DOM
+                (shadow: false), so when the field sits inside a consumer's
+                <form> these buttons would otherwise associate with it and
+                submit it (material-button now defaults to type="submit"). */}
             <material-button
+              type="button"
               variant="text"
               label={cancelLabel}
               data-dialog-close
             />
             <material-button
+              type="button"
               variant="filled"
               label={okLabel}
               data-dialog-close="ok"

@@ -37,6 +37,19 @@
   gap: 0.5rem;
 }
 
+/* 48dp touch target — the pill stays 32dp visually; a transparent pseudo
+   extends the hit area vertically (mirrors split-button's XS/S ::before). */
+:host(:not([variant="input"])) [part="chip"]::before,
+:host([variant="input"]) .body::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3rem;
+  transform: translateY(-50%);
+}
+
 /* Input variant: [part="chip"] is a wrapper; .body is the interactive area. */
 :host([variant="input"]) [part="chip"] {
   padding: 0;
@@ -202,6 +215,13 @@
   object-fit: cover;
   border-radius: inherit;
 }
+
+/* Avatar input chips go fully-rounded (height/2). `.has-avatar` is toggled in
+   TSX from a `querySelector` — `:has(::slotted())` isn't valid CSS (see
+   material-app-bar.css's `.subtitle:not(.has-content)` note). */
+[part="chip"].has-avatar { border-radius: 1rem; }
+[part="chip"].has-avatar .body { border-radius: 1rem 0 0 1rem; }
+[part="chip"].has-avatar .trailing-btn { border-radius: 0 1rem 1rem 0; }
 
 /* Trailing remove button on input chips — own focus/hover; hit area
    extends past the visible 18dp icon to meet the 48dp target spec. */

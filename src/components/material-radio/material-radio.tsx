@@ -4,22 +4,31 @@ import {
   Event,
   EventEmitter,
   Prop,
+  AttachInternals,
   h,
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
+import { activateOnLabelClick } from '../../utils/form-events';
 
 // MD3 spec: icon 20dp / target 48dp / state-layer 40dp.
 // Selection state, focus order and form value are owned by <material-radio-group>.
 // This component renders the visual + emits a select intent on click/Space.
 // The group sets `checked`, `tabindex`, `error`, `disabled` as a property.
+//
+// `formAssociated` here is *not* about posting a value (the group owns
+// form-value/validity) — it exists solely so this element is "labelable":
+// only form-associated custom elements gain `internals.labels`, which is
+// what makes an external <label for="…"> dispatch a click here at all.
 
 @Component({
   tag: 'material-radio',
   styleUrl: 'material-radio.css',
   shadow: true,
+  formAssociated: true,
 })
 export class MaterialRadio {
   @Element() el!: HTMLElement;
+  @AttachInternals() internals!: ElementInternals;
 
   @Prop({ mutable: true, reflect: true }) checked = false;
   @Prop({ reflect: true }) disabled = false;
@@ -53,14 +62,24 @@ export class MaterialRadio {
   };
 
   private ripple?: RippleHandle;
+  private teardownLabelActivation?: () => void;
 
   componentDidLoad() {
     this.ripple = installRipple(this.el.shadowRoot!);
+    // External <label for="…"> / internals.labels click activation: select
+    // and focus the inner radio button — selection flows through the same
+    // `select()` path a real click uses, so the group stays the source of truth.
+    this.teardownLabelActivation = activateOnLabelClick(this.el, () => {
+      this.select();
+      this.el.shadowRoot?.querySelector('button')?.focus();
+    });
   }
 
   disconnectedCallback() {
     this.ripple?.destroy();
     this.ripple = undefined;
+    this.teardownLabelActivation?.();
+    this.teardownLabelActivation = undefined;
   }
 
   render() {

@@ -36,6 +36,47 @@
 | `valueChange` |             | `CustomEvent<{ value: string; values: string[]; }>` |
 
 
+## Methods
+
+### `checkValidity() => Promise<boolean>`
+
+Constraint validation, like a native select.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Constraint validation. An invalid result renders the MD3 inline error
+instead of the native bubble — see the `invalid` listener below.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+### `setCustomValidity(message: string) => Promise<void>`
+
+Sets a custom validity message, like a native select's
+`setCustomValidity()`. See material-textfield for the contract.
+
+#### Parameters
+
+| Name      | Type     | Description |
+| --------- | -------- | ----------- |
+| `message` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ## Dependencies
 
 ### Depends on

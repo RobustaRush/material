@@ -32,6 +32,44 @@
 
 ## Methods
 
+### `checkValidity() => Promise<boolean>`
+
+Constraint validation, like a native checkbox.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Constraint validation. An invalid result renders the MD3 inline error
+instead of the native bubble — see the `invalid` listener below.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+### `setCustomValidity(message: string) => Promise<void>`
+
+Sets a custom validity message, like a native checkbox's
+`setCustomValidity()`. See material-textfield for the contract.
+
+#### Parameters
+
+| Name      | Type     | Description |
+| --------- | -------- | ----------- |
+| `message` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `toggle() => Promise<void>`
 
 Programmatically toggle the checkbox as if a user clicked it.

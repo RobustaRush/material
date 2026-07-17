@@ -152,6 +152,33 @@
           </div>
           <output id="textfield-demo-output" class="text-sm text-on-surface-variant font-mono"></output>
         </form>
+
+        <code class="text-sm text-on-surface-variant pt-3">inline validation — native invalid → MD3 error, no browser bubble</code>
+        <div class="max-w-md space-y-2">
+          <p class="text-on-surface-variant text-sm">
+            Every field below is <code>required</code> with no <code>help-text</code>/<code>error-text</code>
+            of its own. Hit Submit empty: instead of the browser's native validation bubble,
+            each control paints its own MD3 error state with the browser's localized message
+            (<code>reportValidity()</code> → <code>invalid</code> event → inline paint,
+            same mechanism across textfield/checkbox/select/textarea/radio-group).
+            "Set custom error" exercises <code>setCustomValidity()</code>.
+          </p>
+          <form id="validation-demo-form" class="flex flex-col gap-3">
+            <material-textfield id="validation-name" name="fullName" label="Full name" required></material-textfield>
+            <material-checkbox name="terms" value="accepted" required label="Accept terms"></material-checkbox>
+            <material-select name="plan" label="Plan" required>
+              <material-option value="basic">Basic</material-option>
+              <material-option value="pro">Pro</material-option>
+            </material-select>
+            <div class="flex gap-3 mt-1">
+              <material-button type="submit" variant="filled" size="xs" label="Submit"></material-button>
+              <material-button variant="text" size="xs" type="reset" label="Reset"></material-button>
+              <material-button variant="outlined" size="xs" type="button" id="validation-custom-btn"
+                                label="Set custom error"></material-button>
+            </div>
+            <output id="validation-demo-output" class="text-sm text-on-surface-variant font-mono"></output>
+          </form>
+        </div>
       </div>
 
       <details class="rounded-lg bg-surface-container-low border border-outline-variant">
@@ -185,6 +212,21 @@
       ?.addEventListener('click', () => alert('Open file picker dialog'));
 
     serializeFormToOutput('textfield-demo-form', 'textfield-demo-output');
+    serializeFormToOutput('validation-demo-form', 'validation-demo-output');
+
+    // setCustomValidity(): message wins over other constraints until cleared
+    // with ''. Doesn't paint until the next report — reportValidity() here
+    // makes it visible immediately instead of waiting for the next submit.
+    document.getElementById('validation-custom-btn')?.addEventListener('click', async () => {
+      const nameField = document.getElementById('validation-name');
+      await nameField.setCustomValidity('Please use your full legal name');
+      nameField.reportValidity();
+    });
+    // Typing again should let the field recover once the custom message is
+    // cleared and the value is non-empty.
+    document.getElementById('validation-name')?.addEventListener('input', async (e) => {
+      if (e.target.value) await e.target.setCustomValidity('');
+    });
   </script>
 </body>
 </html>

@@ -52,11 +52,29 @@ Type: `Promise<boolean>`
 
 ### `reportValidity() => Promise<boolean>`
 
-Constraint validation with the native error bubble on the inner textarea.
+Constraint validation. An invalid result renders the MD3 inline error
+instead of the native bubble — see the `invalid` listener below.
 
 #### Returns
 
 Type: `Promise<boolean>`
+
+
+
+### `setCustomValidity(message: string) => Promise<void>`
+
+Sets a custom validity message, like a native textarea's
+`setCustomValidity()`. See material-textfield for the contract.
+
+#### Parameters
+
+| Name      | Type     | Description |
+| --------- | -------- | ----------- |
+| `message` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
 
 
 

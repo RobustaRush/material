@@ -1,5 +1,6 @@
 import { Component, Element, Prop, Watch, AttachInternals, h } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
+import { handleFormSubmitterClick } from '../../utils/form-submitter';
 
 export type MaterialFabSize = 'small' | 'medium' | 'large';
 export type MaterialFabVariant =
@@ -116,8 +117,13 @@ export class MaterialFab {
     }
     const form = this.internals.form;
     if (!form) return;
-    if (this.type === 'submit') form.requestSubmit();
-    else if (this.type === 'reset') form.reset();
+    if (this.type === 'submit' || this.type === 'reset') {
+      handleFormSubmitterClick(e, form, this.type, {
+        hostElement: this.el,
+        name: this.name,
+        value: this.value,
+      });
+    }
   };
 
   private ripple?: RippleHandle;

@@ -101,6 +101,10 @@
         <code class="text-sm text-on-surface-variant pt-3">in &lt;form&gt;</code>
         <form id="demo-form" class="grid gap-4">
           <material-textarea name="bio" label="Bio" rows="3" value="default text"></material-textarea>
+          <!-- required, no error-text: submitting empty shows the browser's
+               own localized message inline instead of a native popup
+               (reportValidity() → invalid event → inline MD3 error). -->
+          <material-textarea name="notes" label="Notes" rows="3" required></material-textarea>
           <div class="flex gap-2">
             <material-button type="submit" variant="filled">Submit</material-button>
             <material-button type="reset" variant="outlined">Reset</material-button>

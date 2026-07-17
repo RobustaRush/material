@@ -9,6 +9,7 @@ import {
   h,
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
+import { dispatchNativeEvents, activateOnLabelClick } from '../../utils/form-events';
 
 @Component({
   tag: 'material-switch',
@@ -95,6 +96,8 @@ export class MaterialSwitch {
     if (this.disabled || this.readonly) return;
     this.checked = !this.checked;
     this.checkedChange.emit({ checked: this.checked });
+    // Native semantics: a checkbox-like switch fires input+change together.
+    dispatchNativeEvents(this.el, { input: true, change: true });
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
@@ -105,21 +108,31 @@ export class MaterialSwitch {
   };
 
   private ripple?: RippleHandle;
+  private teardownLabelActivation?: () => void;
 
   componentDidLoad() {
     this.ripple = installRipple(this.el.shadowRoot!);
+    // External <label for="…"> / internals.labels click activation: toggle
+    // and focus the inner switch.
+    this.teardownLabelActivation = activateOnLabelClick(this.el, () => {
+      this.toggle();
+      this.el.shadowRoot?.querySelector('button')?.focus();
+    });
   }
 
   disconnectedCallback() {
     this.ripple?.destroy();
     this.ripple = undefined;
+    this.teardownLabelActivation?.();
+    this.teardownLabelActivation = undefined;
   }
 
   render() {
     const subText = this.error ? this.errorText : this.helpText;
     const subId = subText ? 'sub' : undefined;
     const labelId = this.label ? 'label' : undefined;
-    const iconShown = this.checked ? this.icon : this.iconUnchecked;
+    const onIcon = this.icon;
+    const offIcon = this.iconUnchecked;
 
     const button = (
       <button
@@ -144,7 +157,11 @@ export class MaterialSwitch {
             <span class="md-ripple" aria-hidden="true"></span>
           </span>
           <span class="handle">
-            {iconShown && <span class="icon">{iconShown}</span>}
+            {/* Both glyphs render whenever supplied; opacity/transform (in
+                the CSS) cross-fade between them on toggle instead of
+                swapping textContent. */}
+            {onIcon && <span class="icon icon-on">{onIcon}</span>}
+            {offIcon && <span class="icon icon-off">{offIcon}</span>}
           </span>
         </span>
       </button>

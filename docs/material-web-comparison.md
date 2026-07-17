@@ -229,8 +229,12 @@ Only button/split-button/fab had one, as a one-shot `:active` keyframe
    outline, linear-progress RTL, circular rAF idle + containment, dialog
    scroll + `method="dialog"`, ripple keyboard origin, slider
    restore/required/commit, elevation token use.
-2. Native `change`/`input` re-dispatch + external-label activation across all
-   form controls (small shared utils; biggest integration win).
+2. ~~Native `change`/`input` re-dispatch + external-label activation~~
+   **done ✓** — `src/utils/form-events.ts` (`dispatchNativeEvents` +
+   `activateOnLabelClick` with the Firefox squelch); wired into checkbox,
+   switch, radio(-group), slider, textfield, textarea, select, icon-button.
+   Custom events kept. Audited composed-`input` leaks from shadow-embedded
+   toggle icon-buttons (textfield/file-field/tree-item).
 3. ~~Shared ripple primitive~~ **done ✓** (`d2d02bb`) — `installRipple(root)`
    in `src/utils/ripple.ts` + `src/utils/ripple.css`: touch-delay/min-press/
    pressed-class lifecycle, 0.12 held opacity, soft edge, standard easing,
@@ -242,21 +246,31 @@ Only button/split-button/fab had one, as a one-shot `:active` keyframe
 5. `forced-colors: active` blocks across interactive components. *(Partial:
    the shared ripple layer disables itself under forced colors (`d2d02bb`);
    component fill/border fallbacks still open.)*
-6. reportValidity → inline MD3 error text (cancel `invalid`, render
-   `internals.validationMessage`, `role="alert"` re-announce) +
-   `setCustomValidity` + i18n'd messages via detached-native-input trick.
-7. Form-submitter parity: default `type="submit"`, `SubmitEvent.submitter`
-   patch, submit-after-listeners.
-8. material-chip-set with roving tabindex + intra-chip arrows; cancelable
-   self-removing `remove`.
-9. 48dp touch targets (button xs/s, chips) + `touch-target` API.
-10. Motion fidelity pass: switch overshoot + icon morph, checkbox asymmetric
-    timings + prev-state classes, radio asymmetry, slider label pop, dialog
-    stagger/clip-reveal (decide: spec fidelity vs current compositor-cheap
-    style).
-11. Typeahead upgrade shared by select/menu/autocomplete: rebase-around-active,
-    repeat-letter cycling, Space handling, ~300ms buffer, `aria-live` on
-    closed-select commit.
+6. ~~reportValidity → inline MD3 error text~~ **done ✓** —
+   `src/utils/native-validation.ts` + host `invalid` listener on textfield,
+   textarea, select, checkbox, radio-group; native bubble suppressed,
+   supporting→error swap with helpText fallback, `setCustomValidity`,
+   browser-localized messages, `role="alert"` re-announce where markup allows.
+   (Form-level reportValidity/requestSubmit patching still out of scope.)
+7. ~~Form-submitter parity~~ **done ✓** — `src/utils/form-submitter.ts`:
+   default `type="submit"`, `SubmitEvent.submitter` patch, submit deferred to
+   a microtask so later listeners can `preventDefault`; button/split-button/fab.
+8. ~~material-chip-set~~ **done ✓** — new component, `role="toolbar"`, roving
+   tabindex, RTL arrows/Home/End, intra-chip arrow nav + shift-tab trick,
+   cancelable self-removing `remove`, 48dp target, avatar full-round.
+9. 48dp touch targets — **button xs/s done ✓** (removed `overflow:hidden`
+   now that the ripple clips itself; chips done in chip-set). `touch-target`
+   opt-in/out API still open.
+10. ~~Motion fidelity pass~~ **done ✓** — switch overshoot + icon morph,
+    checkbox asymmetric timings + prev-state, radio asymmetry, slider label
+    pop. Dialog: open keeps clip-reveal; **close reworked to compositor-only
+    scale+fade** (height animation jittered in Chrome and Safari showed a
+    close-only scrim ghost from the `overlay`/`display` allow-discrete hold —
+    scrim now fades pre-close while modal; see material-dialog).
+11. ~~Typeahead upgrade~~ **done ✓** — `src/utils/typeahead.ts` (rebase around
+    active, repeat-letter cycling, Space handling, 200ms buffer, capture-phase
+    in menu, `aria-live` on closed-select commit); menu + select.
+    (autocomplete keeps its own filter model — left as noted.)
 12. Textfield `delegatesFocus` + selection API passthrough; select combobox
     ARIA on the focused element.
 13. soft-disabled support; extended FAB (label collapse); tabs polish

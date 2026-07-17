@@ -5,11 +5,15 @@ import {
   EventEmitter,
   Host,
   Listen,
+  Method,
   Prop,
+  State,
   Watch,
   AttachInternals,
   h,
 } from '@stencil/core';
+import { dispatchNativeEvents } from '../../utils/form-events';
+import { handleInvalidEvent, nativeValidationMessage } from '../../utils/native-validation';
 
 // MD3 radiogroup. Owns name/value/form-association and coordinates child
 // <material-radio> elements via property assignment. ARIA Authoring Practices
@@ -46,6 +50,14 @@ export class MaterialRadioGroup {
   @Prop({ attribute: 'error-text' }) errorText?: string;
   @Prop({ reflect: true }) orientation: 'vertical' | 'horizontal' = 'vertical';
 
+  // Inline-validation state — see material-textfield for the rationale
+  // (same mechanism, mirrored here). No `role="alert"` markup exists below,
+  // so no reannounce-on-repeat step (item 6 — skipped, noted). No
+  // setCustomValidity() here — out of scope per task (textfield/textarea/
+  // select/checkbox only).
+  @State() private nativeError = false;
+  @State() private nativeErrorText = '';
+
   @Event() valueChange!: EventEmitter<{ value: string | undefined }>;
 
   // Captured pre-render: reflected `value` mirrors live state after every
@@ -74,13 +86,14 @@ export class MaterialRadioGroup {
   @Watch('value')
   @Watch('disabled')
   @Watch('error')
+  @Watch('nativeError')
   syncChildren() {
     const radios = this.getRadios();
     const hasSelected = radios.some((r) => r.value === this.value);
     const firstIdx = this.firstFocusableIdx(radios);
     radios.forEach((r, i) => {
       r.checked = r.value === this.value;
-      r.error = this.error;
+      r.error = this.error || this.nativeError;
       // Group disable is a separate prop so it doesn't clobber a per-radio
       // `disabled` — toggling the group back on restores the original state.
       r.groupDisabled = this.disabled;
@@ -91,10 +104,13 @@ export class MaterialRadioGroup {
   }
 
   @Watch('value')
+  @Watch('required')
+  @Watch('error')
+  @Watch('nativeError')
   syncFormValue() {
     this.internals.setFormValue(this.value ?? null);
     this.internals.ariaRequired = this.required ? 'true' : null;
-    this.internals.ariaInvalid = this.error ? 'true' : null;
+    this.internals.ariaInvalid = (this.error || this.nativeError) ? 'true' : null;
   }
 
   @Watch('required')
@@ -107,14 +123,58 @@ export class MaterialRadioGroup {
         { customError: true },
         this.errorText || 'Invalid',
       );
-    } else if (this.required && !this.value) {
+      return;
+    }
+    if (this.required && !this.value) {
+      // Replaces the hardcoded English string with the browser's own
+      // localized "required radio" message (item 5; reference
+      // radio-validator.ts:36-67) — falls back to the previous hardcoded
+      // text if the probe ever comes back empty.
       this.internals.setValidity(
         { valueMissing: true },
-        'Please select an option.',
+        nativeValidationMessage('radio', { required: true, checked: false }) || 'Please select an option.',
       );
-    } else {
-      this.internals.setValidity({});
+      return;
     }
+    this.internals.setValidity({});
+    this.nativeError = false;
+  }
+
+  // Guards checkValidity()'s internals.checkValidity() probe from painting
+  // the inline error UI (item 2).
+  private suppressInvalid = false;
+
+  /** Constraint validation, like a native radio group. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    this.suppressInvalid = true;
+    const valid = this.internals.checkValidity();
+    this.suppressInvalid = false;
+    return valid;
+  }
+
+  /** Constraint validation. An invalid result renders the MD3 inline error
+   *  instead of the native bubble — see the `invalid` listener below. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    return this.internals.reportValidity();
+  }
+
+  @Listen('invalid')
+  handleInvalid(e: Event) {
+    const report = handleInvalidEvent(e, this.el, this.internals, this.suppressInvalid);
+    if (!report) return;
+    this.nativeError = true;
+    this.nativeErrorText = report.message;
+    if (report.shouldFocus) this.focusCurrent();
+  }
+
+  // Focuses the group's roving-tabindex target (the checked radio, or the
+  // first enabled one) — mirrors the target computed in syncChildren().
+  private focusCurrent() {
+    const radios = this.getRadios();
+    const target = radios.find(r => r.focusable) ?? radios.find(r => !r.disabled);
+    (target?.shadowRoot?.querySelector('button') as HTMLButtonElement | null)?.focus();
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -123,6 +183,10 @@ export class MaterialRadioGroup {
 
   formResetCallback() {
     this.value = this.defaultValue;
+    // A native reported-invalid state doesn't survive a form reset either
+    // (see material-textfield's formResetCallback).
+    this.nativeError = false;
+    this.nativeErrorText = '';
   }
 
   formStateRestoreCallback(state: string | null) {
@@ -144,6 +208,7 @@ export class MaterialRadioGroup {
     if (next === this.value) return;
     this.value = next;
     this.valueChange.emit({ value: next });
+    dispatchNativeEvents(this.el, { change: true });
   }
 
   @Listen('keydown')
@@ -179,8 +244,14 @@ export class MaterialRadioGroup {
     }
     e.preventDefault();
     const target = radios[next];
-    this.value = target.value;
-    this.valueChange.emit({ value: target.value });
+    // Same guard as handleSelect: landing on the already-selected radio
+    // (single-radio group, Home while on the first, ...) moves focus but
+    // must not fire valueChange / native change for a no-op selection.
+    if (target.value !== this.value) {
+      this.value = target.value;
+      this.valueChange.emit({ value: target.value });
+      dispatchNativeEvents(this.el, { change: true });
+    }
     // Focus moves after sync so tabindex is already 0 on the target.
     requestAnimationFrame(() => {
       const btn = target.shadowRoot?.querySelector('button') as HTMLButtonElement | null;
@@ -189,8 +260,9 @@ export class MaterialRadioGroup {
   }
 
   render() {
-    const inError = this.error;
-    const subText = inError ? this.errorText : this.helpText;
+    const inError = this.error || this.nativeError;
+    const errorText = this.errorText || this.nativeErrorText;
+    const subText = (inError && errorText) ? errorText : this.helpText;
     const subId = 'description';
     const labelId = 'group-label';
 

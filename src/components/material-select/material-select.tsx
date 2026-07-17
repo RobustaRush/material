@@ -4,6 +4,8 @@ import {
   Event,
   EventEmitter,
   Host,
+  Listen,
+  Method,
   Prop,
   State,
   Watch,
@@ -11,6 +13,9 @@ import {
   h,
 } from '@stencil/core';
 import { gettext } from '../../utils/i18n';
+import { dispatchNativeEvents, activateOnLabelClick } from '../../utils/form-events';
+import { createTypeahead, TypeaheadHandle } from '../../utils/typeahead';
+import { handleInvalidEvent } from '../../utils/native-validation';
 
 export type MaterialSelectVariant = 'filled' | 'outlined';
 
@@ -81,6 +86,16 @@ export class MaterialSelect {
   @State() displayLabel = '';
   @State() open = false;
   @State() shellFocused = false;
+  // Inline-validation state — see material-textfield for the rationale.
+  // `refreshErrorAlert` only drives the multi-shell's own `role="alert"`
+  // markup; the single-shell delegates errorText/error into a nested
+  // material-textfield, which owns its own role="alert" span but has no way
+  // to be told "the same message repeated, re-announce" from here without a
+  // larger cross-component API — skipped for that path (item 6, noted).
+  @State() private nativeError = false;
+  @State() private nativeErrorText = '';
+  @State() private customValidityMessage = '';
+  @State() private refreshErrorAlert = false;
 
   @Event() valueChange!: EventEmitter<{ value: string; values: string[] }>;
   @Event() openChange!: EventEmitter<{ open: boolean }>;
@@ -90,8 +105,40 @@ export class MaterialSelect {
   private menuEl?: MaterialMenuLike;
   private textfieldEl?: HTMLElement;
   private shellEl?: HTMLElement;
-  private typeahead = '';
-  private typeaheadTimer = 0;
+  // Which option to focus once the menu finishes opening. Set by Home/End
+  // on the closed trigger; cleared back to "focus the selection" otherwise.
+  private pendingOpenFocus: 'first' | 'last' | null = null;
+
+  // Closed-select typeahead: commits inline (single) or opens + focuses the
+  // match (multi), rebased around the currently-selected option.
+  private readonly closedTypeahead: TypeaheadHandle = createTypeahead<MaterialOptionLike>({
+    getItems: () => this.getOptions(),
+    getText: o => this.optionLabel(o),
+    isActive: o => !this.multiple && o.value === this.value,
+    onMatch: o => {
+      if (this.multiple) {
+        this.openMenu();
+        requestAnimationFrame(() => {
+          o.focus();
+          o.scrollIntoView({ block: 'nearest' });
+        });
+      } else {
+        this.commit(o.value, false);
+        this.announceValue();
+      }
+    },
+  });
+
+  // Open-menu typeahead: focuses the match without committing/closing.
+  private readonly openTypeahead: TypeaheadHandle = createTypeahead<MaterialOptionLike>({
+    getItems: () => this.getOptions(),
+    getText: o => this.optionLabel(o),
+    isActive: o => o === document.activeElement,
+    onMatch: o => {
+      o.focus();
+      o.scrollIntoView({ block: 'nearest' });
+    },
+  });
 
   componentWillLoad() {
     this.defaultValue = this.value;
@@ -112,14 +159,24 @@ export class MaterialSelect {
     this.mirrorValuesAttr();
   }
 
+  private teardownLabelActivation?: () => void;
+
   componentDidLoad() {
     this.refreshDisplay();
     this.applySelection();
+    // External <label for="…"> / internals.labels click activation: focus
+    // the trigger (input or chip shell) without opening the menu.
+    this.teardownLabelActivation = activateOnLabelClick(this.el, () => {
+      this.focusTrigger();
+    });
   }
 
   disconnectedCallback() {
-    // Typeahead reset timer would otherwise fire on a detached component.
-    window.clearTimeout(this.typeaheadTimer);
+    // Typeahead reset timers would otherwise fire on a detached component.
+    this.closedTypeahead.destroy();
+    this.openTypeahead.destroy();
+    this.teardownLabelActivation?.();
+    this.teardownLabelActivation = undefined;
   }
 
   @Watch('value')
@@ -156,6 +213,7 @@ export class MaterialSelect {
   @Watch('disabled')
   @Watch('error')
   @Watch('required')
+  @Watch('customValidityMessage')
   onAttrChange() {
     this.syncFormValue();
   }
@@ -170,6 +228,10 @@ export class MaterialSelect {
     } else {
       this.value = this.defaultValue;
     }
+    // A native reported-invalid state doesn't survive a form reset either
+    // (see material-textfield's formResetCallback).
+    this.nativeError = false;
+    this.nativeErrorText = '';
   }
 
   formStateRestoreCallback(state: string | null) {
@@ -189,16 +251,28 @@ export class MaterialSelect {
     }
   }
 
+  // customValidityMessage (setCustomValidity()) wins over everything else,
+  // same as a native input; `nativeError` clears here once the control is
+  // valid again (item 3 — this is select's existing validity mirror step).
   private syncFormValue() {
     if (this.disabled) {
       this.internals.setFormValue(null);
       this.internals.setValidity({});
+      this.nativeError = false;
       return;
     }
     if (this.multiple) {
       const fd = new FormData();
       if (this.name) for (const v of this.values) fd.append(this.name, v);
       this.internals.setFormValue(fd, this.values.join(VALUE_SEP));
+      if (this.customValidityMessage) {
+        this.internals.setValidity(
+          { customError: true },
+          this.customValidityMessage,
+          (this.shellEl as HTMLElement | undefined) ?? this.el,
+        );
+        return;
+      }
       const missing = this.required && this.values.length === 0;
       if (missing) {
         this.internals.setValidity(
@@ -208,10 +282,19 @@ export class MaterialSelect {
         );
       } else {
         this.internals.setValidity({});
+        this.nativeError = false;
       }
       return;
     }
     this.internals.setFormValue(this.value);
+    if (this.customValidityMessage) {
+      this.internals.setValidity(
+        { customError: true },
+        this.customValidityMessage,
+        (this.textfieldEl as HTMLElement | undefined) ?? this.el,
+      );
+      return;
+    }
     if (this.required && !this.value) {
       this.internals.setValidity(
         { valueMissing: true },
@@ -220,7 +303,54 @@ export class MaterialSelect {
       );
     } else {
       this.internals.setValidity({});
+      this.nativeError = false;
     }
+  }
+
+  // Guards checkValidity()'s internals.checkValidity() probe from painting
+  // the inline error UI (item 2).
+  private suppressInvalid = false;
+
+  /** Constraint validation, like a native select. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    this.suppressInvalid = true;
+    const valid = this.internals.checkValidity();
+    this.suppressInvalid = false;
+    return valid;
+  }
+
+  /** Constraint validation. An invalid result renders the MD3 inline error
+   *  instead of the native bubble — see the `invalid` listener below. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    return this.internals.reportValidity();
+  }
+
+  /** Sets a custom validity message, like a native select's
+   *  `setCustomValidity()`. See material-textfield for the contract. */
+  @Method()
+  async setCustomValidity(message: string): Promise<void> {
+    this.customValidityMessage = message ?? '';
+    // Fold into internals synchronously — the @Watch-driven sync would
+    // otherwise only catch up a render cycle later, after this method's own
+    // Promise has resolved, so a caller's immediately-following
+    // reportValidity() would still see the previous validity.
+    this.syncFormValue();
+  }
+
+  @Listen('invalid')
+  handleInvalid(e: Event) {
+    const report = handleInvalidEvent(e, this.el, this.internals, this.suppressInvalid);
+    if (!report) return;
+    const prevText = this.errorText || this.nativeErrorText;
+    this.nativeError = true;
+    this.nativeErrorText = report.message;
+    if (this.multiple && prevText && prevText === (this.errorText || this.nativeErrorText)) {
+      this.refreshErrorAlert = true;
+      requestAnimationFrame(() => { this.refreshErrorAlert = false; });
+    }
+    if (report.shouldFocus) this.focusTrigger();
   }
 
   private getOptions(includeDisabled = false): MaterialOptionLike[] {
@@ -265,6 +395,7 @@ export class MaterialSelect {
     if (this.disabled || this.readOnly) return;
     this.value = value;
     this.valueChange.emit({ value, values: value ? [value] : [] });
+    dispatchNativeEvents(this.el, { input: true, change: true });
     if (closeMenu && this.open) this.menuEl?.hide();
   }
 
@@ -274,6 +405,7 @@ export class MaterialSelect {
     set.has(v) ? set.delete(v) : set.add(v);
     this.values = [...set];
     this.valueChange.emit({ value: this.value, values: this.values });
+    dispatchNativeEvents(this.el, { input: true, change: true });
     // menu intentionally stays open
   }
 
@@ -283,6 +415,7 @@ export class MaterialSelect {
     if (!this.values.includes(v)) return;
     this.values = this.values.filter(x => x !== v);
     this.valueChange.emit({ value: this.value, values: this.values });
+    dispatchNativeEvents(this.el, { input: true, change: true });
   };
 
   private clear = (e?: Event) => {
@@ -291,6 +424,7 @@ export class MaterialSelect {
       if (!this.values.length) return;
       this.values = [];
       this.valueChange.emit({ value: this.value, values: this.values });
+      dispatchNativeEvents(this.el, { input: true, change: true });
     } else {
       this.commit('', false);
     }
@@ -338,6 +472,9 @@ export class MaterialSelect {
   private handleMenuOpen = () => {
     this.open = true;
     this.openChange.emit({ open: true });
+    // A closed-select typeahead commit may have left an announcement live;
+    // the menu opening supersedes it.
+    (this.textfieldEl as HTMLElement | undefined)?.removeAttribute('aria-live');
     requestAnimationFrame(() => {
       if (!this.menuEl) return;
       const anchor = this.fieldRowEl();
@@ -347,12 +484,20 @@ export class MaterialSelect {
       style.maxWidth = 'none';
 
       const opts = this.getOptions();
-      // Single mode: focus selected to skip past it. Multi mode: leave
-      // focus on shell so removing chips / continued typing stays natural.
+      // Single mode: focus selected to skip past it (or first/last, if the
+      // menu was opened via Home/End). Multi mode: leave focus on shell so
+      // removing chips / continued typing stays natural.
       if (!this.multiple) {
-        const sel = opts.find(o => o.value === this.value);
-        if (sel) sel.focus();
+        let target: MaterialOptionLike | undefined;
+        if (this.pendingOpenFocus === 'first') target = opts[0];
+        else if (this.pendingOpenFocus === 'last') target = opts[opts.length - 1];
+        else target = opts.find(o => o.value === this.value);
+        if (target) {
+          target.focus();
+          target.scrollIntoView({ block: 'nearest' });
+        }
       }
+      this.pendingOpenFocus = null;
     });
   };
 
@@ -361,6 +506,12 @@ export class MaterialSelect {
     this.openChange.emit({ open: false });
     this.focusTrigger();
   };
+
+  // Announces a closed-select typeahead commit (no visible focus change to
+  // signal it otherwise) — cleared again as soon as the menu opens.
+  private announceValue() {
+    (this.textfieldEl as HTMLElement | undefined)?.setAttribute('aria-live', 'polite');
+  }
 
   private focusTrigger() {
     if (this.multiple) {
@@ -408,26 +559,24 @@ export class MaterialSelect {
         focusAt(opts.length - 1);
         return;
     }
-
-    // Type-ahead within open menu — focus matching option without committing.
-    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      this.typeahead += e.key.toLowerCase();
-      window.clearTimeout(this.typeaheadTimer);
-      this.typeaheadTimer = window.setTimeout(() => (this.typeahead = ''), 500);
-      const match = opts.find(o => this.optionLabel(o).toLowerCase().startsWith(this.typeahead));
-      if (match) {
-        match.focus();
-        match.scrollIntoView({ block: 'nearest' });
-      }
-    }
+    // Type-ahead within the open menu runs from the capture-phase listener
+    // below (needs to run before the focused option's own keydown handler).
   };
 
   private triggerKeyHandler = (e: KeyboardEvent) => {
     if (this.disabled || this.readOnly) return;
     if (this.open) return;
 
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
+    const isOpenKey =
+      e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' ||
+      e.key === ' ' || e.key === 'Home' || e.key === 'End';
+
+    // While a closed-select typeahead buffer is live, none of these keys
+    // open the menu — Space in particular may just be a search-string
+    // character (e.g. "New York"), not a request to open.
+    if (!this.closedTypeahead.isTypingAhead && isOpenKey) {
       e.preventDefault();
+      this.pendingOpenFocus = e.key === 'Home' ? 'first' : e.key === 'End' ? 'last' : null;
       this.openMenu();
       return;
     }
@@ -439,26 +588,24 @@ export class MaterialSelect {
       return;
     }
 
+    // Closed-select type-ahead: printable keys only (this also catches a
+    // mid-buffer Space that isOpenKey above intentionally let fall through).
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      this.typeahead += e.key.toLowerCase();
-      window.clearTimeout(this.typeaheadTimer);
-      this.typeaheadTimer = window.setTimeout(() => (this.typeahead = ''), 500);
-      const opts = this.getOptions();
-      const match = opts.find(o => this.optionLabel(o).toLowerCase().startsWith(this.typeahead));
-      if (!match) return;
-      if (this.multiple) {
-        // Multi: open menu and focus the match — don't toggle on stray keystrokes.
-        this.openMenu();
-        requestAnimationFrame(() => {
-          match.focus();
-          match.scrollIntoView({ block: 'nearest' });
-        });
-      } else {
-        // Single: native <select> parity — commits inline without opening.
-        this.commit(match.value, false);
-      }
+      this.closedTypeahead.onKeydown(e);
+      e.preventDefault();
     }
   };
+
+  // Capture-phase, open-menu only: runs before the event reaches the
+  // focused option's own keydown handler, so a mid-buffer Space (consumed
+  // by the typeahead below) can be stopped before it activates/closes the
+  // option — bubble phase would be too late for that.
+  @Listen('keydown', { capture: true })
+  handleOpenTypeaheadCapture(e: KeyboardEvent) {
+    if (this.disabled || this.readOnly || !this.open) return;
+    this.openTypeahead.onKeydown(e);
+    if (e.defaultPrevented) e.stopPropagation();
+  }
 
   private handleHostKeyDown = (e: KeyboardEvent) => {
     if (this.open) this.menuKeyHandler(e);
@@ -509,8 +656,12 @@ export class MaterialSelect {
     const filled = this.variant === 'filled';
     const hasLeading = !!this.leadingIcon;
     const isFilled = this.values.length > 0 || this.shellFocused;
-    const labelTone = this.error ? 'error' : (this.shellFocused ? 'focused' : 'idle');
-    const subText = this.error ? this.errorText : this.helpText;
+    // See material-textfield's render() for the error/errorText fold-in and
+    // empty-errorText-falls-back-to-helpText rationale.
+    const inError = this.error || this.nativeError;
+    const errorText = this.errorText || this.nativeErrorText;
+    const labelTone = inError ? 'error' : (this.shellFocused ? 'focused' : 'idle');
+    const subText = (inError && errorText) ? errorText : this.helpText;
 
     const stopBlur = (e: Event) => e.preventDefault();
     const removeAria = (lbl: string) => `${gettext('Remove')} ${lbl}`;
@@ -562,7 +713,7 @@ export class MaterialSelect {
 
     const leading = hasLeading && (
       <span
-        class={this.error ? 'leading-icon error' : 'leading-icon'}
+        class={inError ? 'leading-icon error' : 'leading-icon'}
         aria-hidden="true"
       >
         {this.leadingIcon}
@@ -580,7 +731,7 @@ export class MaterialSelect {
       // aria-multiselectable belongs on the listbox popup, not the combobox.
       'aria-controls': 'listbox',
       'aria-disabled': this.disabled ? 'true' : null,
-      'aria-invalid': this.error ? 'true' : null,
+      'aria-invalid': inError ? 'true' : null,
       'aria-describedby': subText ? 'description' : null,
       onClick: this.handleShellClick,
       onFocus: () => (this.shellFocused = true),
@@ -591,8 +742,8 @@ export class MaterialSelect {
       <div class="supporting-row">
         <span
           id="description"
-          class={this.error ? 'error' : 'idle'}
-          role={this.error ? 'alert' : undefined}
+          class={inError ? 'error' : 'idle'}
+          role={inError && !this.refreshErrorAlert ? 'alert' : undefined}
         >
           {subText}
         </span>
@@ -616,8 +767,8 @@ export class MaterialSelect {
       ].filter(Boolean).join(' ');
       const indicatorCls = [
         'indicator',
-        this.error ? 'error' : (this.shellFocused ? 'focused' : ''),
-        this.error || this.shellFocused ? 'active' : '',
+        inError ? 'error' : (this.shellFocused ? 'focused' : ''),
+        inError || this.shellFocused ? 'active' : '',
       ].filter(Boolean).join(' ');
 
       return (
@@ -653,9 +804,9 @@ export class MaterialSelect {
     ].filter(Boolean).join(' ');
     const fieldsetCls = [
       'fieldset',
-      this.error ? 'error' : (this.shellFocused ? 'focused' : ''),
+      inError ? 'error' : (this.shellFocused ? 'focused' : ''),
     ].filter(Boolean).join(' ');
-    const legendCls = this.error || this.shellFocused ? 'legend active' : 'legend';
+    const legendCls = inError || this.shellFocused ? 'legend active' : 'legend';
 
     return (
       <div class="wrapper">
@@ -702,9 +853,12 @@ export class MaterialSelect {
         disabled={this.disabled}
         required={this.required}
         readOnly={true}
-        helpText={!this.error ? this.helpText : undefined}
-        errorText={this.errorText}
-        error={this.error}
+        // Delegates to the inner textfield's own error/errorText handling
+        // (including its empty-errorText-falls-back-to-helpText behavior) —
+        // so pass helpText unconditionally rather than suppressing it here.
+        helpText={this.helpText}
+        errorText={this.errorText || this.nativeErrorText}
+        error={this.error || this.nativeError}
         leadingIcon={this.leadingIcon}
         wideTrailing={showClear}
         onClick={this.handleTextfieldClick as unknown as (e: MouseEvent) => void}

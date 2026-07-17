@@ -160,7 +160,14 @@
       <h2 class="text-lg font-semibold">Long list — scrolls inside the popover</h2>
       <p class="text-on-surface-variant text-sm">
         Type letters while open or closed to jump (closed = native <code>&lt;select&gt;</code>
-        parity, fires <code>valueChange</code>).
+        parity, fires <code>valueChange</code>). Repeat the same first letter
+        with a pause between presses (e.g. "s", pause, "s", pause, "s") to cycle
+        through <em>Saudi Arabia</em> → <em>Singapore</em> → <em>Slovakia</em> →
+        <em>South Africa</em> → <em>South Korea</em> → <em>Spain</em> →
+        <em>Sweden</em> → <em>Switzerland</em>. Space mid-word (e.g. type "new"
+        then Space then "z" for "New Zealand") stays in the buffer instead of
+        opening/closing. Home/End while closed opens the menu focused on the
+        first/last option.
       </p>
       <div class="max-w-sm">
         <material-select id="long" name="country2" label="Country" placeholder="Pick a country"></material-select>

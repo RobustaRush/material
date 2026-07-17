@@ -8,7 +8,8 @@
 
 [part="button"] {
   position: relative;
-  overflow: hidden;
+  /* No `overflow: hidden` here — the XS/S touch-target pseudo (below) must
+     extend past the visible pill. The `.md-ripple` span clips its own wave. */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -69,6 +70,20 @@
 :host([size="m"])  [part="button"] { height: 3.5rem;  padding: 0 1.5rem; gap: 0.5rem;  font-size: 1rem; --btn-icon: 1.5rem; }
 :host([size="l"])  [part="button"] { height: 6rem;  padding: 0 3rem; gap: 0.75rem; font-size: 1.5rem; --btn-icon: 2rem; }
 :host([size="xl"]) [part="button"] { height: 8.5rem; padding: 0 4rem; gap: 1rem; font-size: 1.75rem; --btn-icon: 2.5rem; }
+
+/* 48dp touch target for XS/S (visible pill stays 32/40dp). A transparent,
+   overflow-escaping pseudo extends the hit area vertically — mirrors the 48dp
+   box material-split-button gives its XS/S sizes. */
+:host([size="xs"]) [part="button"]::before,
+:host([size="s"])  [part="button"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3rem;
+  transform: translateY(-50%);
+}
 
 :host([variant="filled"]) [part="button"] {
   --btn-bg: var(--md-sys-color-primary);

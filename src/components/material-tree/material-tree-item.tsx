@@ -156,6 +156,12 @@ export class MaterialTreeItem {
               aria-label={this.label ?? this.value}
               onCheckedChange={this.onCheckboxChange}
               onClick={(e: Event) => e.stopPropagation()}
+              // material-checkbox now dispatches native input/change on user
+              // toggle — its composed 'input' would escape this shadow root
+              // retargeted to the tree-item, looking like a form-field edit
+              // (mirrors material-textfield's password-toggle fix).
+              onInput={(e: Event) => e.stopPropagation()}
+              onChange={(e: Event) => e.stopPropagation()}
             />
           )}
 

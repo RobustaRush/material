@@ -87,7 +87,16 @@
           <material-checkbox label="Plain"></material-checkbox>
           <material-checkbox label="Required" error error-text="This field is required"></material-checkbox>
           <material-checkbox label="Selected" checked error error-text="Conflicts with another option"></material-checkbox>
-          <material-checkbox label="Silent error" error help-text="Help text is hidden when error has no message"></material-checkbox>
+          <material-checkbox label="No error text" error help-text="Help text still shows (in error tone) when error has no message"></material-checkbox>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">native events</code>
+        <div class="flex flex-col gap-2 items-start">
+          <div class="flex items-center gap-2">
+            <material-checkbox id="native-events-cb"></material-checkbox>
+            <label for="native-events-cb">External &lt;label for&gt; — click the text to toggle</label>
+          </div>
+          <output id="native-events-log" class="text-sm text-on-surface-variant font-mono">no native "change" yet</output>
         </div>
 
         <code class="text-sm text-on-surface-variant">in a form</code>
@@ -147,6 +156,21 @@
       if (!btn || !cb) return;
       btn.addEventListener('click', () => {
         cb.helpText = cb.helpText ? '' : 'Click button to toggle help text';
+      });
+    })();
+
+    // Native events: listen ONLY for the native 'change' event (not
+    // checkedChange) — proves both a direct click on the checkbox and a
+    // click on the associated external <label for> each fire exactly one
+    // native change, via activateOnLabelClick + dispatchNativeEvents.
+    (function () {
+      const cb = document.getElementById('native-events-cb');
+      const log = document.getElementById('native-events-log');
+      if (!cb || !log) return;
+      let count = 0;
+      cb.addEventListener('change', (e) => {
+        count += 1;
+        log.textContent = `native "change" #${count} — checked: ${e.target.checked}`;
       });
     })();
   </script>

@@ -9,6 +9,7 @@ import {
   h,
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
+import { handleFormSubmitterClick } from '../../utils/form-submitter';
 
 export type MaterialButtonVariant = 'filled' | 'tonal' | 'elevated' | 'outlined' | 'text';
 export type MaterialButtonType = 'submit' | 'reset' | 'button';
@@ -26,7 +27,9 @@ export class MaterialButton {
 
   @Prop({ reflect: true }) variant: MaterialButtonVariant = 'filled';
   @Prop({ reflect: true }) size: MaterialButtonSize = 's';
-  @Prop() type: MaterialButtonType = 'button';
+  /** Native `<button>` parity: defaults to `submit` (like a plain `<button>`
+   *  in a form), not `button`. Set `type="button"` explicitly to opt out. */
+  @Prop() type: MaterialButtonType = 'submit';
   // mutable: formDisabledCallback writes this back; without it Stencil warns
   // ("immutable prop was modified from within the component") on every form-
   // disable toggle.
@@ -130,23 +133,12 @@ export class MaterialButton {
     }
     const form = this.internals.form;
     if (!form) return;
-    if (this.type === 'submit') {
-      // Contribute name/value to FormData like a native submit button does when
-      // it's the submitter. ElementInternals can't act as a submitter, so add a
-      // transient hidden input for this one submission; the form is serialized
-      // synchronously inside requestSubmit(), so we can remove it right after.
-      let hidden: HTMLInputElement | undefined;
-      if (this.name) {
-        hidden = document.createElement('input');
-        hidden.type = 'hidden';
-        hidden.name = this.name;
-        hidden.value = this.value ?? '';
-        form.appendChild(hidden);
-      }
-      form.requestSubmit();
-      hidden?.remove();
-    } else if (this.type === 'reset') {
-      form.reset();
+    if (this.type === 'submit' || this.type === 'reset') {
+      handleFormSubmitterClick(e, form, this.type, {
+        hostElement: this.el,
+        name: this.name,
+        value: this.value,
+      });
     }
   };
 

@@ -19,7 +19,7 @@
       <div>
         <h1 class="text-xl font-bold">material-chip</h1>
         <p class="text-on-surface-variant text-sm">
-          Four MD3 variants: <code>assist</code>, <code>filter</code>, <code>input</code>, <code>suggestion</code>. Toggle <code>elevated</code> for surface container low + shadow.
+          Four MD3 variants: <code>assist</code>, <code>filter</code>, <code>input</code>, <code>suggestion</code>. Toggle <code>elevated</code> for surface container low + shadow. Wrap chips in <code>material-chip-set</code> for roving-tabindex arrow-key navigation.
         </p>
       </div>
     </div>
@@ -72,7 +72,7 @@
         </div>
 
         <code class="text-sm text-on-surface-variant">input</code>
-        <div class="flex gap-2 flex-wrap items-center" id="input-chip-row">
+        <div class="flex gap-2 flex-wrap items-center">
           <material-chip variant="input" label="alex@example.com" selected></material-chip>
           <material-chip variant="input" icon="person" label="Jamie"></material-chip>
           <material-chip variant="input" label="Disabled" disabled></material-chip>
@@ -93,6 +93,28 @@
         <div class="flex gap-2 flex-wrap items-center">
           <material-chip variant="assist" href="https://m3.material.io/components/chips" target="_blank" trailing-icon="open_in_new" label="MD3 docs"></material-chip>
           <material-chip variant="suggestion" href="#anchor" label="Same tab"></material-chip>
+          <material-chip variant="assist" href="https://m3.material.io/components/chips" download label="Download"></material-chip>
+          <material-chip variant="assist" href="https://m3.material.io/components/chips" disabled label="Disabled link"></material-chip>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">chip-set</code>
+        <div class="flex flex-col gap-2 items-start">
+          <p class="text-xs text-on-surface-variant max-w-prose">
+            <code>material-chip-set</code> is a <code>role="toolbar"</code> with roving tabindex — Tab reaches exactly
+            one chip. ArrowLeft/ArrowRight move between chips (RTL-aware), Home/End jump to the first/last, and the
+            disabled chip is skipped. Inside a removable input chip, ArrowLeft/ArrowRight also move between the label
+            and the × button; Shift+Tab from the × exits straight to the previous chip. Removing a chip drops it from
+            the DOM unless its <code>remove</code> listener calls <code>preventDefault()</code> — try "Pinned".
+          </p>
+          <material-chip-set class="flex" id="chip-set-demo">
+            <material-chip variant="input" label="Alex" selected></material-chip>
+            <material-chip variant="input" icon="person" label="Jamie"></material-chip>
+            <material-chip variant="input" label="Disabled" disabled></material-chip>
+            <material-chip variant="input" label="Riley">
+              <img slot="avatar" src="https://i.pravatar.cc/48?img=5" alt="" />
+            </material-chip>
+            <material-chip variant="input" label="Pinned" id="pinned-chip"></material-chip>
+          </material-chip-set>
         </div>
 
         <code class="text-sm text-on-surface-variant">form</code>
@@ -122,10 +144,16 @@
 &lt;!-- elevated style is orthogonal to variant --&gt;
 &lt;material-chip variant="filter" elevated label="Elevated"&gt;&lt;/material-chip&gt;
 
-&lt;!-- avatar slot for input chips --&gt;
+&lt;!-- avatar slot for input chips — fully-rounded container when present --&gt;
 &lt;material-chip variant="input" label="Kim" selected&gt;
   &lt;img slot="avatar" src="/avatars/kim.jpg" alt="" /&gt;
 &lt;/material-chip&gt;
+
+&lt;!-- chip-set: role="toolbar" + roving tabindex + arrow-key nav across chips --&gt;
+&lt;material-chip-set&gt;
+  &lt;material-chip variant="input" label="Alex" selected&gt;&lt;/material-chip&gt;
+  &lt;material-chip variant="input" label="Jamie"&gt;&lt;/material-chip&gt;
+&lt;/material-chip-set&gt;
 
 &lt;!-- form-associated: filter & input chips contribute name=value when selected --&gt;
 &lt;form&gt;
@@ -135,16 +163,16 @@
 
 &lt;!-- events --&gt;
 &lt;!-- selectedChange: { selected: boolean } on filter/input toggle --&gt;
-&lt;!-- remove: emitted from input chip's trailing close button --&gt;</code></pre>
+&lt;!-- filter chips also dispatch native input/change (form libraries, vanilla JS) --&gt;
+&lt;!-- remove: cancelable — call preventDefault() to keep the chip; otherwise
+     the chip removes itself from the DOM (no manual e.target.remove() needed) --&gt;</code></pre>
       </details>
     </section>
   </main>
 
   <script>
-    // Demo: input chip 'remove' actually drops the chip from the DOM.
-    document.getElementById('input-chip-row').addEventListener('remove', e => {
-      e.target.remove();
-    });
+    // Demo: "Pinned" cancels its own removal instead of disappearing.
+    document.getElementById('pinned-chip').addEventListener('remove', e => e.preventDefault());
   </script>
   <script src="/demos/_shared.js"></script>
 </body>

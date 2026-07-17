@@ -9,6 +9,7 @@ import {
   h,
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
+import { handleFormSubmitterClick } from '../../utils/form-submitter';
 
 export type MaterialSplitButtonVariant = 'filled' | 'tonal' | 'elevated' | 'outlined';
 export type MaterialSplitButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -31,7 +32,9 @@ export class MaterialSplitButton {
   @Prop({ reflect: true }) disabled = false;
   @Prop() label?: string;
   @Prop() icon?: string;
-  @Prop() type: MaterialSplitButtonType = 'button';
+  /** Native `<button>` parity: defaults to `submit` (like a plain `<button>`
+   *  in a form), not `button`. Set `type="button"` explicitly to opt out. */
+  @Prop() type: MaterialSplitButtonType = 'submit';
   @Prop() name?: string;
   @Prop() value?: string;
   @Prop() href?: string;
@@ -68,8 +71,13 @@ export class MaterialSplitButton {
     if (this.href) return;
     const form = this.internals.form;
     if (!form) return;
-    if (this.type === 'submit') form.requestSubmit();
-    else if (this.type === 'reset') form.reset();
+    if (this.type === 'submit' || this.type === 'reset') {
+      handleFormSubmitterClick(e, form, this.type, {
+        hostElement: this.el,
+        name: this.name,
+        value: this.value,
+      });
+    }
   };
 
   private handleMenuToggle = (ev: Event) => {

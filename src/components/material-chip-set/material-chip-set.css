@@ -1,0 +1,10 @@
+/* MD3 chip set: a wrapping row of chips, 8dp gaps (chips/specs.md § Padding
+   between elements). Purely a layout + keyboard-navigation host — chips
+   render their own visuals. */
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}

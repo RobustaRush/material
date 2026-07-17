@@ -203,6 +203,12 @@ export class MaterialFileField {
                   undefined
                 }
                 onSelectedChange={this.handleClearToggle as any}
+                // The toggle icon-button dispatches its own native
+                // input/change on selection — stop them here so a clear/undo
+                // click isn't mistaken for the file-field's own value
+                // changing (mirrors material-textfield's password toggle).
+                onInput={(e: Event) => e.stopPropagation()}
+                onChange={(e: Event) => e.stopPropagation()}
               />
             )}
             <material-icon-button

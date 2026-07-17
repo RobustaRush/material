@@ -54,11 +54,33 @@ Type: `Promise<boolean>`
 
 ### `reportValidity() => Promise<boolean>`
 
-Constraint validation with the native error bubble on the inner input.
+Constraint validation. Unlike a native input, an invalid result renders
+the MD3 inline error (error + errorText) instead of the native bubble —
+see the `invalid` listener below.
 
 #### Returns
 
 Type: `Promise<boolean>`
+
+
+
+### `setCustomValidity(message: string) => Promise<void>`
+
+Sets a custom validity message, like a native input's
+`setCustomValidity()`. Non-empty always wins over constraint checks and
+keeps the control invalid — until cleared by calling this again with
+`''`. Only takes effect in the UI on the next report (reportValidity()
+or a form submit attempt), matching native behavior.
+
+#### Parameters
+
+| Name      | Type     | Description |
+| --------- | -------- | ----------- |
+| `message` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
 
 
 

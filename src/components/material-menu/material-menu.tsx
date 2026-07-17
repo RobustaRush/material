@@ -14,6 +14,7 @@ import {
   AnchorPlacement,
   trackAnchored,
 } from '../../utils/anchor-position';
+import { createTypeahead, TypeaheadHandle } from '../../utils/typeahead';
 
 // MD3 vertical menu (Standard color). Uses the native HTML Popover API for
 // open/close, light-dismiss, and top-layer rendering. The host element itself
@@ -55,8 +56,15 @@ export class MaterialMenu {
 
   private cleanupTrack?: () => void;
   private invoker: Element | null = null;
-  private typeahead = '';
-  private typeaheadTimer = 0;
+  private readonly typeahead: TypeaheadHandle = createTypeahead<HTMLElement>({
+    getItems: () => this.getItems(),
+    getText: it => this.itemText(it),
+    isActive: it => it === document.activeElement,
+    onMatch: it => {
+      it.focus();
+      it.scrollIntoView({ block: 'nearest' });
+    },
+  });
   // Only return focus to the invoker when the menu was dismissed via the
   // keyboard (Tab/Escape) or by selecting an item — NOT when the user
   // light-dismissed it by clicking elsewhere (that would yank focus away
@@ -72,6 +80,7 @@ export class MaterialMenu {
   disconnectedCallback() {
     this.el.removeEventListener('toggle', this.handleToggle);
     this.cleanupTrack?.();
+    this.typeahead.destroy();
   }
 
   @Watch('open')
@@ -165,6 +174,16 @@ export class MaterialMenu {
     items[i].scrollIntoView({ block: 'nearest' });
   }
 
+  // Capture-phase: runs before the event reaches the focused menu item, so
+  // that a mid-buffer Space (consumed by the typeahead) never falls through
+  // to the item's own Enter/Space activation handler.
+  @Listen('keydown', { capture: true })
+  handleCaptureKeyDown(e: KeyboardEvent) {
+    if (!this.el.matches(':popover-open')) return;
+    this.typeahead.onKeydown(e);
+    if (e.defaultPrevented) e.stopPropagation();
+  }
+
   @Listen('keydown')
   handleKeyDown(e: KeyboardEvent) {
     if (!this.el.matches(':popover-open')) return;
@@ -200,17 +219,7 @@ export class MaterialMenu {
         this.restoreFocusOnClose = true;
         return;
     }
-
-    // Typeahead: printable single chars.
-    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      this.typeahead += e.key.toLowerCase();
-      window.clearTimeout(this.typeaheadTimer);
-      this.typeaheadTimer = window.setTimeout(() => (this.typeahead = ''), 500);
-      const match = items.find(it =>
-        this.itemText(it).toLowerCase().startsWith(this.typeahead),
-      );
-      if (match) match.focus();
-    }
+    // Typeahead itself runs from the capture-phase listener above.
   }
 
   @Listen('materialMenuItemActivate')

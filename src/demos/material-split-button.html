@@ -149,6 +149,37 @@
           </material-split-button>
         </div>
 
+        <code class="text-sm text-on-surface-variant">form submission</code>
+        <div class="flex flex-col gap-2">
+          <p class="text-sm text-on-surface-variant max-w-md">
+            Default <code>type</code> is now <code>submit</code> (native <code>&lt;button&gt;</code>
+            parity) — the leading segment submits the form and contributes its
+            <code>name</code>/<code>value</code> to <code>FormData</code>. The logged
+            <code>event.submitter</code> confirms the patched submitter (a
+            form-associated custom element can't be passed to
+            <code>requestSubmit(submitter)</code> directly, see
+            <a href="https://github.com/WICG/webcomponents/issues/814" target="_blank" rel="noopener"
+               class="underline">WICG/webcomponents#814</a>). Check the box first to confirm a
+            <code>click</code> listener can still cancel the submit.
+          </p>
+          <form id="form-demo" class="flex flex-col gap-3 items-start">
+            <input type="text" name="query" placeholder="query"
+                   class="border border-outline-variant rounded px-3 py-1.5 text-sm bg-surface" />
+            <div class="flex items-center gap-3">
+              <material-split-button id="form-submit-btn" variant="filled" label="Search" icon="search"
+                                     name="action" value="search">
+                <material-menu-item label="Search"></material-menu-item>
+                <material-menu-item label="Search in new tab"></material-menu-item>
+              </material-split-button>
+              <label class="flex items-center gap-1.5 text-sm">
+                <input type="checkbox" id="form-cancel-toggle" />
+                cancel via click listener
+              </label>
+            </div>
+          </form>
+          <pre class="text-xs text-on-surface-variant m-0" id="form-output">submit the form to see output</pre>
+        </div>
+
         <code class="text-sm text-on-surface-variant">keyboard ripple</code>
         <div class="flex flex-col gap-2">
           <p class="text-sm text-on-surface-variant max-w-md">
@@ -210,6 +241,22 @@
     evtBtn.addEventListener('splitAction',    () => push('splitAction'));
     evtBtn.addEventListener('splitMenuOpen',  () => push('splitMenuOpen'));
     evtBtn.addEventListener('splitMenuClose', () => push('splitMenuClose'));
+
+    const formDemo = document.getElementById('form-demo');
+    const formOut = document.getElementById('form-output');
+    const cancelToggle = document.getElementById('form-cancel-toggle');
+    document.getElementById('form-submit-btn').addEventListener('click', (e) => {
+      if (cancelToggle.checked) {
+        e.preventDefault();
+        formOut.textContent = 'click prevented — submit skipped';
+      }
+    });
+    formDemo.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(e.target);
+      const entries = [...data.entries()].map(([k, v]) => `${k}=${v}`).join('\n');
+      formOut.textContent = `submitter: <${e.submitter?.tagName.toLowerCase()}>\n${entries}`;
+    });
   </script>
   <script src="/demos/_shared.js"></script>
 </body>
