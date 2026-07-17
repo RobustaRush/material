@@ -20,6 +20,13 @@
   padding: 1.5rem;
   box-sizing: border-box;
   display: grid;
+  /* Explicit single column pinned to the container width. Without it the
+     implicit column is auto-sized to the widest row's max-content, which
+     Chromium lets overflow the padding box while WebKit clamps to the
+     container — so the margin-auto-centred dial rode off-centre (and got
+     right-clipped) in Chrome only. minmax(0, 1fr) makes the column exactly
+     the content width in both. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto auto auto;
   row-gap: 1.25rem;
   width: 20.5rem;
