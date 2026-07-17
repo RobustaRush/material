@@ -29,7 +29,15 @@ export type MaterialTextfieldType =
 @Component({
   tag: 'material-textfield',
   styleUrl: 'material-textfield.css',
-  shadow: true,
+  // delegatesFocus so host.focus() (and a wrapping :focus-within — labels,
+  // supporting-text tone, etc.) lands on the inner <input> rather than being
+  // a no-op on the non-focusable host. Coexists fine with the existing
+  // :focus-within-driven label float. A slotted leading/trailing
+  // icon-button stays independently focusable/clickable — delegatesFocus
+  // only affects where a *programmatic* host.focus() goes, not tab/click
+  // targeting — but the @Method focus() override below still pins it to the
+  // input explicitly, matching the reference (text-field.ts:782-786).
+  shadow: { delegatesFocus: true },
   formAssociated: true,
 })
 export class MaterialTextfield {
@@ -193,6 +201,76 @@ export class MaterialTextfield {
     // own Promise has already resolved, so a caller's immediately-following
     // reportValidity() would still see the previous validity.
     this.syncValidity();
+  }
+
+  /** Focuses the inner input. `delegatesFocus` on its own would send a
+   *  programmatic `host.focus()` to the shadow root's first focusable
+   *  element, which can be a slotted leading/trailing icon-button rather
+   *  than the input — this override pins it to the input, matching a
+   *  native input's `focus()` (reference text-field.ts:782-786). */
+  @Method()
+  async focus(): Promise<void> {
+    this.inputEl?.focus();
+  }
+
+  /** Selects all the text in the input, like a native input's `select()`. */
+  @Method()
+  async select(): Promise<void> {
+    this.inputEl?.select();
+  }
+
+  /** Sets the start/end/direction of the input's text selection, like a
+   *  native input's `setSelectionRange()`. No-op before first render. */
+  @Method()
+  async setSelectionRange(
+    start: number | null,
+    end: number | null,
+    direction?: 'forward' | 'backward' | 'none',
+  ): Promise<void> {
+    this.inputEl?.setSelectionRange(start, end, direction);
+  }
+
+  /** Replaces a range of text with a new string, like a native input's
+   *  `setRangeText()`. Mirrors the value back onto `value` afterward since
+   *  it edits the input directly. No-op before first render. */
+  @Method()
+  async setRangeText(
+    replacement: string,
+    start?: number,
+    end?: number,
+    selectMode?: 'select' | 'start' | 'end' | 'preserve',
+  ): Promise<void> {
+    const input = this.inputEl;
+    if (!input) return;
+    if (start === undefined) {
+      input.setRangeText(replacement);
+    } else {
+      input.setRangeText(replacement, start, end ?? start, selectMode);
+    }
+    this.value = input.value;
+  }
+
+  /** Reads the current selection. A native input exposes selectionStart /
+   *  selectionEnd / selectionDirection as sync property getter/setters —
+   *  Stencil's @Method surface can't be a sync getter, so this is a
+   *  deliberate deviation from the native/reference (text-field.ts:274-299)
+   *  shape: one async getter returning all three instead of three synchronous
+   *  properties. Setting is still per-field via setSelectionRange() above
+   *  (direction) and setSelectionRange()/setRangeText() (start/end); there's
+   *  no standalone setter for a single field. Returns nulls before first
+   *  render. */
+  @Method()
+  async getSelectionRange(): Promise<{
+    start: number | null;
+    end: number | null;
+    direction: 'forward' | 'backward' | 'none' | null;
+  }> {
+    const input = this.inputEl;
+    return {
+      start: input?.selectionStart ?? null,
+      end: input?.selectionEnd ?? null,
+      direction: (input?.selectionDirection as 'forward' | 'backward' | 'none' | null) ?? null,
+    };
   }
 
   // ElementInternals dispatches `invalid` on the host (not the inner input,

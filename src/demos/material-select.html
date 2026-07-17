@@ -167,10 +167,34 @@
         <em>Sweden</em> → <em>Switzerland</em>. Space mid-word (e.g. type "new"
         then Space then "z" for "New Zealand") stays in the buffer instead of
         opening/closing. Home/End while closed opens the menu focused on the
-        first/last option.
+        first/last option; ArrowUp opens focused on the current selection
+        (or the last option, if nothing is selected yet).
       </p>
       <div class="max-w-sm">
         <material-select id="long" name="country2" label="Country" placeholder="Pick a country"></material-select>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Programmatic selection — <code>option.selected</code></h2>
+      <p class="text-on-surface-variant text-sm">
+        Setting an option's <code>selected</code> property directly (not just
+        writing <code>select.value</code>) updates the field's value/display too —
+        a request-selection channel from the option up to the select. The
+        buttons below flip <code>option.selected</code> on individual
+        <code>material-option</code> elements; watch the field and the "Last
+        valueChange" log update without ever touching <code>.value</code>.
+      </p>
+      <div class="max-w-sm space-y-3">
+        <material-select id="prog" name="fruit" label="Fruit">
+          <material-option value="apple">Apple</material-option>
+          <material-option value="banana">Banana</material-option>
+          <material-option value="cherry">Cherry</material-option>
+        </material-select>
+        <div class="flex gap-2 flex-wrap">
+          <material-button type="button" variant="outlined" label="Select Banana" onclick="document.querySelector('#prog material-option[value=banana]').selected = true"></material-button>
+          <material-button type="button" variant="outlined" label="Deselect Banana" onclick="document.querySelector('#prog material-option[value=banana]').selected = false"></material-button>
+        </div>
       </div>
     </section>
 

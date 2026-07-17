@@ -5,6 +5,7 @@ import {
   EventEmitter,
   Host,
   Prop,
+  Watch,
   h,
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
@@ -40,6 +41,25 @@ export class MaterialOption {
   @Event({ bubbles: true, composed: true })
   materialOptionToggle!: EventEmitter<{ value: string; selected: boolean }>;
 
+  // Request-selection channel (reference selectOptionController.ts:105-127):
+  // lets a parent material-select notice `option.selected = true/false` set
+  // *programmatically* from outside (SSR hydration aside, the only other
+  // writers are the select's own `applySelection()` and click/keyboard,
+  // which already go through materialOptionSelect/materialOptionToggle).
+  // Guarded two ways against feeding back into a loop with
+  // `applySelection()`: `loaded` skips the initial attribute-driven set, and
+  // the select's own handlers no-op when its value/values already agree
+  // with the event (which they do the instant `applySelection()` is the one
+  // doing the writing, since it always runs *after* the select's own state
+  // is updated).
+  @Event({ bubbles: true, composed: true })
+  materialOptionRequestSelection!: EventEmitter<{ value: string }>;
+
+  @Event({ bubbles: true, composed: true })
+  materialOptionRequestDeselection!: EventEmitter<{ value: string }>;
+
+  private loaded = false;
+
   private activate = (e?: Event) => {
     if (this.disabled) return;
     e?.stopPropagation();
@@ -64,10 +84,23 @@ export class MaterialOption {
     e.preventDefault();
   };
 
+  @Watch('selected')
+  onSelectedChange(next: boolean) {
+    // Not yet mounted: this is the initial `selected` attribute being
+    // hydrated into the prop, not an external write — nothing to notify.
+    if (!this.loaded) return;
+    if (next) {
+      this.materialOptionRequestSelection.emit({ value: this.value });
+    } else {
+      this.materialOptionRequestDeselection.emit({ value: this.value });
+    }
+  }
+
   private ripple?: RippleHandle;
 
   componentDidLoad() {
     this.ripple = installRipple(this.el.shadowRoot!);
+    this.loaded = true;
   }
 
   disconnectedCallback() {

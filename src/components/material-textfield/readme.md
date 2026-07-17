@@ -52,6 +52,32 @@ Type: `Promise<boolean>`
 
 
 
+### `focus() => Promise<void>`
+
+Focuses the inner input. `delegatesFocus` on its own would send a
+programmatic `host.focus()` to the shadow root's first focusable
+element, which can be a slotted leading/trailing icon-button rather
+than the input — this override pins it to the input, matching a
+native input's `focus()` (reference text-field.ts:782-786).
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `getSelectionRange() => Promise<{ start: number | null; end: number | null; direction: "forward" | "backward" | "none" | null; }>`
+
+Reads the current selection. A native input exposes selectionStart /
+selectionEnd / selectionDirection as sync property getter/setters —
+Stencil's
+
+#### Returns
+
+Type: `Promise<{ start: number | null; end: number | null; direction: "none" | "forward" | "backward" | null; }>`
+
+
+
 ### `reportValidity() => Promise<boolean>`
 
 Constraint validation. Unlike a native input, an invalid result renders
@@ -61,6 +87,16 @@ see the `invalid` listener below.
 #### Returns
 
 Type: `Promise<boolean>`
+
+
+
+### `select() => Promise<void>`
+
+Selects all the text in the input, like a native input's `select()`.
+
+#### Returns
+
+Type: `Promise<void>`
 
 
 
@@ -77,6 +113,46 @@ or a form submit attempt), matching native behavior.
 | Name      | Type     | Description |
 | --------- | -------- | ----------- |
 | `message` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setRangeText(replacement: string, start?: number, end?: number, selectMode?: "select" | "start" | "end" | "preserve") => Promise<void>`
+
+Replaces a range of text with a new string, like a native input's
+`setRangeText()`. Mirrors the value back onto `value` afterward since
+it edits the input directly. No-op before first render.
+
+#### Parameters
+
+| Name          | Type                                                      | Description |
+| ------------- | --------------------------------------------------------- | ----------- |
+| `replacement` | `string`                                                  |             |
+| `start`       | `number \| undefined`                                     |             |
+| `end`         | `number \| undefined`                                     |             |
+| `selectMode`  | `"select" \| "start" \| "end" \| "preserve" \| undefined` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setSelectionRange(start: number | null, end: number | null, direction?: "forward" | "backward" | "none") => Promise<void>`
+
+Sets the start/end/direction of the input's text selection, like a
+native input's `setSelectionRange()`. No-op before first render.
+
+#### Parameters
+
+| Name        | Type                                             | Description |
+| ----------- | ------------------------------------------------ | ----------- |
+| `start`     | `number \| null`                                 |             |
+| `end`       | `number \| null`                                 |             |
+| `direction` | `"none" \| "forward" \| "backward" \| undefined` |             |
 
 #### Returns
 

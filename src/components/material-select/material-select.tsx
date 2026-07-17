@@ -105,9 +105,13 @@ export class MaterialSelect {
   private menuEl?: MaterialMenuLike;
   private textfieldEl?: HTMLElement;
   private shellEl?: HTMLElement;
-  // Which option to focus once the menu finishes opening. Set by Home/End
-  // on the closed trigger; cleared back to "focus the selection" otherwise.
-  private pendingOpenFocus: 'first' | 'last' | null = null;
+  private chevronEl?: HTMLElement;
+  // Which option to focus once the menu finishes opening. Set by Home/End/
+  // ArrowUp on the closed trigger; cleared back to "focus the selection"
+  // otherwise. 'selected-or-last' (ArrowUp) falls back to the last option
+  // when nothing is selected yet, unlike ArrowDown/Enter/Space which land on
+  // nothing rather than guess a direction.
+  private pendingOpenFocus: 'first' | 'last' | 'selected-or-last' | null = null;
 
   // Closed-select typeahead: commits inline (single) or opens + focuses the
   // match (multi), rebased around the currently-selected option.
@@ -169,6 +173,15 @@ export class MaterialSelect {
     this.teardownLabelActivation = activateOnLabelClick(this.el, () => {
       this.focusTrigger();
     });
+    // material-textfield's inner <input> may not exist in its shadow root
+    // yet on this same tick (it renders on its own schedule) — one rAF
+    // later it always does, matching the anchor-measuring rAF in
+    // handleMenuOpen below. componentDidRender covers every render after.
+    requestAnimationFrame(() => this.syncTriggerAria());
+  }
+
+  componentDidRender() {
+    this.syncTriggerAria();
   }
 
   disconnectedCallback() {
@@ -431,14 +444,44 @@ export class MaterialSelect {
     this.focusTrigger();
   };
 
+  // Single mode's actual focus/tab stop: the readonly <input> inside
+  // material-textfield's shadow root. material-textfield has no prop to
+  // plumb combobox ARIA through, so select reaches in directly here — same
+  // shadow-piercing already used by fieldRowEl()/focusTrigger() below.
+  private triggerInputEl(): HTMLInputElement | null {
+    return ((this.textfieldEl as HTMLElement | undefined)
+      ?.shadowRoot?.querySelector('input') as HTMLInputElement | null) ?? null;
+  }
+
   private fieldRowEl(): HTMLElement | undefined {
     if (this.multiple) return this.shellEl;
     // Anchor against the input row, not the whole textfield (which includes
     // supporting text below). Both filled & outlined variants render the
     // input inside a `.relative` wrapper.
-    const input = (this.textfieldEl as HTMLElement | undefined)
-      ?.shadowRoot?.querySelector('input');
+    const input = this.triggerInputEl();
     return (input?.closest('.relative') as HTMLElement | null) ?? this.textfieldEl;
+  }
+
+  // Single mode: role=combobox + aria-haspopup/expanded/controls belong on
+  // the input, the element the user actually tabs to — not the trailing
+  // chevron icon-button, a separate tab stop (per m3 comparison notes /
+  // reference select.ts:398-410). Re-applied on every render since
+  // material-textfield's own vdom diffing doesn't know about these
+  // attributes and won't strip them, but a full input-node replacement
+  // would. The chevron stays mouse-clickable but is pulled out of the tab
+  // order and hidden from assistive tech, so there's exactly one combobox
+  // focus stop.
+  private syncTriggerAria() {
+    if (this.multiple) return;
+    const input = this.triggerInputEl();
+    if (input) {
+      input.setAttribute('role', 'combobox');
+      input.setAttribute('aria-haspopup', 'listbox');
+      input.setAttribute('aria-expanded', this.open ? 'true' : 'false');
+      input.setAttribute('aria-controls', 'listbox');
+    }
+    const chevronBtn = this.chevronEl?.shadowRoot?.querySelector('button');
+    if (chevronBtn) chevronBtn.setAttribute('tabindex', '-1');
   }
 
   private openMenu = () => {
@@ -469,6 +512,38 @@ export class MaterialSelect {
     if (ce.detail?.value) this.toggleValue(ce.detail.value);
   };
 
+  // Request-selection channel: an option's `selected` prop was set
+  // programmatically from outside (reference selectOptionController.ts:
+  // 105-127). No-op when value/values already agree — the same guard the
+  // reference uses, and what keeps this from looping back against
+  // applySelection() (which always updates `value`/`values` before it
+  // writes the options, so by the time an option's own resulting
+  // request-(de)selection round-trips back here, the check below is
+  // already satisfied).
+  private handleOptionRequestSelection = (e: Event) => {
+    const ce = e as CustomEvent<{ value: string }>;
+    e.stopPropagation();
+    const v = ce.detail?.value;
+    if (!v) return;
+    if (this.multiple) {
+      if (!this.values.includes(v)) this.toggleValue(v);
+    } else if (this.value !== v) {
+      this.commit(v);
+    }
+  };
+
+  private handleOptionRequestDeselection = (e: Event) => {
+    const ce = e as CustomEvent<{ value: string }>;
+    e.stopPropagation();
+    const v = ce.detail?.value;
+    if (!v) return;
+    if (this.multiple) {
+      if (this.values.includes(v)) this.toggleValue(v);
+    } else if (this.value === v) {
+      this.commit('', false);
+    }
+  };
+
   private handleMenuOpen = () => {
     this.open = true;
     this.openChange.emit({ open: true });
@@ -491,7 +566,10 @@ export class MaterialSelect {
         let target: MaterialOptionLike | undefined;
         if (this.pendingOpenFocus === 'first') target = opts[0];
         else if (this.pendingOpenFocus === 'last') target = opts[opts.length - 1];
-        else target = opts.find(o => o.value === this.value);
+        else {
+          target = opts.find(o => o.value === this.value);
+          if (!target && this.pendingOpenFocus === 'selected-or-last') target = opts[opts.length - 1];
+        }
         if (target) {
           target.focus();
           target.scrollIntoView({ block: 'nearest' });
@@ -518,9 +596,7 @@ export class MaterialSelect {
       this.shellEl?.focus();
       return;
     }
-    const input = (this.textfieldEl as HTMLElement | undefined)
-      ?.shadowRoot?.querySelector('input') as HTMLInputElement | null;
-    input?.focus();
+    this.triggerInputEl()?.focus();
   }
 
   private menuKeyHandler = (e: KeyboardEvent) => {
@@ -576,7 +652,11 @@ export class MaterialSelect {
     // character (e.g. "New York"), not a request to open.
     if (!this.closedTypeahead.isTypingAhead && isOpenKey) {
       e.preventDefault();
-      this.pendingOpenFocus = e.key === 'Home' ? 'first' : e.key === 'End' ? 'last' : null;
+      this.pendingOpenFocus =
+        e.key === 'Home' ? 'first' :
+        e.key === 'End' ? 'last' :
+        e.key === 'ArrowUp' ? 'selected-or-last' :
+        null;
       this.openMenu();
       return;
     }
@@ -647,6 +727,10 @@ export class MaterialSelect {
 
   private setShellRef = (el?: HTMLElement) => {
     this.shellEl = el;
+  };
+
+  private setChevronRef = (el?: HTMLMaterialIconButtonElement) => {
+    this.chevronEl = el as HTMLElement | undefined;
   };
 
   private renderMultiShell() {
@@ -875,13 +959,12 @@ export class MaterialSelect {
             />
           )}
           <material-icon-button
+            ref={this.setChevronRef}
             size="s"
             variant="standard"
             icon="arrow_drop_down"
             aria-label={openLabel}
-            aria-haspopup="listbox"
-            aria-expanded={this.open ? 'true' : 'false'}
-            aria-controls="listbox"
+            aria-hidden="true"
             disabled={this.disabled}
             onClick={this.toggleMenu}
           />
@@ -896,6 +979,8 @@ export class MaterialSelect {
         onKeyDown={this.handleHostKeyDown}
         onMaterialOptionSelect={this.handleOptionSelect}
         onMaterialOptionToggle={this.handleOptionToggle}
+        onMaterialOptionRequestSelection={this.handleOptionRequestSelection}
+        onMaterialOptionRequestDeselection={this.handleOptionRequestDeselection}
       >
         {this.multiple ? this.renderMultiShell() : this.renderSingleShell()}
 

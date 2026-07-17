@@ -133,6 +133,23 @@
           <material-checkbox label="Whole word"></material-checkbox>
         </div>
 
+        <code class="text-sm text-on-surface-variant pt-3">focus delegation / selection API</code>
+        <div class="max-w-md space-y-2">
+          <p class="text-on-surface-variant text-sm">
+            <code>host.focus()</code> delegates to the inner <code>&lt;input&gt;</code>
+            (<code>delegatesFocus</code>). The buttons exercise the selection
+            passthroughs — <code>select()</code>, <code>setSelectionRange()</code>
+            and <code>getSelectionRange()</code>.
+          </p>
+          <material-textfield id="selection-demo" label="Selection demo" value="Hello world"></material-textfield>
+          <div class="flex gap-3 flex-wrap">
+            <material-button variant="outlined" size="xs" type="button" id="selection-focus-btn" label="Focus field"></material-button>
+            <material-button variant="outlined" size="xs" type="button" id="selection-select-btn" label="Select all"></material-button>
+            <material-button variant="outlined" size="xs" type="button" id="selection-range-btn" label='Select "world"'></material-button>
+          </div>
+          <output id="selection-demo-output" class="text-sm text-on-surface-variant font-mono"></output>
+        </div>
+
         <code class="text-sm text-on-surface-variant pt-3">on tinted bg</code>
         <div class="rounded-lg p-4 bg-secondary-container space-y-4">
           <p class="text-sm text-on-secondary-container">Outlined keeps a real notch — works on any background.</p>
@@ -227,6 +244,26 @@
     document.getElementById('validation-name')?.addEventListener('input', async (e) => {
       if (e.target.value) await e.target.setCustomValidity('');
     });
+
+    // focus delegation + selection API passthroughs (select/setSelectionRange/
+    // getSelectionRange). getSelectionRange() is async — see readme.md.
+    (() => {
+      const field = document.getElementById('selection-demo');
+      const out = document.getElementById('selection-demo-output');
+      const showSelection = async () => {
+        const { start, end, direction } = await field.getSelectionRange();
+        out.textContent = `start=${start} end=${end} direction=${direction}`;
+      };
+      document.getElementById('selection-focus-btn')?.addEventListener('click', () => field.focus());
+      document.getElementById('selection-select-btn')?.addEventListener('click', async () => {
+        await field.select();
+        await showSelection();
+      });
+      document.getElementById('selection-range-btn')?.addEventListener('click', async () => {
+        await field.setSelectionRange(6, 11, 'forward');
+        await showSelection();
+      });
+    })();
   </script>
 </body>
 </html>

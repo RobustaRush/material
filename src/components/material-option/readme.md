@@ -21,10 +21,12 @@
 
 ## Events
 
-| Event                  | Description | Type                                                 |
-| ---------------------- | ----------- | ---------------------------------------------------- |
-| `materialOptionSelect` |             | `CustomEvent<{ value: string; }>`                    |
-| `materialOptionToggle` |             | `CustomEvent<{ value: string; selected: boolean; }>` |
+| Event                              | Description | Type                                                 |
+| ---------------------------------- | ----------- | ---------------------------------------------------- |
+| `materialOptionRequestDeselection` |             | `CustomEvent<{ value: string; }>`                    |
+| `materialOptionRequestSelection`   |             | `CustomEvent<{ value: string; }>`                    |
+| `materialOptionSelect`             |             | `CustomEvent<{ value: string; }>`                    |
+| `materialOptionToggle`             |             | `CustomEvent<{ value: string; selected: boolean; }>` |
 
 
 ----------------------------------------------
