@@ -40,11 +40,14 @@ export class MaterialTabs {
   @Prop({ reflect: true }) variant: MaterialTabsVariant = 'primary';
   @Prop({ reflect: true }) scrollable = false;
 
-  @Event({ bubbles: true, composed: true })
+  // Cancelable: a listener can call preventDefault() to veto the selection
+  // (e.g. unsaved-changes guard); the previous selection is then restored.
+  @Event({ bubbles: true, composed: true, cancelable: true })
   materialTabSelect!: EventEmitter<{ value?: string }>;
 
   private indicatorEl?: HTMLElement;
   private innerEl?: HTMLElement;
+  private tablistEl?: HTMLElement;
   private ro?: ResizeObserver;
 
   connectedCallback() {
@@ -78,6 +81,14 @@ export class MaterialTabs {
     for (const t of tabs) {
       if (this.scrollable) t.setAttribute('scrollable-host', '');
       else t.removeAttribute('scrollable-host');
+    }
+
+    // Auto-select the first enabled tab when none is active, so the
+    // indicator isn't hidden (e.g. no `selected` attribute set declaratively,
+    // or the previously-selected tab was removed).
+    if (!tabs.some((t) => t.selected && !t.disabled)) {
+      const first = tabs.find((t) => !t.disabled);
+      if (first) first.selected = true;
     }
 
     // Roving tabindex: exactly one tabbable element. Prefer selected; else
@@ -139,16 +150,24 @@ export class MaterialTabs {
     if (!target || target.disabled) return;
 
     const tabs = this.tabs();
+    const previous = tabs.find((t) => t.selected) ?? null;
+
     for (const t of tabs) {
       t.selected = t === target;
       t.tabbable = t === target;
     }
-
-    // Scroll a clipped tab fully into view when activated by click.
-    target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-
     this.positionIndicator();
-    this.materialTabSelect.emit({ value: e.detail.value });
+
+    const evt = this.materialTabSelect.emit({ value: e.detail.value });
+    if (evt.defaultPrevented) {
+      // Listener vetoed the selection — restore the previous selected tab.
+      for (const t of tabs) t.selected = t === previous;
+      this.positionIndicator();
+      return;
+    }
+
+    // Scroll a clipped tab into view (with margin) now the selection stuck.
+    this.scrollToTab(target);
   }
 
   @Listen('keydown')
@@ -189,7 +208,42 @@ export class MaterialTabs {
     // Focus the inner button/anchor inside the tab's shadow root.
     const inner = target.shadowRoot?.querySelector<HTMLElement>('button, a');
     inner?.focus();
-    target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    this.scrollToTab(target);
+  }
+
+  @Listen('focusout')
+  handleFocusOut() {
+    // Once focus leaves the tablist entirely, snap the roving tab stop back
+    // to the selected tab — so Tab-out then Tab-in re-enters on the active
+    // tab rather than wherever Arrow keys last parked it.
+    if (this.el.matches(':focus-within')) return;
+    const tabs = this.tabs();
+    const selected = tabs.find((t) => t.selected && !t.disabled);
+    if (!selected) return;
+    for (const t of tabs) t.tabbable = t === selected;
+  }
+
+  // Scroll a tab into view within the (scrollable) tablist, leaving a margin
+  // of context at the scroll edge instead of ending flush against it.
+  private scrollToTab(target: HTMLElement) {
+    const scroller = this.tablistEl;
+    if (!scroller) return;
+    const margin = 48;
+    const targetRect = target.getBoundingClientRect();
+    const scrollerRect = scroller.getBoundingClientRect();
+    const scroll = scroller.scrollLeft;
+    const offset = targetRect.left - scrollerRect.left + scroll;
+    const extent = targetRect.width;
+    const hostExtent = scroller.clientWidth;
+    const min = offset - margin;
+    const max = offset + extent - hostExtent + margin;
+    const to = Math.min(min, Math.max(max, scroll));
+    if (to !== scroll) {
+      // Honor reduced-motion: fall back to an instant jump (matches the prior
+      // scrollIntoView behavior and the indicator's own reduced-motion guard).
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scroller.scrollTo({ left: to, top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    }
   }
 
   private tabs(): TabEl[] {
@@ -206,7 +260,12 @@ export class MaterialTabs {
     // border so it always spans the full width.
     return (
       <Host>
-        <div role="tablist" aria-orientation="horizontal" class="tablist">
+        <div
+          role="tablist"
+          aria-orientation="horizontal"
+          class="tablist"
+          ref={(el) => (this.tablistEl = el)}
+        >
           <div class="inner" ref={(el) => (this.innerEl = el)}>
             <slot onSlotchange={this.handleSlotChange} />
             <span

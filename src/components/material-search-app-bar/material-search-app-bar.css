@@ -110,10 +110,13 @@
   display: none;
 }
 
-/* Focus ring on the search container when input is focused. */
+/* Focus ring on the search container when input is focused. 2px width
+   predates the 3px MD3 default — kept for visual continuity; offset (2px)
+   already matches the shared default. */
 .search-container:focus-within {
-  outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 0.125rem;
+  --md-focus-ring-width: 2px;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 /* A slotted material-search replaces the built-in input: drop the app bar's
@@ -127,10 +130,12 @@
   /* Inherited into the slotted material-search: no focus-widening inside the
      app bar — leading/trailing neighbors sit right next to the container —
      and a slim, inward-hugging focus ring: the 64dp bar leaves only 4px
-     around the 56dp pill, so the spec's 3px+2px ring gets clipped. */
+     around the 56dp pill, so the shared default (3px width / 2px offset)
+     ring gets clipped. Overriding the shared tokens here cascades into the
+     slotted <material-search>'s shadow DOM. */
   --search-focus-expand: 0;
-  --search-focus-ring-width: 2px;
-  --search-focus-ring-offset: -1px;
+  --md-focus-ring-width: 2px;
+  --md-focus-ring-offset: -1px;
 }
 
 .search-container.custom:focus-within {

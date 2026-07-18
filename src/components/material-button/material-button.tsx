@@ -34,6 +34,11 @@ export class MaterialButton {
   // ("immutable prop was modified from within the component") on every form-
   // disable toggle.
   @Prop({ reflect: true, mutable: true }) disabled = false;
+  /** Disabled but still focusable/reachable by keyboard and AT, per
+   *  https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_disabled_controls.
+   *  Visually identical to `disabled`; the click handler blocks activation
+   *  instead of the element leaving the tab order. */
+  @Prop({ reflect: true, attribute: 'soft-disabled' }) softDisabled = false;
   @Prop({ reflect: true, attribute: 'shape-morph' }) shapeMorph = false;
   /** Resting corner shape. `round` is the pill default; `square` uses the
    *  small rounded-rect resting radius (parity with icon-button's `shape`). */
@@ -96,6 +101,15 @@ export class MaterialButton {
   }
 
   private handleClick = (e: MouseEvent) => {
+    if (this.softDisabled) {
+      // Native <button disabled> never fires click; a soft-disabled button
+      // stays enabled so it can, so stop it here — and stop propagation too,
+      // matching material-web's Button.handleClick, so a listener on the host
+      // element doesn't see activation either.
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return;
+    }
     if (this.disabled) {
       e.preventDefault();
       return;
@@ -177,7 +191,7 @@ export class MaterialButton {
           rel={rel}
           download={this.download}
           aria-label={this.ariaLabel}
-          aria-disabled={this.disabled ? 'true' : undefined}
+          aria-disabled={this.disabled || this.softDisabled ? 'true' : undefined}
           tabindex={this.disabled ? -1 : undefined}
           part="button"
           data-ripple
@@ -193,6 +207,7 @@ export class MaterialButton {
         type={this.toggle ? 'button' : this.type}
         disabled={this.disabled}
         aria-pressed={this.toggle ? String(this.selected) : undefined}
+        aria-disabled={this.softDisabled ? 'true' : undefined}
         aria-label={this.ariaLabel}
         part="button"
         data-ripple

@@ -75,20 +75,26 @@
 [part="chip"]:focus-visible,
 .body:focus-visible,
 .trailing-btn:focus-visible {
-  outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 0.125rem;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 /* MD3 disabled: content on-surface 38%, container/outline 12% — not a blanket
-   opacity that keeps the hue. */
+   opacity that keeps the hue. [aria-disabled="true"] also covers soft-disabled
+   for the button/anchor variants (the TSX sets it there instead of the native
+   `disabled` attribute, which would drop the element from the tab order).
+   Input chips render [part="chip"] as a non-interactive wrapper `<div>`
+   around `.body`/`.trailing-btn`, so it never carries either attribute — the
+   `:host(:is([disabled], [soft-disabled]))` selector reaches it via the
+   reflected host attribute instead. */
 [part="chip"]:disabled,
 [part="chip"][aria-disabled="true"],
-:host([disabled]) [part="chip"] {
+:host(:is([disabled], [soft-disabled])) [part="chip"] {
   pointer-events: none;
   --chip-fg: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
   border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
 }
-:host([disabled][selected]) [part="chip"] {
+:host(:is([disabled], [soft-disabled])[selected]) [part="chip"] {
   --chip-bg: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
 }
 
@@ -188,7 +194,7 @@
     0 1px 2px rgb(0 0 0 / .3),
     0 1px 3px 1px rgb(0 0 0 / .15);
 }
-:host([elevated][disabled]) [part="chip"] { box-shadow: none; }
+:host([elevated]:is([disabled], [soft-disabled])) [part="chip"] { box-shadow: none; }
 
 /* Hover state layer (8%). Press feedback comes from the shared ripple, which
    holds its own pressed opacity layer while held — no separate :active tint. */
@@ -196,7 +202,7 @@
   background-color: color-mix(in srgb, currentColor 8%, var(--chip-bg, transparent));
 }
 
-:host([variant="input"]) .body:not(:disabled):hover {
+:host([variant="input"]) .body:not(:disabled):not([aria-disabled="true"]):hover {
   background-color: color-mix(in srgb, currentColor 8%, transparent);
 }
 
@@ -243,7 +249,7 @@
   position: absolute;
   inset: -0.5rem -0.5rem -0.5rem -0.25rem;
 }
-.trailing-btn:not(:disabled):hover {
+.trailing-btn:not(:disabled):not([aria-disabled="true"]):hover {
   background-color: color-mix(in srgb, currentColor 8%, transparent);
 }
 
@@ -272,7 +278,7 @@
 
   [part="chip"]:disabled,
   [part="chip"][aria-disabled="true"],
-  :host([disabled]) [part="chip"] {
+  :host(:is([disabled], [soft-disabled])) [part="chip"] {
     --chip-fg: GrayText;
     border-color: GrayText;
   }
@@ -280,7 +286,7 @@
      all four properties — otherwise a disabled+selected filter/input chip
      would keep HighlightText-on-Canvas from the selected rule (near-
      invisible text) instead of falling back to GrayText. */
-  :host([disabled][selected]) [part="chip"] {
+  :host(:is([disabled], [soft-disabled])[selected]) [part="chip"] {
     --chip-bg: Canvas;
     --chip-fg: GrayText;
     --chip-leading: GrayText;

@@ -50,8 +50,8 @@
 }
 
 [part="button"]:focus-visible [part="visual"] {
-  outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 0.125rem;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 /* Sizes — visual height + icon font-size. */
@@ -137,7 +137,10 @@
 
 /* MD3 disabled system (placed after the variants so it overrides their live
    colors): content at on-surface 38%, container/outline at 12% — neutral grey,
-   not a dimmed hue. */
+   not a dimmed hue. [aria-disabled="true"] also covers `soft-disabled` — the
+   TSX sets it on [part="button"] for that state (in place of the native
+   `disabled` attribute, which would drop it from the tab order) so it rides
+   the same selectors as regular disabled with no extra rules needed here. */
 [part="button"]:disabled [part="visual"],
 [part="button"][aria-disabled="true"] [part="visual"] {
   color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);

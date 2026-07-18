@@ -40,8 +40,17 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: var(--fab-size);
+  /* Width is always intrinsic — icon-only relies on `min-width` to force the
+     square/circle (content is smaller and centers inside it via
+     `justify-content`); extended relies on the same `min-width` floor plus
+     the growing `.label-track` (below) to reach the pill's content width.
+     Keeping `width: auto` in both states means the collapse/expand only ever
+     transitions concrete values (`min-width`, `padding-inline`, `height`),
+     never jumps between `auto` and a fixed length. */
+  width: auto;
+  min-width: var(--fab-size);
   height: var(--fab-size);
+  padding-inline: 0;
   border-radius: var(--fab-r);
   background: var(--fab-bg);
   color: var(--fab-fg);
@@ -53,6 +62,9 @@
     box-shadow 120ms linear,
     background-color 120ms linear,
     border-radius 180ms cubic-bezier(.2, 0, 0, 1),
+    height 180ms cubic-bezier(.2, 0, 0, 1),
+    min-width 180ms cubic-bezier(.2, 0, 0, 1),
+    padding-inline 180ms cubic-bezier(.2, 0, 0, 1),
     opacity 200ms cubic-bezier(.2, 0, 0, 1),
     transform 200ms cubic-bezier(.2, 0, 0, 1);
 }
@@ -70,8 +82,8 @@
 }
 
 [part="button"]:focus-visible [part="visual"] {
-  outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 0.125rem;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 :host([disabled]) [part="visual"] {
@@ -85,6 +97,23 @@
 :host([size="small"])  { --fab-size: 56px; --fab-r: 16px; --fab-icon: 24px; }
 :host([size="medium"]) { --fab-size: 80px; --fab-r: 20px; --fab-icon: 28px; }
 :host([size="large"])  { --fab-size: 96px; --fab-r: 28px; --fab-icon: 36px; }
+
+/* Extended FAB — `label` is set. `size` is ignored (matches the reference:
+   extended never combines with the large/small variants), the container
+   grows to a pill sized like the small FAB (56dp / 16dp corner / 24dp icon)
+   with icon + label side by side. Placed after the size rules so it wins the
+   cascade at equal specificity regardless of `size`. */
+:host([extended]) { --fab-size: 56px; --fab-r: 16px; --fab-icon: 24px; }
+
+:host([extended]) [part="visual"] {
+  justify-content: flex-start;
+  /* MD3 extended padding: 16dp leading (icon side) / 20dp trailing. */
+  padding-inline: 1rem 1.25rem;
+}
+
+:host([extended]) .icon {
+  margin-inline-end: 0.75rem;
+}
 
 /* Color sets per spec. */
 :host([variant="primary"])             { --fab-bg: var(--md-sys-color-primary);             --fab-fg: var(--md-sys-color-on-primary); }
@@ -118,6 +147,56 @@
   line-height: 1;
   font-size: var(--fab-icon, 1.5rem);
   position: relative;
+}
+
+/* Extended-FAB label. `.label-track` is the animated grid column — it's
+   always in the DOM (even icon-only) so setting/clearing `label` at runtime
+   transitions instead of popping in. `min-width: 0` on `.label` lets the
+   column collapse to 0fr; `.label`'s own opacity fades independently so the
+   text doesn't smear across the width change. */
+.label-track {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns var(--md-sys-motion-duration-short4, 200ms)
+    var(--md-sys-motion-easing-emphasized, cubic-bezier(0.2, 0, 0, 1));
+}
+:host([extended]) .label-track {
+  grid-template-columns: 1fr;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0;
+  /* Typescale label-large. */
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  letter-spacing: 0.00625rem;
+  transition: opacity var(--md-sys-motion-duration-short4, 200ms) linear;
+}
+:host([extended]) .label {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .label-track,
+  .label {
+    transition: none;
+  }
+  /* Drop only the extended-collapse-related transitions; leave the
+     pre-existing shadow/color/shape/hide-near-end motion as-is. */
+  [part="visual"] {
+    transition:
+      box-shadow 120ms linear,
+      background-color 120ms linear,
+      border-radius 180ms cubic-bezier(.2, 0, 0, 1),
+      opacity 200ms cubic-bezier(.2, 0, 0, 1),
+      transform 200ms cubic-bezier(.2, 0, 0, 1);
+  }
 }
 
 /* Windows High Contrast: the fill (all FAB variants are filled-type) is

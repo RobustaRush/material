@@ -20,7 +20,8 @@
         <h1 class="text-xl font-bold">material-fab</h1>
         <p class="text-on-surface-variant text-sm">
           MD3 floating action button — three sizes (small / medium / large)
-          and six color sets. Form-associated; supports anchor and popover trigger.
+          and six color sets, plus an extended (icon + label) form.
+          Form-associated; supports anchor and popover trigger.
         </p>
       </div>
     </div>
@@ -73,6 +74,49 @@
           <material-fab variant="primary"   icon="add"     aria-label="Add"></material-fab>
           <material-fab variant="secondary" icon="edit"    aria-label="Edit"></material-fab>
           <material-fab variant="tertiary"  icon="palette" aria-label="Palette"></material-fab>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">extended</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <material-fab icon="add" label="Compose" aria-label="Compose"></material-fab>
+          <material-fab variant="tertiary-container" icon="edit" label="Edit document" aria-label="Edit document"></material-fab>
+          <material-fab variant="secondary" icon="download" label="Download" aria-label="Download"></material-fab>
+          <material-fab disabled icon="add" label="Disabled" aria-label="Disabled"></material-fab>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">extended · size ignored</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <p class="text-sm text-on-surface-variant max-w-md basis-full">
+            <code>size</code> has no effect while <code>label</code> is set — all
+            three render at the same (small-scale) extended height/shape.
+          </p>
+          <material-fab size="small"  icon="add" label="Small"  aria-label="Small"></material-fab>
+          <material-fab size="medium" icon="add" label="Medium" aria-label="Medium"></material-fab>
+          <material-fab size="large"  icon="add" label="Large"  aria-label="Large"></material-fab>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">extended · overflow</code>
+        <div class="flex flex-wrap gap-6 items-center">
+          <p class="text-sm text-on-surface-variant max-w-md basis-full">
+            The label truncates with an ellipsis instead of growing past its
+            container.
+          </p>
+          <div style="max-width: 160px;">
+            <material-fab icon="add" label="A very long extended FAB label" aria-label="A very long extended FAB label"></material-fab>
+          </div>
+        </div>
+
+        <code class="text-sm text-on-surface-variant">extended · collapse animation</code>
+        <div class="flex flex-col gap-2">
+          <p class="text-sm text-on-surface-variant max-w-md">
+            Toggling <code>label</code> at runtime animates the width and the
+            label fade (~200ms, emphasized easing; respects
+            <code>prefers-reduced-motion</code>).
+          </p>
+          <div class="flex items-center gap-4">
+            <material-fab id="extend-toggle-fab" size="small" icon="add" aria-label="Compose"></material-fab>
+            <material-button id="extend-toggle-btn" variant="outlined" size="s">Toggle label</material-button>
+          </div>
         </div>
 
         <code class="text-sm text-on-surface-variant">disabled</code>
@@ -146,7 +190,10 @@
 &lt;material-fab href="/new" icon="add" aria-label="New"&gt;&lt;/material-fab&gt;
 
 &lt;!-- as a popover trigger (e.g. for material-menu) --&gt;
-&lt;material-fab popovertarget="my-menu" icon="more_vert" aria-label="More"&gt;&lt;/material-fab&gt;</code></pre>
+&lt;material-fab popovertarget="my-menu" icon="more_vert" aria-label="More"&gt;&lt;/material-fab&gt;
+
+&lt;!-- extended: icon + label, pill-shaped; `size` is ignored --&gt;
+&lt;material-fab icon="add" label="Compose" aria-label="Compose"&gt;&lt;/material-fab&gt;</code></pre>
       </details>
     </section>
   </main>
@@ -157,6 +204,11 @@
       const n = (parseInt(out.dataset.n || '0', 10) || 0) + 1;
       out.dataset.n = String(n);
       out.textContent = `clicked ×${n}`;
+    });
+
+    document.getElementById('extend-toggle-btn').addEventListener('click', () => {
+      const fab = document.getElementById('extend-toggle-fab');
+      fab.label = fab.label ? '' : 'Compose';
     });
   </script>
   <script src="/demos/_shared.js"></script>

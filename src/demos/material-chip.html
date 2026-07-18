@@ -97,6 +97,22 @@
           <material-chip variant="assist" href="https://m3.material.io/components/chips" disabled label="Disabled link"></material-chip>
         </div>
 
+        <code class="text-sm text-on-surface-variant">soft-disabled</code>
+        <div class="flex flex-col gap-2">
+          <p class="text-sm text-on-surface-variant max-w-md">
+            <code>soft-disabled</code> looks identical to <code>disabled</code> but
+            stays in the tab order — Tab to it and note the focus ring lands on it
+            (unlike the disabled chips above, which skip it). Space/Enter/click do
+            nothing: no toggle, no removal, no navigation.
+          </p>
+          <div class="flex gap-2 flex-wrap items-center">
+            <material-chip variant="assist" icon="link" label="Soft-disabled" soft-disabled></material-chip>
+            <material-chip variant="filter" label="Soft-disabled on" selected soft-disabled></material-chip>
+            <material-chip variant="input" label="Soft-disabled" soft-disabled></material-chip>
+            <material-chip variant="assist" href="https://m3.material.io/components/chips" label="Soft-disabled link" soft-disabled></material-chip>
+          </div>
+        </div>
+
         <code class="text-sm text-on-surface-variant">chip-set</code>
         <div class="flex flex-col gap-2 items-start">
           <p class="text-xs text-on-surface-variant max-w-prose">
@@ -148,6 +164,9 @@
 &lt;material-chip variant="input" label="Kim" selected&gt;
   &lt;img slot="avatar" src="/avatars/kim.jpg" alt="" /&gt;
 &lt;/material-chip&gt;
+
+&lt;!-- soft-disabled: looks disabled, stays tab-focusable, blocks activation --&gt;
+&lt;material-chip variant="filter" label="Soft-disabled" soft-disabled&gt;&lt;/material-chip&gt;
 
 &lt;!-- chip-set: role="toolbar" + roving tabindex + arrow-key nav across chips --&gt;
 &lt;material-chip-set&gt;

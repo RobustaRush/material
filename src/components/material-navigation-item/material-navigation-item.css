@@ -51,8 +51,12 @@
 }
 
 .root:focus-visible {
-  outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: -2px;
+  /* Inset ring, pulled in from the item's own edge; 2px width predates the
+     3px MD3 default — kept for visual continuity with the item's density. */
+  --md-focus-ring-width: 2px;
+  --md-focus-ring-offset: -2px;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .root:disabled {

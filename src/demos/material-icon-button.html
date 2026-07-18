@@ -130,6 +130,20 @@
           </material-icon-button>
         </div>
 
+        <code class="text-sm text-on-surface-variant">soft-disabled</code>
+        <div class="flex flex-col gap-2">
+          <p class="text-sm text-on-surface-variant max-w-md">
+            <code>soft-disabled</code> looks identical to <code>disabled</code> but
+            stays in the tab order — Tab to it and note the focus ring lands on it
+            (unlike the disabled buttons above, which skip it). Space/Enter/click
+            do nothing.
+          </p>
+          <div class="flex gap-3 flex-wrap items-center">
+            <material-icon-button variant="filled" icon="block" aria-label="Soft-disabled" soft-disabled></material-icon-button>
+            <material-icon-button variant="outlined" icon="block" href="#nope" aria-label="Soft-disabled link" soft-disabled></material-icon-button>
+          </div>
+        </div>
+
         <code class="text-sm text-on-surface-variant">link</code>
         <div class="flex gap-3 flex-wrap items-center">
           <material-icon-button variant="filled" icon="home" href="#anchor" aria-label="Home (same tab)"></material-icon-button>
@@ -167,7 +181,10 @@
 &lt;!-- link: renders as &lt;a href&gt; instead of &lt;button&gt; --&gt;
 &lt;material-icon-button icon="home" href="/docs" aria-label="Home"&gt;&lt;/material-icon-button&gt;
 &lt;material-icon-button icon="open_in_new" href="https://example.com" target="_blank"
-                       aria-label="External"&gt;&lt;/material-icon-button&gt;</code></pre>
+                       aria-label="External"&gt;&lt;/material-icon-button&gt;
+
+&lt;!-- soft-disabled: looks disabled, stays tab-focusable, blocks activation --&gt;
+&lt;material-icon-button icon="block" aria-label="Soft-disabled" soft-disabled&gt;&lt;/material-icon-button&gt;</code></pre>
       </details>
     </section>
   </main>

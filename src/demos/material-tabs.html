@@ -125,6 +125,30 @@
       </material-tabs>
     </section>
 
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">No initial selection</h2>
+      <p class="text-on-surface-variant text-sm">
+        When no tab carries <code>selected</code>, the first enabled tab is auto-selected on mount so the indicator is never hidden.
+      </p>
+      <material-tabs id="tabs-auto-select">
+        <material-tab value="draft" label="Draft"></material-tab>
+        <material-tab value="review" label="Review"></material-tab>
+        <material-tab value="archived" label="Archived"></material-tab>
+      </material-tabs>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Cancelable selection</h2>
+      <p class="text-on-surface-variant text-sm">
+        <code>materialTabSelect</code> is cancelable — a listener can call <code>preventDefault()</code> to veto the switch and keep the previous tab selected. Try "Locked" below.
+      </p>
+      <material-tabs id="tabs-cancelable">
+        <material-tab value="draft" label="Draft" selected></material-tab>
+        <material-tab value="review" label="Review"></material-tab>
+        <material-tab value="locked" label="Locked"></material-tab>
+      </material-tabs>
+    </section>
+
     <section class="space-y-2">
       <h2 class="text-lg font-semibold">Selection log</h2>
       <output id="log" class="block bg-surface-container-low border border-outline-variant rounded px-3 py-2 text-sm font-mono min-h-9">(none)</output>
@@ -170,6 +194,16 @@
     document.addEventListener('materialTabSelect', (e) => {
       const tabs = e.target.closest('material-tabs');
       log.textContent = `[${tabs?.id || 'tabs'}] → ${e.detail.value ?? '(no value)'}`;
+    });
+
+    // Demo: "Locked" vetoes its own selection instead of activating. Stop the
+    // event from also reaching the generic log listener below, which would
+    // otherwise print the vetoed value as if it had been selected.
+    document.getElementById('tabs-cancelable').addEventListener('materialTabSelect', (e) => {
+      if (e.detail.value !== 'locked') return;
+      e.preventDefault();
+      e.stopPropagation();
+      log.textContent = '[tabs-cancelable] → locked vetoed (kept previous)';
     });
   </script>
 </body>

@@ -156,7 +156,12 @@
 }
 
 .toggle:focus-visible {
-  outline: 2px solid var(--md-sys-color-secondary);
+  /* Flush ring (no outward offset — the toggle sits close to the rail edge);
+     2px width predates the 3px MD3 default, kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  --md-focus-ring-offset: 0;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .state-layer {

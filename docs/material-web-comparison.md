@@ -240,9 +240,12 @@ Only button/split-button/fab had one, as a one-shot `:active` keyframe
    pressed-class lifecycle, 0.12 held opacity, soft edge, standard easing,
    reduced-motion + forced-colors fallbacks; rolled out to 17 components.
    Bonus: hover state layers swept 120ms → 15ms linear (reference value).
-4. Unified focus ring tokens (`--md-focus-ring-*` in system.css) + two-phase
-   animation; sweep all `:focus-visible` rules. *(Partial: checkbox/radio got
-   visible outlines in `abe0c33`; unification/animation still open.)*
+4. ~~Unified focus ring tokens + sweep~~ **done ✓** — `--md-focus-ring-{color,
+   width,offset}` (secondary / 3px / 2px) in system.css; every `:focus-visible`
+   across ~30 components routed through them, deliberate deviations (inset
+   offsets on dense rows, wider slider-thumb clearance) preserved via local
+   token overrides. A `@keyframes md-focus-ring-grow` (150ms→8px / 450ms
+   settle) is defined as an opt-in; per-component application still open.
 5. ~~`forced-colors: active` blocks across interactive components~~
    **done ✓** — @media (forced-colors: active) added across buttons/fab/
    icon-button/split-button, checkbox/radio/switch/slider, chips, and
@@ -285,6 +288,12 @@ Only button/split-button/fab had one, as a one-shot `:active` keyframe
     (chevron `aria-hidden` + `tabindex=-1`), Home/End/ArrowUp open the menu
     focusing first/last/selected, and a request-selection channel so
     programmatic `option.selected = true` syncs the select (loop-guarded).
-13. soft-disabled support; extended FAB (label collapse); tabs polish
-    (focusout reset, scroll margin, cancelable select); themeable elevation
-    shadow color via `color-mix(var(--md-sys-color-shadow))`.
+13. ~~soft-disabled; extended FAB; tabs polish; themeable elevation shadow~~
+    **done ✓** — soft-disabled (focusable, `aria-disabled`, activation swallowed,
+    stays in tab order) on button/icon-button/chip; extended FAB (`label` prop,
+    pill geometry, collapse animation); tabs polish (focusout returns roving to
+    the selected tab, 48px scroll margin, cancelable select with revert,
+    auto-select first tab); elevation tokens →
+    `color-mix(in srgb, var(--md-sys-color-shadow) …)` so shadows follow the
+    theme. (`focus`-ring entrance animation opt-in and `touch-target` API from
+    #4/#9 remain the only open polish.)

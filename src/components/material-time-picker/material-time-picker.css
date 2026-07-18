@@ -90,8 +90,10 @@
 }
 
 .tp__tile:focus-visible {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 0.125rem;
+  /* 2px width predates the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .tp__sep {
@@ -145,8 +147,12 @@
 }
 
 .tp__period-btn:focus-visible {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -0.125rem;
+  /* Inset ring (button has no room for an outward offset); 2px width
+     predates the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  --md-focus-ring-offset: -0.125rem;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 /* ---------- Dial ---------- */
@@ -236,8 +242,10 @@
 }
 
 .tp__dial-cell:focus-visible {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 0.125rem;
+  /* 2px width predates the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .tp__dial-cell--inner {

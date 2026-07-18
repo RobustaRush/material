@@ -77,8 +77,15 @@
 }
 
 .tb-btn:focus-visible {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 1px;
+  /* Kept on primary (not the shared secondary default): pressed toolbar
+     buttons sit on a secondary-container fill just 1px inside this ring, so
+     a secondary ring would read as blending into that fill. 2px width
+     predates the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-color: var(--md-sys-color-primary);
+  --md-focus-ring-width: 2px;
+  --md-focus-ring-offset: 1px;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .tb-btn.pressed {

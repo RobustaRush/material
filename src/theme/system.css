@@ -52,18 +52,55 @@
   /* ---- Elevation: shadow sets ------------------------------------------- */
   --md-sys-elevation-0: none;
   --md-sys-elevation-1:
-    0 1px 2px 0 rgb(0 0 0 / 0.30),
-    0 1px 3px 1px rgb(0 0 0 / 0.15);
+    0 1px 2px 0 color-mix(in srgb, var(--md-sys-color-shadow, #000) 30%, transparent),
+    0 1px 3px 1px color-mix(in srgb, var(--md-sys-color-shadow, #000) 15%, transparent);
   --md-sys-elevation-2:
-    0 1px 2px 0 rgb(0 0 0 / 0.30),
-    0 2px 6px 2px rgb(0 0 0 / 0.15);
+    0 1px 2px 0 color-mix(in srgb, var(--md-sys-color-shadow, #000) 30%, transparent),
+    0 2px 6px 2px color-mix(in srgb, var(--md-sys-color-shadow, #000) 15%, transparent);
   --md-sys-elevation-3:
-    0 1px 3px 0 rgb(0 0 0 / 0.30),
-    0 4px 8px 3px rgb(0 0 0 / 0.15);
+    0 1px 3px 0 color-mix(in srgb, var(--md-sys-color-shadow, #000) 30%, transparent),
+    0 4px 8px 3px color-mix(in srgb, var(--md-sys-color-shadow, #000) 15%, transparent);
   --md-sys-elevation-4:
-    0 2px 3px 0 rgb(0 0 0 / 0.30),
-    0 6px 10px 4px rgb(0 0 0 / 0.15);
+    0 2px 3px 0 color-mix(in srgb, var(--md-sys-color-shadow, #000) 30%, transparent),
+    0 6px 10px 4px color-mix(in srgb, var(--md-sys-color-shadow, #000) 15%, transparent);
   --md-sys-elevation-5:
-    0 4px 4px 0 rgb(0 0 0 / 0.30),
-    0 8px 12px 6px rgb(0 0 0 / 0.15);
+    0 4px 4px 0 color-mix(in srgb, var(--md-sys-color-shadow, #000) 30%, transparent),
+    0 8px 12px 6px color-mix(in srgb, var(--md-sys-color-shadow, #000) 15%, transparent);
+
+  /* ---- Focus ring --------------------------------------------------------
+     Single source of truth for keyboard-focus outlines (MD3: secondary
+     color, 3dp width, 2dp outward offset). Components should reference these
+     tokens instead of hardcoding outline color/width/offset per file.
+     Per-component overrides are still allowed by re-declaring the token
+     locally (e.g. a tighter --md-focus-ring-offset on dense controls, or a
+     contrast-driven --md-focus-ring-color on saturated fills) — this block
+     only sets the shared default. */
+  --md-focus-ring-color: var(--md-sys-color-secondary);
+  --md-focus-ring-width: 3px;
+  --md-focus-ring-offset: 2px;
+}
+
+/* Shared entrance animation for focus rings: outline-width grows past its
+   resting width then settles back down, giving the MD3 "spring" feel on an
+   outline instead of a dedicated ring element. Components opt in on their
+   :focus-visible rule, e.g.:
+     [part="button"]:focus-visible {
+       outline-width: var(--md-focus-ring-width);
+       animation: md-focus-ring-grow 600ms var(--md-sys-motion-easing-emphasized);
+     }
+     @media (prefers-reduced-motion: reduce) {
+       [part="button"]:focus-visible { animation: none; }
+     }
+   150ms grow to ~8px, 450ms settle back to the base width (matches
+   --md-sys-motion-duration-short3 + --md-sys-motion-duration-long1). */
+@keyframes md-focus-ring-grow {
+  0% {
+    outline-width: var(--md-focus-ring-width);
+  }
+  25% {
+    outline-width: 8px;
+  }
+  100% {
+    outline-width: var(--md-focus-ring-width);
+  }
 }

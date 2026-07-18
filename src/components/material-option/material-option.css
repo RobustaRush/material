@@ -30,8 +30,12 @@
 }
 
 :host(:focus-visible) > div {
-  outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: -0.125rem;
+  /* Inset ring (row has no room for an outward offset); 2px width predates
+     the 3px MD3 default — kept for visual continuity with the row's density. */
+  --md-focus-ring-width: 2px;
+  --md-focus-ring-offset: -0.125rem;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .row {

@@ -76,8 +76,10 @@
 }
 
 .cal__title-btn:focus-visible {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 0.125rem;
+  /* 2px width predates the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 /* The non-active button while a picker is open: dim label, caret hidden
@@ -234,8 +236,10 @@
    the moment focus leaves the day grid (header / nav / outside). */
 .cal__day:focus-visible,
 .cal__grid:focus-within .cal__day.is-focused {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 0.125rem;
+  /* 2px width predates the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
   background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
 }
 
@@ -314,8 +318,12 @@
 
 .cal__list-item:focus-visible,
 .cal__list:focus-within .cal__list-item.is-kb-focused {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -0.125rem;
+  /* Inset ring (row has no room for an outward offset); 2px width predates
+     the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  --md-focus-ring-offset: -0.125rem;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
   background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
 }
 
@@ -376,8 +384,12 @@
 
 .cal__year:focus-visible,
 .cal__years:focus-within .cal__year.is-kb-focused {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: -0.125rem;
+  /* Inset ring (pill has no room for an outward offset); 2px width predates
+     the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  --md-focus-ring-offset: -0.125rem;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .cal__year:disabled {

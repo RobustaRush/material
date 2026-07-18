@@ -29,8 +29,10 @@
 }
 
 .item:focus-visible {
-  outline: 2px solid var(--md-sys-color-primary);
-  outline-offset: 2px;
+  /* 2px width predates the 3px MD3 default — kept for visual continuity. */
+  --md-focus-ring-width: 2px;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .circle {

@@ -125,6 +125,20 @@
           <material-button toggle variant="elevated" label="Pin"></material-button>
         </div>
 
+        <code class="text-sm text-on-surface-variant">soft-disabled</code>
+        <div class="flex flex-col gap-2">
+          <p class="text-sm text-on-surface-variant max-w-md">
+            <code>soft-disabled</code> looks identical to <code>disabled</code> but
+            stays in the tab order — Tab to it and note the focus ring lands on it
+            (unlike the disabled buttons above, which skip it). Space/Enter/click
+            do nothing.
+          </p>
+          <div class="flex gap-3 flex-wrap">
+            <material-button variant="filled" label="Soft-disabled" soft-disabled></material-button>
+            <material-button variant="outlined" href="#nope" label="Soft-disabled link" soft-disabled></material-button>
+          </div>
+        </div>
+
         <code class="text-sm text-on-surface-variant">link</code>
         <div class="flex gap-3 flex-wrap">
           <material-button variant="filled" href="#anchor" icon="link" label="Same tab"></material-button>
@@ -176,6 +190,7 @@
 &lt;!-- options --&gt;
 &lt;material-button label="Press me" shape-morph&gt;&lt;/material-button&gt;
 &lt;material-button label="Disabled" disabled&gt;&lt;/material-button&gt;
+&lt;material-button label="Soft-disabled" soft-disabled&gt;&lt;/material-button&gt;
 &lt;material-button icon="check" aria-label="Confirm"&gt;&lt;/material-button&gt;</code></pre>
       </details>
     </section>

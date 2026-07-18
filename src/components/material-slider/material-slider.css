@@ -271,8 +271,12 @@
 
 .thumb:active { cursor: grabbing; }
 .thumb:focus-visible {
-  outline: 2px solid var(--md-sys-color-secondary);
-  outline-offset: 0.25rem;
+  /* Wider offset than the shared default: the handle narrows 4dp → 2dp on
+     focus (see below), so the ring needs extra clearance to avoid crowding
+     the thinned thumb. */
+  --md-focus-ring-offset: 0.25rem;
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 /* Spec: handle narrows from 4dp → 2dp on focus / press. */

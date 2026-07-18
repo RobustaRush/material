@@ -25,6 +25,11 @@ export class MaterialFab {
   @Prop({ reflect: true }) size: MaterialFabSize = 'medium';
   @Prop({ reflect: true }) variant: MaterialFabVariant = 'primary-container';
   @Prop() icon!: string;
+  /** When set, the FAB renders "extended": icon + text label side by side in a
+   *  pill, instead of the icon-only circle/square. `size` is ignored while
+   *  extended — the reference always uses the base (small) height/shape.
+   *  Setting/clearing it at runtime animates the width and label fade. */
+  @Prop() label?: string;
   @Prop({ reflect: true }) disabled = false;
   @Prop() type: MaterialFabType = 'button';
   @Prop() name?: string;
@@ -46,7 +51,23 @@ export class MaterialFab {
     this.disabled = disabled;
   }
 
+  private get isExtended(): boolean {
+    return !!this.label && this.label.trim().length > 0;
+  }
+
+  @Watch('label')
+  onLabelChange() {
+    this.syncExtendedAttr();
+  }
+
+  private syncExtendedAttr() {
+    this.el.toggleAttribute('extended', this.isExtended);
+  }
+
   connectedCallback() {
+    // Set before the first paint so a FAB that starts extended doesn't
+    // animate in from the collapsed state.
+    this.syncExtendedAttr();
     if (this.hideNearEnd) this.attachScrollListener();
   }
 
@@ -138,6 +159,9 @@ export class MaterialFab {
         <span class="md-ripple" aria-hidden="true"></span>
         <span part="state-layer" aria-hidden="true"></span>
         <span class="icon" aria-hidden="true">{this.icon}</span>
+        <span class="label-track">
+          <span class="label">{this.label}</span>
+        </span>
       </span>
     );
 

@@ -27,6 +27,11 @@ export class MaterialChip {
   @Prop({ reflect: true }) elevated = false;
   @Prop({ reflect: true, mutable: true }) selected = false;
   @Prop({ reflect: true }) disabled = false;
+  /** Disabled but still focusable/reachable by keyboard and AT, per
+   *  https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_disabled_controls.
+   *  Visually identical to `disabled`; the click handler blocks activation
+   *  instead of the element leaving the tab order. */
+  @Prop({ reflect: true, attribute: 'soft-disabled' }) softDisabled = false;
   @Prop() label?: string;
   @Prop() icon?: string;
   @Prop() trailingIcon?: string;
@@ -125,7 +130,7 @@ export class MaterialChip {
   }
 
   private toggle = () => {
-    if (this.disabled) return;
+    if (this.disabled || this.softDisabled) return;
     if (this.isSelectable()) {
       this.selected = !this.selected;
       this.selectedChange.emit({ selected: this.selected });
@@ -142,6 +147,31 @@ export class MaterialChip {
         this.el.dispatchEvent(new CustomEvent('change', { bubbles: true, composed: false }));
       }
     }
+  };
+
+  // Wraps toggle() for the primary action's onClick. A soft-disabled chip
+  // stays native-enabled (so it's keyboard/AT reachable), so unlike disabled
+  // it does fire click — stop it from reaching a listener on the host element
+  // too, matching material-web's Chip.handleClick.
+  private handleClick = (e: MouseEvent) => {
+    if (this.softDisabled) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return;
+    }
+    this.toggle();
+  };
+
+  // Link (href) chips aren't selectable, so this only ever blocks navigation
+  // — soft-disabled keeps the href (see render()) so the anchor stays a real,
+  // focusable link, and this stops the click that would otherwise follow it.
+  private handleLinkClick = (e: MouseEvent) => {
+    if (this.softDisabled) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return;
+    }
+    if (this.disabled) e.preventDefault();
   };
 
   // remove is cancelable (Stencil @Event default) — if a listener calls
@@ -185,8 +215,10 @@ export class MaterialChip {
       return;
     }
     // Input chips: Backspace/Delete on the focused chip removes it
-    // (chips/accessibility.md § Keyboard).
-    if (this.variant === 'input' && (e.key === 'Backspace' || e.key === 'Delete')) {
+    // (chips/accessibility.md § Keyboard). Arrow-key navigation above stays
+    // live under soft-disabled (focus movement isn't activation); removal
+    // isn't.
+    if (this.variant === 'input' && !this.softDisabled && (e.key === 'Backspace' || e.key === 'Delete')) {
       e.preventDefault();
       this.emitRemove();
     }
@@ -199,6 +231,11 @@ export class MaterialChip {
   }
 
   private handleTrailingClick = (e: MouseEvent) => {
+    if (this.softDisabled) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return;
+    }
     e.stopPropagation();
     if (this.disabled) return;
     this.emitRemove();
@@ -212,7 +249,7 @@ export class MaterialChip {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
-      if (!this.disabled) this.emitRemove();
+      if (!this.disabled && !this.softDisabled) this.emitRemove();
     }
   };
 
@@ -286,11 +323,11 @@ export class MaterialChip {
           rel={rel}
           download={this.download}
           aria-label={this.ariaLabel ?? this.label ?? undefined}
-          aria-disabled={this.disabled ? 'true' : undefined}
+          aria-disabled={this.disabled || this.softDisabled ? 'true' : undefined}
           tabindex={this.disabled ? -1 : primaryTabIndex}
           part="chip"
           data-ripple
-          onClick={(e) => { if (this.disabled) e.preventDefault(); }}
+          onClick={this.handleLinkClick}
         >
           {inner}
         </a>
@@ -306,12 +343,13 @@ export class MaterialChip {
             type="button"
             class="body"
             disabled={this.disabled}
+            aria-disabled={this.softDisabled ? 'true' : undefined}
             role={role}
             aria-checked={ariaChecked}
             aria-label={this.ariaLabel ?? this.label ?? undefined}
             tabindex={primaryTabIndex}
             data-ripple
-            onClick={this.toggle}
+            onClick={this.handleClick}
             onKeyDown={this.handleBodyKeyDown}
           >
             {this.renderBodyContents(hasAvatar)}
@@ -321,6 +359,7 @@ export class MaterialChip {
             type="button"
             class="trailing-btn"
             disabled={this.disabled}
+            aria-disabled={this.softDisabled ? 'true' : undefined}
             aria-label={this.removeLabel()}
             tabindex={-1}
             data-ripple
@@ -346,13 +385,14 @@ export class MaterialChip {
         ref={(el) => { this.primaryActionEl = el; }}
         type="button"
         disabled={this.disabled}
+        aria-disabled={this.softDisabled ? 'true' : undefined}
         role={role}
         aria-checked={ariaChecked}
         aria-label={this.ariaLabel ?? this.label ?? undefined}
         tabindex={primaryTabIndex}
         part="chip"
         data-ripple
-        onClick={this.toggle}
+        onClick={this.handleClick}
         onKeyDown={this.handleBodyKeyDown}
       >
         {inner}

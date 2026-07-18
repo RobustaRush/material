@@ -77,12 +77,13 @@
 }
 
 /* Keyboard focus lands on the input, which has no visible outline of its
-   own — draw the spec's focus indicator around the pill instead (3dp ring,
-   2dp offset). Hosts with no room around the pill (e.g. inside an app bar)
-   shrink it via the two custom properties. */
+   own — draw the spec's focus indicator around the pill instead, via the
+   shared --md-focus-ring-* tokens (default: secondary/3px/2px). Hosts with
+   no room around the pill (e.g. inside an app bar) shrink it by overriding
+   those tokens locally — see material-search-app-bar.css. */
 .bar:has(.input:focus-visible) {
-  outline: var(--search-focus-ring-width, 3px) solid var(--md-sys-color-secondary);
-  outline-offset: var(--search-focus-ring-offset, 2px);
+  outline: var(--md-focus-ring-width) solid var(--md-focus-ring-color);
+  outline-offset: var(--md-focus-ring-offset);
 }
 
 .lead-icon {
