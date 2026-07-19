@@ -20,21 +20,47 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "main": "dist/index.cjs.js",
+  "type": "module",
   "module": "dist/index.js",
   "es2017": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
-  "collection": "dist/collection/collection-manifest.json",
-  "unpkg": "dist/material/material.esm.js",
+  "types": "dist/types/components.d.ts",
+  "unpkg": "cdn/material.min.js",
+  "jsdelivr": "cdn/material.min.js",
   "sideEffects": true,
+  "exports": {
+    ".": {
+      "types": "./dist/types/components.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./loader": {
+      "types": "./loader/index.d.ts",
+      "import": "./loader/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./cdn": "./cdn/material.min.js",
+    "./theme.css": "./css/theme.css",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
   "files": [
-    "dist/",
-    "loader/"
+    "dist/components/",
+    "dist/esm/",
+    "dist/material/",
+    "dist/types/",
+    "dist/index.js",
+    "loader/",
+    "cdn/material.min.js",
+    "css/theme.css"
   ],
   "scripts": {
-    "build": "npm run build:theme && npm run build:css && stencil build",
+    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:css && stencil build && npm run build:cdn",
     "build:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --minify",
     "build:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --minify",
+    "build:theme:pkg": "tailwindcss -i ./src/theme/theme.css -o ./css/theme.css --minify",
+    "build:cdn": "node scripts/build-cdn.mjs",
     "dev:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --watch",
     "dev:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --watch",
     "start": "concurrently -k -n theme,css,stencil -c green,blue,magenta \"npm:dev:theme\" \"npm:dev:css\" \"stencil build --dev --watch --serve\"",
@@ -43,10 +69,14 @@
     "generate": "stencil generate",
     "prepublishOnly": "npm run build"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@stencil/core": "^4.22.0",
     "@tailwindcss/cli": "^4.0.0",
     "concurrently": "^9.0.0",
+    "esbuild": "^0.28.0",
     "tailwindcss": "^4.0.0"
   }
 }

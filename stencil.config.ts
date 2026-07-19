@@ -6,7 +6,17 @@ export const config: Config = {
   sourceMap: false,
   outputTargets: [
     { type: 'dist', esmLoaderPath: '../loader' },
-    { type: 'dist-custom-elements' },
+    // auto-define-custom-elements: importing dist/components/index.js registers
+    // every element by side effect — the entry point the single-file CDN bundle
+    // (scripts/cdn-entry.mjs → esbuild) is built from.
+    // externalRuntime: false inlines the Stencil runtime so dist/components (and
+    // thus the CDN bundle and the ./components export) carry no bare
+    // `@stencil/core` import — it's a devDependency, absent from consumers.
+    {
+      type: 'dist-custom-elements',
+      customElementsExportBehavior: 'auto-define-custom-elements',
+      externalRuntime: false,
+    },
     { type: 'docs-readme' },
     {
       type: 'www',

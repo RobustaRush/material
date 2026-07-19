@@ -4,13 +4,40 @@ One stylesheet, one script, one class on `<html>`. No bundler required; componen
 
 ## Install
 
-> **Stub — npm release pending.** Until `@robustarush/material` is published, build from source: clone <https://github.com/RobustaRush/material>, run `npm install && npm run build`, then copy `dist/` and `www/static/material/theme.css` into your static assets. The snippets below assume they're served under `/static/material/`.
-
 ```sh
-npm install @robustarush/material   # once published
+npm install @robustarush/material
 ```
 
-## Page wiring (script tag, no build step)
+The package ships the components, the TypeScript types, and `theme.css`. Serve
+`node_modules/@robustarush/material/css/theme.css` (import it via
+`@robustarush/material/theme.css`) and, for the no-bundler path, the ESM entry
+under your static assets.
+
+## CDN (no install, no build step)
+
+The whole library is also one self-contained ESM file — every `<material-*>`
+registers on load:
+
+```html
+<html lang="en" class="light">
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/@robustarush/material/css/theme.css">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+  <script type="module" src="https://unpkg.com/@robustarush/material"></script>
+</head>
+<body>
+  <material-button variant="filled" label="It works"></material-button>
+</body>
+</html>
+```
+
+`https://unpkg.com/@robustarush/material` resolves to the single bundle
+(`cdn/material.min.js`, ~590 KB — all 72 components eager). For pages that use a
+handful of components, prefer the **lazy loader** below (small entry, chunks
+fetched on demand): `https://unpkg.com/@robustarush/material/dist/material/material.esm.js`.
+
+## Page wiring (self-hosted, no build step)
 
 ```html
 <html lang="en" class="light">
@@ -18,7 +45,10 @@ npm install @robustarush/material   # once published
   <link rel="stylesheet" href="/static/material/theme.css">
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
-  <script type="module" src="/static/material/material.esm.js"></script>
+  <!-- one eager bundle … -->
+  <script type="module" src="/static/material/material.min.js"></script>
+  <!-- … or the lazy loader (chunks fetched on demand) -->
+  <!-- <script type="module" src="/static/material/material.esm.js"></script> -->
 </head>
 <body>
   <material-button variant="filled" label="It works"></material-button>
@@ -36,16 +66,27 @@ Nothing else: each component's CSS is bundled into its JS chunk and scoped to it
 
 ## With a bundler
 
+Lazy loader (recommended — components load on demand):
+
 ```js
 import { defineCustomElements } from '@robustarush/material/loader';
+import '@robustarush/material/theme.css';   // if your bundler handles CSS
 defineCustomElements();
 ```
 
-Still load `theme.css` and the icon font in the host page as above.
+Or import only the components you use (tree-shakeable, each self-registers):
+
+```js
+import '@robustarush/material/dist/components/material-button.js';
+import '@robustarush/material/dist/components/material-switch.js';
+```
+
+Still ensure the theme class on `<html>` and the icon font are present (the
+font can't be bundled — it's a webfont link in the host page).
 
 ## Verifying
 
-Open the page: the button renders filled with the theme's primary color (not a bare `<button>`), and `document.querySelector('material-button').shadowRoot` is non-null. If components stay invisible/unstyled, check the browser console for a 404 on `material.esm.js` and confirm the `<html>` class.
+Open the page: the button renders filled with the theme's primary color (not a bare `<button>`), and `document.querySelector('material-button').shadowRoot` is non-null. If components stay invisible/unstyled, check the browser console for a 404 on the bundle and confirm both the `theme.css` link and the `<html>` theme class are present.
 
 ## Conventions (apply to every component)
 
