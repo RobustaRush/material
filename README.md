@@ -1,143 +1,167 @@
 # @robustarush/material
 
-Material 3 web components built with [Stencil](https://stenciljs.com/).
-Each component ships its own scoped CSS — no required stylesheet fetch, no
-build step for consumers.
+[![npm](https://img.shields.io/npm/v/@robustarush/material)](https://www.npmjs.com/package/@robustarush/material)
+[![license: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
+
+Material 3 web components built with [Stencil](https://stenciljs.com/). More than
+70 custom elements — buttons, text fields, dialogs, data tables — that style
+themselves from CSS custom properties and run in any page, with or without a
+framework.
+
+Each component bundles its own CSS into its shadow root. The only stylesheet you
+load is a theme file of `--md-sys-color-*` tokens. There is no runtime stylesheet
+fetch and no build step for consumers.
+
+## Install
+
+```sh
+npm install @robustarush/material
+```
+
+Or load it from a CDN with no install:
+
+```html
+<script type="module" src="https://unpkg.com/@robustarush/material"></script>
+```
 
 ## Quick start
 
-```bash
-npm install
-npm start
-```
-
-Open <http://localhost:3333>. Three watchers run in parallel: theme bundling,
-Tailwind compilation (for the demo pages only, see below), and Stencil's dev
-server.
-
-## One stylesheet, one job
-
-```
-/static/material/theme.css   Material 3 tokens (--md-sys-color-*)
-```
-
-**`theme.css`** ships exactly the variables produced by
-[Material Theme Builder](https://material-foundation.github.io/material-theme-builder/),
-scoped to six classes: `.light`, `.dark`, `.light-medium-contrast`,
-`.dark-medium-contrast`, `.light-high-contrast`, `.dark-high-contrast`.
-It's the only stylesheet a consumer of the components needs to load.
-
-### Activating a theme
+A page needs three things: the theme stylesheet, a theme class on `<html>`, and
+the Material Symbols font.
 
 ```html
-<html class="light">…</html>
+<html lang="en" class="light">
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/@robustarush/material/css/theme.css">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+  <script type="module" src="https://unpkg.com/@robustarush/material"></script>
+</head>
+<body>
+  <material-button variant="filled" label="It works" icon="check"></material-button>
+</body>
+</html>
 ```
 
-Or pick any of the 6 contrast variants. Custom properties cascade into shadow
-DOM, so every component picks up the active theme without doing anything
-else — no JS, no per-component config, no adopted stylesheet.
+- **`theme.css`** carries the `--md-sys-color-*` custom properties. They cascade
+  into every shadow tree, so components render themed with no per-component setup.
+- **The `<html>` class** picks the theme: `light`, `dark`, or one of the four
+  contrast variants. No class means no tokens.
+- **The Material Symbols font** renders the `icon="..."` ligatures. Without it,
+  icons show as their text names.
 
-### How styling reaches shadow DOM
+## Loading options
 
-- `theme.css` is loaded once in the host page (light DOM only) — its
-  `--md-sys-color-*` variables inherit into every shadow tree for free.
-- Each component's own CSS (bundled into its JS chunk by Stencil, scoped to
-  its shadow root) reads those variables directly — e.g.
-  `background: var(--md-sys-color-primary)`. Nothing is fetched at runtime;
-  the component renders correctly the instant it upgrades.
+| Method | Source | Use it when |
+|--------|--------|-------------|
+| Single bundle | `unpkg.com/@robustarush/material` (~590 KB, all elements eager) | You want one file and use many components. |
+| Lazy loader | `.../dist/material/material.esm.js` (small entry) | A page uses a few components; chunks load on demand. |
 
-### `material.css` — optional, for your own page markup only
+With a bundler:
 
-`src/global/material.css` is a Tailwind v4 entry point (`@import
-"tailwindcss"` + a `@theme` bridge that maps `--md-sys-color-*` into
-Tailwind utility names like `bg-primary`). It's used by this repo's own demo
-and showcase pages to lay out plain HTML around the components — it is
-**not** required by, or coupled to, any `<material-*>` element. Skip it
-entirely unless you want the same MD3-aware Tailwind utilities in your own
-light-DOM markup.
-
-## Project layout
-
-```
-src/
-  index.html              # dev showcase page (Stencil compiles → www/index.html)
-  components/
-    material-button/      # one component per folder, tag prefix `material-`
-    material-card/
-  demos/                  # one demo page per component, Tailwind-styled page chrome
-  showcases/              # composed real-world layouts (email, CRM, ERP)
-  global/
-    material.css          # Tailwind entry for demo/showcase page markup only
-  theme/
-    theme.css             # @import all 6 generated theme files
-    light.css dark.css
-    light-mc.css dark-mc.css
-    light-hc.css dark-hc.css
-www/                      # build output, fully gitignored — owned by Stencil + Tailwind CLI
-  index.html               # generated from src/index.html
-  build/                   # Stencil bundles
-  static/material/
-    material.css
-    theme.css
+```js
+import { defineCustomElements } from '@robustarush/material/loader';
+import '@robustarush/material/theme.css';
+defineCustomElements();
 ```
 
-> **Don't edit `www/index.html`** — Stencil regenerates it from
-> `src/index.html` on every build and wipes the directory on `start`. Edit
-> the source file instead.
+Or import only the elements you use. Each one registers itself:
 
-## Regenerating the theme
+```js
+import '@robustarush/material/dist/components/material-button.js';
+```
 
-1. Open <https://material-foundation.github.io/material-theme-builder/>.
-2. Pick a seed colour or upload an image.
-3. Export → Web → CSS — you get six files.
-4. Replace the files in `src/theme/`. Filenames must stay the same.
-5. `npm run build:theme` (or just keep `npm start` running).
+## What the components handle
 
-No component change is required — every component reads the same
-`--md-sys-color-*` variable names regardless of which theme is active.
+- **Self-contained styles.** No stylesheet to fetch, no adopted-stylesheet
+  wiring, no flash of unstyled content. A component renders correctly the moment
+  it upgrades.
+- **Form association.** Put a field in a `<form>` with a `name` and it posts its
+  value, runs constraint validation (`required`, `checkValidity()`,
+  `reportValidity()`), and resets with the form. No hidden inputs.
+- **Server-first.** Components enhance server-rendered markup, such as a real
+  `<table>` inside `material-data-table` or a real `<form>` post, instead of
+  owning a client-side data model.
+- **Plain events.** Every interaction is a `CustomEvent` you read with
+  `addEventListener` (`valueChange`, `materialSort`, …).
+- **RTL and i18n.** Set `dir="rtl"` on any subtree and layout, animation, and
+  keyboard direction follow. Strings and formats come from your `gettext` and
+  `Intl`, English by default.
+- **Accessibility.** Keyboard navigation, focus rings, 48dp touch targets,
+  Windows High Contrast, and `prefers-reduced-motion` are built in.
 
-## Adding a component
+## Components
 
-```bash
+| Group | Elements | Reference |
+|-------|----------|-----------|
+| Actions | button, icon-button, fab, fab-menu, split-button, button-group, chip, chip-set | [actions.md](skills/material-web-components/references/actions.md) |
+| Text fields | textfield, textarea, number-field, masked-field, date-field, time-field, datetime-field, date-range-field, file-field, json-field | [fields.md](skills/material-web-components/references/fields.md) |
+| Selection | checkbox, radio, switch, slider, select, autocomplete, dropzone | [forms.md](skills/material-web-components/references/forms.md) |
+| Navigation | app-bar, toolbar, navigation-bar, navigation-rail, navigation-group, navigation-item, tabs, breadcrumbs, pagination, stepper | [navigation.md](skills/material-web-components/references/navigation.md) |
+| Overlays | dialog, bottom-sheet, side-sheet, menu, tooltip, snackbar, command-palette | [overlays.md](skills/material-web-components/references/overlays.md) |
+| Data & display | data-table, list, card, avatar, badge, divider, tree, transfer, calendar, carousel, rich-text, time-picker | [display.md](skills/material-web-components/references/display.md), [data-table.md](skills/material-web-components/references/data-table.md), [lists.md](skills/material-web-components/references/lists.md) |
+| Progress | linear-progress, circular-progress, loading-indicator, skeleton | [progress.md](skills/material-web-components/references/progress.md) |
+| Search | search, search-app-bar | [search.md](skills/material-web-components/references/search.md) |
+
+Tags and attributes are kebab-case (`<material-date-field first-day-of-week="1">`).
+Boolean attributes follow HTML rules: present means true.
+
+## Theming
+
+`theme.css` holds the tokens from
+[Material Theme Builder](https://material-foundation.github.io/material-theme-builder/),
+scoped to six classes: `light`, `dark`, and a medium- and high-contrast variant of
+each. Switch themes by changing the `<html>` class.
+
+To use your own palette, export a new set from the builder (Export → Web → CSS),
+replace the six files in `src/theme/`, and rebuild. Component code never changes,
+because every element reads the same `--md-sys-color-*` names. See
+[theming.md](skills/material-web-components/references/theming.md).
+
+## Documentation
+
+Each area has a reference under `skills/material-web-components/references/`:
+
+- [setup.md](skills/material-web-components/references/setup.md) — loading the library on a page
+- [theming.md](skills/material-web-components/references/theming.md) — tokens and palettes
+- [forms.md](skills/material-web-components/references/forms.md) / [fields.md](skills/material-web-components/references/fields.md) — form controls and validation
+- [navigation.md](skills/material-web-components/references/navigation.md), [overlays.md](skills/material-web-components/references/overlays.md), [display.md](skills/material-web-components/references/display.md), [lists.md](skills/material-web-components/references/lists.md), [data-table.md](skills/material-web-components/references/data-table.md), [progress.md](skills/material-web-components/references/progress.md), [search.md](skills/material-web-components/references/search.md), [stepper.md](skills/material-web-components/references/stepper.md)
+- [i18n.md](skills/material-web-components/references/i18n.md) — catalogs and formats
+- [integrations.md](skills/material-web-components/references/integrations.md) — what you wire up (endpoints, persistence, file upload, maps)
+
+## Development
+
+Build from source and run the dev server:
+
+```sh
+git clone https://github.com/RobustaRush/material
+cd material && npm install
+npm start        # http://localhost:3333
+```
+
+`npm start` runs three watchers: theme bundling, Tailwind for the demo pages, and
+Stencil's dev server. Every component has a demo page at
+`src/demos/<component>.html`, which is where behavior is checked. There are no unit
+tests; the components are mostly CSS, so demo pages carry the test cases.
+
+Build the package:
+
+```sh
+npm run build    # theme.css + Stencil dist/ + single-file CDN bundle
+```
+
+`npm publish` runs this build first through `prepublishOnly`.
+
+Add a component:
+
+```sh
 npx stencil generate material-card
 ```
 
-Pattern — self-contained styles, no external stylesheet dependency:
+Keep each component's styles in its own shadow root and read `var(--md-sys-color-*)`
+directly. `src/global/material.css` is a Tailwind entry for the demo and showcase
+pages only; no `<material-*>` element depends on it.
 
-```tsx
-import { Component, Prop, h } from '@stencil/core';
+## License
 
-@Component({ tag: 'material-card', styleUrl: 'material-card.css', shadow: true })
-export class MaterialCard {
-  render() {
-    return (
-      <div part="surface">
-        <slot />
-      </div>
-    );
-  }
-}
-```
-
-```css
-/* material-card.css */
-[part="surface"] {
-  border-radius: 0.75rem;
-  padding: 1rem;
-  background: var(--md-sys-color-surface-container);
-  color: var(--md-sys-color-on-surface);
-}
-```
-
-Reach for `var(--md-sys-color-*)` directly — see `src/theme/light.css` (or
-any of the other five theme files) for the full token list. Reserve
-`src/global/material.css` Tailwind utilities for demo/showcase page markup
-only, not component internals.
-
-## Build
-
-```bash
-npm run build   # theme.css → material.css → stencil dist/, loader/, www/
-```
-
-`npm publish` runs this automatically via `prepublishOnly`.
+[AGPL-3.0-or-later](LICENSE).
