@@ -53,7 +53,9 @@
     "dist/index.js",
     "loader/",
     "cdn/material.min.js",
-    "css/theme.css"
+    "css/theme.css",
+    "LICENSE",
+    "LICENSE_EXCEPTION"
   ],
   "scripts": {
     "build": "npm run build:theme && npm run build:theme:pkg && npm run build:css && stencil build && npm run build:cdn",

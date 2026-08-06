@@ -1,7 +1,7 @@
 # @viewflow/material
 
 [![npm](https://img.shields.io/npm/v/@viewflow/material)](https://www.npmjs.com/package/@viewflow/material)
-[![license: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
+[![license: AGPL-3.0 + exception](https://img.shields.io/badge/license-AGPL--3.0%20%2B%20exception-blue)](LICENSE_EXCEPTION)
 
 Material 3 web components built with [Stencil](https://stenciljs.com/). More than
 70 custom elements — buttons, text fields, dialogs, data tables — that style
@@ -164,4 +164,19 @@ pages only; no `<material-*>` element depends on it.
 
 ## License
 
-[AGPL-3.0-or-later](LICENSE).
+`@viewflow/material` is an Open Source project. It uses the AGPL license,
+[The GNU Affero General Public License v3.0](http://www.gnu.org/licenses/agpl-3.0.html),
+with the additional permissions in [LICENSE_EXCEPTION](./LICENSE_EXCEPTION).
+
+The exception permits you to use this package in a project that has a license
+which is not compatible with the AGPL. A proprietary project is included. Your
+own code keeps your own license, and you do not release its source. The
+condition is that you do not change the source code of this package — importing
+the components, styling them through CSS custom properties, and shipping the
+bundle as-is all stay within the exception.
+
+If you do change this package, the AGPL applies to your modified version of it.
+
+The license scheme is the same as the license scheme of the GCC Runtime Library.
+The text above is a summary. Read [LICENSE_EXCEPTION](./LICENSE_EXCEPTION) for
+the conditions.
