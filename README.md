@@ -1,6 +1,6 @@
-# @robustarush/material
+# @viewflow/material
 
-[![npm](https://img.shields.io/npm/v/@robustarush/material)](https://www.npmjs.com/package/@robustarush/material)
+[![npm](https://img.shields.io/npm/v/@viewflow/material)](https://www.npmjs.com/package/@viewflow/material)
 [![license: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 
 Material 3 web components built with [Stencil](https://stenciljs.com/). More than
@@ -15,13 +15,13 @@ fetch and no build step for consumers.
 ## Install
 
 ```sh
-npm install @robustarush/material
+npm install @viewflow/material
 ```
 
 Or load it from a CDN with no install:
 
 ```html
-<script type="module" src="https://unpkg.com/@robustarush/material"></script>
+<script type="module" src="https://unpkg.com/@viewflow/material"></script>
 ```
 
 ## Quick start
@@ -32,10 +32,10 @@ the Material Symbols font.
 ```html
 <html lang="en" class="light">
 <head>
-  <link rel="stylesheet" href="https://unpkg.com/@robustarush/material/css/theme.css">
+  <link rel="stylesheet" href="https://unpkg.com/@viewflow/material/css/theme.css">
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
-  <script type="module" src="https://unpkg.com/@robustarush/material"></script>
+  <script type="module" src="https://unpkg.com/@viewflow/material"></script>
 </head>
 <body>
   <material-button variant="filled" label="It works" icon="check"></material-button>
@@ -54,21 +54,21 @@ the Material Symbols font.
 
 | Method | Source | Use it when |
 |--------|--------|-------------|
-| Single bundle | `unpkg.com/@robustarush/material` (~590 KB, all elements eager) | You want one file and use many components. |
+| Single bundle | `unpkg.com/@viewflow/material` (~590 KB, all elements eager) | You want one file and use many components. |
 | Lazy loader | `.../dist/material/material.esm.js` (small entry) | A page uses a few components; chunks load on demand. |
 
 With a bundler:
 
 ```js
-import { defineCustomElements } from '@robustarush/material/loader';
-import '@robustarush/material/theme.css';
+import { defineCustomElements } from '@viewflow/material/loader';
+import '@viewflow/material/theme.css';
 defineCustomElements();
 ```
 
 Or import only the elements you use. Each one registers itself:
 
 ```js
-import '@robustarush/material/dist/components/material-button.js';
+import '@viewflow/material/dist/components/material-button.js';
 ```
 
 ## What the components handle
@@ -134,7 +134,7 @@ Each area has a reference under `skills/material-web-components/references/`:
 Build from source and run the dev server:
 
 ```sh
-git clone https://github.com/RobustaRush/material
+git clone https://github.com/viewflow/material
 cd material && npm install
 npm start        # http://localhost:3333
 ```

@@ -5,12 +5,12 @@ One stylesheet, one script, one class on `<html>`. No bundler required; componen
 ## Install
 
 ```sh
-npm install @robustarush/material
+npm install @viewflow/material
 ```
 
 The package ships the components, the TypeScript types, and `theme.css`. Serve
-`node_modules/@robustarush/material/css/theme.css` (import it via
-`@robustarush/material/theme.css`) and, for the no-bundler path, the ESM entry
+`node_modules/@viewflow/material/css/theme.css` (import it via
+`@viewflow/material/theme.css`) and, for the no-bundler path, the ESM entry
 under your static assets.
 
 ## CDN (no install, no build step)
@@ -21,10 +21,10 @@ registers on load:
 ```html
 <html lang="en" class="light">
 <head>
-  <link rel="stylesheet" href="https://unpkg.com/@robustarush/material/css/theme.css">
+  <link rel="stylesheet" href="https://unpkg.com/@viewflow/material/css/theme.css">
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
-  <script type="module" src="https://unpkg.com/@robustarush/material"></script>
+  <script type="module" src="https://unpkg.com/@viewflow/material"></script>
 </head>
 <body>
   <material-button variant="filled" label="It works"></material-button>
@@ -32,10 +32,10 @@ registers on load:
 </html>
 ```
 
-`https://unpkg.com/@robustarush/material` resolves to the single bundle
+`https://unpkg.com/@viewflow/material` resolves to the single bundle
 (`cdn/material.min.js`, ~590 KB — all 72 components eager). For pages that use a
 handful of components, prefer the **lazy loader** below (small entry, chunks
-fetched on demand): `https://unpkg.com/@robustarush/material/dist/material/material.esm.js`.
+fetched on demand): `https://unpkg.com/@viewflow/material/dist/material/material.esm.js`.
 
 ## Page wiring (self-hosted, no build step)
 
@@ -69,16 +69,16 @@ Nothing else: each component's CSS is bundled into its JS chunk and scoped to it
 Lazy loader (recommended — components load on demand):
 
 ```js
-import { defineCustomElements } from '@robustarush/material/loader';
-import '@robustarush/material/theme.css';   // if your bundler handles CSS
+import { defineCustomElements } from '@viewflow/material/loader';
+import '@viewflow/material/theme.css';   // if your bundler handles CSS
 defineCustomElements();
 ```
 
 Or import only the components you use (tree-shakeable, each self-registers):
 
 ```js
-import '@robustarush/material/dist/components/material-button.js';
-import '@robustarush/material/dist/components/material-switch.js';
+import '@viewflow/material/dist/components/material-button.js';
+import '@viewflow/material/dist/components/material-switch.js';
 ```
 
 Still ensure the theme class on `<html>` and the icon font are present (the

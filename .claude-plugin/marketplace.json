@@ -18,8 +18,8 @@
         "name": "Mikhail Podgurskiy",
         "email": "mikhail@viewflow.io"
       },
-      "homepage": "https://github.com/RobustaRush/material",
-      "repository": "https://github.com/RobustaRush/material",
+      "homepage": "https://github.com/viewflow/material",
+      "repository": "https://github.com/viewflow/material",
       "license": "AGPL-3.0-or-later",
       "keywords": ["material-design", "md3", "web-components", "ui-components", "ai-skill"]
     }

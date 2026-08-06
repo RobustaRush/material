@@ -1,11 +1,11 @@
 ---
 name: material-web-components
-description: Build UIs with @robustarush/material — 71 Material 3 web components (forms, data-table, JSON editor, dialogs, navigation, date/time pickers, stepper, tree, search, carousel, snackbar). Server-first and form-associated: components enhance plain HTML and post real values through a normal <form>, themeable via CSS custom properties with no build step. Use whenever the user is building a page, form, table, dialog, or app shell with these <material-*> elements, wiring one into a project, or asking which component fits a UI need.
+description: Build UIs with @viewflow/material — 71 Material 3 web components (forms, data-table, JSON editor, dialogs, navigation, date/time pickers, stepper, tree, search, carousel, snackbar). Server-first and form-associated: components enhance plain HTML and post real values through a normal <form>, themeable via CSS custom properties with no build step. Use whenever the user is building a page, form, table, dialog, or app shell with these <material-*> elements, wiring one into a project, or asking which component fits a UI need.
 ---
 
 ## What this is
 
-`@robustarush/material` is a library of 71 Material 3 custom elements (`<material-*>`). Each ships its own shadow-DOM CSS bundled into a lazy-loaded JS chunk — no required stylesheet fetch, no bundler, no framework. Load `theme.css` + the ESM bundle, put a theme class on `<html>`, and use the tags. See `references/setup.md` **first** for the exact page wiring — it is load-bearing and the same for every component.
+`@viewflow/material` is a library of 71 Material 3 custom elements (`<material-*>`). Each ships its own shadow-DOM CSS bundled into a lazy-loaded JS chunk — no required stylesheet fetch, no bundler, no framework. Load `theme.css` + the ESM bundle, put a theme class on `<html>`, and use the tags. See `references/setup.md` **first** for the exact page wiring — it is load-bearing and the same for every component.
 
 Design principles that shape how you use every component:
 

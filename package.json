@@ -1,11 +1,11 @@
 {
-  "name": "@robustarush/material",
+  "name": "@viewflow/material",
   "version": "26.28.1",
   "description": "Material 3 web components built with Stencil — self-contained shadow-DOM styles, swappable theme via CSS custom properties, zero required stylesheet fetch.",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RobustaRush/material.git"
+    "url": "git+https://github.com/viewflow/material.git"
   },
   "keywords": [
     "material-design",
