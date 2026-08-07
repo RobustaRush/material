@@ -8,10 +8,11 @@ One stylesheet, one script, one class on `<html>`. No bundler required; componen
 npm install @viewflow/material
 ```
 
-The package ships the components, the TypeScript types, and `theme.css`. Serve
-`node_modules/@viewflow/material/css/theme.css` (import it via
-`@viewflow/material/theme.css`) and, for the no-bundler path, the ESM entry
-under your static assets.
+The package ships the components, the TypeScript types, `theme.css`, and
+`material.css`. Serve `node_modules/@viewflow/material/css/theme.css`
+(import it via `@viewflow/material/theme.css`) and, for the no-bundler path,
+the ESM entry under your static assets. If the page uses `material-data-table`
+or `material-breadcrumbs`, also serve `material.css` — see below.
 
 ## CDN (no install, no build step)
 
@@ -62,7 +63,23 @@ Three requirements, each load-bearing:
 - **A theme class on `<html>`** — one of `light`, `dark`, `light-medium-contrast`, `dark-medium-contrast`, `light-high-contrast`, `dark-high-contrast`. No class → no tokens. See `theming.md`.
 - **Material Symbols Outlined font** — every `icon="..."` attribute is a [Material Symbols](https://fonts.google.com/icons) ligature name (`search`, `arrow_back`, `delete`). Without the font, icons render as raw text.
 
-Nothing else: each component's CSS is bundled into its JS chunk and scoped to its shadow root — no per-component stylesheet, no FOUC-management, no adopted-stylesheet setup.
+Almost every component's CSS is bundled into its JS chunk and scoped to its
+shadow root — no per-component stylesheet, no FOUC-management, no
+adopted-stylesheet setup. Two are the exception: `material-data-table` and
+`material-breadcrumbs` enhance markup that stays in the light DOM (a real
+server-rendered `<table>`, a real `<nav>`), so their visual styling can't live
+in a shadow root — it ships as `material.css`, the library's light-DOM
+stylesheet (any future component built the same server-first way joins it
+too), and has to be loaded like `theme.css` is:
+
+```html
+<link rel="stylesheet" href="/static/material/theme.css">
+<link rel="stylesheet" href="/static/material/material.css">
+```
+
+Skip it and every other component still renders correctly; only the table and
+the breadcrumbs render as unstyled light-DOM markup. Each component's own
+readme says so under "Styles live in the document stylesheet."
 
 ## With a bundler
 

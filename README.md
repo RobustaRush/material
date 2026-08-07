@@ -9,8 +9,11 @@ themselves from CSS custom properties and run in any page, with or without a
 framework.
 
 Each component bundles its own CSS into its shadow root. The only stylesheet you
-load is a theme file of `--md-sys-color-*` tokens. There is no runtime stylesheet
-fetch and no build step for consumers.
+load is a theme file of `--md-sys-color-*` tokens — with one exception:
+`material-data-table` and `material-breadcrumbs` enhance real light-DOM markup
+(a server-rendered `<table>`, a real `<nav>`) rather than a shadow root, so
+their styling ships as a second, optional stylesheet (`material.css`). There
+is no runtime stylesheet fetch and no build step for consumers.
 
 ## Install
 
@@ -49,6 +52,10 @@ the Material Symbols font.
   contrast variants. No class means no tokens.
 - **The Material Symbols font** renders the `icon="..."` ligatures. Without it,
   icons show as their text names.
+
+Using `material-data-table` or `material-breadcrumbs`? Add
+`@viewflow/material/material.css` next to `theme.css` — see
+[Light-DOM components](#light-dom-components).
 
 ## Loading options
 
@@ -118,6 +125,23 @@ replace the six files in `src/theme/`, and rebuild. Component code never changes
 because every element reads the same `--md-sys-color-*` names. See
 [theming.md](skills/material-web-components/references/theming.md).
 
+## Light-DOM components
+
+`material-data-table` and `material-breadcrumbs` enhance real server-rendered
+markup — a `<table>`, a `<nav>` — instead of owning a shadow root, so their
+styling can't be bundled into a JS chunk the way every other component's is.
+It ships as `material.css`, loaded the same way as `theme.css`:
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/@viewflow/material/css/theme.css">
+<link rel="stylesheet" href="https://unpkg.com/@viewflow/material/css/material.css">
+```
+
+Skip it and the rest of the library still works — only these two render
+unstyled. Any future component built the same server-first way (enhancing
+markup that has to exist without JS) joins this file rather than getting its
+own.
+
 ## Documentation
 
 Each area has a reference under `skills/material-web-components/references/`:
@@ -147,7 +171,7 @@ tests; the components are mostly CSS, so demo pages carry the test cases.
 Build the package:
 
 ```sh
-npm run build    # theme.css + Stencil dist/ + single-file CDN bundle
+npm run build    # theme.css + material.css + Stencil dist/ + single-file CDN bundle
 ```
 
 `npm publish` runs this build first through `prepublishOnly`.
@@ -159,8 +183,11 @@ npx stencil generate material-card
 ```
 
 Keep each component's styles in its own shadow root and read `var(--md-sys-color-*)`
-directly. `src/global/material.css` is a Tailwind entry for the demo and showcase
-pages only; no `<material-*>` element depends on it.
+directly — `src/global/material.css` is a Tailwind entry for the demo and
+showcase pages, plus the source `npm run build:material:pkg` reads to produce
+the published `css/material.css` (see [Light-DOM components](#light-dom-components)
+above). A component's own shadow-DOM styles never depend on it; only the two
+light-DOM components it `@import`s under `layer(components)` do.
 
 ## License
 

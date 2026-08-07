@@ -14,7 +14,7 @@ Activate one by putting the class on `<html>` (or any ancestor of the components
 <html class="dark">
 ```
 
-No class → no color tokens → un-themed components. See `references/setup.md` for the full page wiring.
+No class → no color tokens → un-themed components. See `references/setup.md` for the full page wiring, including `material.css` — a second stylesheet only `material-data-table` and `material-breadcrumbs` need.
 
 ## Switching theme at runtime
 

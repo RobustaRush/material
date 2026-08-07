@@ -42,6 +42,7 @@
     },
     "./cdn": "./cdn/material.min.js",
     "./theme.css": "./css/theme.css",
+    "./material.css": "./css/material.css",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
@@ -54,14 +55,16 @@
     "loader/",
     "cdn/material.min.js",
     "css/theme.css",
+    "css/material.css",
     "LICENSE",
     "LICENSE_EXCEPTION"
   ],
   "scripts": {
-    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:css && stencil build && npm run build:cdn",
+    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:material:pkg && npm run build:css && stencil build && npm run build:cdn",
     "build:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --minify",
     "build:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --minify",
     "build:theme:pkg": "tailwindcss -i ./src/theme/theme.css -o ./css/theme.css --minify",
+    "build:material:pkg": "node scripts/build-material-css.mjs",
     "build:cdn": "node scripts/build-cdn.mjs",
     "dev:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --watch",
     "dev:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --watch",
