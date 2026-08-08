@@ -130,7 +130,8 @@ export class MaterialLoadingIndicator {
   @State() d: string = pathFromRadii(SAMPLED[0]);
 
   private rafId = 0;
-  private startedAt = 0;
+  // -1 until the first frame hands us its timestamp; see startLoop().
+  private startedAt = -1;
   private pathEl?: SVGPathElement;
   private spinEl?: HTMLElement;
   private prefersReducedMotion = false;
@@ -169,8 +170,15 @@ export class MaterialLoadingIndicator {
     if (!e.matches && !this.paused && !this.rafId) this.startLoop();
   };
 
+  // The epoch is adopted from the first frame's own timestamp, not from
+  // performance.now() here. The two are different clocks in practice: Stencil
+  // calls componentDidLoad from inside the frame already in flight, so the
+  // timestamp the first tick receives can predate a performance.now() taken at
+  // this point (measured at -0.3ms). A negative elapsed made idx floor to -1,
+  // SAMPLED[-1] threw before the loop could reschedule itself, and the
+  // indicator froze on its first frame with no way back.
   private startLoop() {
-    this.startedAt = performance.now();
+    this.startedAt = -1;
     this.rafId = requestAnimationFrame(this.tick);
   }
 
@@ -187,6 +195,7 @@ export class MaterialLoadingIndicator {
       this.rafId = 0;
       return;
     }
+    if (this.startedAt < 0) this.startedAt = now;
     const elapsed = (now - this.startedAt) % CYCLE_MS;
     const t = elapsed / CYCLE_MS;        // 0..1 over full cycle
     const scaled = t * SHAPES.length;     // 0..7
