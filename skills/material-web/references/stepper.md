@@ -15,8 +15,9 @@ Multi-step flow. Two modes with the same anatomy: a **client-side wizard** (all 
 ```
 
 - Stepper: `orientation` (`horizontal` default | `vertical` — vertical puts each step's content under its own header), `linear` (default **true**: steps must be completed in order and header jumps ahead are blocked; set `linear="false"` for free navigation).
-- Step: `label`, `value` (stable id used in events and `go-to`), `supporting-text`, and the reflected state attributes `active` (the visible step), `completed`, `error`, `disabled`. Exactly one step should start `active`.
-- Methods on the stepper: `next()`, `back()`, `goTo(to)` (index or value). Event: `materialStepChange` — `{from, to, fromValue, toValue}` (fires after any change: next/back/goTo/header click).
+- Step: `label`, `value` (stable id reported in events), `supporting-text`, and the reflected state attributes `active` (the visible step), `completed`, `error`, `disabled`. Exactly one step should start `active`.
+- Stepper methods, all `Promise<boolean>` (false = the move was refused): `next()` (validates the current step first), `back()` (no validation), `goTo(index, validate?)` — **index only, not a value**; `validate` defaults to false.
+- Event: `materialStepChange` — `{from, to, fromValue, toValue}`, after any change (next/back/goTo/header click).
 
 ## Client-side wizard (one form, local validation)
 

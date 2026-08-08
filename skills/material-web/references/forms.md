@@ -138,5 +138,5 @@ Numeric slider; `value` is a **number**.
 
 - `min`, `max`, `step`, `value` (single thumb) or `value-low` + `value-high` (range).
 - `discrete` (snap + show value bubble), `tick-labels`, `value-indicator`, `orientation` (`horizontal` | `vertical`), `size` (`xs`–`xl`), `origin` (fill anchor for centered/diverging sliders), `icon`.
-- `value-formatter` — a JS function property (set via `el.valueFormatter = n => ...`) to format the bubble.
+- `valueFormatter` — formats the value bubble. **JS property only**, no attribute: `el.valueFormatter = (n) => n + '%'`.
 - Events: `valueChange` (`{value}` or `{valueLow, valueHigh}`, live drag) and `valueCommit` (same shape, on release — use this to persist).

@@ -49,9 +49,10 @@ Hierarchical list. The container is `material-tree`; nodes are slotted `material
 </material-tree>
 ```
 
-- Container: `selectable` (tri-state checkboxes on every node), `name` (posts one form entry per checked value), `dense`, `src` (lazy-load endpoint — see below).
-- Node (`material-tree-item`): `value`, `label`, `icon`, `expanded`, `disabled`, `supporting-text`, `has-children` (mark a node expandable before its children exist — for lazy load), `level` (0-based, for flat/pre-flattened rows instead of nesting), `checked` / `indeterminate` (selection state), `loading`.
-- Events (on the tree): `materialTreeToggle` (`{value, expanded}`), `materialTreeChecked` (`{value, checked}`), `materialTreeActivate` (`{value}`).
+- Container: `selectable` (tri-state checkboxes on every node), `name` (posts one form entry per checked value), `cascade` (default **true** — checking a parent checks its descendants; set `cascade="false"` for independent checkboxes), `dense`, `src` + `query-param` (default `parent`) for lazy loading, `aria-label`.
+- Node (`material-tree-item`): `value`, `label`, `icon`, `expanded`, `disabled`, `supporting-text`, `has-children` (mark a node expandable before its children exist — for lazy load), `level` (0-based, for flat/pre-flattened rows instead of nesting), `checked` / `indeterminate`, `loading`.
+- Events (fired by items, listen on the tree): `materialTreeToggle` (`{value, expanded}`), `materialTreeChecked` (`{value, checked}`), `materialTreeActivate` (`{value}`). The tree itself emits `materialSelectionChange` (`{values, count}`).
+- Tree methods: `getSelected()`, `clearSelection()`, `expandAll()`, `collapseAll()`.
 - **Lazy children:** mark parents `has-children`. With `src` set, expanding a node fetches `src?parent=<value>` (JSON array of child nodes) automatically. Without `src`, the tree emits `materialTreeLoad` (`{value}`) and you append `material-tree-item` children yourself.
 
 ## material-transfer
@@ -74,8 +75,6 @@ Dual-listbox: available ⇄ chosen, form-associated. Options are slotted `materi
 - Event: `valueChange` (`{values}`). Method: `getValues()`.
 
 ## material-divider
-
-Thin rule between content or list rows.
 
 ```html
 <material-divider></material-divider>

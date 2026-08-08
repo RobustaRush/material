@@ -39,7 +39,8 @@ Single date; text entry plus a picker surface. Posts ISO `YYYY-MM-DD`.
 ```
 
 - `picker` — `auto` (default: docked dropdown on desktop, modal dialog on compact) | `docked` | `modal`.
-- `min` / `max` (ISO), `format` (display format override), `input-formats` (accepted typed formats), `headline` (dialog title).
+- `min` / `max` (ISO), `format` (strftime-style display format), `headline` (dialog title).
+- `inputFormats` — the list of formats accepted on manual entry. **JS property only**, no attribute (`el.inputFormats = ['%d/%m/%Y']`); it defaults to the locale's full input-format list, and the parser is already lenient about separators, 1- vs 2-digit parts, and month names.
 - Event: `valueChange` (`{value}`, ISO).
 
 ## material-date-range-field
@@ -61,7 +62,7 @@ Time entry + dial picker. Posts `HH:MM[:SS]`.
 <material-time-field name="at" label="Time" mode="24"></material-time-field>
 ```
 
-- `mode` — `"12"` (default) | `"24"`. `precision` (`minute` | `second`), `minimum` / `maximum`, `format`, `input-formats`, `headline`.
+- `mode` — `"12"` (default) | `"24"`. `precision` (`minute` | `second`), `minimum` / `maximum`, `format`, `headline`; `inputFormats` as a JS property (see date-field).
 - Event: `valueChange` (`{value}`).
 
 ## material-datetime-field

@@ -57,4 +57,4 @@ Shimmer placeholder shown while a fragment loads. Three primitives; compose larg
 - `variant` — `text` (default, stacked lines) | `circular` (avatar) | `rectangular` (image/media).
 - `lines` — number of text lines (`text` variant); the last line renders shortened.
 - Sizing: `text` sizes from font metrics; `circular` / `rectangular` size from the host element — set height/width with classes or inline style (e.g. `class="h-32 w-full"`).
-- Purely presentational (aria-hidden); reduced-motion falls back to a pulse. Swap the skeleton for real content once loaded, or use it as a placeholder while a fragment loads.
+- Presentational and `aria-hidden`; reduced-motion falls back to a pulse.
