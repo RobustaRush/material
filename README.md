@@ -78,6 +78,26 @@ Or import only the elements you use. Each one registers itself:
 import '@viewflow/material/dist/components/material-button.js';
 ```
 
+## Frameworks
+
+The elements work in any framework as-is. These packages add typed props, real event bindings,
+two-way binding and — for React and Vue — server rendering:
+
+```sh
+npm install @viewflow/material-react     # React 18+, Next.js / Remix SSR
+npm install @viewflow/material-vue       # Vue 3.5+, v-model, Nuxt SSR
+npm install @viewflow/material-angular   # Angular 19+, standalone, reactive forms
+npm install @viewflow/material-svelte    # Svelte 5, bind:value
+```
+
+Each is generated from the component sources on every release and versioned in lockstep with this
+package. See [`docs/frameworks.md`](docs/frameworks.md), or the README inside each
+[`packages/`](packages) directory.
+
+The package also ships editor metadata — VS Code custom data, JetBrains web-types, and a Custom
+Elements Manifest — so `<material-*>` tags autocomplete in plain HTML and server templates. Setup is
+in [`docs/frameworks.md`](docs/frameworks.md#editor-and-tooling-metadata).
+
 ## What the components handle
 
 - **Self-contained styles.** No stylesheet to fetch, no adopted-stylesheet
@@ -144,14 +164,16 @@ own.
 
 ## Documentation
 
-Each area has a reference under `skills/material-web-components/references/`:
+Each area has a reference under `skills/material-web/references/`:
 
-- [setup.md](skills/material-web-components/references/setup.md) — loading the library on a page
-- [theming.md](skills/material-web-components/references/theming.md) — tokens and palettes
-- [forms.md](skills/material-web-components/references/forms.md) / [fields.md](skills/material-web-components/references/fields.md) — form controls and validation
-- [navigation.md](skills/material-web-components/references/navigation.md), [overlays.md](skills/material-web-components/references/overlays.md), [display.md](skills/material-web-components/references/display.md), [lists.md](skills/material-web-components/references/lists.md), [data-table.md](skills/material-web-components/references/data-table.md), [progress.md](skills/material-web-components/references/progress.md), [search.md](skills/material-web-components/references/search.md), [stepper.md](skills/material-web-components/references/stepper.md)
-- [i18n.md](skills/material-web-components/references/i18n.md) — catalogs and formats
-- [integrations.md](skills/material-web-components/references/integrations.md) — what you wire up (endpoints, persistence, file upload, maps)
+- [setup.md](skills/material-web/references/setup.md) — loading the library on a page
+- [theming.md](skills/material-web/references/theming.md) — tokens and palettes
+- [forms.md](skills/material-web/references/forms.md) / [fields.md](skills/material-web/references/fields.md) — form controls and validation
+- [navigation.md](skills/material-web/references/navigation.md), [overlays.md](skills/material-web/references/overlays.md), [display.md](skills/material-web/references/display.md), [lists.md](skills/material-web/references/lists.md), [data-table.md](skills/material-web/references/data-table.md), [progress.md](skills/material-web/references/progress.md), [search.md](skills/material-web/references/search.md), [stepper.md](skills/material-web/references/stepper.md)
+- [i18n.md](skills/material-web/references/i18n.md) — catalogs and formats
+- [integrations.md](skills/material-web/references/integrations.md) — what you wire up (endpoints, persistence, file upload)
+
+Framework packages and editor tooling: [docs/frameworks.md](docs/frameworks.md).
 
 ## Development
 
@@ -167,14 +189,17 @@ npm start        # http://localhost:3333
 Stencil's dev server. Every component has a demo page at
 `src/demos/<component>.html`, which is where behavior is checked. There are no unit
 tests; the components are mostly CSS, so demo pages carry the test cases.
+Watch rebuilds skip the framework wrapper codegen (`MATERIAL_WRAPPERS=0`).
 
 Build the package:
 
 ```sh
-npm run build    # theme.css + material.css + Stencil dist/ + single-file CDN bundle
+npm run build       # theme.css + material.css + Stencil dist/ + hydrate/ + tooling JSON + CDN bundle
+npm run build:all   # the above, then the four framework packages under packages/
 ```
 
-`npm publish` runs this build first through `prepublishOnly`.
+`npm publish` runs `npm run build` first through `prepublishOnly`. The framework
+packages are separate npm packages — see [docs/frameworks.md](docs/frameworks.md).
 
 Add a component:
 

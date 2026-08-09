@@ -38,7 +38,7 @@ Four properties shape every component, and they are not the defaults you'd assum
 
 All tags are prefixed `material-` (`material-textfield`, `material-data-table`).
 
-Cross-cutting: `theming.md` (six contrast themes, rem density, re-skinning, RTL) · `i18n.md` (string and format resolution) · `integrations.md` (what *you* wire up: endpoints, persistence, uploads, catalogs).
+Cross-cutting: `theming.md` (six contrast themes, rem density, re-skinning, RTL) · `i18n.md` (string and format resolution) · `integrations.md` (what *you* wire up: endpoints, persistence, uploads, catalogs — and the React/Vue/Angular/Svelte wrapper packages).
 
 ## Choosing a component
 

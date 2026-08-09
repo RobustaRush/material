@@ -27,6 +27,8 @@
   "unpkg": "cdn/material.min.js",
   "jsdelivr": "cdn/material.min.js",
   "sideEffects": true,
+  "customElements": "dist/custom-elements.json",
+  "web-types": "dist/web-types.json",
   "exports": {
     ".": {
       "types": "./dist/types/components.d.ts",
@@ -40,9 +42,22 @@
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
     },
+    "./hydrate": {
+      "types": "./hydrate/index.d.ts",
+      "import": "./hydrate/index.mjs",
+      "require": "./hydrate/index.js"
+    },
     "./cdn": "./cdn/material.min.js",
     "./theme.css": "./css/theme.css",
     "./material.css": "./css/material.css",
+    "./custom-elements.json": "./dist/custom-elements.json",
+    "./html-data.json": "./dist/html-data.json",
+    "./web-types.json": "./dist/web-types.json",
+    "./docs.json": "./dist/docs.json",
+    "./dist/components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
@@ -52,6 +67,11 @@
     "dist/material/",
     "dist/types/",
     "dist/index.js",
+    "dist/custom-elements.json",
+    "dist/html-data.json",
+    "dist/web-types.json",
+    "dist/docs.json",
+    "hydrate/",
     "loader/",
     "cdn/material.min.js",
     "css/theme.css",
@@ -59,8 +79,16 @@
     "LICENSE",
     "LICENSE_EXCEPTION"
   ],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:material:pkg && npm run build:css && stencil build && npm run build:cdn",
+    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:material:pkg && npm run build:css && stencil build && npm run build:types && npm run check:svelte && npm run build:web-types && npm run build:cdn",
+    "build:all": "npm run build && npm run build:packages",
+    "build:packages": "npm run sync:versions && npm run build --workspaces --if-present",
+    "build:types": "node scripts/patch-custom-element-types.mjs",
+    "build:web-types": "node scripts/build-web-types.mjs",
+    "sync:versions": "node scripts/sync-package-versions.mjs",
     "build:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --minify",
     "build:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --minify",
     "build:theme:pkg": "tailwindcss -i ./src/theme/theme.css -o ./css/theme.css --minify",
@@ -68,20 +96,30 @@
     "build:cdn": "node scripts/build-cdn.mjs",
     "dev:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --watch",
     "dev:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --watch",
-    "start": "concurrently -k -n theme,css,stencil -c green,blue,magenta \"npm:dev:theme\" \"npm:dev:css\" \"stencil build --dev --watch --serve\"",
+    "start": "MATERIAL_WRAPPERS=0 concurrently -k -n theme,css,stencil -c green,blue,magenta \"npm:dev:theme\" \"npm:dev:css\" \"stencil build --dev --watch --serve\"",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "check:svelte": "node scripts/check-svelte-output.mjs"
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
+    "@stencil/angular-output-target": "^1.4.1",
     "@stencil/core": "^4.22.0",
+    "@stencil/react-output-target": "^1.6.1",
+    "@stencil/ssr": "^0.4.0",
+    "@stencil/vue-output-target": "^0.14.1",
     "@tailwindcss/cli": "^4.0.0",
     "concurrently": "^9.0.0",
     "esbuild": "^0.28.0",
-    "tailwindcss": "^4.0.0"
+    "svelte": "^5.56.8",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "vue-router": "^4.5.0"
   }
 }

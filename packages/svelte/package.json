@@ -1,0 +1,46 @@
+{
+  "name": "@viewflow/material-svelte",
+  "version": "26.28.1",
+  "description": "Svelte 5 bindings for @viewflow/material — Material 3 web components, with bind: support.",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viewflow/material.git",
+    "directory": "packages/svelte"
+  },
+  "keywords": [
+    "material-design",
+    "material-3",
+    "svelte",
+    "sveltekit",
+    "web-components"
+  ],
+  "type": "module",
+  "svelte": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "sideEffects": [
+    "**/*.svelte"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "svelte": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src/"
+  ],
+  "peerDependencies": {
+    "@viewflow/material": "^26.28.1",
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@viewflow/material": "file:../..",
+    "svelte": "^5.56.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
