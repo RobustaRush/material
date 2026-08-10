@@ -37,15 +37,23 @@ Type: `Promise<void>`
 
 
 
-### `show(anchorEl?: Element) => Promise<void>`
+### `show(anchorEl?: AnchorLike) => Promise<void>`
 
-Open the menu. Resolves the anchor from `el` arg, the `anchor` prop, or the popover invoker.
+Open the menu. Resolves the anchor from `el` arg, the `anchor` prop, or the
+popover invoker. The argument only has to report a rect, so a pointer
+position works as well as an element:
+
+    row.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      menu.show({ getBoundingClientRect: () =>
+        new DOMRect(e.clientX, e.clientY, 0, 0) });
+    });
 
 #### Parameters
 
-| Name       | Type                   | Description |
-| ---------- | ---------------------- | ----------- |
-| `anchorEl` | `Element \| undefined` |             |
+| Name       | Type                      | Description |
+| ---------- | ------------------------- | ----------- |
+| `anchorEl` | `AnchorLike \| undefined` |             |
 
 #### Returns
 

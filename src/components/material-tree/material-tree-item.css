@@ -144,6 +144,7 @@
 }
 
 .text {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -151,17 +152,33 @@
 }
 
 .label {
+  line-height: 1.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* A supporting line used to make .text two lines tall, and centring the row on
+   that block lifted the label clear of the icon and checkbox — the label stopped
+   reading as the row's subject, and the row stopped matching its plain siblings.
+   Re-aligning each cell against the label needs per-cell arithmetic, because no
+   two cells share an intrinsic height. So the supporting line leaves the flow
+   and the row reserves its space with padding instead: .text stays exactly one
+   line tall, and chevron, checkbox, icon, label and trailing cells all centre on
+   the label exactly as they do without supporting text. */
 .supporting {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
   font-size: 0.75rem;
   color: var(--md-sys-color-on-surface-variant);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.row:has(.supporting) {
+  padding-block-end: 1.125rem;
 }
 
 /* --- trailing data cells (aligned columns) ------------------------------------ */

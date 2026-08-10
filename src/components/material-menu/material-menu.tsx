@@ -11,6 +11,7 @@ import {
   h,
 } from '@stencil/core';
 import {
+  AnchorLike,
   AnchorPlacement,
   trackAnchored,
 } from '../../utils/anchor-position';
@@ -55,7 +56,8 @@ export class MaterialMenu {
   @Event() materialMenuClose!: EventEmitter<void>;
 
   private cleanupTrack?: () => void;
-  private invoker: Element | null = null;
+  private invoker: AnchorLike | null = null;
+  private explicitAnchor: AnchorLike | null = null;
   private readonly typeahead: TypeaheadHandle = createTypeahead<HTMLElement>({
     getItems: () => this.getItems(),
     getText: it => this.itemText(it),
@@ -91,10 +93,26 @@ export class MaterialMenu {
     else if (!open && isOpen) (this.el as HTMLElement & { hidePopover: () => void }).hidePopover();
   }
 
-  /** Open the menu. Resolves the anchor from `el` arg, the `anchor` prop, or the popover invoker. */
+  /** Open the menu. Resolves the anchor from `el` arg, the `anchor` prop, or the
+   *  popover invoker. The argument only has to report a rect, so a pointer
+   *  position works as well as an element:
+   *
+   *      row.addEventListener('contextmenu', (e) => {
+   *        e.preventDefault();
+   *        menu.show({ getBoundingClientRect: () =>
+   *          new DOMRect(e.clientX, e.clientY, 0, 0) });
+   *      });
+   */
   @Method()
-  async show(anchorEl?: Element) {
-    if (anchorEl) this.invoker = anchorEl;
+  async show(anchorEl?: AnchorLike) {
+    if (anchorEl) {
+      this.invoker = anchorEl;
+      // Kept apart from `invoker` so it can outrank the `anchor` prop: a caller
+      // naming an anchor at the call site means it for this opening, whatever
+      // the markup says. One menu can then serve both a toolbar button and a
+      // right-click at the pointer.
+      this.explicitAnchor = anchorEl;
+    }
     this.open = true;
   }
 
@@ -103,7 +121,8 @@ export class MaterialMenu {
     this.open = false;
   }
 
-  private resolveAnchor(): Element | null {
+  private resolveAnchor(): AnchorLike | null {
+    if (this.explicitAnchor) return this.explicitAnchor;
     if (this.anchor) {
       // Only auto-prefix `#` for a bare HTML id; leave any real CSS selector
       // (class, attribute, descendant, id already prefixed) untouched.
@@ -137,8 +156,11 @@ export class MaterialMenu {
       this.open = false;
       this.cleanupTrack?.();
       this.cleanupTrack = undefined;
+      // A virtual anchor is a plain object with no focus() — the guard below
+      // covers it, so the menu simply leaves focus where it was.
       const returnTo = this.invoker as HTMLElement | null;
       this.invoker = null;
+      this.explicitAnchor = null;
       // Refocus the invoker only for keyboard/Escape/selection dismissals;
       // on a light-dismiss (outside click) leave focus where the user put it.
       if (this.restoreFocusOnClose && returnTo && typeof returnTo.focus === 'function') {

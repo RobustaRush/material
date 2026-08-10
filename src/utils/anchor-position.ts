@@ -12,6 +12,14 @@
  * with `inset: unset` so we can drive `top`/`left` directly.
  */
 
+/**
+ * Anything that can report a viewport rect. Positioning only ever reads
+ * `getBoundingClientRect()`, so a caller can anchor to a pointer position or
+ * any other computed box instead of a real element — the "virtual anchor"
+ * pattern, which is what a right-click context menu needs.
+ */
+export type AnchorLike = Element | { getBoundingClientRect(): DOMRect };
+
 export type AnchorPlacement =
   | 'bottom-start' | 'bottom-end' | 'bottom-center'
   | 'top-start' | 'top-end' | 'top-center';
@@ -35,7 +43,7 @@ const DEFAULTS: Required<AnchorPositionOptions> = {
 
 export function positionAnchored(
   floater: HTMLElement,
-  anchor: Element,
+  anchor: AnchorLike,
   opts: AnchorPositionOptions = {},
 ): void {
   const placement = opts.placement ?? DEFAULTS.placement;
@@ -104,7 +112,7 @@ export function positionAnchored(
  */
 export function trackAnchored(
   floater: HTMLElement,
-  anchor: Element,
+  anchor: AnchorLike,
   opts?: AnchorPositionOptions,
 ): () => void {
   let frame = 0;

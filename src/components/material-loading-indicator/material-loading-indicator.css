@@ -42,3 +42,10 @@ svg {
   height: 100%;
   overflow: visible;
 }
+
+/* `hidden` is a global attribute, but a :host display declaration outranks the
+   UA's [hidden] rule, so it has to be restated here or hiding the element from
+   markup silently does nothing. */
+:host([hidden]) {
+  display: none !important;
+}

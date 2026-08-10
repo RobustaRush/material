@@ -90,3 +90,10 @@
      gap contributes 4dp, so 8dp here totals 12dp. */
   margin-top: 0.5rem;
 }
+
+/* `hidden` is a global attribute, but a :host display declaration outranks the
+   UA's [hidden] rule, so it has to be restated here or hiding the element from
+   markup silently does nothing. */
+:host([hidden]) {
+  display: none !important;
+}

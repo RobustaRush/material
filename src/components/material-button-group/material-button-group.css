@@ -76,3 +76,10 @@
    only.) */
 :host([variant="connected"][size="xs"]) ::slotted(material-icon-button) { margin-inline: -0.5rem; }
 :host([variant="connected"][size="s"])  ::slotted(material-icon-button) { margin-inline: -0.25rem; }
+
+/* `hidden` is a global attribute, but a :host display declaration outranks the
+   UA's [hidden] rule, so it has to be restated here or hiding the element from
+   markup silently does nothing. */
+:host([hidden]) {
+  display: none !important;
+}

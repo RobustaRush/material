@@ -42,10 +42,11 @@ export class MaterialCalendar {
    *  Ignored in `range` mode — see `startValue` / `endValue`. */
   @Prop({ mutable: true, reflect: true }) value = '';
 
-  /** Range-selection mode: the first pick sets `startValue`, the second sets
-   *  `endValue`; picking a date before the start restarts the range. The
-   *  in-between band renders in secondary-container per the MD3 date range
-   *  picker spec. */
+  /** Range-selection mode: the first pick opens the range, the second closes it
+   *  in either direction, and once both ends are set a pick moves whichever end
+   *  is nearer — so an existing range is adjustable instead of restarting from
+   *  scratch on every click. The in-between band renders in secondary-container
+   *  per the MD3 date range picker spec. */
   @Prop({ reflect: true }) range = false;
 
   /** Range start, ISO `YYYY-MM-DD` (range mode). */
@@ -244,20 +245,42 @@ export class MaterialCalendar {
     return toISO(target) > this.max;
   }
 
+  // What a pick on `iso` would make the range, without committing it — the
+  // renderer uses the same function to preview the hovered day, so the band a
+  // user sees is exactly the range they get.
+  //
+  // Three states, in order: no start yet, one end outstanding, and a complete
+  // range. The old rule restarted the range on any pick once both ends were
+  // set (and on any pick before the start), which made a range you had almost
+  // right unadjustable — the only way to move the end was to re-pick the start
+  // and walk the whole thing again.
+  private rangeAfterPick(iso: string): { start: string; end: string } {
+    const { startValue: start, endValue: end } = this;
+
+    if (!start) return { start: iso, end: '' };
+
+    // Second pick: order the pair rather than discard it, so closing the range
+    // backwards from the start works. Same-day ranges are allowed.
+    if (!end) return iso < start ? { start: iso, end: start } : { start, end: iso };
+
+    // Complete range: move the nearer end. A pick outside the range extends the
+    // end it is nearer to, which is the same rule and needs no special case.
+    // The ordering guard covers a start dragged past the end, and vice versa.
+    const next = daysBetween(iso, start) <= daysBetween(iso, end)
+      ? { start: iso, end }
+      : { start, end: iso };
+    return next.start <= next.end ? next : { start: next.end, end: next.start };
+  }
+
   private selectDate = (iso: string) => {
     if (!inRange(iso, this.min || undefined, this.max || undefined)) return;
     if (this.range) {
-      if (!this.startValue || this.endValue || iso < this.startValue) {
-        // First pick, a fresh range after a complete one, or an earlier
-        // date than the current start — (re)start the range.
-        this.startValue = iso;
-        this.endValue = '';
-      } else {
-        this.endValue = iso; // same-day ranges allowed
-      }
+      const { start, end } = this.rangeAfterPick(iso);
+      this.startValue = start;
+      this.endValue = end;
       this.focusedDate = iso;
       this.hoverDate = '';
-      this.rangeSelect.emit({ start: this.startValue, end: this.endValue });
+      this.rangeSelect.emit({ start, end });
       return;
     }
     this.value = iso;
@@ -571,15 +594,13 @@ export class MaterialCalendar {
     const weeks: (typeof cells)[] = [];
     for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
 
-    // Range band boundaries. While the second pick is outstanding, the
-    // hovered day previews the band (only forward from the start).
-    const bandStart = this.range ? this.startValue : '';
-    const bandEnd = this.range
-      ? (this.endValue
-          || (this.startValue && this.hoverDate && this.hoverDate > this.startValue
-              ? this.hoverDate
-              : ''))
-      : '';
+    // Range band boundaries. The hovered day previews the range a pick would
+    // produce, in whichever direction and on whichever end — the preview runs
+    // through the same rangeAfterPick() the click does, so what the band shows
+    // is what committing gives.
+    const preview = this.range && this.hoverDate ? this.rangeAfterPick(this.hoverDate) : null;
+    const bandStart = this.range ? (preview ? preview.start : this.startValue) : '';
+    const bandEnd = this.range ? (preview ? preview.end : this.endValue) : '';
     const hasBand = !!(bandStart && bandEnd && bandEnd > bandStart);
 
     return (
@@ -627,11 +648,7 @@ export class MaterialCalendar {
                     disabled={disabled}
                     tabIndex={tabIndex}
                     onClick={() => this.selectDate(c.iso)}
-                    onMouseEnter={
-                      this.range && this.startValue && !this.endValue
-                        ? () => (this.hoverDate = c.iso)
-                        : undefined
-                    }
+                    onMouseEnter={this.range ? () => (this.hoverDate = c.iso) : undefined}
                   >
                     {c.day}
                   </button>
@@ -717,4 +734,10 @@ export class MaterialCalendar {
 
 function pad2(n: number): string {
   return n < 10 ? `0${n}` : String(n);
+}
+
+// Whole days between two `YYYY-MM-DD` strings. Date-only ISO parses as UTC
+// midnight, so the subtraction is exact and DST cannot skew it.
+function daysBetween(a: string, b: string): number {
+  return Math.abs(Date.parse(a) - Date.parse(b)) / 86_400_000;
 }

@@ -146,10 +146,15 @@
   border-end-start-radius: var(--sb-inner-active);
 }
 
-/* Selected state (menu open) — trailing inner side becomes fully circular. */
+/* Selected state (menu open). The inner corners morph to the same radius the
+   press state uses — not to 9999px, which they did before: the outer corners
+   are already a full pill, so rounding the inner pair to match turned the
+   trailing segment into a circle the moment the menu opened, and it stayed
+   that way while the pointer was over the menu. The chevron flip below is what
+   carries "open"; the shape only needs to echo the press. */
 .trailing[aria-expanded="true"] {
-  border-start-start-radius: 9999px;
-  border-end-start-radius: 9999px;
+  border-start-start-radius: var(--sb-inner-active);
+  border-end-start-radius: var(--sb-inner-active);
 }
 
 .icon {
@@ -310,4 +315,11 @@
   :host([variant="outlined"]) .trailing:disabled {
     border-color: GrayText;
   }
+}
+
+/* `hidden` is a global attribute, but a :host display declaration outranks the
+   UA's [hidden] rule, so it has to be restated here or hiding the element from
+   markup silently does nothing. */
+:host([hidden]) {
+  display: none !important;
 }
