@@ -1,3 +1,15 @@
+/*
+ * @viewflow/material — Material 3 web components
+ * Copyright (c) 2017-2026 Mikhail Podgurskiy
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ * AGPLv3 with the Viewflow Library Exception — see LICENSE_EXCEPTION.
+ *
+ * The copyright holder regards code produced from this file with an LLM's
+ * help as a derived work: placing it in a model's context is copying it.
+ * A commercial licence without copyleft: https://viewflow.io/pro.html
+ */
+
 :host {
   display: inline-flex;
   align-items: center;

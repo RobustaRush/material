@@ -83,12 +83,15 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:material:pkg && npm run build:css && stencil build && npm run build:types && npm run check:svelte && npm run build:web-types && npm run build:cdn",
+    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:material:pkg && npm run build:css && stencil build && npm run build:types && npm run check:svelte && npm run build:web-types && npm run build:cdn && npm run license:generated",
     "build:all": "npm run build && npm run build:packages",
     "build:packages": "npm run sync:versions && npm run build --workspaces --if-present",
     "build:types": "node scripts/patch-custom-element-types.mjs",
     "build:web-types": "node scripts/build-web-types.mjs",
     "sync:versions": "node scripts/sync-package-versions.mjs",
+    "license": "node scripts/license-header.mjs",
+    "license:check": "node scripts/license-header.mjs --check",
+    "license:generated": "node scripts/license-header.mjs --generated",
     "build:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --minify",
     "build:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --minify",
     "build:theme:pkg": "tailwindcss -i ./src/theme/theme.css -o ./css/theme.css --minify",

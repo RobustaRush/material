@@ -232,3 +232,31 @@ If you do change this package, the AGPL applies to your modified version of it.
 The license scheme is the same as the license scheme of the GCC Runtime Library.
 The text above is a summary. Read [LICENSE_EXCEPTION](./LICENSE_EXCEPTION) for
 the conditions.
+
+### Every file carries the notice
+
+The exception applies to a library that "bears a notice placed by the copyright
+holder" naming the AGPL and the exception — so every source file carries that
+notice in its header, and `npm run license:check` fails the build if one drifts.
+`scripts/license-header.mjs` holds the text and stamps it; edit it there, never
+file by file.
+
+Minified artifacts (`cdn/material.min.js`, `css/material.css`) drop the per-file
+copies and carry the notice once, in a banner at the top.
+
+### Generating code from this package with an LLM
+
+Passing these files to a model — as context, as a prompt, as training data —
+copies them, and the copy is governed by the AGPL like any other. The copyright
+holder therefore regards code produced that way as a derived work of this
+package, whether or not the result is a literal copy.
+
+This is a statement of the copyright holder's position, not an extra condition
+bolted onto the AGPL: AGPLv3 section 7 lets a recipient remove added conditions
+outside its own enumerated list, so adding one would achieve nothing except
+making the license read as something other than AGPL to license scanners.
+
+Rewriting the components with a model in order to avoid the copyleft is the case
+this is about. If that is what you need,
+[a commercial license](https://viewflow.io/pro.html) removes the copyleft
+outright and is the cheaper path.
