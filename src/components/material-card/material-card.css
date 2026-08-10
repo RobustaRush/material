@@ -61,6 +61,13 @@ button[part="surface"] {
 ::slotted([slot="media"]) {
   display: block;
   width: 100%;
+  /* Without this, an <img> that carries width/height attributes — which it
+     should, so the layout reserves its box — keeps the attribute height while
+     CSS overrides the width, and the picture comes out squashed. `auto` hands
+     the height back to the intrinsic ratio. */
+  height: auto;
+  /* And if a consumer does fix a height, crop to fill rather than stretch. */
+  object-fit: cover;
   position: relative;
   z-index: 1;
 }
