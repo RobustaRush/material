@@ -42,6 +42,7 @@
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
     },
+    "./components/*": "./dist/components/*",
     "./hydrate": {
       "types": "./hydrate/index.d.ts",
       "import": "./hydrate/index.mjs",
