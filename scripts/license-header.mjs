@@ -1,5 +1,5 @@
 /*
- * @viewflow/material — Material 3 web components
+ * advanced-material-web — Material 3 web components
  * Copyright (c) 2017-2026 Mikhail Podgurskiy
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
@@ -44,7 +44,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
  * something other than AGPL to distributions and licence scanners.
  */
 export const NOTICE = [
-  '@viewflow/material — Material 3 web components',
+  'advanced-material-web — Material 3 web components',
   'Copyright (c) 2017-2026 Mikhail Podgurskiy',
   '',
   'SPDX-License-Identifier: AGPL-3.0-or-later',

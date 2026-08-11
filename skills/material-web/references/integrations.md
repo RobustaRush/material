@@ -31,22 +31,22 @@ The dropzone posts files with the surrounding form for a normal multipart submit
 
 See `references/i18n.md`. Define `window.gettext` / `pgettext` / `get_format` and the init flag before the bundle loads to use your own catalogs. Without them, strings fall back to English and formats to `Intl` for `<html lang>` — no wiring required.
 
-## Framework packages
+## Framework subpaths
 
-The elements run anywhere, but four generated wrapper packages add typed props, real event bindings and two-way binding. Reach for one when the user is already in that framework; otherwise plain tags are correct.
+The elements run anywhere, but four generated subpath exports add typed props, real event bindings and two-way binding — no separate install. Reach for one when the user is already in that framework; otherwise plain tags are correct.
 
-- `@viewflow/material-react` — props camelCase, events `onValueChange`-style receiving the real `CustomEvent`, refs give the element (so `@Method()`s are callable). SSR to declarative shadow DOM via `@stencil/ssr` in `next.config`.
-- `@viewflow/material-vue` — `v-model` on the single-value controls, events as `@valueChange`. Nuxt SSR needs no config; the wrapper picks the server implementation itself.
-- `@viewflow/material-angular` — standalone components, selectors are the tag names, events are `@Output()`s, and `ControlValueAccessor`s make the fields work with reactive forms / `ngModel`.
-- `@viewflow/material-svelte` — `bind:value` / `bind:checked`, callback props `onValueChange`, `bind:element` for methods. Svelte 5 only.
+- `advanced-material-web/react` — props camelCase, events `onValueChange`-style receiving the real `CustomEvent`, refs give the element (so `@Method()`s are callable). SSR to declarative shadow DOM via `@stencil/ssr` in `next.config`, imported from `advanced-material-web/react/ssr`.
+- `advanced-material-web/vue` — `v-model` on the single-value controls, events as `@valueChange`. Nuxt SSR needs no config; the component picks the server implementation itself.
+- `advanced-material-web/angular` — standalone components, selectors are the tag names, events are `@Output()`s, and `ControlValueAccessor`s make the fields work with reactive forms / `ngModel`.
+- `advanced-material-web/svelte` — `bind:value` / `bind:checked`, callback props `onValueChange`, `bind:element` for methods. Svelte 5 only.
 
 Two-way binding covers the text-like fields, `select`, `autocomplete`, `radio-group`, `slider` (`value`) and `checkbox` / `switch` (`checked`). **`date-range-field` and `transfer` are excluded** — they emit `{start, end}` and `{values}`, so bind them with an explicit `valueChange` listener.
 
-All four still need the page baseline (theme + font); wrappers bind behavior, not styling.
+All four still need the page baseline (theme + font); the adapters bind behavior, not styling.
 
 ## Editor metadata
 
-Published with the core package: `dist/html-data.json` (VS Code custom data), `dist/web-types.json` (JetBrains), `dist/custom-elements.json` (CEM, advertised via the `customElements` field). VS Code needs `"html.customData": ["./node_modules/@viewflow/material/dist/html-data.json"]`; JetBrains finds web-types on its own.
+Published with the package: `dist/html-data.json` (VS Code custom data), `dist/web-types.json` (JetBrains), `dist/custom-elements.json` (CEM, advertised via the `customElements` field). VS Code needs `"html.customData": ["./node_modules/advanced-material-web/dist/html-data.json"]`; JetBrains finds web-types on its own.
 
 ## Not in the library
 

@@ -1,6 +1,6 @@
-# @viewflow/material
+# advanced-material-web
 
-[![npm](https://img.shields.io/npm/v/@viewflow/material)](https://www.npmjs.com/package/@viewflow/material)
+[![npm](https://img.shields.io/npm/v/advanced-material-web)](https://www.npmjs.com/package/advanced-material-web)
 [![license: AGPL-3.0 + exception](https://img.shields.io/badge/license-AGPL--3.0%20%2B%20exception-blue)](LICENSE_EXCEPTION)
 
 Material 3 web components built with [Stencil](https://stenciljs.com/). More than
@@ -18,13 +18,13 @@ is no runtime stylesheet fetch and no build step for consumers.
 ## Install
 
 ```sh
-npm install @viewflow/material
+npm install advanced-material-web
 ```
 
 Or load it from a CDN with no install:
 
 ```html
-<script type="module" src="https://unpkg.com/@viewflow/material"></script>
+<script type="module" src="https://unpkg.com/advanced-material-web"></script>
 ```
 
 ## Quick start
@@ -35,10 +35,10 @@ the Material Symbols font.
 ```html
 <html lang="en" class="light">
 <head>
-  <link rel="stylesheet" href="https://unpkg.com/@viewflow/material/css/theme.css">
+  <link rel="stylesheet" href="https://unpkg.com/advanced-material-web/css/theme.css">
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
-  <script type="module" src="https://unpkg.com/@viewflow/material"></script>
+  <script type="module" src="https://unpkg.com/advanced-material-web"></script>
 </head>
 <body>
   <material-button variant="filled" label="It works" icon="check"></material-button>
@@ -54,45 +54,44 @@ the Material Symbols font.
   icons show as their text names.
 
 Using `material-data-table` or `material-breadcrumbs`? Add
-`@viewflow/material/material.css` next to `theme.css` — see
+`advanced-material-web/material.css` next to `theme.css` — see
 [Light-DOM components](#light-dom-components).
 
 ## Loading options
 
 | Method | Source | Use it when |
 |--------|--------|-------------|
-| Single bundle | `unpkg.com/@viewflow/material` (~590 KB, all elements eager) | You want one file and use many components. |
+| Single bundle | `unpkg.com/advanced-material-web` (~590 KB, all elements eager) | You want one file and use many components. |
 | Lazy loader | `.../dist/material/material.esm.js` (small entry) | A page uses a few components; chunks load on demand. |
 
 With a bundler:
 
 ```js
-import { defineCustomElements } from '@viewflow/material/loader';
-import '@viewflow/material/theme.css';
+import { defineCustomElements } from 'advanced-material-web/loader';
+import 'advanced-material-web/theme.css';
 defineCustomElements();
 ```
 
 Or import only the elements you use. Each one registers itself:
 
 ```js
-import '@viewflow/material/dist/components/material-button.js';
+import 'advanced-material-web/dist/components/material-button.js';
 ```
 
 ## Frameworks
 
-The elements work in any framework as-is. These packages add typed props, real event bindings,
-two-way binding and — for React and Vue — server rendering:
+The elements work in any framework as-is. The same install also carries typed props, real event
+bindings, two-way binding and — for React and Vue — server rendering, as subpath imports:
 
-```sh
-npm install @viewflow/material-react     # React 18+, Next.js / Remix SSR
-npm install @viewflow/material-vue       # Vue 3.5+, v-model, Nuxt SSR
-npm install @viewflow/material-angular   # Angular 19+, standalone, reactive forms
-npm install @viewflow/material-svelte    # Svelte 5, bind:value
+```js
+import { MaterialButton } from 'advanced-material-web/react';     // React 18+, Next.js / Remix SSR
+import { MaterialButton } from 'advanced-material-web/vue';       // Vue 3.5+, v-model, Nuxt SSR
+import { MaterialButton } from 'advanced-material-web/angular';   // Angular 19+, standalone, reactive forms
+import { MaterialButton } from 'advanced-material-web/svelte';    // Svelte 5, bind:value
 ```
 
-Each is generated from the component sources on every release and versioned in lockstep with this
-package. See [`docs/frameworks.md`](docs/frameworks.md), or the README inside each
-[`packages/`](packages) directory.
+No separate install and no version to keep in lockstep — each subpath is generated from the same
+component sources on every release. See [`docs/frameworks.md`](docs/frameworks.md).
 
 The package also ships editor metadata — VS Code custom data, JetBrains web-types, and a Custom
 Elements Manifest — so `<material-*>` tags autocomplete in plain HTML and server templates. Setup is
@@ -121,14 +120,14 @@ in [`docs/frameworks.md`](docs/frameworks.md#editor-and-tooling-metadata).
 
 | Group | Elements | Reference |
 |-------|----------|-----------|
-| Actions | button, icon-button, fab, fab-menu, split-button, button-group, chip, chip-set | [actions.md](skills/material-web-components/references/actions.md) |
-| Text fields | textfield, textarea, number-field, masked-field, date-field, time-field, datetime-field, date-range-field, file-field, json-field | [fields.md](skills/material-web-components/references/fields.md) |
-| Selection | checkbox, radio, switch, slider, select, autocomplete, dropzone | [forms.md](skills/material-web-components/references/forms.md) |
-| Navigation | app-bar, toolbar, navigation-bar, navigation-rail, navigation-group, navigation-item, tabs, breadcrumbs, pagination, stepper | [navigation.md](skills/material-web-components/references/navigation.md) |
-| Overlays | dialog, bottom-sheet, side-sheet, menu, tooltip, snackbar, command-palette | [overlays.md](skills/material-web-components/references/overlays.md) |
-| Data & display | data-table, list, card, avatar, badge, divider, tree, transfer, calendar, carousel, rich-text, time-picker | [display.md](skills/material-web-components/references/display.md), [data-table.md](skills/material-web-components/references/data-table.md), [lists.md](skills/material-web-components/references/lists.md) |
-| Progress | linear-progress, circular-progress, loading-indicator, skeleton | [progress.md](skills/material-web-components/references/progress.md) |
-| Search | search, search-app-bar | [search.md](skills/material-web-components/references/search.md) |
+| Actions | button, icon-button, fab, fab-menu, split-button, button-group, chip, chip-set | [actions.md](skills/material-web/references/actions.md) |
+| Text fields | textfield, textarea, number-field, masked-field, date-field, time-field, datetime-field, date-range-field, file-field, json-field | [fields.md](skills/material-web/references/fields.md) |
+| Selection | checkbox, radio, switch, slider, select, autocomplete, dropzone | [forms.md](skills/material-web/references/forms.md) |
+| Navigation | app-bar, toolbar, navigation-bar, navigation-rail, navigation-group, navigation-item, tabs, breadcrumbs, pagination, stepper | [navigation.md](skills/material-web/references/navigation.md) |
+| Overlays | dialog, bottom-sheet, side-sheet, menu, tooltip, snackbar, command-palette | [overlays.md](skills/material-web/references/overlays.md) |
+| Data & display | data-table, list, card, avatar, badge, divider, tree, transfer, calendar, carousel, rich-text, time-picker | [display.md](skills/material-web/references/display.md), [data-table.md](skills/material-web/references/data-table.md), [lists.md](skills/material-web/references/lists.md) |
+| Progress | linear-progress, circular-progress, loading-indicator, skeleton | [progress.md](skills/material-web/references/progress.md) |
+| Search | search, search-app-bar | [search.md](skills/material-web/references/search.md) |
 
 Tags and attributes are kebab-case (`<material-date-field first-day-of-week="1">`).
 Boolean attributes follow HTML rules: present means true.
@@ -143,7 +142,7 @@ each. Switch themes by changing the `<html>` class.
 To use your own palette, export a new set from the builder (Export → Web → CSS),
 replace the six files in `src/theme/`, and rebuild. Component code never changes,
 because every element reads the same `--md-sys-color-*` names. See
-[theming.md](skills/material-web-components/references/theming.md).
+[theming.md](skills/material-web/references/theming.md).
 
 ## Light-DOM components
 
@@ -153,8 +152,8 @@ styling can't be bundled into a JS chunk the way every other component's is.
 It ships as `material.css`, loaded the same way as `theme.css`:
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/@viewflow/material/css/theme.css">
-<link rel="stylesheet" href="https://unpkg.com/@viewflow/material/css/material.css">
+<link rel="stylesheet" href="https://unpkg.com/advanced-material-web/css/theme.css">
+<link rel="stylesheet" href="https://unpkg.com/advanced-material-web/css/material.css">
 ```
 
 Skip it and the rest of the library still works — only these two render
@@ -195,11 +194,11 @@ Build the package:
 
 ```sh
 npm run build       # theme.css + material.css + Stencil dist/ + hydrate/ + tooling JSON + CDN bundle
-npm run build:all   # the above, then the four framework packages under packages/
+npm run build:all   # the above, then the four framework adapters under adapters/
 ```
 
-`npm publish` runs `npm run build` first through `prepublishOnly`. The framework
-packages are separate npm packages — see [docs/frameworks.md](docs/frameworks.md).
+`npm publish` runs `npm run build:all` first through `prepublishOnly`. The framework adapters are
+subpath exports of this same package, not separate ones — see [docs/frameworks.md](docs/frameworks.md).
 
 Add a component:
 
@@ -216,7 +215,7 @@ light-DOM components it `@import`s under `layer(components)` do.
 
 ## License
 
-`@viewflow/material` is an Open Source project. It uses the AGPL license,
+`advanced-material-web` is an Open Source project. It uses the AGPL license,
 [The GNU Affero General Public License v3.0](http://www.gnu.org/licenses/agpl-3.0.html),
 with the additional permissions in [LICENSE_EXCEPTION](./LICENSE_EXCEPTION).
 

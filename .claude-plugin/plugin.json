@@ -1,5 +1,5 @@
 {
-  "name": "material-web-components",
+  "name": "material-web",
   "description": "Material 3 web components — server-first, form-associated, themeable via CSS custom properties, no build step required",
   "version": "0.1.0",
   "author": {

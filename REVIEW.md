@@ -149,8 +149,8 @@ visual map appears once an adapter is attached.
 adapter per engine from scratch = writing the whole map integration. So lean
 on **Terra Draw** (engine-agnostic across Leaflet / MapLibre / OpenLayers,
 covers all these geometry types) for the reference adapter — one thin adapter
-then serves multiple engines. Ship it as an optional package
-(`@viewflow/material/geo-terradraw`) and document the interface so others
+then serves multiple engines. Ship it as an optional subpath
+(`advanced-material-web/geo-terradraw`) and document the interface so others
 can bring a different engine.
 
 **One component, `type` prop — not eight.** A single `material-geometry-field`

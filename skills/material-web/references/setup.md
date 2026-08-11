@@ -5,10 +5,10 @@ One stylesheet, one script, one class on `<html>`. No bundler required; componen
 ## Install
 
 ```sh
-npm install @viewflow/material
+npm install advanced-material-web
 ```
 
-Ships components, TypeScript types, `theme.css`, and `material.css`. Serve `node_modules/@viewflow/material/css/theme.css` (importable as `@viewflow/material/theme.css`) and, on the no-bundler path, the ESM entry from your static assets.
+Ships components, TypeScript types, `theme.css`, and `material.css`. Serve `node_modules/advanced-material-web/css/theme.css` (importable as `advanced-material-web/theme.css`) and, on the no-bundler path, the ESM entry from your static assets.
 
 ## CDN (no install, no build step)
 
@@ -17,10 +17,10 @@ One self-contained ESM file; every `<material-*>` registers on load:
 ```html
 <html lang="en" class="light">
 <head>
-  <link rel="stylesheet" href="https://unpkg.com/@viewflow/material/css/theme.css">
+  <link rel="stylesheet" href="https://unpkg.com/advanced-material-web/css/theme.css">
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
-  <script type="module" src="https://unpkg.com/@viewflow/material"></script>
+  <script type="module" src="https://unpkg.com/advanced-material-web"></script>
 </head>
 <body>
   <material-button variant="filled" label="It works"></material-button>
@@ -28,7 +28,7 @@ One self-contained ESM file; every `<material-*>` registers on load:
 </html>
 ```
 
-`https://unpkg.com/@viewflow/material` resolves to the single eager bundle (`cdn/material.min.js`, ~590 KB, all 72 components). For pages using a handful of components, prefer the lazy loader — small entry, chunks on demand: `https://unpkg.com/@viewflow/material/dist/material/material.esm.js`.
+`https://unpkg.com/advanced-material-web` resolves to the single eager bundle (`cdn/material.min.js`, ~590 KB, all 72 components). For pages using a handful of components, prefer the lazy loader — small entry, chunks on demand: `https://unpkg.com/advanced-material-web/dist/material/material.esm.js`.
 
 ## Page wiring (self-hosted, no build step)
 
@@ -70,12 +70,12 @@ Skip it and only those two render unstyled; everything else is fine. Any compone
 
 ```js
 // Lazy loader — recommended, components load on demand
-import { defineCustomElements } from '@viewflow/material/loader';
-import '@viewflow/material/theme.css';
+import { defineCustomElements } from 'advanced-material-web/loader';
+import 'advanced-material-web/theme.css';
 defineCustomElements();
 
 // Or import only what you use (each self-registers)
-import '@viewflow/material/dist/components/material-button.js';
+import 'advanced-material-web/dist/components/material-button.js';
 ```
 
 The theme class and the icon font still have to be in the host page — a webfont link can't be bundled.

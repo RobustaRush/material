@@ -14,13 +14,13 @@
     // Self-reference: adapters/angular needs its own package.json (ng-packagr
     // requires one), which is the nearest ancestor for files under src/ and
     // shadows the real root's — so plain self-reference resolution never
-    // reaches material/package.json's exports map. These paths only steer
+    // reaches the root package.json's exports map. These paths only steer
     // the type-checker there directly; the emitted .mjs keeps the bare
-    // `@viewflow/material/...` specifier, which real consumers resolve
+    // `advanced-material-web/...` specifier, which real consumers resolve
     // normally (the installed package's own node_modules entry, not this).
     "paths": {
-      "@viewflow/material/dist/components": ["../../dist/components/index.d.ts"],
-      "@viewflow/material/dist/components/*": ["../../dist/components/*"]
+      "advanced-material-web/dist/components": ["../../dist/components/index.d.ts"],
+      "advanced-material-web/dist/components/*": ["../../dist/components/*"]
     }
   },
   "angularCompilerOptions": {

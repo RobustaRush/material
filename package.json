@@ -1,5 +1,5 @@
 {
-  "name": "@viewflow/material",
+  "name": "advanced-material-web",
   "version": "26.28.1",
   "description": "Material 3 web components built with Stencil — self-contained shadow-DOM styles, swappable theme via CSS custom properties, zero required stylesheet fetch.",
   "license": "AGPL-3.0-or-later",
@@ -72,8 +72,8 @@
       "import": "./adapters/vue/dist/components.js"
     },
     "./angular": {
-      "types": "./adapters/angular/dist/types/viewflow-material-angular.d.ts",
-      "default": "./adapters/angular/dist/fesm2022/viewflow-material-angular.mjs"
+      "types": "./adapters/angular/dist/types/advanced-material-web-angular.d.ts",
+      "default": "./adapters/angular/dist/fesm2022/advanced-material-web-angular.mjs"
     },
     "./svelte": {
       "types": "./adapters/svelte/src/index.d.ts",

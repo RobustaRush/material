@@ -1,5 +1,5 @@
 /*
- * @viewflow/material — Material 3 web components
+ * advanced-material-web — Material 3 web components
  * Copyright (c) 2017-2026 Mikhail Podgurskiy
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
@@ -19,7 +19,7 @@ import { vueOutputTarget } from '@stencil/vue-output-target';
 // compiler API, which Svelte 5 rejects. See the file header.
 import { svelteOutputTarget } from './scripts/svelte-output-target.mjs';
 
-const PKG = '@viewflow/material';
+const PKG = 'advanced-material-web';
 const CUSTOM_ELEMENTS_DIR = 'dist/components';
 const HYDRATE_MODULE = `${PKG}/hydrate`;
 
@@ -124,7 +124,7 @@ export const config: Config = {
       customElementsExportBehavior: 'auto-define-custom-elements',
       externalRuntime: false,
     },
-    // Renders components to HTML off the DOM. Published as `@viewflow/material/hydrate`
+    // Renders components to HTML off the DOM. Published as `advanced-material-web/hydrate`
     // and consumed by the React and Vue wrappers for SSR.
     { type: 'dist-hydrate-script', dir: 'hydrate', generatePackageJson: false },
     { type: 'docs-readme' },

@@ -1,11 +1,11 @@
 ---
 name: material-web
-description: Build UIs with @viewflow/material — 72 Material 3 web components (forms, data-table, JSON editor, dialogs, navigation, date/time pickers, stepper, tree, search, carousel, snackbar). Server-first and form-associated: components enhance plain HTML and post real values through a normal <form>, themeable via CSS custom properties with no build step. Use whenever the user is building a page, form, table, dialog, or app shell with these <material-*> elements, wiring one into a project, or asking which component fits a UI need.
+description: Build UIs with advanced-material-web — 72 Material 3 web components (forms, data-table, JSON editor, dialogs, navigation, date/time pickers, stepper, tree, search, carousel, snackbar). Server-first and form-associated: components enhance plain HTML and post real values through a normal <form>, themeable via CSS custom properties with no build step. Use whenever the user is building a page, form, table, dialog, or app shell with these <material-*> elements, wiring one into a project, or asking which component fits a UI need.
 ---
 
 ## What this is
 
-`@viewflow/material` — 72 Material 3 custom elements (`<material-*>`). Each ships its own shadow-DOM CSS inside a lazy-loaded JS chunk: no framework, no bundler required.
+`advanced-material-web` — 72 Material 3 custom elements (`<material-*>`). Each ships its own shadow-DOM CSS inside a lazy-loaded JS chunk: no framework, no bundler required.
 
 Four properties shape every component, and they are not the defaults you'd assume:
 
