@@ -47,24 +47,26 @@ const VALUE_ELEMENTS = [
 const CHECKED_ELEMENTS = ['material-checkbox', 'material-switch'];
 
 /**
- * Wrapper codegen writes into packages/*, which watch rebuilds don't need.
+ * Adapter codegen writes into adapters/*, which watch rebuilds don't need.
  * `npm start` sets MATERIAL_WRAPPERS=0 to skip it.
  */
 const wrappers = process.env.MATERIAL_WRAPPERS !== '0';
 
 const frameworkTargets = [
   reactOutputTarget({
-    outDir: './packages/react/src',
+    outDir: './adapters/react/src',
     stencilPackageName: PKG,
     customElementsDir: CUSTOM_ELEMENTS_DIR,
     // SSR: emits components.server.ts alongside components.ts, so Next.js /
     // Remix render the elements to declarative shadow DOM on the server.
+    // clientModule points at the client build's own subpath, now that React
+    // bindings are a subpath export rather than a sibling `-react` package.
     hydrateModule: HYDRATE_MODULE,
-    clientModule: `${PKG}-react`,
+    clientModule: `${PKG}/react`,
   }),
   vueOutputTarget({
     componentCorePackage: PKG,
-    proxiesFile: './packages/vue/src/components.ts',
+    proxiesFile: './adapters/vue/src/components.ts',
     includeImportCustomElements: true,
     customElementsDir: CUSTOM_ELEMENTS_DIR,
     hydrateModule: HYDRATE_MODULE,
@@ -77,8 +79,8 @@ const frameworkTargets = [
   }),
   angularOutputTarget({
     componentCorePackage: PKG,
-    directivesProxyFile: './packages/angular/src/lib/components.ts',
-    directivesArrayFile: './packages/angular/src/lib/index.ts',
+    directivesProxyFile: './adapters/angular/src/lib/components.ts',
+    directivesArrayFile: './adapters/angular/src/lib/index.ts',
     customElementsDir: CUSTOM_ELEMENTS_DIR,
     // standalone components — no NgModule to import, and the only outputType
     // that pairs with dist-custom-elements.
@@ -92,7 +94,7 @@ const frameworkTargets = [
   }),
   svelteOutputTarget({
     componentCorePackage: PKG,
-    outDir: './packages/svelte/src',
+    outDir: './adapters/svelte/src',
     customElementsDir: CUSTOM_ELEMENTS_DIR,
     componentBindings: [
       { elements: VALUE_ELEMENTS, event: 'valueChange', targetProp: 'value' },

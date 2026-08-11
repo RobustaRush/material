@@ -59,6 +59,27 @@
       "import": "./dist/components/index.js"
     },
     "./dist/*": "./dist/*",
+    "./react": {
+      "types": "./adapters/react/dist/components.d.ts",
+      "import": "./adapters/react/dist/components.js"
+    },
+    "./react/ssr": {
+      "types": "./adapters/react/dist/components.server.d.ts",
+      "import": "./adapters/react/dist/components.server.js"
+    },
+    "./vue": {
+      "types": "./adapters/vue/dist/components.d.ts",
+      "import": "./adapters/vue/dist/components.js"
+    },
+    "./angular": {
+      "types": "./adapters/angular/dist/types/viewflow-material-angular.d.ts",
+      "default": "./adapters/angular/dist/fesm2022/viewflow-material-angular.mjs"
+    },
+    "./svelte": {
+      "types": "./adapters/svelte/src/index.d.ts",
+      "svelte": "./adapters/svelte/src/index.js",
+      "default": "./adapters/svelte/src/index.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -76,19 +97,23 @@
     "cdn/material.min.js",
     "css/theme.css",
     "css/material.css",
+    "adapters/react/dist/",
+    "adapters/vue/dist/",
+    "adapters/angular/dist/fesm2022/",
+    "adapters/angular/dist/types/",
+    "adapters/svelte/src/",
     "LICENSE",
     "LICENSE_EXCEPTION"
   ],
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "build": "npm run build:theme && npm run build:theme:pkg && npm run build:material:pkg && npm run build:css && stencil build && npm run build:types && npm run check:svelte && npm run build:web-types && npm run build:cdn && npm run license:generated",
-    "build:all": "npm run build && npm run build:packages",
-    "build:packages": "npm run sync:versions && npm run build --workspaces --if-present",
+    "build:all": "npm run build && npm run build:adapters",
+    "build:adapters": "npm run build:adapters:react && npm run build:adapters:vue && npm run build:adapters:angular",
+    "build:adapters:react": "tsc -p adapters/react/tsconfig.json",
+    "build:adapters:vue": "tsc -p adapters/vue/tsconfig.json",
+    "build:adapters:angular": "ng-packagr -p adapters/angular/ng-package.json -c adapters/angular/tsconfig.json",
     "build:types": "node scripts/patch-custom-element-types.mjs",
     "build:web-types": "node scripts/build-web-types.mjs",
-    "sync:versions": "node scripts/sync-package-versions.mjs",
     "license": "node scripts/license-header.mjs",
     "license:check": "node scripts/license-header.mjs --check",
     "license:generated": "node scripts/license-header.mjs --generated",
@@ -103,24 +128,59 @@
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build:all",
     "check:svelte": "node scripts/check-svelte-output.mjs"
   },
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "@stencil/react-output-target": "^1.6.1",
+    "@stencil/vue-output-target": "^0.14.1",
+    "tslib": "^2.8.0"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=19.0.0",
+    "@angular/core": ">=19.0.0",
+    "@angular/forms": ">=19.0.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "rxjs": "^7.8.0",
+    "svelte": "^5.0.0",
+    "vue": "^3.5.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular/common": { "optional": true },
+    "@angular/core": { "optional": true },
+    "@angular/forms": { "optional": true },
+    "react": { "optional": true },
+    "react-dom": { "optional": true },
+    "rxjs": { "optional": true },
+    "svelte": { "optional": true },
+    "vue": { "optional": true }
+  },
   "devDependencies": {
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/compiler-cli": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
     "@stencil/angular-output-target": "^1.4.1",
     "@stencil/core": "^4.22.0",
-    "@stencil/react-output-target": "^1.6.1",
     "@stencil/ssr": "^0.4.0",
-    "@stencil/vue-output-target": "^0.14.1",
     "@tailwindcss/cli": "^4.0.0",
+    "@types/react": "^19.2.0",
     "concurrently": "^9.0.0",
     "esbuild": "^0.28.0",
+    "ng-packagr": "^22.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "rxjs": "^7.8.2",
     "svelte": "^5.56.8",
     "tailwindcss": "^4.0.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vue": "^3.5.0",
+    "zone.js": "^0.15.0"
   },
   "overrides": {
     "vue-router": "^4.5.0"

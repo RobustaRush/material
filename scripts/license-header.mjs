@@ -121,19 +121,19 @@ const trackedFiles = () => [
   ...walk(join(root, 'src'), SOURCE_EXTS),
   ...walk(join(root, 'scripts'), ['.mjs']),
   join(root, 'stencil.config.ts'),
-  join(root, 'packages/angular/src/public-api.ts'),
+  join(root, 'adapters/angular/src/public-api.ts'),
 ].filter(existsSync);
 
 /**
- * The framework wrappers. Generated into gitignored directories on every
+ * The framework adapters. Generated into gitignored directories on every
  * build, and shipped to npm — the React, Vue and Angular output targets have
  * no banner option, so they get stamped after the fact.
  */
 const generatedFiles = () => [
-  ...walk(join(root, 'packages/react/src'), WRAPPER_EXTS),
-  ...walk(join(root, 'packages/vue/src'), WRAPPER_EXTS),
-  ...walk(join(root, 'packages/svelte/src'), WRAPPER_EXTS),
-  ...walk(join(root, 'packages/angular/src/lib'), WRAPPER_EXTS),
+  ...walk(join(root, 'adapters/react/src'), WRAPPER_EXTS),
+  ...walk(join(root, 'adapters/vue/src'), WRAPPER_EXTS),
+  ...walk(join(root, 'adapters/svelte/src'), WRAPPER_EXTS),
+  ...walk(join(root, 'adapters/angular/src/lib'), WRAPPER_EXTS),
   // Tailwind's CLI writes this one and has no banner option, so it is stamped
   // after the fact. (css/material.css carries its own banner already.)
   join(root, 'css/theme.css'),

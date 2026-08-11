@@ -26,10 +26,10 @@ const require = createRequire(import.meta.url);
 const { compile } = require('svelte/compiler');
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const libDir = join(root, 'packages/svelte/src/lib');
+const libDir = join(root, 'adapters/svelte/src/lib');
 
 if (!existsSync(libDir)) {
-  console.log('packages/svelte/src/lib — not generated, skipping');
+  console.log('adapters/svelte/src/lib — not generated, skipping');
   process.exit(0);
 }
 
@@ -56,9 +56,9 @@ for (const file of readdirSync(libDir).filter((f) => f.endsWith('.svelte'))) {
 }
 
 if (failures.length) {
-  console.error(`packages/svelte — ${failures.length} wrapper(s) failed to compile:`);
+  console.error(`adapters/svelte — ${failures.length} wrapper(s) failed to compile:`);
   for (const failure of failures) console.error(`  ${failure}`);
   process.exit(1);
 }
 
-console.log(`packages/svelte — ${checked} wrappers compile (client + server), ${warnings} warnings`);
+console.log(`adapters/svelte — ${checked} wrappers compile (client + server), ${warnings} warnings`);
