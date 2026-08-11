@@ -19,7 +19,7 @@
     <div>
       <h1 class="text-headline-medium font-bold">@viewflow/material</h1>
       <p class="text-on-surface-variant text-body-medium">
-        Material 3 web components — Stencil + Tailwind v4
+        70+ Material 3 web components — Stencil + Tailwind v4
       </p>
     </div>
     <label class="flex items-center gap-2 text-body-medium">
@@ -62,7 +62,7 @@
       <header class="mb-4 pb-2 border-b border-outline-variant">
         <h2 class="text-title-large font-medium">Showcases</h2>
         <p class="text-on-surface-variant text-body-small">
-          Composed examples that show how the components fit together in real-world layouts.
+          Composed examples showing how the components fit together in real-world layouts.
         </p>
       </header>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -174,8 +174,8 @@
         <material-card variant="outlined" href="/demos/material-autocomplete.html" aria-label="material-autocomplete demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">manage_search</span><span>material-autocomplete</span></h3>
           <p slot="supporting">
-            Editable combobox — filters slotted options client-side or queries a
-            remote <code>src</code> endpoint (select2-compatible JSON); single or
+            Editable combobox: filters slotted options client-side, or queries a
+            remote <code>src</code> endpoint (select2-compatible JSON). Single or
             <code>multiple</code> chips; form-associated.
           </p>
         </material-card>
@@ -208,8 +208,8 @@
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">table</span><span>material-data-table</span></h3>
           <p slot="supporting">
             Progressive enhancement over a server-rendered <code>&lt;table&gt;</code>
-            (Django / Unpoly) — sort links, form-posting selection, sticky
-            header, row links, virtual rows, column resize/reorder, pinned
+            (Django / Unpoly). Sort links, form-posting selection, sticky
+            header, row links. Virtual rows, column resize/reorder, pinned
             columns, row grouping, inline editing. M2 anatomy, M3 tokens.
           </p>
         </material-card>
@@ -227,7 +227,7 @@
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">account_tree</span><span>material-tree</span></h3>
           <p slot="supporting">
             Tree view — expand/collapse, tri-state checkbox selection, lazy
-            children; nested markup or flat mptt-style rows with
+            children. Nested markup or flat mptt-style rows with
             <code>level</code>; form-posts checked values.
           </p>
         </material-card>
@@ -280,14 +280,14 @@
         <material-card variant="outlined" href="/demos/material-radio.html" aria-label="material-radio demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">radio_button_checked</span><span>material-radio</span></h3>
           <p slot="supporting">
-            20dp ring, 48dp target; <code>material-radio-group</code> coordinates value, ARIA, arrow keys; form-associated.
+            20dp ring, 48dp target; <code>material-radio-group</code> coordinates value, ARIA roles, and arrow-key navigation; form-associated.
           </p>
         </material-card>
 
         <material-card variant="outlined" href="/demos/material-rich-text.html" aria-label="material-rich-text demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">edit_note</span><span>material-rich-text</span></h3>
           <p slot="supporting">
-            Rich text for notes — marks, lists, links, undo over
+            Rich text for notes — marks, lists, links, undo, all over
             contenteditable; form-associated, posts HTML (sanitize server-side).
           </p>
         </material-card>
@@ -295,8 +295,8 @@
         <material-card variant="outlined" href="/demos/material-select.html" aria-label="material-select demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">arrow_drop_down</span><span>material-select</span></h3>
           <p slot="supporting">
-            MD3 single-select — textfield + chevron trigger that opens a popover
-            menu of <code>material-option</code> children; supports
+            MD3 single-select — a textfield + chevron trigger opens a popover
+            menu of <code>material-option</code> children. Supports
             <code>material-optgroup</code>, type-ahead, clearable, form-associated.
           </p>
         </material-card>
@@ -334,7 +334,7 @@
         <material-card variant="outlined" href="/demos/material-dropzone.html" aria-label="material-dropzone demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">upload_file</span><span>material-dropzone</span></h3>
           <p slot="supporting">
-            Drag-and-drop multi-file area — native input posts with the form
+            Drag-and-drop multi-file area — form-posted native input
             (<code>FILES.getlist</code>), image previews, size/type validation,
             per-file progress API.
           </p>
@@ -390,7 +390,7 @@
         <material-card variant="outlined" href="/demos/material-carousel.html" aria-label="material-carousel demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">view_carousel</span><span>material-carousel</span></h3>
           <p slot="supporting">
-            MD3 carousel — uncontained / uncontained-multi-aspect layouts with
+            MD3 carousel — uncontained or uncontained-multi-aspect layouts, with
             parallax, scroll-snap, and keyboard arrow navigation. Items are
             actionable via <code>href</code> or <code>clickable</code>.
           </p>
@@ -408,7 +408,8 @@
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">expand_less</span><span>material-bottom-sheet</span></h3>
           <p slot="supporting">
             MD3 bottom sheet — modal (scrim, swipe-to-dismiss) and standard;
-            drag handle expands peek ↔ full, same <code>data-dialog-target</code> triggers.
+            drag handle expands peek ↔ full. Opens via the same
+            <code>data-dialog-target</code> trigger as dialogs.
           </p>
         </material-card>
 
@@ -432,9 +433,9 @@
         <material-card variant="outlined" href="/demos/material-stepper.html" aria-label="material-stepper demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">linear_scale</span><span>material-stepper</span></h3>
           <p slot="supporting">
-            Multi-step wizard — M2 anatomy, M3 tokens. Client-side with
-            constraint-validation gating, or a server-driven indicator for
-            django-formtools (<code>wizard_goto_step</code> via events).
+            Multi-step wizard — M2 anatomy, M3 tokens. Client-side, with
+            constraint-validation gating. Or server-driven: an indicator for
+            django-formtools, controlled via <code>wizard_goto_step</code> events.
             Horizontal / vertical, linear / free-order.
           </p>
         </material-card>
@@ -486,7 +487,7 @@
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">route</span><span>material-breadcrumbs</span></h3>
           <p slot="supporting">
             Server-rendered breadcrumb links with CSS chevron separators
-            (RTL-mirrored); marks the last crumb <code>aria-current</code>.
+            (RTL-mirrored); marks the last crumb with <code>aria-current</code>.
           </p>
         </material-card>
 
@@ -494,7 +495,7 @@
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">keyboard_command_key</span><span>material-command-palette</span></h3>
           <p slot="supporting">
             ⌘K quick actions — fuzzy search, sections, keyboard nav;
-            href items navigate Unpoly-friendly, others emit
+            href items navigate the Unpoly-friendly way; others emit
             <code>materialCommand</code>.
           </p>
         </material-card>
@@ -502,8 +503,8 @@
         <material-card variant="outlined" href="/demos/material-navigation-bar.html" aria-label="material-navigation-bar demo">
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">bottom_navigation</span><span>material-navigation-bar</span></h3>
           <p slot="supporting">
-            MD3 Expressive nav bar — 3–5 destinations at the bottom edge; vertical
-            (compact) / horizontal (medium) items, shared <code>material-navigation-item</code>.
+            MD3 Expressive nav bar — 3–5 destinations at the bottom edge. Vertical
+            (compact) or horizontal (medium) items, sharing <code>material-navigation-item</code>.
           </p>
         </material-card>
 
@@ -527,7 +528,7 @@
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">last_page</span><span>material-pagination</span></h3>
           <p slot="supporting">
             Page navigation with ellipsis windowing — server-driven links via
-            <code>href-template</code> (Unpoly) or client
+            <code>href-template</code> (Unpoly), or client-side via
             <code>materialPageChange</code>.
           </p>
         </material-card>
@@ -536,7 +537,7 @@
           <h3 slot="headline" class="flex items-center gap-2 m-0"><span class="material-symbols text-xl text-primary shrink-0" aria-hidden="true">manage_search</span><span>material-search</span></h3>
           <p slot="supporting">
             MD3 Search — contained pill bar + search view: docked suggestions on
-            desktop, full-screen on compact; slotted / JS / remote sources,
+            desktop, full-screen on compact; slotted, JS, or remote sources,
             form-associated.
           </p>
         </material-card>
