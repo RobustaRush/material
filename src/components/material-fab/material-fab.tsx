@@ -12,7 +12,7 @@
 
 import { Component, Element, Prop, Watch, AttachInternals, h } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
-import { handleFormSubmitterClick } from '../../utils/form-submitter';
+import { handleFormSubmitterClick, resolveSubmitterForm } from '../../utils/form-submitter';
 
 export type MaterialFabSize = 'small' | 'medium' | 'large';
 export type MaterialFabVariant =
@@ -44,6 +44,12 @@ export class MaterialFab {
   @Prop() label?: string;
   @Prop({ reflect: true }) disabled = false;
   @Prop() type: MaterialFabType = 'button';
+  /** Native `<button form="id">` parity: submit or reset the form with that
+   *  id instead of the enclosing one — the dialog layout, where the button
+   *  sits in the actions slot beside the form rather than inside it. The
+   *  `form` content attribute is not honoured for custom elements, so this
+   *  prop stands in for it. */
+  @Prop() form?: string;
   @Prop() name?: string;
   @Prop() value?: string;
   @Prop() href?: string;
@@ -148,13 +154,14 @@ export class MaterialFab {
         return;
       }
     }
-    const form = this.internals.form;
+    const form = resolveSubmitterForm(this.el, this.internals, this.form);
     if (!form) return;
     if (this.type === 'submit' || this.type === 'reset') {
       handleFormSubmitterClick(e, form, this.type, {
         hostElement: this.el,
         name: this.name,
         value: this.value,
+        formId: this.form,
       });
     }
   };

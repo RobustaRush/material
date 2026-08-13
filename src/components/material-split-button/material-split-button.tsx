@@ -21,7 +21,7 @@ import {
   h,
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
-import { handleFormSubmitterClick } from '../../utils/form-submitter';
+import { handleFormSubmitterClick, resolveSubmitterForm } from '../../utils/form-submitter';
 
 export type MaterialSplitButtonVariant = 'filled' | 'tonal' | 'elevated' | 'outlined';
 export type MaterialSplitButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -47,6 +47,12 @@ export class MaterialSplitButton {
   /** Native `<button>` parity: defaults to `submit` (like a plain `<button>`
    *  in a form), not `button`. Set `type="button"` explicitly to opt out. */
   @Prop() type: MaterialSplitButtonType = 'submit';
+  /** Native `<button form="id">` parity: submit or reset the form with that
+   *  id instead of the enclosing one — the dialog layout, where the button
+   *  sits in the actions slot beside the form rather than inside it. The
+   *  `form` content attribute is not honoured for custom elements, so this
+   *  prop stands in for it. */
+  @Prop() form?: string;
   @Prop() name?: string;
   @Prop() value?: string;
   @Prop() href?: string;
@@ -81,13 +87,14 @@ export class MaterialSplitButton {
     }
     this.splitAction.emit();
     if (this.href) return;
-    const form = this.internals.form;
+    const form = resolveSubmitterForm(this.el, this.internals, this.form);
     if (!form) return;
     if (this.type === 'submit' || this.type === 'reset') {
       handleFormSubmitterClick(e, form, this.type, {
         hostElement: this.el,
         name: this.name,
         value: this.value,
+        formId: this.form,
       });
     }
   };

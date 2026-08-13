@@ -22,7 +22,7 @@ import {
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
 import { dispatchNativeEvents } from '../../utils/form-events';
-import { handleFormSubmitterClick } from '../../utils/form-submitter';
+import { handleFormSubmitterClick, resolveSubmitterForm } from '../../utils/form-submitter';
 
 export type MaterialIconButtonVariant = 'filled' | 'tonal' | 'outlined' | 'standard';
 export type MaterialIconButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -55,6 +55,12 @@ export class MaterialIconButton {
    *  instead of the element leaving the tab order. */
   @Prop({ reflect: true, attribute: 'soft-disabled' }) softDisabled = false;
   @Prop() type: MaterialIconButtonType = 'button';
+  /** Native `<button form="id">` parity: submit or reset the form with that
+   *  id instead of the enclosing one — the dialog layout, where the button
+   *  sits in the actions slot beside the form rather than inside it. The
+   *  `form` content attribute is not honoured for custom elements, so this
+   *  prop stands in for it. */
+  @Prop() form?: string;
   @Prop({ reflect: true }) name?: string;
   @Prop() value = 'on';
   @Prop() href?: string;
@@ -164,13 +170,14 @@ export class MaterialIconButton {
         return;
       }
     }
-    const form = this.internals.form;
+    const form = resolveSubmitterForm(this.el, this.internals, this.form);
     if (!form) return;
     if (this.type === 'submit' || this.type === 'reset') {
       handleFormSubmitterClick(e, form, this.type, {
         hostElement: this.el,
         name: this.name,
         value: this.value,
+        formId: this.form,
       });
     }
   };

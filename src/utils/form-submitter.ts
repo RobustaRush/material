@@ -59,12 +59,44 @@ export interface FormSubmitterOptions {
    *  `name` is set. */
   name?: string;
   value?: string;
+  /** Set when the control targets a form by id (`form="…"`) instead of by
+   *  ancestry. The transient submitter needs the same attribute — otherwise
+   *  its form owner is whatever form encloses the host, which is usually
+   *  none, and `requestSubmit()` rejects it. */
+  formId?: string;
+}
+
+/**
+ * The form a submit/reset control acts on: the one named by `form="id"` when
+ * that attribute is set, else the ancestor form the element is associated
+ * with.
+ *
+ * The `form` content attribute is not honoured for form-associated custom
+ * elements — their association follows the DOM tree — so a control that wants
+ * `<button form="id">` parity resolves it here. Submit/reset controls only: a
+ * *field* can't be redirected this way, because its value reaches the form
+ * through ElementInternals, which is bound to the ancestor form.
+ */
+export function resolveSubmitterForm(
+  el: HTMLElement,
+  internals: ElementInternals,
+  formId?: string,
+): HTMLFormElement | null {
+  if (!formId) return internals.form;
+  const root = el.getRootNode() as Document | ShadowRoot;
+  const target = (root as Document).getElementById?.(formId);
+  // globalThis.HTMLFormElement, because a bare `HTMLFormElement` here would be
+  // the DOM lib type, not the runtime constructor, under Stencil's transpile.
+  return target instanceof globalThis.HTMLFormElement ? target : null;
 }
 
 /** Submits `form` through a transient native button, so `SubmitEvent.submitter`
  *  is something the platform accepts. See the module doc comment for why the
  *  host element can't be the submitter itself. */
-function submitForm(form: HTMLFormElement, { hostElement, name, value }: FormSubmitterOptions) {
+function submitForm(
+  form: HTMLFormElement,
+  { hostElement, name, value, formId }: FormSubmitterOptions,
+) {
   // Contribute name/value to FormData like a native submit button does when
   // it's the submitter. ElementInternals can't act as a submitter, so add a
   // transient hidden input for this one submission; the form is serialized
@@ -90,6 +122,7 @@ function submitForm(form: HTMLFormElement, { hostElement, name, value }: FormSub
   submitter.type = 'submit';
   submitter.hidden = true;
   if (value !== undefined) submitter.value = value;
+  if (formId) submitter.setAttribute('form', formId);
   hostElement.appendChild(submitter);
 
   form.requestSubmit(submitter);
@@ -198,12 +231,23 @@ const SUBMIT_BUTTON_SELECTOR = [
   'material-icon-button[type="submit"]',
 ].join(',');
 
+/** A submit button counts whether it sits inside the form or points at it with
+ *  `form="id"` — the dialog layout puts the Save button in the actions slot,
+ *  outside the form it submits, and Enter has to reach it there too. */
+function hasSubmitButton(form: HTMLFormElement): boolean {
+  if (form.querySelector(SUBMIT_BUTTON_SELECTOR)) return true;
+  if (!form.id) return false;
+  const root = form.getRootNode() as Document | ShadowRoot;
+  const associated = root.querySelectorAll?.(`[form="${CSS.escape(form.id)}"]`) ?? [];
+  return Array.from(associated).some((el) => el.matches(SUBMIT_BUTTON_SELECTOR));
+}
+
 export function handleImplicitSubmission(
   keyEvent: KeyboardEvent,
   form: HTMLFormElement | null | undefined,
 ) {
   if (keyEvent.key !== 'Enter' || keyEvent.defaultPrevented) return;
   if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
-  if (!form || !form.querySelector(SUBMIT_BUTTON_SELECTOR)) return;
+  if (!form || !hasSubmitButton(form)) return;
   afterDispatch(keyEvent, () => form.requestSubmit());
 }
