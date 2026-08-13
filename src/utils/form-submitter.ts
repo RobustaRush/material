@@ -17,13 +17,22 @@
  * Two problems this works around:
  *
  * 1. `form.requestSubmit(submitter)` rejects a form-associated custom element
- *    as the `submitter` argument ("parameter 1 is not of type 'HTMLElement'"
- *    in spec terms — a FACE isn't an `HTMLButtonElement`/`HTMLInputElement`).
- *    So we call `requestSubmit()` with no argument and instead patch the
- *    dispatched `SubmitEvent.submitter` to point at the host element via a
- *    capture-phase, once-only 'submit' listener added right before
- *    `requestSubmit()` runs. See https://github.com/WICG/webcomponents/issues/814
- *    and material-web's labs/behaviors/form-submitter.ts (lines 116–131).
+ *    as the `submitter` argument — a FACE isn't an `HTMLButtonElement` /
+ *    `HTMLInputElement`. See https://github.com/WICG/webcomponents/issues/814
+ *    and material-web's labs/behaviors/form-submitter.ts (lines 116–131),
+ *    which answers this by patching the dispatched `SubmitEvent.submitter` to
+ *    the host element.
+ *
+ *    We don't, because `submitter` is not merely informational: React 19,
+ *    SvelteKit's `enhance()` and React Router all pass it straight to
+ *    `new FormData(form, submitter)`, and that constructor throws
+ *    "The specified element is not a submit button" on anything the platform
+ *    didn't produce — the page dies inside the framework's own listener. So we
+ *    submit through a real `<button type="submit">`, created for this one
+ *    submission inside the host element. Listeners that want the control read
+ *    `event.submitter.closest('material-button')`; the button is nameless, so
+ *    it contributes nothing of its own to the entry list, and the data still
+ *    comes from the hidden input below.
  *
  * 2. Native `<button type="submit">` only submits if its click wasn't
  *    prevented — and "prevented" includes later listeners on the same click,
@@ -41,8 +50,9 @@
  */
 
 export interface FormSubmitterOptions {
-  /** The form-associated custom element acting as submitter/resetter —
-   *  becomes `SubmitEvent.submitter`. */
+  /** The form-associated custom element being clicked. The transient submitter
+   *  button is created inside it, so a listener reaches the control with
+   *  `event.submitter.closest('material-button')`. */
   hostElement: HTMLElement;
   /** Contributes name/value to FormData for this one submission, like a
    *  native submit button does when it's the submitter. Only added when
@@ -51,26 +61,17 @@ export interface FormSubmitterOptions {
   value?: string;
 }
 
-/** Patches the next 'submit' event's `submitter` to `hostElement`, then
- *  requests submission. See the module doc comment for why this is needed
- *  instead of `form.requestSubmit(hostElement)`. */
+/** Submits `form` through a transient native button, so `SubmitEvent.submitter`
+ *  is something the platform accepts. See the module doc comment for why the
+ *  host element can't be the submitter itself. */
 function submitForm(form: HTMLFormElement, { hostElement, name, value }: FormSubmitterOptions) {
-  form.addEventListener(
-    'submit',
-    (submitEvent: Event) => {
-      Object.defineProperty(submitEvent, 'submitter', {
-        configurable: true,
-        enumerable: true,
-        value: hostElement,
-      });
-    },
-    { capture: true, once: true },
-  );
-
   // Contribute name/value to FormData like a native submit button does when
   // it's the submitter. ElementInternals can't act as a submitter, so add a
   // transient hidden input for this one submission; the form is serialized
   // synchronously inside requestSubmit(), so we can remove it right after.
+  // It stays an input rather than moving onto the submitter button below: a
+  // button contributes only when it submits, so consumers that serialize the
+  // form themselves — htmx, a bare `new FormData(form)` — would lose the pair.
   let hidden: HTMLInputElement | undefined;
   if (name) {
     hidden = document.createElement('input');
@@ -79,7 +80,21 @@ function submitForm(form: HTMLFormElement, { hostElement, name, value }: FormSub
     hidden.value = value ?? '';
     form.appendChild(hidden);
   }
-  form.requestSubmit();
+
+  // Lives inside the host, so `event.submitter.closest('material-button')`
+  // finds the control. Nameless — the hidden input above already carries the
+  // data, and a named submitter would send it twice. `value` is mirrored
+  // anyway for listeners that read it off the submitter, which is how
+  // material-dialog resolves its return value.
+  const submitter = document.createElement('button');
+  submitter.type = 'submit';
+  submitter.hidden = true;
+  if (value !== undefined) submitter.value = value;
+  hostElement.appendChild(submitter);
+
+  form.requestSubmit(submitter);
+
+  submitter.remove();
   hidden?.remove();
 }
 

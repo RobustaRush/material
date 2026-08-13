@@ -260,8 +260,12 @@ Only button/split-button/fab had one, as a one-shot `:active` keyframe
    browser-localized messages, `role="alert"` re-announce where markup allows.
    (Form-level reportValidity/requestSubmit patching still out of scope.)
 7. ~~Form-submitter parity~~ **done ✓** — `src/utils/form-submitter.ts`:
-   default `type="submit"`, `SubmitEvent.submitter` patch, submit deferred to
-   a microtask so later listeners can `preventDefault`; button/split-button/fab.
+   default `type="submit"`, submit through a transient native button inside the
+   host (the reference patches `SubmitEvent.submitter` instead; that value is
+   fed to `new FormData(form, submitter)` by React 19, SvelteKit `enhance` and
+   React Router, which throw on anything but a real button), submit deferred to
+   the end of the click dispatch so later listeners can `preventDefault`;
+   button/split-button/fab.
 8. ~~material-chip-set~~ **done ✓** — new component, `role="toolbar"`, roving
    tabindex, RTL arrows/Home/End, intra-chip arrow nav + shift-tab trick,
    cancelable self-removing `remove`, 48dp target, avatar full-round.

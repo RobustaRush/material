@@ -154,13 +154,14 @@
           <p class="text-sm text-on-surface-variant max-w-md">
             Default <code>type</code> is now <code>submit</code> (native <code>&lt;button&gt;</code>
             parity) — the leading segment submits the form and contributes its
-            <code>name</code>/<code>value</code> to <code>FormData</code>. The logged
-            <code>event.submitter</code> confirms the patched submitter (a
-            form-associated custom element can't be passed to
-            <code>requestSubmit(submitter)</code> directly, see
-            <a href="https://github.com/WICG/webcomponents/issues/814" target="_blank" rel="noopener"
-               class="underline">WICG/webcomponents#814</a>). Check the box first to confirm a
-            <code>click</code> listener can still cancel the submit.
+            <code>name</code>/<code>value</code> to <code>FormData</code>. A form-associated
+            custom element can't be passed to <code>requestSubmit(submitter)</code>
+            (<a href="https://github.com/WICG/webcomponents/issues/814" target="_blank" rel="noopener"
+               class="underline">WICG/webcomponents#814</a>), so the submit runs through a
+            transient native button inside the host — the log shows it next to the
+            <code>closest()</code> control, which is how a listener gets back to the
+            component. Check the box first to confirm a <code>click</code> listener can
+            still cancel the submit.
           </p>
           <form id="form-demo" class="flex flex-col gap-3 items-start">
             <input type="text" name="query" placeholder="query"
@@ -253,9 +254,14 @@
     });
     formDemo.addEventListener('submit', (e) => {
       e.preventDefault();
-      const data = new FormData(e.target);
+      // Same call every form framework makes — it throws unless the submitter
+      // is a native button, which is why the component submits through one.
+      const data = new FormData(e.target, e.submitter);
       const entries = [...data.entries()].map(([k, v]) => `${k}=${v}`).join('\n');
-      formOut.textContent = `submitter: <${e.submitter?.tagName.toLowerCase()}>\n${entries}`;
+      const control = e.submitter?.closest('material-split-button, material-button');
+      formOut.textContent =
+        `submitter: <${e.submitter?.tagName.toLowerCase()}>\n` +
+        `closest(): <${control?.tagName.toLowerCase()}>\n${entries}`;
     });
   </script>
   <script src="/demos/_shared.js"></script>
