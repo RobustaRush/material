@@ -14,7 +14,7 @@ Vertical list. The list owns selection mode and keyboard roving; items are slott
 </material-list>
 ```
 
-- List: `selection` — `none` (default) | `single` | `multi`; `selection-trigger` (`control` = only the checkbox/radio toggles, vs whole-row); `dense`; `variant` (`baseline` | `expressive`).
+- List: `selection` — `none` (default) | `single` | `multi`; `selection-trigger` (`control` = only the checkbox/radio toggles, vs whole-row); `activation` (`manual` default — the list only emits and you own `active`; `auto` — the list keeps one row highlighted, for master-detail markup with no state of its own); `dense`; `variant` (`baseline` | `expressive`).
 - Event: `materialListSelect` (`{value}`) when selection changes.
 
 **Selectable list** — put a `material-checkbox` (multi) or `material-radio` (single) in `slot="leading"`; the list drives its state and accessibility. Set `selected` + the control's `checked` on the initially-chosen rows.

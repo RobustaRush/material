@@ -36,10 +36,15 @@ import {
 //                native change event. Right for multi-action lists like
 //                email inboxes where the row opens the item and the checkbox
 //                is an independent select.
+//
+// `activation` controls whether the list also keeps one row `active` (the
+// master-detail highlight) in that mode: "manual" (default) leaves the prop to
+// the consumer and only emits, "auto" restores the list writing it.
 
 export type ListSelection = 'none' | 'single' | 'multi';
 export type ListVariant = 'baseline' | 'expressive';
 export type ListSelectionTrigger = 'row' | 'control';
+export type ListActivation = 'manual' | 'auto';
 
 @Component({
   tag: 'material-list',
@@ -53,6 +58,19 @@ export class MaterialList {
   @Prop({ reflect: true }) variant: ListVariant = 'baseline';
   @Prop({ reflect: true }) dense = false;
   @Prop({ reflect: true, attribute: 'selection-trigger' }) selectionTrigger: ListSelectionTrigger = 'row';
+  /**
+   * Who owns `active` — the master-detail highlight on the last-activated row.
+   *
+   * `manual` (default): nobody but you. The list emits `materialListSelect` and
+   * leaves the prop alone, which is the only thing a declarative framework can
+   * work with: React writes a DOM property when the *rendered* value changes,
+   * so a row the component marked active can never be cleared from JSX again.
+   *
+   * `auto`: the list keeps one row active for you, as it always did — the
+   * shorter path for plain HTML and for master-detail layouts that have no
+   * other state to drive it from.
+   */
+  @Prop({ reflect: true }) activation: ListActivation = 'manual';
 
   /** Fires when an item is activated. For multi, `checked` reflects the new state. */
   @Event({ bubbles: true, composed: true })
@@ -144,13 +162,17 @@ export class MaterialList {
     // selection-trigger="control" — the row click is just an activate signal
     // (e.g. "open"). Selection is owned by the consumer via the leading
     // control's own change event; the list does not flip `selected` here.
-    // The list does, however, maintain a single `active` row (master-detail
-    // pattern) so the consumer gets a free open/focused highlight.
+    // With activation="auto" it also keeps one row `active` (master-detail
+    // pattern), which is a free highlight for markup that has nothing else to
+    // drive it — and a prop the consumer can no longer own, which is why it is
+    // opt-in. See the `activation` doc comment.
     if (this.selectionTrigger === 'control') {
-      for (const it of Array.from(
-        this.el.querySelectorAll<HTMLElement & { active?: boolean }>('material-list-item'),
-      )) {
-        it.active = it === target;
+      if (this.activation === 'auto') {
+        for (const it of Array.from(
+          this.el.querySelectorAll<HTMLElement & { active?: boolean }>('material-list-item'),
+        )) {
+          it.active = it === target;
+        }
       }
       this.materialListSelect.emit({ value, checked });
       return;
