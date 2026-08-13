@@ -24,7 +24,7 @@ import {
   h,
 } from '@stencil/core';
 import { dispatchNativeEvents, activateOnLabelClick } from '../../utils/form-events';
-import { handleInvalidEvent } from '../../utils/native-validation';
+import { handleInvalidEvent, defineValiditySurface } from '../../utils/native-validation';
 
 export type MaterialTextareaVariant = 'filled' | 'outlined';
 
@@ -96,6 +96,7 @@ export class MaterialTextarea {
   }
 
   connectedCallback() {
+    defineValiditySurface(this.el, this.internals);
     this.syncFormValue();
   }
 
@@ -115,6 +116,11 @@ export class MaterialTextarea {
       this.textareaEl.value = this.value ?? '';
       this.applyAutoResize();
     }
+    // Mirror validity on the write rather than on the render it schedules, so
+    // `field.value = ''; form.checkValidity()` doesn't answer for the previous
+    // value. Brings this in line with material-checkbox/-select/-radio-group,
+    // which already sync validity from their watchers.
+    this.syncValidity();
   }
 
   // Mirror the inner textarea's constraint validation onto ElementInternals —

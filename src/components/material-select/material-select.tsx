@@ -27,7 +27,7 @@ import {
 import { gettext } from '../../utils/i18n';
 import { dispatchNativeEvents, activateOnLabelClick } from '../../utils/form-events';
 import { createTypeahead, TypeaheadHandle } from '../../utils/typeahead';
-import { handleInvalidEvent } from '../../utils/native-validation';
+import { handleInvalidEvent, defineValiditySurface } from '../../utils/native-validation';
 
 export type MaterialSelectVariant = 'filled' | 'outlined';
 
@@ -169,6 +169,7 @@ export class MaterialSelect {
   }
 
   connectedCallback() {
+    defineValiditySurface(this.el, this.internals);
     this.refreshDisplay();
     this.applySelection();
     this.syncFormValue();

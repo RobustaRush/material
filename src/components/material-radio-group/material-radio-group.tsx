@@ -25,7 +25,11 @@ import {
   h,
 } from '@stencil/core';
 import { dispatchNativeEvents } from '../../utils/form-events';
-import { handleInvalidEvent, nativeValidationMessage } from '../../utils/native-validation';
+import {
+  handleInvalidEvent,
+  nativeValidationMessage,
+  defineValiditySurface,
+} from '../../utils/native-validation';
 
 // MD3 radiogroup. Owns name/value/form-association and coordinates child
 // <material-radio> elements via property assignment. ARIA Authoring Practices
@@ -82,6 +86,7 @@ export class MaterialRadioGroup {
   }
 
   connectedCallback() {
+    defineValiditySurface(this.el, this.internals);
     this.syncChildren();
     this.syncFormValue();
     this.syncValidity();

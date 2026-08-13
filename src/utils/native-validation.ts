@@ -85,6 +85,39 @@ export function handleInvalidEvent(
   };
 }
 
+/**
+ * Mirrors the read-only half of a native form control's validation API onto the
+ * host element: `form`, `willValidate`, `validity`, `validationMessage`.
+ *
+ * `ElementInternals` holds all four, but nothing outside the component can see
+ * it, so to anything duck-typing a form control these elements look like they
+ * have no validity at all — a form library that reads `field.validity.valid` to
+ * render its own message gets `undefined` and silently treats the control as
+ * fine. `checkValidity()`/`reportValidity()` stay as they are, `@Method`s
+ * returning promises: a synchronous shadow would suit callers that test the
+ * result directly (`if (!el.checkValidity())` — a promise is always truthy),
+ * but submission is already gated natively through `form.requestSubmit()`
+ * before any such caller runs, so the added surprise of an own-property
+ * shadowing a documented async method buys nothing.
+ *
+ * Defined on the element rather than as class getters because both build
+ * targets have to agree: in the lazy bundle the element is a generated proxy
+ * carrying only `@Prop`/`@Method` members, so a getter on the component class
+ * would exist in `dist/components` and be missing from `cdn/material.min.js`.
+ *
+ * Call from `connectedCallback`. Re-entrant: re-defining is a no-op.
+ */
+export function defineValiditySurface(host: HTMLElement, internals: ElementInternals) {
+  if (Object.prototype.hasOwnProperty.call(host, 'validity')) return;
+  const get = <T>(read: () => T) => ({ get: read, configurable: true, enumerable: false });
+  Object.defineProperties(host, {
+    form: get(() => internals.form),
+    willValidate: get(() => internals.willValidate),
+    validity: get(() => internals.validity),
+    validationMessage: get(() => internals.validationMessage),
+  });
+}
+
 export type NativeValidationType = 'checkbox' | 'radio' | 'text';
 
 export interface NativeValidationFlags {

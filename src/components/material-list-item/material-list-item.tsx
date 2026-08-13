@@ -106,31 +106,42 @@ export class MaterialListItem {
     return !!list && list.hasAttribute('dense');
   }
 
-  private activate = (e?: Event) => {
+  private activate = async (e?: Event) => {
     if (this.disabled) return;
     const list = this.el.closest('material-list');
     const trigger = list?.getAttribute('selection-trigger') ?? 'row';
     const leading = this.el.querySelector<HTMLElement>(':scope > [slot="leading"]');
+    // Read the path before any await — a dispatched event's composedPath() is
+    // empty once dispatch has finished.
+    const fromLeading = !!e && !!leading && e.composedPath().includes(leading);
 
     // selection-trigger="control" — the leading control is independent. If
     // the click landed inside it, let the control handle itself (its own
     // change event drives selection). Otherwise emit a plain activate so
     // the consumer can treat row click as "open" without toggling anything.
     if (trigger === 'control') {
-      if (e && leading && e.composedPath().includes(leading)) return;
+      if (fromLeading) return;
       this.materialListItemActivate.emit({ value: this.value });
       return;
     }
 
     // selection-trigger="row" (default) — row click toggles a leading checkbox.
-    const tag = leading?.tagName.toLowerCase();
+    // Through the checkbox's own toggle(), not by assigning `checked`: the
+    // checkbox owns its state and is the only thing that can announce a change
+    // (`checkedChange` plus native input/change). Assigning the property would
+    // move it silently, so a consumer wired to the checkbox — the first thing
+    // anyone reaches for — would never hear about a row click, and Space in
+    // control mode (which already goes through toggle()) would behave
+    // differently from a click. Awaiting it keeps `checked` truthful: a lazily
+    // loaded component's @Method resolves a microtask later, so reading the
+    // property straight after the call would report the old value.
+    const cb = leading?.tagName.toLowerCase() === 'material-checkbox'
+      ? (leading as HTMLElement & { checked: boolean; toggle?: () => Promise<void> })
+      : null;
     let checked: boolean | undefined;
-    if (leading && (tag === 'material-checkbox') && e && !e.composedPath().includes(leading)) {
-      const cb = leading as HTMLElement & { checked: boolean };
-      cb.checked = !cb.checked;
+    if (cb) {
+      if (!fromLeading && cb.toggle) await cb.toggle();
       checked = cb.checked;
-    } else if (leading && tag === 'material-checkbox') {
-      checked = (leading as HTMLElement & { checked: boolean }).checked;
     }
     this.materialListItemActivate.emit({ value: this.value, checked });
   };

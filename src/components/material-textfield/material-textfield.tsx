@@ -24,7 +24,8 @@ import {
   h,
 } from '@stencil/core';
 import { dispatchNativeEvents, activateOnLabelClick } from '../../utils/form-events';
-import { handleInvalidEvent } from '../../utils/native-validation';
+import { handleImplicitSubmission } from '../../utils/form-submitter';
+import { handleInvalidEvent, defineValiditySurface } from '../../utils/native-validation';
 
 export type MaterialTextfieldVariant = 'filled' | 'outlined';
 export type MaterialTextfieldType =
@@ -112,6 +113,7 @@ export class MaterialTextfield {
   }
 
   connectedCallback() {
+    defineValiditySurface(this.el, this.internals);
     this.syncFormValue();
   }
 
@@ -127,6 +129,12 @@ export class MaterialTextfield {
     if (this.inputEl && this.inputEl.value !== next) {
       this.inputEl.value = next;
     }
+    // Mirror validity now, not on the render this write schedules: renders are
+    // async, so `field.value = ''; form.checkValidity()` — or a submit in the
+    // same tick — would otherwise ask the form about a value that has already
+    // been replaced. Same reasoning as setCustomValidity() below, and cheap:
+    // syncValidity() is idempotent and no-ops before the first render.
+    this.syncValidity();
   }
 
   // Mirror the inner input's constraint validation onto the host's
@@ -331,6 +339,13 @@ export class MaterialTextfield {
     this.valueInput.emit({ value: this.value });
   };
 
+  // Enter submits the form, like it does from a real <input> — see
+  // handleImplicitSubmission for why the inner input can't do this by itself
+  // and why the submit is deferred rather than immediate.
+  private handleKeyDown = (e: KeyboardEvent) => {
+    handleImplicitSubmission(e, this.internals.form);
+  };
+
   private handleChange = () => {
     this.valueChange.emit({ value: this.value });
     // The inner input's own 'input' event is already composed and escapes
@@ -448,6 +463,7 @@ export class MaterialTextfield {
         aria-describedby={subText ? 'description' : null}
         onInput={this.handleInput}
         onChange={this.handleChange}
+        onKeyDown={this.handleKeyDown}
       />
     );
 

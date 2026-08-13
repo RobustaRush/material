@@ -25,7 +25,11 @@ import {
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
 import { dispatchNativeEvents, activateOnLabelClick } from '../../utils/form-events';
-import { handleInvalidEvent, nativeValidationMessage } from '../../utils/native-validation';
+import {
+  handleInvalidEvent,
+  nativeValidationMessage,
+  defineValiditySurface,
+} from '../../utils/native-validation';
 
 // MD3 spec: container 18dp / corner 2dp / icon 18dp / target 48dp / state-layer 40dp.
 // The button is a 1×1 inline-grid; the 40px state-layer and 18px box share the
@@ -97,6 +101,7 @@ export class MaterialCheckbox {
   }
 
   connectedCallback() {
+    defineValiditySurface(this.el, this.internals);
     this.syncFormValue();
     this.syncValidity();
   }

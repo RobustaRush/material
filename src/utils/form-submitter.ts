@@ -98,28 +98,43 @@ export function handleFormSubmitterClick(
   type: 'submit' | 'reset',
   options: FormSubmitterOptions,
 ) {
+  afterDispatch(clickEvent, () => {
+    if (type === 'submit') submitForm(form, options);
+    else form.reset();
+  });
+}
+
+/**
+ * Runs `action` once `event` has finished dispatching — unless anything called
+ * `preventDefault()` by then, in which case it never runs.
+ *
+ * Shared by the submit-button click path and text-field implicit submission:
+ * both have to let listeners that haven't run yet cancel the action, and
+ * neither can use `queueMicrotask()` to wait for them (see point 2 in the
+ * module doc comment).
+ */
+export function afterDispatch(event: Event, action: () => void) {
   let settled = false;
   const abort = new AbortController();
   const settle = () => {
     if (settled) return;
     settled = true;
     abort.abort();
-    if (clickEvent.defaultPrevented) return;
-    if (type === 'submit') submitForm(form, options);
-    else form.reset();
+    if (event.defaultPrevented) return;
+    action();
   };
 
   // The last event target of the composed path receives the event last (in
   // the bubble phase), so a once-listener there fires after every other
   // listener has run. Branching mirrors the reference's dispatch-hooks.ts.
-  const path = clickEvent.composedPath();
+  const path = event.composedPath();
   const lastNode: EventTarget =
-    clickEvent.composed && clickEvent.bubbles
+    event.composed && event.bubbles
       ? path[path.length - 1]
-      : !clickEvent.bubbles
+      : !event.bubbles
         ? path[0]
         : (path[0] as Node).getRootNode();
-  lastNode.addEventListener('click', settle, { once: true, signal: abort.signal });
+  lastNode.addEventListener(event.type, settle, { once: true, signal: abort.signal });
 
   // stopPropagation would keep the last-node listener from ever firing, but a
   // native button still submits when propagation is stopped (only
@@ -130,6 +145,50 @@ export function handleFormSubmitterClick(
       superMethod.call(this);
       settle();
     };
-  clickEvent.stopPropagation = patchStop(clickEvent.stopPropagation);
-  clickEvent.stopImmediatePropagation = patchStop(clickEvent.stopImmediatePropagation);
+  event.stopPropagation = patchStop(event.stopPropagation);
+  event.stopImmediatePropagation = patchStop(event.stopImmediatePropagation);
+}
+
+/**
+ * Native implicit-submission parity for a single-line text control: Enter in a
+ * real `<input>` submits its form, but these inputs live in a shadow root, so
+ * the form never sees the keypress and the gesture is simply lost.
+ *
+ * Deferred to the end of the dispatch like the button path, so a composing
+ * component that treats Enter as its own (material-select opening its menu, a
+ * date field confirming a picker) still wins by calling `preventDefault()` —
+ * its handler sits on an ancestor and therefore runs *after* the inner input's.
+ *
+ * Only submits when the form has a submit button. Native also submits a
+ * button-less form that has just one field, but a button-less form with several
+ * is *not* submitted by Enter — and quietly submitting one would be a worse
+ * failure than under-implementing the rule. A control that wants Enter to
+ * submit regardless can call `form.requestSubmit()` itself, as
+ * material-search does.
+ */
+// Mind the defaults: like a native <button>, material-button and
+// material-split-button are submitters with no `type` attribute at all, while
+// material-fab and material-icon-button default to "button" and only count when
+// they say so.
+const SUBMIT_BUTTON_SELECTOR = [
+  'button:not([type])',
+  'button[type="submit"]',
+  'input[type="submit"]',
+  'input[type="image"]',
+  'material-button:not([type])',
+  'material-button[type="submit"]',
+  'material-split-button:not([type])',
+  'material-split-button[type="submit"]',
+  'material-fab[type="submit"]',
+  'material-icon-button[type="submit"]',
+].join(',');
+
+export function handleImplicitSubmission(
+  keyEvent: KeyboardEvent,
+  form: HTMLFormElement | null | undefined,
+) {
+  if (keyEvent.key !== 'Enter' || keyEvent.defaultPrevented) return;
+  if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+  if (!form || !form.querySelector(SUBMIT_BUTTON_SELECTOR)) return;
+  afterDispatch(keyEvent, () => form.requestSubmit());
 }
