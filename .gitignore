@@ -17,3 +17,13 @@ src/components.d.ts
 .playwright-cli/
 css/
 cdn/
+
+# Vendored agent skills, fetched from third-party repos (see skills-lock.json,
+# which pins each one by source + hash). Not ours to republish under this
+# repo's licence, and reproducible from the lock file — so the lock file is
+# tracked and the payload is not.
+/.agents/
+
+# Symlinks into /.agents/ — broken in any fresh clone, since the payload above
+# is not tracked. Re-created by the skills installer alongside it.
+/.claude/skills/
