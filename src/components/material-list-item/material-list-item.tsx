@@ -29,6 +29,35 @@ import { installRipple, RippleHandle } from '../../utils/ripple';
 // the matching icon/text props for richer cases (avatar, image, checkbox,
 // switch).
 
+// Things that handle their own activation, so a click on one is theirs and not
+// the row's. Deliberately a list rather than a focusability test: slotted
+// metadata (trailing text, an avatar, a badge) should still activate the row,
+// and only controls should not. `[tabindex]` is excluded for the same reason —
+// the row itself carries one.
+const ROW_CONTROL_SELECTOR = [
+  'button',
+  'a[href]',
+  'input',
+  'select',
+  'textarea',
+  'material-button',
+  'material-icon-button',
+  'material-fab',
+  'material-split-button',
+  'material-checkbox',
+  'material-radio',
+  'material-switch',
+  'material-select',
+  'material-textfield',
+  'material-chip',
+].join(',');
+
+function isRowControl(node: EventTarget): boolean {
+  // globalThis.Element, because the `Element` in scope here is Stencil's
+  // decorator import — the same shadowing material-chip notes for `Event`.
+  return node instanceof globalThis.Element && node.matches(ROW_CONTROL_SELECTOR);
+}
+
 @Component({
   tag: 'material-list-item',
   styleUrl: 'material-list-item.css',
@@ -113,7 +142,15 @@ export class MaterialListItem {
     const leading = this.el.querySelector<HTMLElement>(':scope > [slot="leading"]');
     // Read the path before any await — a dispatched event's composedPath() is
     // empty once dispatch has finished.
-    const fromLeading = !!e && !!leading && e.composedPath().includes(leading);
+    const path = e ? e.composedPath() : [];
+    const fromLeading = !!leading && path.includes(leading);
+
+    // A click that landed on a control the row merely contains belongs to that
+    // control, not to the row. Without this, a row with a trailing action —
+    // the ordinary "delete" button on a list row — toggles its leading checkbox
+    // as well, so one click on delete both toggles and deletes. The leading
+    // control is excluded because the branches below already account for it.
+    if (!fromLeading && path.some((n) => n !== this.el && isRowControl(n))) return;
 
     // selection-trigger="control" — the leading control is independent. If
     // the click landed inside it, let the control handle itself (its own

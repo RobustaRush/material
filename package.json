@@ -1,6 +1,6 @@
 {
   "name": "advanced-material-web",
-  "version": "26.30.0",
+  "version": "26.30.1",
   "description": "Material 3 web components built with Stencil — self-contained shadow-DOM styles, swappable theme via CSS custom properties, zero required stylesheet fetch.",
   "license": "AGPL-3.0-or-later",
   "repository": {
