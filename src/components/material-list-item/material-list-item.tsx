@@ -156,6 +156,15 @@ export class MaterialListItem {
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
+    // Keys belong to whatever has focus. Slotted controls — a trailing
+    // icon-button, the leading checkbox — are light-DOM children of this host,
+    // so their keydown bubbles here: handling it would preventDefault() the
+    // control's own Space/Enter activation and act on the row instead, so
+    // Space on a row's delete button would toggle the row's checkbox and never
+    // delete anything. A key event aimed at the row itself has the host as its
+    // target (focus sits on the host, and anything inside the shadow root
+    // retargets to it).
+    if (e.target !== this.el) return;
     if (e.key === 'Enter') {
       e.preventDefault();
       if (this.href) {
