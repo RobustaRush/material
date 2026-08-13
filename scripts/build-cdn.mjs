@@ -27,7 +27,11 @@ const modules = readdirSync(componentsDir)
   .filter((f) => f.startsWith('material-') && f.endsWith('.js'))
   .sort();
 
-const entry = modules.map((f) => `import './${f}';`).join('\n') + '\n';
+// index.js first: it is what carries the global script (the theme setup check),
+// which the per-component modules don't pull in. The CDN is the no-build path,
+// so it is the likeliest place for a page to be missing theme.css entirely.
+const entry =
+  `import './index.js';\n` + modules.map((f) => `import './${f}';`).join('\n') + '\n';
 
 await build({
   stdin: { contents: entry, resolveDir: componentsDir, loader: 'js' },

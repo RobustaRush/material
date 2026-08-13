@@ -147,6 +147,15 @@ The six classes are `light`, `dark`, and a medium- and high-contrast variant of
 each. Switch themes by changing the `<html>` class. Those class names are part of
 the public contract — `tailwind.css` keys its `dark:` variant off them.
 
+With no class anywhere the light palette applies — it sits on `:root` as well —
+so forgetting the class costs you the choice, not the colors. Load the elements
+through the CDN bundle or `defineCustomElements()` and a startup check reports
+the setup in the console too: a warning when no tokens are on the page at all, a
+note when only the class is missing. It does not run behind the framework
+wrappers, which import per-component modules that Stencil doesn't wire the
+global script into — there, a forgotten `theme.css` still shows up as unstyled
+components with a silent console.
+
 ### Your own palette
 
 Build one at [Material Theme Builder](https://material-foundation.github.io/material-theme-builder/),

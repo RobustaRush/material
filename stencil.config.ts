@@ -109,6 +109,11 @@ export const config: Config = {
   namespace: 'material',
   taskQueue: 'async',
   sourceMap: false,
+  // Setup check for the mistake with no other symptom — see the file. Reaches
+  // the loader, the CDN bundle and dist/components/index.js; the framework
+  // wrappers import per-component modules, which Stencil does not wire the
+  // global script into.
+  globalScript: 'src/global/app.ts',
   outputTargets: [
     { type: 'dist', esmLoaderPath: '../loader' },
     // auto-define-custom-elements: importing dist/components/index.js registers
@@ -151,5 +156,13 @@ export const config: Config = {
   ],
   testing: {
     browserHeadless: 'new',
+    // @angular/* ships ESM-only (`fesm2022/*.mjs`, no CJS build). Jest's
+    // default transformIgnorePatterns skips all of node_modules, so without
+    // this carve-out any spec that imports the real `@angular/core`/`forms`
+    // (adapters/angular/src/lib/value-accessors.spec.ts) fails with
+    // "Cannot use import statement outside a module" — Stencil's own jest
+    // transform (keyed off file extension, including .mjs) never gets a
+    // chance to run. Everything else under node_modules stays untransformed.
+    transformIgnorePatterns: ['/node_modules/(?!@angular/)', '\\.pnp\\.[^\\/]+$'],
   },
 };

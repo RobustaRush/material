@@ -35,8 +35,15 @@
  * These class names are part of the public contract: tailwind.css keys its
  * `dark:` variant off them, and re-skinning is expected to keep them.
  *
+ * With no class anywhere, the light palette applies: light.css carries it on
+ * `:root` as well, so forgetting the class costs you the choice, not the
+ * colors. Every palette class is imported after it and wins on equal
+ * specificity. Dev builds also warn once when no theme class is present —
+ * see src/global/app.ts.
+ *
  * To re-skin the system, export a new set from the builder and either replace
- * the palette files here and rebuild, or — with no build at all — load
+ * the palette files here and rebuild (keeping the `:root` selector light.css
+ * adds to the export), or — with no build at all — load
  * css/tokens.css plus your own export instead of this file. Component code
  * never changes: every element reads the same --md-sys-color-* names. Tokens
  * cascade into shadow DOM as CSS custom properties, so the Tailwind utilities

@@ -10,6 +10,15 @@
  * A commercial licence without copyleft: https://viewflow.io/pro.html
  */
 
+/*
+ * `:root` is not part of the Theme Builder export — keep it when re-exporting.
+ * It makes the light palette the default, so a page that loads theme.css and
+ * forgets the theme class renders themed instead of with unresolved color
+ * tokens (no outlines, no fills, black on white, and nothing in the console to
+ * explain it). Every palette class is imported after this file and matches on
+ * equal specificity, so a class on <html> still wins.
+ */
+:root,
 .light {
   --md-sys-color-primary: rgb(65 95 145);
   --md-sys-color-surface-tint: rgb(65 95 145);
