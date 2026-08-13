@@ -134,6 +134,21 @@ in [`docs/frameworks.md`](docs/frameworks.md#editor-and-tooling-metadata).
 Tags and attributes are kebab-case (`<material-date-field first-day-of-week="1">`).
 Boolean attributes follow HTML rules: present means true.
 
+One thing in the package is a function rather than an element — showing a
+snackbar without putting a host in your markup:
+
+```js
+import { snackbar } from 'advanced-material-web';
+
+snackbar({ message: 'Task deleted', actionLabel: 'Undo', onAction: undo });
+```
+
+It enqueues into the page's `<material-snackbar-host>`, creating one on
+`document.body` if there is none — which is also the placement that survives a
+`transform` or `contain` on an ancestor, since either makes that ancestor the
+containing block for fixed positioning and traps a snackbar inside it. Add the
+host yourself when you want to set `placement` or `live`; the call finds it.
+
 ## Theming
 
 `theme.css` is two halves in one file:

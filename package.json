@@ -31,7 +31,7 @@
   "web-types": "dist/web-types.json",
   "exports": {
     ".": {
-      "types": "./dist/types/components.d.ts",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/index.js"
     },
     "./loader": {
