@@ -22,6 +22,7 @@ import {
 } from '@stencil/core';
 import { installRipple, RippleHandle } from '../../utils/ripple';
 import { dispatchNativeEvents } from '../../utils/form-events';
+import { handleFormSubmitterClick } from '../../utils/form-submitter';
 
 export type MaterialIconButtonVariant = 'filled' | 'tonal' | 'outlined' | 'standard';
 export type MaterialIconButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -165,8 +166,13 @@ export class MaterialIconButton {
     }
     const form = this.internals.form;
     if (!form) return;
-    if (this.type === 'submit') form.requestSubmit();
-    else if (this.type === 'reset') form.reset();
+    if (this.type === 'submit' || this.type === 'reset') {
+      handleFormSubmitterClick(e, form, this.type, {
+        hostElement: this.el,
+        name: this.name,
+        value: this.value,
+      });
+    }
   };
 
   render() {
