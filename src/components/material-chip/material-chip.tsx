@@ -141,6 +141,13 @@ export class MaterialChip {
     return this.variant === 'filter' || this.variant === 'input';
   }
 
+  // A chip in a single-select set is one of many rather than an independent
+  // toggle, so it reports radio instead of checkbox. Read off the parent the way
+  // material-list-item reads its list's density and selection trigger.
+  private inSingleSet() {
+    return this.el.closest('material-chip-set')?.getAttribute('selection') === 'single';
+  }
+
   private toggle = () => {
     if (this.disabled || this.softDisabled) return;
     if (this.isSelectable()) {
@@ -310,7 +317,7 @@ export class MaterialChip {
 
   render() {
     const selectable = this.isSelectable();
-    const role = selectable ? 'checkbox' : undefined;
+    const role = selectable ? (this.inSingleSet() ? 'radio' : 'checkbox') : undefined;
     const ariaChecked = selectable ? String(this.selected) : undefined;
     const hasAvatar = !!this.el.querySelector('[slot="avatar"]');
     const primaryTabIndex = this.tabbable && !this.trailingFocused ? undefined : -1;

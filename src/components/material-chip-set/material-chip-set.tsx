@@ -15,6 +15,7 @@ import {
   Element,
   Host,
   Listen,
+  Prop,
   h,
 } from '@stencil/core';
 
@@ -32,6 +33,7 @@ import {
 
 type ChipEl = HTMLElement & {
   tabbable: boolean;
+  selected: boolean;
   setFocus: (opts?: { trailing?: boolean }) => Promise<void>;
 };
 
@@ -43,8 +45,43 @@ type ChipEl = HTMLElement & {
 export class MaterialChipSet {
   @Element() el!: HTMLElement;
 
+  /**
+   * How selection behaves across the set.
+   *
+   * - `none` (the default) and `multi` — chips toggle independently, which is
+   *   what filter chips normally want: filtering by several attributes at once.
+   * - `single` — one at a time. Selecting a chip clears the rest, and clicking
+   *   the selected one keeps it selected rather than clearing the set, like a
+   *   radio group; selectable chips in a single set report `role="radio"`
+   *   instead of `checkbox`.
+   *
+   * Without this a "view switcher" set — the common sort/filter/view row where
+   * exactly one option applies — has to be wired by hand, and a chip that only
+   * knows its own state leaves two of them looking selected until the page
+   * catches up.
+   */
+  @Prop({ reflect: true }) selection: 'none' | 'single' | 'multi' = 'none';
+
   connectedCallback() {
     this.syncRoving();
+  }
+
+  // A chip toggles only itself, so one-of-many has to be enforced by whatever
+  // owns the group — the same shape material-tabs uses for its own children.
+  // Assigning `selected` doesn't re-emit (the chip's watcher only syncs its form
+  // value), so this can't feed back on itself.
+  @Listen('selectedChange')
+  handleSelectedChange(e: Event) {
+    if (this.selection !== 'single') return;
+    const chip = (e.target as HTMLElement | null)?.closest('material-chip') as ChipEl | null;
+    if (!chip || !this.allChips().includes(chip)) return;
+    if (!chip.selected) {
+      chip.selected = true;
+      return;
+    }
+    for (const other of this.allChips()) {
+      if (other !== chip) other.selected = false;
+    }
   }
 
   private handleSlotChange = () => this.syncRoving();
