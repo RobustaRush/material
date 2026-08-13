@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>layout — advanced-material-web</title>
+  <link rel="stylesheet" href="/static/material/theme.css" />
+  <link rel="stylesheet" href="/static/material/material.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script type="module" src="/build/material.esm.js"></script>
+  <script nomodule src="/build/material.js"></script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+  <header class="bg-surface-container-low border-b border-outline-variant px-8 py-5 flex items-center gap-4">
+    <material-icon-button variant="filled" size="m" icon="arrow_back" aria-label="All components" onclick="location.href='/'"></material-icon-button>
+    <div>
+      <h1 class="text-xl font-bold">layout</h1>
+      <p class="text-on-surface-variant text-sm max-w-3xl">
+        A form grid in two classes and three custom properties — <code>md-grid</code>,
+        <code>md-grid-auto</code>, <code>--md-span</code>, <code>--md-grid-columns</code>,
+        <code>--md-grid-gap</code>. Sizing is a container query, so the same form stacks on its own
+        inside a narrow column with no viewport breakpoints involved.
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-8 py-10 space-y-12">
+
+    <!-- 1. The form grid, resizable -->
+    <section class="space-y-5">
+      <div class="space-y-1">
+        <h2 class="text-headline-small font-medium">Form grid</h2>
+        <p class="text-on-surface-variant text-sm max-w-3xl">
+          Drag the width. The grid measures <em>itself</em>, not the window — below 30rem every field
+          takes its own row regardless of how wide the browser is, and above it each field takes the
+          <code>--md-span</code> columns it asks for.
+        </p>
+      </div>
+
+      <label class="flex items-center gap-3 text-sm">
+        <span class="text-on-surface-variant shrink-0">Container width</span>
+        <input id="width" type="range" min="240" max="960" value="720" step="8" class="w-64" />
+        <output id="width-out" class="font-mono text-body-small text-on-surface-variant"></output>
+      </label>
+
+      <div id="frame" class="border border-dashed border-outline rounded-lg p-4 resize-x overflow-hidden">
+        <form class="md-grid">
+          <material-textfield label="First name" style="--md-span: 3"></material-textfield>
+          <material-textfield label="Last name" style="--md-span: 3"></material-textfield>
+          <material-textfield label="Email" type="email" style="--md-span: 6"></material-textfield>
+          <material-textfield label="Street address" style="--md-span: 12"></material-textfield>
+          <material-textfield label="City" style="--md-span: 5"></material-textfield>
+          <material-textfield label="Region" style="--md-span: 4"></material-textfield>
+          <material-textfield label="Postcode" style="--md-span: 3"></material-textfield>
+          <material-textarea label="Notes" rows="2" style="--md-span: 12"></material-textarea>
+          <div style="--md-span: 12" class="flex justify-end gap-2">
+            <material-button variant="text" label="Cancel"></material-button>
+            <material-button variant="filled" label="Save" type="submit"></material-button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 2. A different track count -->
+    <section class="space-y-5">
+      <div class="space-y-1">
+        <h2 class="text-headline-small font-medium">Fewer columns</h2>
+        <p class="text-on-surface-variant text-sm max-w-3xl">
+          <code>--md-grid-columns</code> changes the track count on the container. A span left over
+          from a 12-column layout can't overflow a 4-column one — it clamps to the tracks that exist,
+          so the third field below asks for 8 and gets 4.
+        </p>
+      </div>
+
+      <div class="md-grid" style="--md-grid-columns: 4; --md-grid-gap: 0.75rem">
+        <material-textfield label="Quantity" type="number" style="--md-span: 1"></material-textfield>
+        <material-textfield label="Unit" style="--md-span: 1"></material-textfield>
+        <material-textfield label="Description (asks for 8)" style="--md-span: 8"></material-textfield>
+      </div>
+    </section>
+
+    <!-- 3. Auto grid -->
+    <section class="space-y-5">
+      <div class="space-y-1">
+        <h2 class="text-headline-small font-medium">Auto grid</h2>
+        <p class="text-on-surface-variant text-sm max-w-3xl">
+          For tiles, where the count doesn't matter: <code>md-grid-auto</code> fits as many tracks as
+          will hold <code>--md-grid-min</code> (16rem by default) and reflows by itself. No spans, no
+          breakpoints.
+        </p>
+      </div>
+
+      <div class="md-grid-auto">
+        <material-card variant="outlined" class="p-4">
+          <h3 class="md-typescale-title-medium">Reflows</h3>
+          <p class="md-typescale-body-small text-on-surface-variant">No column count to maintain.</p>
+        </material-card>
+        <material-card variant="outlined" class="p-4">
+          <h3 class="md-typescale-title-medium">Equal tracks</h3>
+          <p class="md-typescale-body-small text-on-surface-variant">Each at least 16rem wide.</p>
+        </material-card>
+        <material-card variant="outlined" class="p-4">
+          <h3 class="md-typescale-title-medium">Tune it</h3>
+          <p class="md-typescale-body-small text-on-surface-variant">Set <code>--md-grid-min</code>.</p>
+        </material-card>
+        <material-card variant="outlined" class="p-4">
+          <h3 class="md-typescale-title-medium">Or don't</h3>
+          <p class="md-typescale-body-small text-on-surface-variant">The default is usually right.</p>
+        </material-card>
+      </div>
+    </section>
+
+    <!-- 4. Sample usage -->
+    <details class="rounded-lg bg-surface-container-low border border-outline-variant">
+      <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
+<pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- 12 tracks; below 30rem of container width every field gets its own row --&gt;
+&lt;form class="md-grid"&gt;
+  &lt;material-textfield label="First name" style="--md-span: 3"&gt;&lt;/material-textfield&gt;
+  &lt;material-textfield label="Last name"  style="--md-span: 3"&gt;&lt;/material-textfield&gt;
+  &lt;material-textfield label="Address"    style="--md-span: 12"&gt;&lt;/material-textfield&gt;
+&lt;/form&gt;
+
+&lt;!-- Tiles, no counting --&gt;
+&lt;div class="md-grid-auto" style="--md-grid-min: 20rem"&gt; … &lt;/div&gt;
+
+&lt;!-- React: same classes, span goes on style --&gt;
+&lt;div className="md-grid"&gt;
+  &lt;MaterialTextfield label="Address" style={{ '--md-span': 12 } as CSSProperties} /&gt;
+&lt;/div&gt;
+
+&lt;!-- Angular --&gt;
+&lt;div class="md-grid"&gt;
+  &lt;material-textfield label="Address" [style.--md-span]="12"&gt;&lt;/material-textfield&gt;
+&lt;/div&gt;
+
+&lt;!-- Already on Tailwind? You don't need any of this: --&gt;
+&lt;form class="@container grid grid-cols-12 gap-4"&gt;
+  &lt;material-textfield class="col-span-full @md:col-span-3"&gt;&lt;/material-textfield&gt;
+&lt;/form&gt;</code></pre>
+    </details>
+  </main>
+
+  <script>
+    const frame = document.getElementById('frame');
+    const slider = document.getElementById('width');
+    const out = document.getElementById('width-out');
+
+    const apply = () => {
+      const px = Number(slider.value);
+      frame.style.width = px + 'px';
+      // The grid is the query container, so what matters is its own content box,
+      // not the window. Report both so the difference is visible.
+      const inner = frame.querySelector('.md-grid').getBoundingClientRect().width;
+      out.textContent = `${px}px frame → grid ${Math.round(inner)}px (${(inner / 16).toFixed(1)}rem), stacks below 30rem`;
+    };
+
+    slider.addEventListener('input', apply);
+    new ResizeObserver(apply).observe(frame);
+    apply();
+  </script>
+  <script src="/demos/_shared.js"></script>
+</body>
+</html>

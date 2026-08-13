@@ -11,13 +11,18 @@
  */
 
 /*
- * Material 3 design tokens.
+ * Material 3 design tokens — the everything-included stylesheet.
  *
- * Generated with Material Theme Builder
- * (https://material-foundation.github.io/material-theme-builder/),
- * Export → Web → CSS.
+ * Two halves, deliberately kept in separate files because they have different
+ * origins and different lifetimes:
  *
- * Each imported file defines one class. Activate a theme by setting the
+ *   tokens.css   type scale, motion, shape, elevation, focus ring. Ours,
+ *                hand-authored from the M3 spec. Not palette-dependent.
+ *   the palettes --md-sys-color-* only. Generated with Material Theme Builder
+ *                (https://material-foundation.github.io/material-theme-builder/),
+ *                Export → Web → CSS. Replaceable.
+ *
+ * Each palette file defines one class. Activate a theme by setting the
  * matching class on <html> (or any ancestor of the components):
  *
  *   <html class="light">                   default light
@@ -27,14 +32,18 @@
  *   <html class="light-high-contrast">     high-contrast variants
  *   <html class="dark-high-contrast">
  *
- * To re-skin the system, regenerate these files and replace them — no
- * component rebuild is needed. Tokens cascade into shadow DOM as CSS
- * custom properties, so Tailwind utilities (bg-primary, text-on-surface,
- * ...) bridged in material.css automatically follow the active theme.
+ * These class names are part of the public contract: tailwind.css keys its
+ * `dark:` variant off them, and re-skinning is expected to keep them.
+ *
+ * To re-skin the system, export a new set from the builder and either replace
+ * the palette files here and rebuild, or — with no build at all — load
+ * css/tokens.css plus your own export instead of this file. Component code
+ * never changes: every element reads the same --md-sys-color-* names. Tokens
+ * cascade into shadow DOM as CSS custom properties, so the Tailwind utilities
+ * bridged in tailwind.css follow the active theme too.
  */
 
-@import "./typography.css";
-@import "./system.css";
+@import "./tokens.css";
 
 @import "./light.css";
 @import "./dark.css";

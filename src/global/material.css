@@ -19,206 +19,34 @@
 @import "../components/material-data-table/material-data-table.css" layer(components);
 @import "../components/material-breadcrumbs/material-breadcrumbs.css" layer(components);
 
+/* The class-based half of the design system — MD3 type scale and the form/page
+   grid — for pages with no Tailwind build. They ship in css/material.css from
+   these same imports. Each declares its own `@layer material.*` internally;
+   nesting that inside Tailwind's `components` keeps the whole set below
+   `utilities`, so a Tailwind class on the markup still wins here too. */
+@import "./typescale.css" layer(components);
+@import "./layout.css" layer(components);
+
+/* The Tailwind bridge — MD3 tokens in Tailwind theme namespaces — lives in
+   theme/tailwind.css and ships as `advanced-material-web/tailwind.css` for
+   consumers with their own Tailwind build. Importing the published file here
+   means the demo site exercises exactly what is published: a token that goes
+   missing from the bridge breaks the demo, not just someone else's app.
+   Stays above @source because @import has to precede other rules. */
+@import "../theme/tailwind.css";
+
 /* Tailwind v4 scans source files for class usage. The CSS file lives at
    src/global/, so reach back up to cover components and the demo page. */
 @source "../**/*.{ts,tsx,html}";
 
-/*
- * Bridge Material 3 design tokens (--md-sys-color-*) into Tailwind's theme
- * namespace. Tailwind v4 generates utilities (bg-*, text-*, border-*) from
- * @theme tokens; making each token a var() reference means utilities follow
- * whichever MD3 theme class is active on <html>.
- *
- * The MD3 vars themselves are defined in theme.css and ship as a separate
- * stylesheet — keeping component CSS independent of palette choices.
- */
-@theme {
-  /* Primary */
-  --color-primary: var(--md-sys-color-primary);
-  --color-on-primary: var(--md-sys-color-on-primary);
-  --color-primary-container: var(--md-sys-color-primary-container);
-  --color-on-primary-container: var(--md-sys-color-on-primary-container);
-  --color-inverse-primary: var(--md-sys-color-inverse-primary);
-
-  /* Secondary */
-  --color-secondary: var(--md-sys-color-secondary);
-  --color-on-secondary: var(--md-sys-color-on-secondary);
-  --color-secondary-container: var(--md-sys-color-secondary-container);
-  --color-on-secondary-container: var(--md-sys-color-on-secondary-container);
-
-  /* Tertiary */
-  --color-tertiary: var(--md-sys-color-tertiary);
-  --color-on-tertiary: var(--md-sys-color-on-tertiary);
-  --color-tertiary-container: var(--md-sys-color-tertiary-container);
-  --color-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
-
-  /* Error */
-  --color-error: var(--md-sys-color-error);
-  --color-on-error: var(--md-sys-color-on-error);
-  --color-error-container: var(--md-sys-color-error-container);
-  --color-on-error-container: var(--md-sys-color-on-error-container);
-
-  /* Background & Surface */
-  --color-background: var(--md-sys-color-background);
-  --color-on-background: var(--md-sys-color-on-background);
-  --color-surface: var(--md-sys-color-surface);
-  --color-on-surface: var(--md-sys-color-on-surface);
-  --color-surface-variant: var(--md-sys-color-surface-variant);
-  --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
-  --color-surface-tint: var(--md-sys-color-surface-tint);
-  --color-surface-dim: var(--md-sys-color-surface-dim);
-  --color-surface-bright: var(--md-sys-color-surface-bright);
-  --color-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
-  --color-surface-container-low: var(--md-sys-color-surface-container-low);
-  --color-surface-container: var(--md-sys-color-surface-container);
-  --color-surface-container-high: var(--md-sys-color-surface-container-high);
-  --color-surface-container-highest: var(--md-sys-color-surface-container-highest);
-  --color-inverse-surface: var(--md-sys-color-inverse-surface);
-  --color-inverse-on-surface: var(--md-sys-color-inverse-on-surface);
-
-  /* Outline & Utility */
-  --color-outline: var(--md-sys-color-outline);
-  --color-outline-variant: var(--md-sys-color-outline-variant);
-  --color-shadow: var(--md-sys-color-shadow);
-  --color-scrim: var(--md-sys-color-scrim);
-
-  /*
-   * Typography bridge — see theme/typography.css for the underlying MD3
-   * typescale tokens. Three layers are exposed to Tailwind v4:
-   *
-   *  1. Default font family — `font-sans`, body text, and Tailwind's
-   *     unprefixed defaults all inherit the plain MD3 font.
-   *  2. The size scale (`text-xs` … `text-6xl`) is re-mapped to the
-   *     closest MD3 typescale role — size + line-height + tracking
-   *     emit together, so existing demo markup gains MD3-correct metrics
-   *     without rewriting classes.
-   *  3. MD3-named utilities (`text-display-large`, `text-headline-medium`,
-   *     `text-body-medium`, `text-label-small`, …) for explicit semantic
-   *     typography. Each carries size, leading, tracking, and weight.
-   */
-
-  /* Default font stack */
-  --default-font-family: var(--md-sys-typescale-plain-font);
-  --font-sans: var(--md-sys-typescale-plain-font);
-  --font-display: var(--md-sys-typescale-brand-font);
-
-  /* Size scale → MD3 mapping (size / line-height / tracking) */
-  --text-xs: var(--md-sys-typescale-label-small-size);
-  --text-xs--line-height: var(--md-sys-typescale-label-small-line-height);
-  --text-xs--letter-spacing: var(--md-sys-typescale-label-small-tracking);
-
-  --text-sm: var(--md-sys-typescale-body-medium-size);
-  --text-sm--line-height: var(--md-sys-typescale-body-medium-line-height);
-  --text-sm--letter-spacing: var(--md-sys-typescale-body-medium-tracking);
-
-  --text-base: var(--md-sys-typescale-body-large-size);
-  --text-base--line-height: var(--md-sys-typescale-body-large-line-height);
-  --text-base--letter-spacing: var(--md-sys-typescale-body-large-tracking);
-
-  --text-lg: var(--md-sys-typescale-title-large-size);
-  --text-lg--line-height: var(--md-sys-typescale-title-large-line-height);
-  --text-lg--letter-spacing: var(--md-sys-typescale-title-large-tracking);
-
-  --text-xl: var(--md-sys-typescale-headline-small-size);
-  --text-xl--line-height: var(--md-sys-typescale-headline-small-line-height);
-  --text-xl--letter-spacing: var(--md-sys-typescale-headline-small-tracking);
-
-  --text-2xl: var(--md-sys-typescale-headline-medium-size);
-  --text-2xl--line-height: var(--md-sys-typescale-headline-medium-line-height);
-  --text-2xl--letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
-
-  --text-3xl: var(--md-sys-typescale-headline-large-size);
-  --text-3xl--line-height: var(--md-sys-typescale-headline-large-line-height);
-  --text-3xl--letter-spacing: var(--md-sys-typescale-headline-large-tracking);
-
-  --text-4xl: var(--md-sys-typescale-display-small-size);
-  --text-4xl--line-height: var(--md-sys-typescale-display-small-line-height);
-  --text-4xl--letter-spacing: var(--md-sys-typescale-display-small-tracking);
-
-  --text-5xl: var(--md-sys-typescale-display-medium-size);
-  --text-5xl--line-height: var(--md-sys-typescale-display-medium-line-height);
-  --text-5xl--letter-spacing: var(--md-sys-typescale-display-medium-tracking);
-
-  --text-6xl: var(--md-sys-typescale-display-large-size);
-  --text-6xl--line-height: var(--md-sys-typescale-display-large-line-height);
-  --text-6xl--letter-spacing: var(--md-sys-typescale-display-large-tracking);
-
-  /* MD3-named utilities */
-  --text-display-large: var(--md-sys-typescale-display-large-size);
-  --text-display-large--line-height: var(--md-sys-typescale-display-large-line-height);
-  --text-display-large--letter-spacing: var(--md-sys-typescale-display-large-tracking);
-  --text-display-large--font-weight: var(--md-sys-typescale-display-large-weight);
-
-  --text-display-medium: var(--md-sys-typescale-display-medium-size);
-  --text-display-medium--line-height: var(--md-sys-typescale-display-medium-line-height);
-  --text-display-medium--letter-spacing: var(--md-sys-typescale-display-medium-tracking);
-  --text-display-medium--font-weight: var(--md-sys-typescale-display-medium-weight);
-
-  --text-display-small: var(--md-sys-typescale-display-small-size);
-  --text-display-small--line-height: var(--md-sys-typescale-display-small-line-height);
-  --text-display-small--letter-spacing: var(--md-sys-typescale-display-small-tracking);
-  --text-display-small--font-weight: var(--md-sys-typescale-display-small-weight);
-
-  --text-headline-large: var(--md-sys-typescale-headline-large-size);
-  --text-headline-large--line-height: var(--md-sys-typescale-headline-large-line-height);
-  --text-headline-large--letter-spacing: var(--md-sys-typescale-headline-large-tracking);
-  --text-headline-large--font-weight: var(--md-sys-typescale-headline-large-weight);
-
-  --text-headline-medium: var(--md-sys-typescale-headline-medium-size);
-  --text-headline-medium--line-height: var(--md-sys-typescale-headline-medium-line-height);
-  --text-headline-medium--letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
-  --text-headline-medium--font-weight: var(--md-sys-typescale-headline-medium-weight);
-
-  --text-headline-small: var(--md-sys-typescale-headline-small-size);
-  --text-headline-small--line-height: var(--md-sys-typescale-headline-small-line-height);
-  --text-headline-small--letter-spacing: var(--md-sys-typescale-headline-small-tracking);
-  --text-headline-small--font-weight: var(--md-sys-typescale-headline-small-weight);
-
-  --text-title-large: var(--md-sys-typescale-title-large-size);
-  --text-title-large--line-height: var(--md-sys-typescale-title-large-line-height);
-  --text-title-large--letter-spacing: var(--md-sys-typescale-title-large-tracking);
-  --text-title-large--font-weight: var(--md-sys-typescale-title-large-weight);
-
-  --text-title-medium: var(--md-sys-typescale-title-medium-size);
-  --text-title-medium--line-height: var(--md-sys-typescale-title-medium-line-height);
-  --text-title-medium--letter-spacing: var(--md-sys-typescale-title-medium-tracking);
-  --text-title-medium--font-weight: var(--md-sys-typescale-title-medium-weight);
-
-  --text-title-small: var(--md-sys-typescale-title-small-size);
-  --text-title-small--line-height: var(--md-sys-typescale-title-small-line-height);
-  --text-title-small--letter-spacing: var(--md-sys-typescale-title-small-tracking);
-  --text-title-small--font-weight: var(--md-sys-typescale-title-small-weight);
-
-  --text-body-large: var(--md-sys-typescale-body-large-size);
-  --text-body-large--line-height: var(--md-sys-typescale-body-large-line-height);
-  --text-body-large--letter-spacing: var(--md-sys-typescale-body-large-tracking);
-  --text-body-large--font-weight: var(--md-sys-typescale-body-large-weight);
-
-  --text-body-medium: var(--md-sys-typescale-body-medium-size);
-  --text-body-medium--line-height: var(--md-sys-typescale-body-medium-line-height);
-  --text-body-medium--letter-spacing: var(--md-sys-typescale-body-medium-tracking);
-  --text-body-medium--font-weight: var(--md-sys-typescale-body-medium-weight);
-
-  --text-body-small: var(--md-sys-typescale-body-small-size);
-  --text-body-small--line-height: var(--md-sys-typescale-body-small-line-height);
-  --text-body-small--letter-spacing: var(--md-sys-typescale-body-small-tracking);
-  --text-body-small--font-weight: var(--md-sys-typescale-body-small-weight);
-
-  --text-label-large: var(--md-sys-typescale-label-large-size);
-  --text-label-large--line-height: var(--md-sys-typescale-label-large-line-height);
-  --text-label-large--letter-spacing: var(--md-sys-typescale-label-large-tracking);
-  --text-label-large--font-weight: var(--md-sys-typescale-label-large-weight);
-
-  --text-label-medium: var(--md-sys-typescale-label-medium-size);
-  --text-label-medium--line-height: var(--md-sys-typescale-label-medium-line-height);
-  --text-label-medium--letter-spacing: var(--md-sys-typescale-label-medium-tracking);
-  --text-label-medium--font-weight: var(--md-sys-typescale-label-medium-weight);
-
-  --text-label-small: var(--md-sys-typescale-label-small-size);
-  --text-label-small--line-height: var(--md-sys-typescale-label-small-line-height);
-  --text-label-small--letter-spacing: var(--md-sys-typescale-label-small-tracking);
-  --text-label-small--font-weight: var(--md-sys-typescale-label-small-weight);
-}
+/* demos/typography.html builds its rows from a ROLES array — `text-${role}` is
+   assembled at runtime, so the scanner never sees those names and the roles that
+   aren't also spelled out literally somewhere else in the repo (display-medium,
+   headline-large, label-medium) silently render at the inherited size. Safelist
+   the whole MD3 set: it's the page that documents the type scale, so a missing
+   row there is worse than 15 rules of CSS. Demo-only — a consumer's own build
+   scans their own markup. */
+@source inline("text-{display,headline,title,body,label}-{large,medium,small}");
 
 /* Material Symbols icon font helper. @font-face is document-scoped and works
    in shadow DOM, but the class rule must be in the adopted stylesheet. */

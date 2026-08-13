@@ -1,0 +1,39 @@
+/*
+ * advanced-material-web — Material 3 web components
+ * Copyright (c) 2017-2026 Mikhail Podgurskiy
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ * AGPLv3 with the Viewflow Library Exception — see LICENSE_EXCEPTION.
+ *
+ * The copyright holder regards code produced from this file with an LLM's
+ * help as a derived work: placing it in a model's context is copying it.
+ * A commercial licence without copyleft: https://viewflow.io/pro.html
+ */
+
+/*
+ * The half of the design system that is NOT a palette: type scale, motion,
+ * shape, elevation, focus ring.
+ *
+ * Why this file exists separately from theme.css: Material Theme Builder
+ * exports colors and nothing else. A consumer who builds their own theme at
+ * https://material-foundation.github.io/material-theme-builder/ and drops the
+ * export in place of theme.css would silently lose every token below —
+ * components would render with no radii, no shadows, no type scale, and the
+ * Tailwind bridge in tailwind.css would resolve half its utilities to nothing.
+ * Splitting the two makes "bring your own palette" a file swap:
+ *
+ *   <link rel="stylesheet" href=".../css/tokens.css">   this file — always
+ *   <link rel="stylesheet" href="/static/my-theme.css"> your Theme Builder export
+ *
+ * theme.css imports this file and adds the six default palettes, so a single
+ * <link rel="stylesheet" href=".../css/theme.css"> still works unchanged.
+ *
+ * This file is not meant to be loaded alone: --md-focus-ring-color and the
+ * elevation shadows reference palette tokens (--md-sys-color-secondary,
+ * --md-sys-color-shadow), which resolve at the point of use. Without a palette
+ * alongside it the shadows fall back to black and the focus ring to
+ * `currentColor`-less invalid, i.e. no ring.
+ */
+
+@import "./typography.css";
+@import "./system.css";

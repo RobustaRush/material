@@ -232,7 +232,9 @@ VS Code needs one setting:
 
 `npm run build` (core package):
 
-1. Tailwind builds `theme.css` and `material.css`.
+1. The four stylesheets under `css/`: Tailwind compiles `theme.css` and `tokens.css`,
+   `scripts/build-tailwind-preset.mjs` publishes `tailwind.css` uncompiled (consumers' own Tailwind
+   reads its `@theme` directives), and `scripts/build-material-css.mjs` bundles `material.css`.
 2. `stencil build` emits `dist/`, `loader/`, `hydrate/`, the readmes, the tooling JSON, and the four
    framework adapters' generated source into `adapters/*/src`.
 3. `scripts/patch-custom-element-types.mjs` fixes the custom-elements typings (below).

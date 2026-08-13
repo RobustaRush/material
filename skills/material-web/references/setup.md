@@ -57,14 +57,19 @@ Three requirements, each load-bearing:
 
 ## The second stylesheet: material.css
 
-Almost every component's CSS rides inside its JS chunk, scoped to its shadow root. Two are the exception — `material-data-table` and `material-breadcrumbs` enhance markup that stays in the **light DOM** (a server-rendered `<table>`, a real `<nav>`), so their styling ships as `material.css` and must be linked like `theme.css`:
+Everything the library styles outside a shadow root, linked like `theme.css`:
 
 ```html
 <link rel="stylesheet" href="/static/material/theme.css">
 <link rel="stylesheet" href="/static/material/material.css">
 ```
 
-Skip it and only those two render unstyled; everything else is fine. Any component whose readme says "Styles live in the document stylesheet" needs it.
+Two things are in it:
+
+- **`material-data-table` and `material-breadcrumbs`.** Almost every component's CSS rides inside its JS chunk, scoped to its shadow root; these two enhance markup that stays in the **light DOM** (a server-rendered `<table>`, a real `<nav>`), so their styling can't. Any component whose readme says "Styles live in the document stylesheet" needs this file.
+- **The MD3 type scale and a form grid as classes** — `md-typescale-body-large`, `md-grid` with `--md-span`. For pages with no Tailwind build; see `references/theming.md`.
+
+Skip it and only those two components render unstyled; everything else is fine. Tailwind projects get the type scale and grid from their own build instead (`advanced-material-web/tailwind.css`) and need `material.css` only for the two components.
 
 ## With a bundler
 

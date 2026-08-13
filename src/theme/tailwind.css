@@ -1,0 +1,361 @@
+/*
+ * advanced-material-web — Material 3 web components
+ * Copyright (c) 2017-2026 Mikhail Podgurskiy
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ * AGPLv3 with the Viewflow Library Exception — see LICENSE_EXCEPTION.
+ *
+ * The copyright holder regards code produced from this file with an LLM's
+ * help as a derived work: placing it in a model's context is copying it.
+ * A commercial licence without copyleft: https://viewflow.io/pro.html
+ */
+
+/*
+ * The Tailwind v4 bridge: Material 3 tokens in Tailwind's theme namespaces.
+ *
+ * Import it after Tailwind itself and the utilities you already know are
+ * Material-flavoured — no new class names to learn:
+ *
+ *   @import "tailwindcss";
+ *   @import "advanced-material-web/tailwind.css";
+ *
+ *   <div class="bg-surface-container text-on-surface rounded-lg shadow-md">
+ *     <h2 class="text-headline-small">…</h2>
+ *   </div>
+ *
+ * Every value here is a var() reference, never a literal, and the block is
+ * plain `@theme` rather than `@theme inline`. That is the whole trick: the
+ * utilities carry `var(--md-sys-color-primary)` to the browser instead of a
+ * resolved hex, so they follow whichever theme class is active on <html> and
+ * survive a palette swap with no rebuild of anything. `@theme inline` would
+ * substitute the value at build time and freeze the theme — do not use it
+ * here, and do not paste literals in.
+ *
+ * Coverage is measured against what Material Theme Builder emits, not against
+ * what this library happens to use, so a consumer's own export never lands
+ * tokens that have no utility. scripts/build-tailwind-preset.mjs enforces
+ * that, plus the two rules above, and fails the build otherwise.
+ *
+ * Custom ("extended") colors from Theme Builder can't be pre-declared — the
+ * names are yours. Add four lines per color in your own entry file:
+ *
+ *   @theme {
+ *     --color-success: var(--md-extended-color-success-color);
+ *     --color-on-success: var(--md-extended-color-success-on-color);
+ *     --color-success-container: var(--md-extended-color-success-color-container);
+ *     --color-on-success-container: var(--md-extended-color-success-on-color-container);
+ *   }
+ *
+ * To override anything below, put your own @theme block after this import —
+ * later declarations win.
+ */
+
+/*
+ * Tailwind's stock `dark:` variant keys off prefers-color-scheme, but this
+ * library switches themes with a class on <html> (see theme.css), so out of
+ * the box `dark:bg-surface` and the components would disagree whenever the
+ * page theme differs from the OS setting. Point the variant at the same
+ * classes the tokens use.
+ *
+ * Renamed those classes in your own theme? Redeclare this variant after the
+ * import with your names — the class list is the contract, not the mechanism.
+ */
+@custom-variant dark (&:where(.dark, .dark *, .dark-medium-contrast, .dark-medium-contrast *, .dark-high-contrast, .dark-high-contrast *));
+
+@theme {
+  /* ---- Color ------------------------------------------------------------- */
+
+  /* Primary */
+  --color-primary: var(--md-sys-color-primary);
+  --color-on-primary: var(--md-sys-color-on-primary);
+  --color-primary-container: var(--md-sys-color-primary-container);
+  --color-on-primary-container: var(--md-sys-color-on-primary-container);
+  --color-inverse-primary: var(--md-sys-color-inverse-primary);
+
+  /* Secondary */
+  --color-secondary: var(--md-sys-color-secondary);
+  --color-on-secondary: var(--md-sys-color-on-secondary);
+  --color-secondary-container: var(--md-sys-color-secondary-container);
+  --color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+
+  /* Tertiary */
+  --color-tertiary: var(--md-sys-color-tertiary);
+  --color-on-tertiary: var(--md-sys-color-on-tertiary);
+  --color-tertiary-container: var(--md-sys-color-tertiary-container);
+  --color-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
+
+  /*
+   * Fixed colors — the pairs that stay put across light and dark, for
+   * surfaces that must not flip with the theme (a hero panel, a persistent
+   * banner). Theme Builder emits all twelve; they were previously unbridged,
+   * so `bg-primary-fixed` did not exist even though the token was loaded.
+   */
+  --color-primary-fixed: var(--md-sys-color-primary-fixed);
+  --color-on-primary-fixed: var(--md-sys-color-on-primary-fixed);
+  --color-primary-fixed-dim: var(--md-sys-color-primary-fixed-dim);
+  --color-on-primary-fixed-variant: var(--md-sys-color-on-primary-fixed-variant);
+
+  --color-secondary-fixed: var(--md-sys-color-secondary-fixed);
+  --color-on-secondary-fixed: var(--md-sys-color-on-secondary-fixed);
+  --color-secondary-fixed-dim: var(--md-sys-color-secondary-fixed-dim);
+  --color-on-secondary-fixed-variant: var(--md-sys-color-on-secondary-fixed-variant);
+
+  --color-tertiary-fixed: var(--md-sys-color-tertiary-fixed);
+  --color-on-tertiary-fixed: var(--md-sys-color-on-tertiary-fixed);
+  --color-tertiary-fixed-dim: var(--md-sys-color-tertiary-fixed-dim);
+  --color-on-tertiary-fixed-variant: var(--md-sys-color-on-tertiary-fixed-variant);
+
+  /* Error */
+  --color-error: var(--md-sys-color-error);
+  --color-on-error: var(--md-sys-color-on-error);
+  --color-error-container: var(--md-sys-color-error-container);
+  --color-on-error-container: var(--md-sys-color-on-error-container);
+
+  /* Background & Surface */
+  --color-background: var(--md-sys-color-background);
+  --color-on-background: var(--md-sys-color-on-background);
+  --color-surface: var(--md-sys-color-surface);
+  --color-on-surface: var(--md-sys-color-on-surface);
+  --color-surface-variant: var(--md-sys-color-surface-variant);
+  --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --color-surface-tint: var(--md-sys-color-surface-tint);
+  --color-surface-dim: var(--md-sys-color-surface-dim);
+  --color-surface-bright: var(--md-sys-color-surface-bright);
+  --color-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
+  --color-surface-container-low: var(--md-sys-color-surface-container-low);
+  --color-surface-container: var(--md-sys-color-surface-container);
+  --color-surface-container-high: var(--md-sys-color-surface-container-high);
+  --color-surface-container-highest: var(--md-sys-color-surface-container-highest);
+  --color-inverse-surface: var(--md-sys-color-inverse-surface);
+  --color-inverse-on-surface: var(--md-sys-color-inverse-on-surface);
+
+  /* Outline & Utility */
+  --color-outline: var(--md-sys-color-outline);
+  --color-outline-variant: var(--md-sys-color-outline-variant);
+  --color-shadow: var(--md-sys-color-shadow);
+  --color-scrim: var(--md-sys-color-scrim);
+
+  /* ---- Typography -------------------------------------------------------- */
+
+  /*
+   * See theme/typography.css for the underlying MD3 typescale tokens. Three
+   * layers are exposed:
+   *
+   *  1. Default font family — `font-sans`, body text, and Tailwind's
+   *     unprefixed defaults all inherit the plain MD3 font.
+   *  2. The size scale (`text-xs` … `text-6xl`) is re-mapped to the closest
+   *     MD3 typescale role — size + line-height + tracking emit together, so
+   *     existing markup gains MD3-correct metrics without rewriting classes.
+   *  3. MD3-named utilities (`text-display-large`, `text-headline-medium`,
+   *     `text-body-medium`, `text-label-small`, …) for explicit semantic
+   *     typography. Each carries size, leading, tracking, and weight.
+   */
+
+  /* Default font stack */
+  --default-font-family: var(--md-sys-typescale-plain-font);
+  --font-sans: var(--md-sys-typescale-plain-font);
+  --font-display: var(--md-sys-typescale-brand-font);
+
+  /* Size scale → MD3 mapping (size / line-height / tracking) */
+  --text-xs: var(--md-sys-typescale-label-small-size);
+  --text-xs--line-height: var(--md-sys-typescale-label-small-line-height);
+  --text-xs--letter-spacing: var(--md-sys-typescale-label-small-tracking);
+
+  --text-sm: var(--md-sys-typescale-body-medium-size);
+  --text-sm--line-height: var(--md-sys-typescale-body-medium-line-height);
+  --text-sm--letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+
+  --text-base: var(--md-sys-typescale-body-large-size);
+  --text-base--line-height: var(--md-sys-typescale-body-large-line-height);
+  --text-base--letter-spacing: var(--md-sys-typescale-body-large-tracking);
+
+  --text-lg: var(--md-sys-typescale-title-large-size);
+  --text-lg--line-height: var(--md-sys-typescale-title-large-line-height);
+  --text-lg--letter-spacing: var(--md-sys-typescale-title-large-tracking);
+
+  --text-xl: var(--md-sys-typescale-headline-small-size);
+  --text-xl--line-height: var(--md-sys-typescale-headline-small-line-height);
+  --text-xl--letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+
+  --text-2xl: var(--md-sys-typescale-headline-medium-size);
+  --text-2xl--line-height: var(--md-sys-typescale-headline-medium-line-height);
+  --text-2xl--letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
+
+  --text-3xl: var(--md-sys-typescale-headline-large-size);
+  --text-3xl--line-height: var(--md-sys-typescale-headline-large-line-height);
+  --text-3xl--letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+
+  --text-4xl: var(--md-sys-typescale-display-small-size);
+  --text-4xl--line-height: var(--md-sys-typescale-display-small-line-height);
+  --text-4xl--letter-spacing: var(--md-sys-typescale-display-small-tracking);
+
+  --text-5xl: var(--md-sys-typescale-display-medium-size);
+  --text-5xl--line-height: var(--md-sys-typescale-display-medium-line-height);
+  --text-5xl--letter-spacing: var(--md-sys-typescale-display-medium-tracking);
+
+  --text-6xl: var(--md-sys-typescale-display-large-size);
+  --text-6xl--line-height: var(--md-sys-typescale-display-large-line-height);
+  --text-6xl--letter-spacing: var(--md-sys-typescale-display-large-tracking);
+
+  /* MD3-named utilities */
+  --text-display-large: var(--md-sys-typescale-display-large-size);
+  --text-display-large--line-height: var(--md-sys-typescale-display-large-line-height);
+  --text-display-large--letter-spacing: var(--md-sys-typescale-display-large-tracking);
+  --text-display-large--font-weight: var(--md-sys-typescale-display-large-weight);
+
+  --text-display-medium: var(--md-sys-typescale-display-medium-size);
+  --text-display-medium--line-height: var(--md-sys-typescale-display-medium-line-height);
+  --text-display-medium--letter-spacing: var(--md-sys-typescale-display-medium-tracking);
+  --text-display-medium--font-weight: var(--md-sys-typescale-display-medium-weight);
+
+  --text-display-small: var(--md-sys-typescale-display-small-size);
+  --text-display-small--line-height: var(--md-sys-typescale-display-small-line-height);
+  --text-display-small--letter-spacing: var(--md-sys-typescale-display-small-tracking);
+  --text-display-small--font-weight: var(--md-sys-typescale-display-small-weight);
+
+  --text-headline-large: var(--md-sys-typescale-headline-large-size);
+  --text-headline-large--line-height: var(--md-sys-typescale-headline-large-line-height);
+  --text-headline-large--letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+  --text-headline-large--font-weight: var(--md-sys-typescale-headline-large-weight);
+
+  --text-headline-medium: var(--md-sys-typescale-headline-medium-size);
+  --text-headline-medium--line-height: var(--md-sys-typescale-headline-medium-line-height);
+  --text-headline-medium--letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
+  --text-headline-medium--font-weight: var(--md-sys-typescale-headline-medium-weight);
+
+  --text-headline-small: var(--md-sys-typescale-headline-small-size);
+  --text-headline-small--line-height: var(--md-sys-typescale-headline-small-line-height);
+  --text-headline-small--letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+  --text-headline-small--font-weight: var(--md-sys-typescale-headline-small-weight);
+
+  --text-title-large: var(--md-sys-typescale-title-large-size);
+  --text-title-large--line-height: var(--md-sys-typescale-title-large-line-height);
+  --text-title-large--letter-spacing: var(--md-sys-typescale-title-large-tracking);
+  --text-title-large--font-weight: var(--md-sys-typescale-title-large-weight);
+
+  --text-title-medium: var(--md-sys-typescale-title-medium-size);
+  --text-title-medium--line-height: var(--md-sys-typescale-title-medium-line-height);
+  --text-title-medium--letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+  --text-title-medium--font-weight: var(--md-sys-typescale-title-medium-weight);
+
+  --text-title-small: var(--md-sys-typescale-title-small-size);
+  --text-title-small--line-height: var(--md-sys-typescale-title-small-line-height);
+  --text-title-small--letter-spacing: var(--md-sys-typescale-title-small-tracking);
+  --text-title-small--font-weight: var(--md-sys-typescale-title-small-weight);
+
+  --text-body-large: var(--md-sys-typescale-body-large-size);
+  --text-body-large--line-height: var(--md-sys-typescale-body-large-line-height);
+  --text-body-large--letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  --text-body-large--font-weight: var(--md-sys-typescale-body-large-weight);
+
+  --text-body-medium: var(--md-sys-typescale-body-medium-size);
+  --text-body-medium--line-height: var(--md-sys-typescale-body-medium-line-height);
+  --text-body-medium--letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+  --text-body-medium--font-weight: var(--md-sys-typescale-body-medium-weight);
+
+  --text-body-small: var(--md-sys-typescale-body-small-size);
+  --text-body-small--line-height: var(--md-sys-typescale-body-small-line-height);
+  --text-body-small--letter-spacing: var(--md-sys-typescale-body-small-tracking);
+  --text-body-small--font-weight: var(--md-sys-typescale-body-small-weight);
+
+  --text-label-large: var(--md-sys-typescale-label-large-size);
+  --text-label-large--line-height: var(--md-sys-typescale-label-large-line-height);
+  --text-label-large--letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  --text-label-large--font-weight: var(--md-sys-typescale-label-large-weight);
+
+  --text-label-medium: var(--md-sys-typescale-label-medium-size);
+  --text-label-medium--line-height: var(--md-sys-typescale-label-medium-line-height);
+  --text-label-medium--letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+  --text-label-medium--font-weight: var(--md-sys-typescale-label-medium-weight);
+
+  --text-label-small: var(--md-sys-typescale-label-small-size);
+  --text-label-small--line-height: var(--md-sys-typescale-label-small-line-height);
+  --text-label-small--letter-spacing: var(--md-sys-typescale-label-small-tracking);
+  --text-label-small--font-weight: var(--md-sys-typescale-label-small-weight);
+
+  /* ---- Shape ------------------------------------------------------------- */
+
+  /*
+   * MD3 names its corner scale none / xs / sm / md / lg / xl / full, which is
+   * Tailwind's own naming — so `rounded-lg` means the MD3 16dp radius, not
+   * Tailwind's 8px. MD3's published set stops at xl (28dp) while Tailwind's
+   * goes on to 4xl; 2xl…4xl continue the MD3 ramp (32 / 40 / 48dp, the last
+   * being M3 Expressive's extra-extra-large) so the scale stays monotonic —
+   * left at their stock values they would fall *below* xl and `rounded-2xl`
+   * would round less than `rounded-xl`.
+   */
+  --radius: var(--md-sys-shape-corner-xs);
+  --radius-none: var(--md-sys-shape-corner-none);
+  --radius-xs: var(--md-sys-shape-corner-xs);
+  --radius-sm: var(--md-sys-shape-corner-sm);
+  --radius-md: var(--md-sys-shape-corner-md);
+  --radius-lg: var(--md-sys-shape-corner-lg);
+  --radius-xl: var(--md-sys-shape-corner-xl);
+  --radius-2xl: 2rem;
+  --radius-3xl: 2.5rem;
+  --radius-4xl: 3rem;
+  --radius-full: var(--md-sys-shape-corner-full);
+
+  /* ---- Elevation --------------------------------------------------------- */
+
+  /*
+   * MD3 has six elevation levels against Tailwind's eight shadow steps, so
+   * the small end collapses: 2xs / xs / sm all resolve to level 1. Reach for
+   * `shadow-elevation-3` when the level itself is the point — that set is the
+   * one-to-one mapping and won't shift if the aliases are ever retuned.
+   */
+  --shadow: var(--md-sys-elevation-1);
+  --shadow-2xs: var(--md-sys-elevation-1);
+  --shadow-xs: var(--md-sys-elevation-1);
+  --shadow-sm: var(--md-sys-elevation-1);
+  --shadow-md: var(--md-sys-elevation-2);
+  --shadow-lg: var(--md-sys-elevation-3);
+  --shadow-xl: var(--md-sys-elevation-4);
+  --shadow-2xl: var(--md-sys-elevation-5);
+
+  --shadow-elevation-0: var(--md-sys-elevation-0);
+  --shadow-elevation-1: var(--md-sys-elevation-1);
+  --shadow-elevation-2: var(--md-sys-elevation-2);
+  --shadow-elevation-3: var(--md-sys-elevation-3);
+  --shadow-elevation-4: var(--md-sys-elevation-4);
+  --shadow-elevation-5: var(--md-sys-elevation-5);
+
+  /* ---- Motion ------------------------------------------------------------ */
+
+  /*
+   * MD3 pairs a decelerating curve with entering motion and an accelerating
+   * one with exiting, which is what Tailwind's out/in already mean — so
+   * `ease-out` on an enter transition is correct without thinking about it.
+   * The MD3-named aliases below are there for the cases where standard vs
+   * emphasized matters, and for the two spring curves, which have no Tailwind
+   * equivalent at all.
+   */
+  --ease-out: var(--md-sys-motion-easing-emphasized-decelerate);
+  --ease-in: var(--md-sys-motion-easing-emphasized-accelerate);
+  --ease-in-out: var(--md-sys-motion-easing-emphasized);
+
+  --ease-standard: var(--md-sys-motion-easing-standard);
+  --ease-standard-decelerate: var(--md-sys-motion-easing-standard-decelerate);
+  --ease-standard-accelerate: var(--md-sys-motion-easing-standard-accelerate);
+  --ease-emphasized: var(--md-sys-motion-easing-emphasized);
+  --ease-emphasized-decelerate: var(--md-sys-motion-easing-emphasized-decelerate);
+  --ease-emphasized-accelerate: var(--md-sys-motion-easing-emphasized-accelerate);
+  --ease-linear: var(--md-sys-motion-easing-linear);
+  --ease-spring-fast-spatial: var(--md-sys-motion-spring-fast-spatial);
+  --ease-spring-default-effects: var(--md-sys-motion-spring-default-effects);
+
+  /* Named durations sit alongside Tailwind's numeric `duration-150`, which
+     keeps working — these add `duration-short2`, `duration-medium4`, …
+     The namespace behind the `duration-*` utility is --transition-duration-*,
+     not --duration-*; keys under the latter compile to nothing at all. */
+  --transition-duration-short1: var(--md-sys-motion-duration-short1);
+  --transition-duration-short2: var(--md-sys-motion-duration-short2);
+  --transition-duration-short3: var(--md-sys-motion-duration-short3);
+  --transition-duration-short4: var(--md-sys-motion-duration-short4);
+  --transition-duration-medium1: var(--md-sys-motion-duration-medium1);
+  --transition-duration-medium2: var(--md-sys-motion-duration-medium2);
+  --transition-duration-medium3: var(--md-sys-motion-duration-medium3);
+  --transition-duration-medium4: var(--md-sys-motion-duration-medium4);
+  --transition-duration-long1: var(--md-sys-motion-duration-long1);
+  --transition-duration-long2: var(--md-sys-motion-duration-long2);
+}

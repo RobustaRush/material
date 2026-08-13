@@ -1,0 +1,84 @@
+/*
+ * advanced-material-web — Material 3 web components
+ * Copyright (c) 2017-2026 Mikhail Podgurskiy
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ * AGPLv3 with the Viewflow Library Exception — see LICENSE_EXCEPTION.
+ *
+ * The copyright holder regards code produced from this file with an LLM's
+ * help as a derived work: placing it in a model's context is copying it.
+ * A commercial licence without copyleft: https://viewflow.io/pro.html
+ */
+
+/* Form and page grid — two classes and three custom properties.
+ *
+ * The job: lay out a form where most fields share a row and the occasional
+ * long one (an address, a note) takes the whole width, and do it without the
+ * author counting columns at every breakpoint.
+ *
+ *   <form class="md-grid">
+ *     <material-textfield label="First name" style="--md-span: 3"></material-textfield>
+ *     <material-textfield label="Last name"  style="--md-span: 3"></material-textfield>
+ *     <material-textfield label="Address"    style="--md-span: 12"></material-textfield>
+ *   </form>
+ *
+ * Tailwind users have all of this already (`@container grid grid-cols-12` with
+ * `col-span-full @md:col-span-6` per child) and can ignore this file. What it
+ * adds for everyone else is the default: below a comfortable field width every
+ * child takes its own row, and --md-span only applies above it. Two states, one
+ * declaration.
+ *
+ * Sizing is a container query, not a media query, so the same form laid out in
+ * a side sheet or a narrow column stacks on its own — no viewport breakpoints,
+ * no per-context overrides. The 30rem switch point is baked in: size container
+ * queries can't read a custom property, so a project that needs a different one
+ * re-declares the rule below rather than setting a variable.
+ *
+ * Custom properties, all optional:
+ *   --md-grid-columns  track count on the container (default 12)
+ *   --md-grid-gap      row and column gap (default 1rem)
+ *   --md-span          columns one child takes above 30rem (default 6, i.e. half)
+ *   --md-grid-min      .md-grid-auto only: narrowest a track may get (default 16rem)
+ *
+ * One caveat worth knowing: `container-type` brings layout containment, which
+ * makes .md-grid the containing block for `position: fixed` descendants. The
+ * library's own popups are unaffected — menus, autocomplete and date pickers
+ * all live in the top layer via the Popover API — but your own fixed-position
+ * content inside a grid cell will anchor to the grid instead of the viewport.
+ *
+ * Layered (see build-material-css.mjs) so unlayered CSS in the consuming page
+ * wins without !important. */
+
+@layer material.layout {
+  .md-grid {
+    display: grid;
+    container-type: inline-size;
+    grid-template-columns: repeat(var(--md-grid-columns, 12), minmax(0, 1fr));
+    gap: var(--md-grid-gap, 1rem);
+  }
+
+  /* Narrow: one field per row. Also the state every child falls back to, so a
+     child that never sets --md-span still behaves. */
+  .md-grid > * {
+    grid-column: 1 / -1;
+  }
+
+  /* Wide enough for side-by-side fields. min() clamps --md-span to the track
+     count, so a span left over from a 12-column layout can't overflow a
+     4-column one into implicit tracks. */
+  @container (width >= 30rem) {
+    .md-grid > * {
+      grid-column: span min(var(--md-span, 6), var(--md-grid-columns, 12));
+    }
+  }
+
+  /* The other shape: equal tracks that reflow by themselves, for cards and
+     tiles where the count doesn't matter. No spans here — with auto-fit the
+     track count is unknown, so `grid-column: 1 / -1` is the only span that
+     means anything, and it means "all of them". */
+  .md-grid-auto {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--md-grid-min, 16rem), 100%), 1fr));
+    gap: var(--md-grid-gap, 1rem);
+  }
+}

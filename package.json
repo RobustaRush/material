@@ -1,6 +1,6 @@
 {
   "name": "advanced-material-web",
-  "version": "26.28.1",
+  "version": "26.29.0",
   "description": "Material 3 web components built with Stencil — self-contained shadow-DOM styles, swappable theme via CSS custom properties, zero required stylesheet fetch.",
   "license": "AGPL-3.0-or-later",
   "repository": {
@@ -50,6 +50,8 @@
     },
     "./cdn": "./cdn/material.min.js",
     "./theme.css": "./css/theme.css",
+    "./tokens.css": "./css/tokens.css",
+    "./tailwind.css": "./css/tailwind.css",
     "./material.css": "./css/material.css",
     "./custom-elements.json": "./dist/custom-elements.json",
     "./html-data.json": "./dist/html-data.json",
@@ -97,6 +99,8 @@
     "loader/",
     "cdn/material.min.js",
     "css/theme.css",
+    "css/tokens.css",
+    "css/tailwind.css",
     "css/material.css",
     "adapters/react/dist/",
     "adapters/vue/dist/",
@@ -107,7 +111,7 @@
     "LICENSE_EXCEPTION"
   ],
   "scripts": {
-    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:material:pkg && npm run build:css && stencil build && npm run build:types && npm run check:svelte && npm run build:web-types && npm run build:cdn && npm run license:generated",
+    "build": "npm run build:theme && npm run build:theme:pkg && npm run build:tokens:pkg && npm run build:tailwind:pkg && npm run build:material:pkg && npm run build:css && stencil build && npm run build:types && npm run check:svelte && npm run build:web-types && npm run build:cdn && npm run license:generated",
     "build:all": "npm run build && npm run build:adapters",
     "build:adapters": "npm run build:adapters:react && npm run build:adapters:vue && npm run build:adapters:angular",
     "build:adapters:react": "tsc -p adapters/react/tsconfig.json",
@@ -121,6 +125,8 @@
     "build:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --minify",
     "build:theme": "tailwindcss -i ./src/theme/theme.css -o ./www/static/material/theme.css --minify",
     "build:theme:pkg": "tailwindcss -i ./src/theme/theme.css -o ./css/theme.css --minify",
+    "build:tokens:pkg": "tailwindcss -i ./src/theme/tokens.css -o ./css/tokens.css --minify",
+    "build:tailwind:pkg": "node scripts/build-tailwind-preset.mjs",
     "build:material:pkg": "node scripts/build-material-css.mjs",
     "build:cdn": "node scripts/build-cdn.mjs",
     "dev:css": "tailwindcss -i ./src/global/material.css -o ./www/static/material/material.css --watch",

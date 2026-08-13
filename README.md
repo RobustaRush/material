@@ -8,12 +8,13 @@ Material 3 web components built with [Stencil](https://stenciljs.com/). More tha
 themselves from CSS custom properties and run in any page, with or without a
 framework.
 
-Each component bundles its own CSS into its shadow root. The only stylesheet you
-load is a theme file of `--md-sys-color-*` tokens — with one exception:
-`material-data-table` and `material-breadcrumbs` enhance real light-DOM markup
-(a server-rendered `<table>`, a real `<nav>`) rather than a shadow root, so
-their styling ships as a second, optional stylesheet (`material.css`). There
-is no runtime stylesheet fetch and no build step for consumers.
+Each component bundles its own CSS into its shadow root, so the only stylesheet
+you need is a theme file of design tokens. A second, optional one
+(`material.css`) covers what lives outside a shadow root: the two components
+that enhance real server-rendered markup, plus the MD3 type scale and a form
+grid as plain classes for pages with no build step. There is no runtime
+stylesheet fetch, and Tailwind projects can pull the whole token set into their
+own build instead.
 
 ## Install
 
@@ -53,9 +54,10 @@ the Material Symbols font.
 - **The Material Symbols font** renders the `icon="..."` ligatures. Without it,
   icons show as their text names.
 
-Using `material-data-table` or `material-breadcrumbs`? Add
+Want the type scale and grid as ready-made classes, or using
+`material-data-table` / `material-breadcrumbs`? Add
 `advanced-material-web/material.css` next to `theme.css` — see
-[Light-DOM components](#light-dom-components).
+[Without Tailwind](#without-tailwind).
 
 ## Loading options
 
@@ -134,32 +136,126 @@ Boolean attributes follow HTML rules: present means true.
 
 ## Theming
 
-`theme.css` holds the tokens from
-[Material Theme Builder](https://material-foundation.github.io/material-theme-builder/),
-scoped to six classes: `light`, `dark`, and a medium- and high-contrast variant of
-each. Switch themes by changing the `<html>` class.
+`theme.css` is two halves in one file:
 
-To use your own palette, export a new set from the builder (Export → Web → CSS),
-replace the six files in `src/theme/`, and rebuild. Component code never changes,
-because every element reads the same `--md-sys-color-*` names. See
+| | Contents | Origin |
+|---|---|---|
+| **`tokens.css`** | type scale, motion, shape, elevation, focus ring | ours, from the M3 spec |
+| the palettes | `--md-sys-color-*`, six classes | [Material Theme Builder](https://material-foundation.github.io/material-theme-builder/) |
+
+The six classes are `light`, `dark`, and a medium- and high-contrast variant of
+each. Switch themes by changing the `<html>` class. Those class names are part of
+the public contract — `tailwind.css` keys its `dark:` variant off them.
+
+### Your own palette
+
+Build one at [Material Theme Builder](https://material-foundation.github.io/material-theme-builder/),
+Export → Web → CSS, then load `tokens.css` and your export **instead of**
+`theme.css`. No build step, nothing to rebuild:
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/advanced-material-web/css/tokens.css">
+<link rel="stylesheet" href="/static/my-theme.css">
+```
+
+Theme Builder exports colors and nothing else, which is why the split exists:
+dropping an export in place of the whole of `theme.css` would take the type
+scale, radii, shadows and motion curves with it. Component code never changes
+either way — every element reads the same `--md-sys-color-*` names. See
 [theming.md](skills/material-web/references/theming.md).
 
-## Light-DOM components
+## Tailwind
 
-`material-data-table` and `material-breadcrumbs` enhance real server-rendered
-markup — a `<table>`, a `<nav>` — instead of owning a shadow root, so their
-styling can't be bundled into a JS chunk the way every other component's is.
-It ships as `material.css`, loaded the same way as `theme.css`:
+Using Tailwind v4? Import the bridge and the utilities you already know are
+Material-flavoured — `bg-primary`, `text-on-surface`, `rounded-lg`, `shadow-md`,
+`ease-out` — with no new class names:
+
+```css
+@import "tailwindcss";
+@import "advanced-material-web/tailwind.css";
+```
+
+```html
+<div class="bg-surface-container text-on-surface rounded-lg shadow-md p-4">
+  <h2 class="text-headline-small">Material type scale</h2>
+</div>
+```
+
+It bridges the full MD3 token set into Tailwind's theme namespaces — colors
+(including the `*-fixed` pairs), the type scale both as `text-xs … text-6xl` and
+as MD3 roles (`text-body-large`, `text-display-small`), `--radius-*` from the
+corner tokens, `--shadow-*` from the elevation levels plus explicit
+`shadow-elevation-1 … 5`, and the easing and duration curves
+(`ease-emphasized-decelerate`, `duration-medium2`).
+
+Two things worth knowing:
+
+- Every value is a `var()` reference, so a palette swap needs no rebuild — the
+  utilities follow whatever theme class is on `<html>`.
+- `dark:` is repointed at that class instead of `prefers-color-scheme`, so
+  `dark:bg-surface` and the components can't disagree. Renamed the classes in
+  your own theme? Redeclare `@custom-variant dark` after the import.
+
+You still load `tokens.css` (or `theme.css`) in the page — the bridge only
+declares utilities, it doesn't carry token values.
+
+## Without Tailwind
+
+Not every page has a build step. `material.css` carries the class-based half of
+the design system for the ones that don't — the type scale and a form grid:
 
 ```html
 <link rel="stylesheet" href="https://unpkg.com/advanced-material-web/css/theme.css">
 <link rel="stylesheet" href="https://unpkg.com/advanced-material-web/css/material.css">
 ```
 
-Skip it and the rest of the library still works — only these two render
-unstyled. Any future component built the same server-first way (enhancing
-markup that has to exist without JS) joins this file rather than getting its
-own.
+**Type scale** — one class per MD3 role, same names as `@material/web`:
+
+```html
+<h1 class="md-typescale-display-small">Invoices</h1>
+<p class="md-typescale-body-medium">Body copy.</p>
+<span class="md-typescale-label-small">CAPTION</span>
+```
+
+**Form grid** — the usual problem: most fields share a row, the occasional long
+one takes the whole width, and nobody wants to count columns per breakpoint.
+
+```html
+<form class="md-grid">
+  <material-textfield label="First name" style="--md-span: 3"></material-textfield>
+  <material-textfield label="Last name"  style="--md-span: 3"></material-textfield>
+  <material-textfield label="Address"    style="--md-span: 12"></material-textfield>
+</form>
+```
+
+12 tracks by default; `--md-grid-columns` and `--md-grid-gap` change the
+container, `--md-span` changes one child. Sizing is a **container** query, not a
+media query — the same form stacks by itself inside a side sheet or a narrow
+column, with no viewport breakpoints and no per-context overrides. Below 30rem
+of container width every child takes its own row; above it each takes the span
+it asks for, clamped to the tracks that exist. `md-grid-auto` is the other
+shape: equal tracks that reflow on their own, sized by `--md-grid-min`, for
+tiles where the count doesn't matter.
+
+Both work the same in React (`style={{ '--md-span': 3 }}`) and Angular
+(`[style.--md-span]="3"`) — they're classes, so there is nothing to import and
+no wrapper component. Live examples:
+[layout](https://material.viewflow.io/docs/demos/layout.html) and
+[typography](https://material.viewflow.io/docs/demos/typography.html).
+
+Everything in the file sits in a cascade layer, so your own unlayered CSS
+overrides it without `!important`. On Tailwind? Skip all of this — `grid-cols-12`
+with `@container` does the same job, and `tailwind.css` above already
+Material-flavours it.
+
+### Light-DOM components
+
+The same file also styles the two components that enhance real server-rendered
+markup — `material-data-table` (a `<table>`) and `material-breadcrumbs` (a
+`<nav>`) — instead of owning a shadow root, so their CSS can't be bundled into a
+JS chunk the way every other component's is. Skip `material.css` and the rest of
+the library still works; only these two render unstyled. Any future component
+built the same server-first way joins this file rather than getting its own.
 
 ## Documentation
 
@@ -193,7 +289,7 @@ Watch rebuilds skip the framework wrapper codegen (`MATERIAL_WRAPPERS=0`).
 Build the package:
 
 ```sh
-npm run build       # theme.css + material.css + Stencil dist/ + hydrate/ + tooling JSON + CDN bundle
+npm run build       # the css/ stylesheets + Stencil dist/ + hydrate/ + tooling JSON + CDN bundle
 npm run build:all   # the above, then the four framework adapters under adapters/
 ```
 
@@ -212,6 +308,26 @@ showcase pages, plus the source `npm run build:material:pkg` reads to produce
 the published `css/material.css` (see [Light-DOM components](#light-dom-components)
 above). A component's own shadow-DOM styles never depend on it; only the two
 light-DOM components it `@import`s under `layer(components)` do.
+
+The four published stylesheets under `css/` come from `src/theme/` and
+`src/components/`, never from hand-editing `css/`:
+
+| Published | Built from | By |
+|---|---|---|
+| `theme.css` | `src/theme/theme.css` — `tokens.css` + the six palettes | `build:theme:pkg` |
+| `tokens.css` | `src/theme/tokens.css` — typography + system tokens | `build:tokens:pkg` |
+| `tailwind.css` | `src/theme/tailwind.css`, copied uncompiled | `build:tailwind:pkg` |
+| `material.css` | the `layer(components)` imports in `src/global/material.css` | `build:material:pkg` |
+
+`tailwind.css` is the odd one: it must reach consumers as source, since their
+Tailwind build is what turns its `@theme` directives into utilities. Nothing
+compiles it here, so `scripts/build-tailwind-preset.mjs` type-checks it by hand
+instead — it refuses to publish if the file grows an `@source`, switches to
+`@theme inline`, hardcodes a value instead of a `var()`, references a token that
+`src/theme/` doesn't define, or leaves an `--md-sys-color-*` without a matching
+`--color-*` utility. Any of those would fail silently in someone else's app.
+`src/global/material.css` imports the same file, so the demo pages exercise
+exactly what ships.
 
 ## License
 

@@ -134,9 +134,11 @@ const generatedFiles = () => [
   ...walk(join(root, 'adapters/vue/src'), WRAPPER_EXTS),
   ...walk(join(root, 'adapters/svelte/src'), WRAPPER_EXTS),
   ...walk(join(root, 'adapters/angular/src/lib'), WRAPPER_EXTS),
-  // Tailwind's CLI writes this one and has no banner option, so it is stamped
-  // after the fact. (css/material.css carries its own banner already.)
+  // Tailwind's CLI writes these two and has no banner option, so they are
+  // stamped after the fact. (css/material.css and css/tailwind.css are written
+  // by our own scripts and carry their banners already.)
   join(root, 'css/theme.css'),
+  join(root, 'css/tokens.css'),
 ].filter(existsSync);
 
 const main = () => {

@@ -104,7 +104,39 @@
       </div>
     </section>
 
-    <!-- 3. Sample usage -->
+    <!-- 3. The same scale without Tailwind -->
+    <section class="space-y-5">
+      <div class="space-y-1">
+        <h2 class="text-headline-small font-medium">Without a Tailwind build</h2>
+        <p class="text-on-surface-variant text-sm max-w-3xl">
+          Everything above needs your own Tailwind build to generate it. Pages loaded from a CDN, or
+          rendered by Django or Rails, get the same scale as ready-made classes from
+          <code>material.css</code> — <code>md-typescale-body-large</code> and friends, one per role.
+          The rows below use those classes, not utilities.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-[max-content_1fr] gap-x-8 gap-y-3 items-baseline">
+        <code class="text-body-small text-on-surface-variant whitespace-nowrap">md-typescale-headline-small</code>
+        <p class="md-typescale-headline-small">Aa Material headline</p>
+
+        <code class="text-body-small text-on-surface-variant whitespace-nowrap">md-typescale-title-medium</code>
+        <p class="md-typescale-title-medium">Material title text</p>
+
+        <code class="text-body-small text-on-surface-variant whitespace-nowrap">md-typescale-body-medium</code>
+        <p class="md-typescale-body-medium">Body copy — the quick brown fox jumps over the lazy dog.</p>
+
+        <code class="text-body-small text-on-surface-variant whitespace-nowrap">md-typescale-label-small</code>
+        <p class="md-typescale-label-small uppercase">Caption</p>
+      </div>
+
+      <p class="text-on-surface-variant text-sm max-w-3xl">
+        They read the same tokens, so the font picker above moves them too — and they sit in a cascade
+        layer, so any unlayered CSS on the page overrides them without <code>!important</code>.
+      </p>
+    </section>
+
+    <!-- 4. Sample usage -->
     <details class="rounded-lg bg-surface-container-low border border-outline-variant">
       <summary class="cursor-pointer px-4 py-3 text-sm font-medium">Sample usage</summary>
 <pre class="px-4 pb-4 text-sm overflow-x-auto"><code>&lt;!-- Named MD3 utilities --&gt;
@@ -117,6 +149,10 @@
 &lt;p class="text-sm"&gt;14/20, tracking 0.25 (body-medium)&lt;/p&gt;
 &lt;p class="text-base"&gt;16/24, tracking 0.5 (body-large)&lt;/p&gt;
 &lt;p class="text-2xl"&gt;28/36 (headline-medium)&lt;/p&gt;
+
+&lt;!-- No Tailwind? Same scale, ready-made classes from material.css --&gt;
+&lt;h1 class="md-typescale-display-large"&gt;Hero headline&lt;/h1&gt;
+&lt;p  class="md-typescale-body-medium"&gt;Body copy&lt;/p&gt;
 
 &lt;!-- Re-skin globally — swap one var on :root --&gt;
 &lt;style&gt;
