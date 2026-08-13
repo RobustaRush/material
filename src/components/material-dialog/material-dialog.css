@@ -228,6 +228,20 @@
   /* Scroll long content within the body only, so the headline and actions
      stay pinned while the dialog itself is capped at max-height above. */
   overflow-y: auto;
+  /* A scroll container clips at its padding box, and an outlined field's
+     floated label is painted half a line above its own box — a text field as
+     the first thing in the body loses the top of its label. Reserve that
+     overhang here; the rule below takes the same amount back out of the flex
+     gap, so nothing moves. */
+  padding-top: 0.5rem;
+}
+
+/* Only when something sits above the body is there a gap to borrow from. With
+   no icon and no headline the body is the first box, and the reserved space
+   simply adds to the dialog's own padding rather than eating into it. */
+.dlg--basic:has(.dlg__icon:not([hidden])) .dlg__body,
+.dlg--basic:has(.dlg__headline:not([hidden])) .dlg__body {
+  margin-top: -0.5rem;
 }
 
 .dlg--basic .dlg__actions {
