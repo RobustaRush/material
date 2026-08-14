@@ -78,8 +78,12 @@ export function installRipple(root: ShadowRoot | HTMLElement): RippleHandle {
   // Prefer a direct child; fall back to a descendant so the wave can clip to
   // an inner visual box smaller than the control (e.g. icon-button's visual
   // circle inside its 48dp touch box).
-  const surfaceOf = (c: HTMLElement): HTMLElement | null =>
-    c.querySelector(':scope > .md-ripple') ?? c.querySelector('.md-ripple');
+  const surfaceOf = (c: HTMLElement): HTMLElement | null => {
+    const direct = Array.from(c.children).find((child) =>
+      child.classList.contains('md-ripple'),
+    ) as HTMLElement | undefined;
+    return direct ?? c.querySelector('.md-ripple');
+  };
 
   const shouldReact = (e: PointerEvent): boolean => {
     if (forcedColors?.matches || !e.isPrimary) return false;

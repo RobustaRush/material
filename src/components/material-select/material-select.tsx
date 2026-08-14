@@ -119,10 +119,9 @@ export class MaterialSelect {
   private shellEl?: HTMLElement;
   private chevronEl?: HTMLElement;
   // Which option to focus once the menu finishes opening. Set by Home/End/
-  // ArrowUp on the closed trigger; cleared back to "focus the selection"
-  // otherwise. 'selected-or-last' (ArrowUp) falls back to the last option
-  // when nothing is selected yet, unlike ArrowDown/Enter/Space which land on
-  // nothing rather than guess a direction.
+  // ArrowDown/ArrowUp on the closed trigger; cleared back to "focus the
+  // selection" otherwise. 'selected-or-last' (ArrowUp) falls back to the last
+  // option when nothing is selected yet.
   private pendingOpenFocus: 'first' | 'last' | 'selected-or-last' | null = null;
 
   // Closed-select typeahead: commits inline (single) or opens + focuses the
@@ -157,15 +156,25 @@ export class MaterialSelect {
   });
 
   componentWillLoad() {
-    this.defaultValue = this.value;
-    // If `values` was supplied directly, capture it; otherwise derive from CSV.
+    // Seed initial state from declarative selected options when no explicit
+    // value/values were supplied. This matches native <select> SSR behavior.
+    const marked = this.selectedOptionValues();
     if (this.multiple) {
       if (!this.values?.length && this.value) {
         this.values = this.value.split(VALUE_SEP).filter(Boolean);
+      } else if (!this.values?.length && marked.length) {
+        this.values = marked;
       }
-      this.defaultValues = [...(this.values ?? [])];
       this.value = this.values.join(VALUE_SEP);
+      this.defaultValues = [...(this.values ?? [])];
+      this.defaultValue = this.value;
+      return;
     }
+
+    if (!this.value && marked.length) {
+      this.value = marked[0];
+    }
+    this.defaultValue = this.value;
   }
 
   connectedCallback() {
@@ -382,6 +391,12 @@ export class MaterialSelect {
   private getOptions(includeDisabled = false): MaterialOptionLike[] {
     const sel = includeDisabled ? 'material-option' : 'material-option:not([disabled])';
     return Array.from(this.el.querySelectorAll<HTMLElement>(sel)) as MaterialOptionLike[];
+  }
+
+  private selectedOptionValues(): string[] {
+    return this.getOptions(true)
+      .filter(o => o.selected || o.hasAttribute('selected'))
+      .map(o => o.value ?? o.getAttribute('value') ?? '');
   }
 
   private optionLabel(o: MaterialOptionLike): string {
@@ -668,6 +683,7 @@ export class MaterialSelect {
       this.pendingOpenFocus =
         e.key === 'Home' ? 'first' :
         e.key === 'End' ? 'last' :
+        e.key === 'ArrowDown' ? 'first' :
         e.key === 'ArrowUp' ? 'selected-or-last' :
         null;
       this.openMenu();

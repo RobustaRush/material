@@ -173,7 +173,9 @@ export class MaterialJsonField {
   }
 
   formResetCallback() {
-    this.parse(this.el.getAttribute('value') || '{}');
+    const resetValue = this.el.getAttribute('value') || '{}';
+    this.value = resetValue;
+    this.parse(resetValue);
     this.collapsed.clear();
     this.syncForm();
     this.rev++;

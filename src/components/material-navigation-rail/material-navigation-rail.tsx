@@ -109,6 +109,7 @@ export class MaterialNavigationRail {
   private mql?: MediaQueryList;
   private mqlHandler?: (e: MediaQueryListEvent) => void;
   private pendingToggleFocus = false;
+  private menuEls = new Set<Element>();
 
   componentWillLoad() {
     this.setupMqlIfNeeded();
@@ -121,6 +122,7 @@ export class MaterialNavigationRail {
 
   disconnectedCallback() {
     this.teardownMql();
+    this.clearMenuListeners();
     if (this.dialogEl) {
       this.dialogEl.removeEventListener('close', this.handleDialogClose);
       this.dialogEl.removeEventListener('click', this.handleDialogClick);
@@ -260,7 +262,27 @@ export class MaterialNavigationRail {
   }
 
   private detectMenuSlot() {
-    this.hasMenuSlot = !!this.el.querySelector(':scope > [slot="menu"]');
+    const next = new Set(
+      Array.from(this.el.children).filter((child) => child.getAttribute('slot') === 'menu'),
+    );
+
+    this.menuEls.forEach((el) => {
+      if (!next.has(el)) {
+        el.removeEventListener('click', this.handleMenuClick);
+      }
+    });
+    next.forEach((el) => {
+      if (!this.menuEls.has(el)) {
+        el.addEventListener('click', this.handleMenuClick);
+      }
+    });
+    this.menuEls = next;
+    this.hasMenuSlot = next.size > 0;
+  }
+
+  private clearMenuListeners() {
+    this.menuEls.forEach((el) => el.removeEventListener('click', this.handleMenuClick));
+    this.menuEls.clear();
   }
 
   private handleSlotChange = () => this.syncItems();
@@ -354,7 +376,7 @@ export class MaterialNavigationRail {
   // meaning to "collapse" when the rail is open).
   private renderHeader(expandedLayout: boolean) {
     const menuSlot = (
-      <div onClick={this.handleMenuClick} class="menu-wrapper">
+      <div class="menu-wrapper">
         <slot name="menu" onSlotchange={this.handleMenuSlotChange} />
       </div>
     );

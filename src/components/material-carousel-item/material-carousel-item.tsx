@@ -10,7 +10,7 @@
  * A commercial licence without copyleft: https://viewflow.io/pro.html
  */
 
-import { Component, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Host, Prop, State, h } from '@stencil/core';
 
 export type MaterialCarouselItemAspect = '16:9' | '9:16' | '1:1' | '3:4';
 
@@ -24,6 +24,8 @@ export type MaterialCarouselItemAspect = '16:9' | '9:16' | '1:1' | '3:4';
   shadow: { delegatesFocus: true },
 })
 export class MaterialCarouselItem {
+  @Element() el!: HTMLElement;
+
   @Prop({ reflect: true }) aspect?: MaterialCarouselItemAspect;
   @Prop() href?: string;
   @Prop() target?: '_self' | '_blank' | '_parent' | '_top';
@@ -36,11 +38,12 @@ export class MaterialCarouselItem {
 
   private onTextSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement;
-    this.hasText = slot.assignedNodes({ flatten: true }).some(
+    const hasAssignedText = slot.assignedNodes({ flatten: true }).some(
       (n) =>
         n.nodeType === Node.ELEMENT_NODE ||
         (n.nodeType === Node.TEXT_NODE && (n.textContent ?? '').trim() !== ''),
     );
+    this.hasText = hasAssignedText || this.hasProjectedText();
   };
 
   private onBlockedClick = (e: MouseEvent) => {
@@ -48,15 +51,24 @@ export class MaterialCarouselItem {
     e.stopPropagation();
   };
 
+  private hasProjectedText(): boolean {
+    return Array.from(this.el.childNodes).some((node) => {
+      if (node.nodeType !== Node.ELEMENT_NODE) return false;
+      const slot = (node as Element).getAttribute('slot');
+      return slot === 'headline' || slot === 'supporting';
+    });
+  }
+
   render() {
     const isLink = !!this.href;
     const isButton = !isLink && this.clickable;
     const rel = this.rel ?? (this.target === '_blank' ? 'noopener noreferrer' : undefined);
+    const hasText = this.hasText || this.hasProjectedText();
 
     const inner = [
       <slot name="media" />,
       <slot />,
-      <div part="text" hidden={!this.hasText}>
+      <div part="text" hidden={!hasText}>
         <slot name="headline" onSlotchange={this.onTextSlotChange} />
         <slot name="supporting" onSlotchange={this.onTextSlotChange} />
       </div>,

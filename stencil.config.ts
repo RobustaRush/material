@@ -10,11 +10,15 @@
  * A commercial licence without copyleft: https://viewflow.io/pro.html
  */
 
+import { existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Config } from '@stencil/core';
 import { angularOutputTarget } from '@stencil/angular-output-target';
+import { Browser, Cache, computeExecutablePath } from '@puppeteer/browsers';
 import { reactOutputTarget } from '@stencil/react-output-target';
 import { vueOutputTarget } from '@stencil/vue-output-target';
+import puppeteer from 'puppeteer';
 // Local: @stencil/svelte-output-target is 0.0.3 and targets the Svelte 3/4
 // compiler API, which Svelte 5 rejects. See the file header.
 import { svelteOutputTarget } from './scripts/svelte-output-target.mjs';
@@ -22,6 +26,52 @@ import { svelteOutputTarget } from './scripts/svelte-output-target.mjs';
 const PKG = 'advanced-material-web';
 const CUSTOM_ELEMENTS_DIR = 'dist/components';
 const HYDRATE_MODULE = `${PKG}/hydrate`;
+const CHROME_TEST_PROFILE_DIR = join(tmpdir(), `material-stencil-chrome-${process.pid}`);
+
+const compareBuildIds = (left: string, right: string) =>
+  left.localeCompare(right, undefined, { numeric: true, sensitivity: 'base' });
+
+const getChromeHeadlessShellPath = () => {
+  const runtime = puppeteer as typeof puppeteer & {
+    browserRevision?: string;
+    defaultDownloadPath?: string;
+  };
+  const { browserRevision, defaultDownloadPath } = runtime;
+
+  if (defaultDownloadPath) {
+    const installedShell = new Cache(defaultDownloadPath)
+      .getInstalledBrowsers()
+      .filter((browser) => browser.browser === Browser.CHROMEHEADLESSSHELL && existsSync(browser.executablePath))
+      .sort((left, right) => compareBuildIds(right.buildId, left.buildId))[0];
+
+    if (installedShell) {
+      return installedShell.executablePath;
+    }
+  }
+
+  if (browserRevision && defaultDownloadPath) {
+    const executablePath = computeExecutablePath({
+      browser: Browser.CHROMEHEADLESSSHELL,
+      buildId: browserRevision,
+      cacheDir: defaultDownloadPath,
+    });
+
+    if (existsSync(executablePath)) {
+      return executablePath;
+    }
+  }
+
+  return puppeteer.executablePath();
+};
+
+// Stencil 4's e2e runner falls back to `puppeteer.executablePath('chrome')`
+// when `headless: 'shell'` is active, which launches the system Chrome on macOS.
+// Puppeteer 21 also resolves its full `.app` browser for Stencil's string
+// `shell` mode; point it at Puppeteer's headless-shell binary unless the caller
+// opts into a different browser explicitly.
+if (!process.env.PUPPETEER_EXECUTABLE_PATH && !process.env.CHROME_PATH) {
+  process.env.PUPPETEER_EXECUTABLE_PATH = getChromeHeadlessShellPath();
+}
 
 /**
  * Components whose `valueChange` detail carries a single `value` — the set that
@@ -155,7 +205,16 @@ export const config: Config = {
     ...(wrappers ? frameworkTargets : []),
   ],
   testing: {
-    browserHeadless: 'new',
+    browserHeadless: 'shell',
+    browserArgs: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-crash-reporter',
+      '--disable-crashpad',
+      `--user-data-dir=${CHROME_TEST_PROFILE_DIR}`,
+      `--disk-cache-dir=${join(CHROME_TEST_PROFILE_DIR, 'cache')}`,
+    ],
     // @angular/* ships ESM-only (`fesm2022/*.mjs`, no CJS build). Jest's
     // default transformIgnorePatterns skips all of node_modules, so without
     // this carve-out any spec that imports the real `@angular/core`/`forms`

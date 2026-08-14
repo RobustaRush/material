@@ -176,11 +176,14 @@ export class MaterialCalendar {
     this.el.removeEventListener('focusout', this.handleFocusOut);
   }
 
-  private handleFocusOut = (e: FocusEvent) => {
-    const next = e.relatedTarget as Node | null;
-    // Focus moved within the calendar (e.g. day → header) — keep state.
-    if (next && this.el.contains(next)) return;
-    if (this.focusedDate) this.focusedDate = '';
+  private handleFocusOut = () => {
+    requestAnimationFrame(() => {
+      const sr = this.el.shadowRoot;
+      const shadowActive = sr?.activeElement;
+      // Focus moved within the calendar (e.g. day → header) — keep state.
+      if ((shadowActive && sr?.contains(shadowActive)) || this.el.contains(document.activeElement)) return;
+      if (this.focusedDate) this.focusedDate = '';
+    });
   };
 
   private handlePointerDown = () => {
