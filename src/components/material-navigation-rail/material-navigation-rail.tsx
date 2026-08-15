@@ -291,8 +291,8 @@ export class MaterialNavigationRail {
   // Slotted children in `menu` toggle the rail by default — that's the menu
   // button's whole purpose per MD3. Opt out with `data-no-rail-toggle` on the
   // slotted element if you want to drive `expanded` yourself.
-  private handleMenuClick = (e: MouseEvent) => {
-    const target = e.target as HTMLElement | null;
+  private handleMenuClick: EventListener = (event) => {
+    const target = event.target as HTMLElement | null;
     if (target?.closest('[data-no-rail-toggle]')) return;
     this.expanded = !this.expanded;
   };

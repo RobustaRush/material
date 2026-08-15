@@ -121,7 +121,7 @@ describe('material-calendar', () => {
       html: `<material-calendar locale="en-US" first-day-of-week="0" display-month="2024-06"></material-calendar>`,
     });
     const dateSelect = jest.fn();
-    page.root!.addEventListener('dateSelect', (e: CustomEvent) => dateSelect(e.detail));
+    page.root!.addEventListener('dateSelect', (event) => dateSelect((event as CustomEvent).detail));
     const btn = page.root!.shadowRoot!.querySelector('button[data-iso="2024-06-15"]') as HTMLButtonElement;
     btn.click();
     await page.waitForChanges();
@@ -135,7 +135,7 @@ describe('material-calendar', () => {
       html: `<material-calendar locale="en-US" first-day-of-week="0" display-month="2024-06" min="2024-06-10"></material-calendar>`,
     });
     const dateSelect = jest.fn();
-    page.root!.addEventListener('dateSelect', (e: CustomEvent) => dateSelect(e.detail));
+    page.root!.addEventListener('dateSelect', (event) => dateSelect((event as CustomEvent).detail));
     const btn = page.root!.shadowRoot!.querySelector('button[data-iso="2024-06-05"]') as HTMLButtonElement;
     expect(btn.hasAttribute('disabled')).toBe(true);
     page.rootInstance.selectDate?.('2024-06-05');
@@ -149,7 +149,7 @@ describe('material-calendar', () => {
       html: `<material-calendar locale="en-US" first-day-of-week="0" display-month="2024-06" range></material-calendar>`,
     });
     const rangeSelect = jest.fn();
-    page.root!.addEventListener('rangeSelect', (e: CustomEvent) => rangeSelect(e.detail));
+    page.root!.addEventListener('rangeSelect', (event) => rangeSelect((event as CustomEvent).detail));
 
     const click = (iso: string) => {
       (page.root!.shadowRoot!.querySelector(`button[data-iso="${iso}"]`) as HTMLButtonElement).click();
@@ -191,7 +191,7 @@ describe('material-calendar', () => {
       html: `<material-calendar locale="en-US" display-month="2024-06"></material-calendar>`,
     });
     const displayMonthChange = jest.fn();
-    page.root!.addEventListener('displayMonthChange', (e: CustomEvent) => displayMonthChange(e.detail));
+    page.root!.addEventListener('displayMonthChange', (event) => displayMonthChange((event as CustomEvent).detail));
     const sr = page.root!.shadowRoot!;
     (sr.querySelectorAll('.cal__title-btn')[0] as HTMLButtonElement).click();
     await page.waitForChanges();
@@ -231,7 +231,7 @@ describe('material-calendar', () => {
       html: `<material-calendar locale="en-US" display-month="2024-06"></material-calendar>`,
     });
     const displayMonthChange = jest.fn();
-    page.root!.addEventListener('displayMonthChange', (e: CustomEvent) => displayMonthChange(e.detail));
+    page.root!.addEventListener('displayMonthChange', (event) => displayMonthChange((event as CustomEvent).detail));
     const sr = page.root!.shadowRoot!;
     const [prevBtn, nextBtn] = Array.from(sr.querySelectorAll('material-icon-button'));
 

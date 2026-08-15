@@ -21,7 +21,7 @@ import { newE2EPage } from '@stencil/core/testing';
 const clickSearchRow = (page: any, index: number) =>
   page.evaluate((rowIndex: number) => {
     const host = document.querySelector('material-search');
-    const row = host?.shadowRoot?.querySelectorAll<HTMLElement>('.row')[rowIndex];
+    const row = host?.shadowRoot?.querySelectorAll('.row')[rowIndex] as HTMLElement | undefined;
     if (!row) throw new Error(`Missing search row ${rowIndex}`);
     row.click();
   }, index);
@@ -29,7 +29,7 @@ const clickSearchRow = (page: any, index: number) =>
 const pressSearchKey = (page: any, key: string) =>
   page.evaluate((keyName: string) => {
     const host = document.querySelector('material-search');
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input');
+    const input = host?.shadowRoot?.querySelector('input') as HTMLInputElement | null;
     if (!input) throw new Error('Missing search input');
     input.dispatchEvent(new FocusEvent('focus'));
     input.dispatchEvent(new KeyboardEvent('keydown', {
@@ -43,7 +43,7 @@ const pressSearchKey = (page: any, key: string) =>
 const pressSearchKeys = (page: any, keys: string[]) =>
   page.evaluate((keyNames: string[]) => {
     const host = document.querySelector('material-search');
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input');
+    const input = host?.shadowRoot?.querySelector('input') as HTMLInputElement | null;
     if (!input) throw new Error('Missing search input');
     input.dispatchEvent(new FocusEvent('focus'));
     for (const keyName of keyNames) {

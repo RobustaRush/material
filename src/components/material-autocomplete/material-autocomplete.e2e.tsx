@@ -27,8 +27,8 @@ const settle = (page: any, ms = 60) => page.evaluate((t: number) => new Promise(
 const clickAutocompleteInput = (page: any) =>
   page.evaluate(() => {
     const host = document.querySelector('material-autocomplete');
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input.query');
-    const surface = host?.shadowRoot?.querySelector<HTMLElement>('.surface');
+    const input = host?.shadowRoot?.querySelector('input.query') as HTMLInputElement | null;
+    const surface = host?.shadowRoot?.querySelector('.surface') as HTMLElement | null;
     if (!input) throw new Error('Missing autocomplete input');
     if (!surface) throw new Error('Missing autocomplete surface');
     input.focus();
@@ -38,7 +38,7 @@ const clickAutocompleteInput = (page: any) =>
 const clickAutocompleteRow = (page: any, index: number) =>
   page.evaluate((rowIndex: number) => {
     const host = document.querySelector('material-autocomplete');
-    const row = host?.shadowRoot?.querySelectorAll<HTMLElement>('.row')[rowIndex];
+    const row = host?.shadowRoot?.querySelectorAll('.row')[rowIndex] as HTMLElement | undefined;
     if (!row) throw new Error(`Missing autocomplete row ${rowIndex}`);
     row.click();
   }, index);
@@ -46,7 +46,7 @@ const clickAutocompleteRow = (page: any, index: number) =>
 const pressAutocompleteKey = (page: any, key: string) =>
   page.evaluate((keyName: string) => {
     const host = document.querySelector('material-autocomplete');
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input.query');
+    const input = host?.shadowRoot?.querySelector('input.query') as HTMLInputElement | null;
     if (!input) throw new Error('Missing autocomplete input');
     input.focus();
     input.dispatchEvent(new KeyboardEvent('keydown', {
@@ -60,7 +60,7 @@ const pressAutocompleteKey = (page: any, key: string) =>
 const pressAutocompleteKeys = (page: any, keys: string[]) =>
   page.evaluate((keyNames: string[]) => {
     const host = document.querySelector('material-autocomplete') as any;
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input.query');
+    const input = host?.shadowRoot?.querySelector('input.query') as HTMLInputElement | null;
     if (!host || !input) throw new Error('Missing autocomplete input');
     for (const keyName of keyNames) {
       input.dispatchEvent(new KeyboardEvent('keydown', {
@@ -76,7 +76,7 @@ const pressAutocompleteKeys = (page: any, keys: string[]) =>
 const setAutocompleteQuery = (page: any, value: string) =>
   page.evaluate((text: string) => {
     const host = document.querySelector('material-autocomplete');
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input.query');
+    const input = host?.shadowRoot?.querySelector('input.query') as HTMLInputElement | null;
     if (!input) throw new Error('Missing autocomplete input');
     input.focus();
     input.value = text;
@@ -86,8 +86,8 @@ const setAutocompleteQuery = (page: any, value: string) =>
 const openAndPressAutocompleteKey = (page: any, key: string) =>
   page.evaluate((keyName: string) => {
     const host = document.querySelector('material-autocomplete') as any;
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input.query');
-    const surface = host?.shadowRoot?.querySelector<HTMLElement>('.surface');
+    const input = host?.shadowRoot?.querySelector('input.query') as HTMLInputElement | null;
+    const surface = host?.shadowRoot?.querySelector('.surface') as HTMLElement | null;
     if (!host || !input) throw new Error('Missing autocomplete input');
     if (!surface) throw new Error('Missing autocomplete surface');
     input.focus();
@@ -104,13 +104,13 @@ const openAndPressAutocompleteKey = (page: any, key: string) =>
 const openAndClickAutocompleteRow = (page: any, index: number) =>
   page.evaluate((rowIndex: number) => {
     const host = document.querySelector('material-autocomplete') as any;
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input.query');
-    const surface = host?.shadowRoot?.querySelector<HTMLElement>('.surface');
+    const input = host?.shadowRoot?.querySelector('input.query') as HTMLInputElement | null;
+    const surface = host?.shadowRoot?.querySelector('.surface') as HTMLElement | null;
     if (!host || !input) throw new Error('Missing autocomplete input');
     if (!surface) throw new Error('Missing autocomplete surface');
     input.focus();
     surface.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true, cancelable: true }));
-    const row = host.shadowRoot?.querySelectorAll<HTMLElement>('.row')[rowIndex];
+    const row = host.shadowRoot?.querySelectorAll('.row')[rowIndex] as HTMLElement | undefined;
     if (!row) throw new Error(`Missing autocomplete row ${rowIndex}`);
     row.click();
     return { open: host.open, value: host.value, values: [...host.values] };
@@ -119,8 +119,8 @@ const openAndClickAutocompleteRow = (page: any, index: number) =>
 const setAutocompleteQueryAndPressKey = (page: any, value: string, key: string) =>
   page.evaluate(({ text, keyName }: { text: string; keyName: string }) => {
     const host = document.querySelector('material-autocomplete') as any;
-    const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input.query');
-    const surface = host?.shadowRoot?.querySelector<HTMLElement>('.surface');
+    const input = host?.shadowRoot?.querySelector('input.query') as HTMLInputElement | null;
+    const surface = host?.shadowRoot?.querySelector('.surface') as HTMLElement | null;
     if (!host || !input) throw new Error('Missing autocomplete input');
     if (!surface) throw new Error('Missing autocomplete surface');
     input.focus();
@@ -204,7 +204,6 @@ describe('material-autocomplete', () => {
       </material-autocomplete>
     `);
     const searchSpy = await page.spyOnEvent('materialSearch');
-    let input = await page.find('material-autocomplete >>> input.query');
 
     await clickAutocompleteInput(page);
     await page.waitForChanges();
@@ -347,7 +346,6 @@ describe('material-autocomplete', () => {
     const page = await newE2EPage();
     await page.setContent(`<material-autocomplete label="Pick"></material-autocomplete>`);
     const el = await page.find('material-autocomplete');
-    const input = await page.find('material-autocomplete >>> input.query');
 
     el.setProperty('options', [
       { value: 'a', label: 'Alpha' },

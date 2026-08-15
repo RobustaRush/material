@@ -114,7 +114,7 @@ describe('material-navigation-bar', () => {
     await page.waitForChanges();
     const bogus = page.doc.createElement('div');
     page.root!.appendChild(bogus);
-    bogus.dispatchEvent(new page.win.CustomEvent('materialSelect', { bubbles: true, composed: true }));
+    bogus.dispatchEvent(new CustomEvent('materialSelect', { bubbles: true, composed: true }));
     await page.waitForChanges();
     const a = page.root!.querySelector('material-navigation-item') as any;
     expect(a.active).toBe(true);

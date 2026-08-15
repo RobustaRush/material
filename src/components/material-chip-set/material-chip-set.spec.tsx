@@ -104,7 +104,7 @@ describe('material-chip-set', () => {
         </material-chip-set>
       `,
     });
-    const [a, , c] = Array.from(page.root!.querySelectorAll('material-chip')) as Array<
+    const [a, , c] = Array.from(page.root!.querySelectorAll('material-chip')) as unknown as Array<
       HTMLElement & { setFocus: jest.Mock; tabbable: boolean }
     >;
     a.setFocus = jest.fn();
