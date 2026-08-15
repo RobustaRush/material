@@ -55,7 +55,7 @@ export class MaterialFileField {
   @Prop() currentName?: string;
   @Prop() accept?: string;
   @Prop() multiple = false;
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop({ reflect: true }) required = false;
   @Prop() label?: string;
   @Prop() helpText?: string;

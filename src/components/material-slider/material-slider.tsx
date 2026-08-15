@@ -57,7 +57,7 @@ export class MaterialSlider {
   @Prop() valueFormatter?: (n: number) => string;
   @Prop({ reflect: true, attribute: 'tick-labels' }) tickLabels = false;
 
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop({ reflect: true }) readonly = false;
   @Prop({ reflect: true }) required = false;
 

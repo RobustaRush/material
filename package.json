@@ -21,6 +21,8 @@
     "node": ">=16.0.0"
   },
   "type": "module",
+  "main": "dist/index.cjs.js",
+  "collection": "dist/collection/collection-manifest.json",
   "module": "dist/index.js",
   "es2017": "dist/esm/index.js",
   "types": "dist/types/components.d.ts",
@@ -86,14 +88,16 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "dist/",
     "dist/components/",
+    "dist/collection/",
     "dist/esm/",
     "dist/material/",
     "dist/types/",
     "dist/index.js",
     "dist/custom-elements.json",
     "dist/html-data.json",
-    "dist/web-types.json",
+    "dist/web-types.*",
     "dist/docs.json",
     "hydrate/",
     "loader/",

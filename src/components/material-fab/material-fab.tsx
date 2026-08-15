@@ -42,7 +42,7 @@ export class MaterialFab {
    *  extended — the reference always uses the base (small) height/shape.
    *  Setting/clearing it at runtime animates the width and label fade. */
   @Prop() label?: string;
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop() type: MaterialFabType = 'button';
   /** Native `<button form="id">` parity: submit or reset the form with that
    *  id instead of the enclosing one — the dialog layout, where the button

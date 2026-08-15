@@ -41,7 +41,7 @@ export class MaterialSplitButton {
 
   @Prop({ reflect: true }) variant: MaterialSplitButtonVariant = 'filled';
   @Prop({ reflect: true }) size: MaterialSplitButtonSize = 's';
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop() label?: string;
   @Prop() icon?: string;
   /** Native `<button>` parity: defaults to `submit` (like a plain `<button>`

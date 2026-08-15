@@ -49,7 +49,7 @@ export class MaterialCheckbox {
 
   @Prop({ mutable: true, reflect: true }) checked = false;
   @Prop({ mutable: true, reflect: true }) indeterminate = false;
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop({ reflect: true }) required = false;
   @Prop() name?: string;
   @Prop() value = 'on';

@@ -258,7 +258,7 @@ describe('material-chip', () => {
 
   it('a slotted avatar renders inside a dedicated wrapper', async () => {
     const page = await newE2EPage();
-    await page.setContent(`<material-chip label="Ada"><img slot="avatar" src="a.png" /></material-chip>`);
+    await page.setContent(`<material-chip label="Ada"><img slot="avatar" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" /></material-chip>`);
     const avatarWrapper = await page.find('material-chip >>> .avatar');
     expect(avatarWrapper).not.toBeNull();
   });

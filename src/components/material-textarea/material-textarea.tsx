@@ -46,7 +46,7 @@ export class MaterialTextarea {
   @Prop() name?: string;
   @Prop({ mutable: true }) value = '';
   @Prop() placeholder?: string;
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop({ reflect: true }) required = false;
   @Prop({ reflect: true, attribute: 'readonly' }) readOnly = false;
   @Prop() helpText?: string;

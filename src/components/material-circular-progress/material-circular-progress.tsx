@@ -63,11 +63,14 @@ export class MaterialCircularProgress {
   private prefersReducedMotion = false;
   private mql?: MediaQueryList;
 
+  componentWillLoad() {
+    this.recomputePaths(performance.now());
+  }
+
   componentDidLoad() {
     this.mql = window.matchMedia('(prefers-reduced-motion: reduce)');
     this.prefersReducedMotion = this.mql.matches;
     this.mql.addEventListener('change', this.handleReducedMotion);
-    this.recomputePaths(performance.now());
     this.startLoop();
   }
 

@@ -87,7 +87,7 @@ describe('material-command-palette', () => {
       components: [MaterialCommandPalette],
       html: `<material-command-palette empty-label="Nothing found"></material-command-palette>`,
     });
-    page.rootInstance.commands = [
+    page.root!.commands = [
       { id: 'new-order', label: 'New order', keywords: 'purchase create', section: 'Actions' },
       { id: 'vendors', label: 'Vendors', keywords: 'suppliers', section: 'Go to' },
     ];
@@ -127,7 +127,7 @@ describe('material-command-palette', () => {
       html: `<material-command-palette></material-command-palette>`,
     });
     stubDialog(page.root!);
-    page.rootInstance.commands = [{ id: 'new-order', label: 'New order' }];
+    page.root!.commands = [{ id: 'new-order', label: 'New order' }];
     await page.rootInstance.show();
     await page.waitForChanges();
 

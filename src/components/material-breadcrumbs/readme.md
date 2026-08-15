@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property    | Attribute    | Description | Type                  | Default     |
-| ----------- | ------------ | ----------- | --------------------- | ----------- |
-| `ariaLabel` | `aria-label` |             | `string \| undefined` | `undefined` |
+| Property          | Attribute          | Description | Type                  | Default     |
+| ----------------- | ------------------ | ----------- | --------------------- | ----------- |
+| `navigationLabel` | `navigation-label` |             | `string \| undefined` | `undefined` |
 
 
 ----------------------------------------------

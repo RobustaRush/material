@@ -98,7 +98,7 @@ describe('material-calendar', () => {
       .map((n) => n.textContent);
     const sunNames = weekdayNames();
 
-    page.rootInstance.firstDayOfWeek = 1;
+    page.root!.firstDayOfWeek = 1;
     await page.waitForChanges();
     const monNames = weekdayNames();
 

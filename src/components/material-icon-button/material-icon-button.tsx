@@ -48,7 +48,7 @@ export class MaterialIconButton {
   @Prop() selectedIcon?: string;
   @Prop({ reflect: true }) toggle = false;
   @Prop({ mutable: true, reflect: true }) selected = false;
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   /** Disabled but still focusable/reachable by keyboard and AT, per
    *  https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_disabled_controls.
    *  Visually identical to `disabled`; the click handler blocks activation

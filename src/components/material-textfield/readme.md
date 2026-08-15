@@ -52,13 +52,9 @@ Type: `Promise<boolean>`
 
 
 
-### `focus() => Promise<void>`
+### `focusInput() => Promise<void>`
 
-Focuses the inner input. `delegatesFocus` on its own would send a
-programmatic `host.focus()` to the shadow root's first focusable
-element, which can be a slotted leading/trailing icon-button rather
-than the input — this override pins it to the input, matching a
-native input's `focus()` (reference text-field.ts:782-786).
+Focuses the inner input without colliding with HTMLElement#focus().
 
 #### Returns
 

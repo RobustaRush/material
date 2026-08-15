@@ -58,7 +58,7 @@ export class MaterialSearchAppBar {
   @Prop() name?: string;
   @Prop() placeholder = 'Search';
   @Prop({ mutable: true }) value = '';
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   /** Show a search icon at the leading edge of the search container. */
   @Prop() searchIcon = true;
   @Prop() scrollTarget?: string;

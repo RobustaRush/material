@@ -32,7 +32,7 @@ export type MaterialNumberFieldVariant = 'filled' | 'outlined';
 // the visible text shows "12 400,50" per locale.
 //
 //   <material-number-field name="total" label="Total" min="0" step="0.01"
-//                          decimals="2" grouping prefix="$"></material-number-field>
+//                          decimals="2" grouping prefix-text="$"></material-number-field>
 //
 // Out-of-range / unparseable entry follows material-date-field's contract:
 // keep the text, flag `error`, post nothing new — never silently clamp what
@@ -78,7 +78,7 @@ export class MaterialNumberField {
   @Prop() locale = '';
 
   /** Static text inside the field, e.g. a currency sign or unit. */
-  @Prop() prefix?: string;
+  @Prop() prefixText?: string;
   @Prop() suffix?: string;
 
   @Prop({ mutable: true, reflect: true }) disabled = false;
@@ -279,7 +279,7 @@ export class MaterialNumberField {
           helpText={!this.error ? this.helpText : undefined}
           errorText={subText}
           error={this.error}
-          leadingText={this.prefix}
+          leadingText={this.prefixText}
           trailingText={this.suffix}
           wideTrailing={true}
           onValueChange={this.handleTextChange as unknown as (e: Event) => void}

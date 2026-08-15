@@ -48,8 +48,7 @@ export type MaterialTextfieldType =
   // :focus-within-driven label float. A slotted leading/trailing
   // icon-button stays independently focusable/clickable — delegatesFocus
   // only affects where a *programmatic* host.focus() goes, not tab/click
-  // targeting — but the @Method focus() override below still pins it to the
-  // input explicitly, matching the reference (text-field.ts:782-786).
+  // targeting.
   shadow: { delegatesFocus: true },
   formAssociated: true,
 })
@@ -63,7 +62,7 @@ export class MaterialTextfield {
   @Prop() name?: string;
   @Prop({ mutable: true }) value = '';
   @Prop() placeholder?: string;
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop({ reflect: true }) required = false;
   @Prop({ reflect: true, attribute: 'readonly' }) readOnly = false;
   @Prop() helpText?: string;
@@ -223,13 +222,9 @@ export class MaterialTextfield {
     this.syncValidity();
   }
 
-  /** Focuses the inner input. `delegatesFocus` on its own would send a
-   *  programmatic `host.focus()` to the shadow root's first focusable
-   *  element, which can be a slotted leading/trailing icon-button rather
-   *  than the input — this override pins it to the input, matching a
-   *  native input's `focus()` (reference text-field.ts:782-786). */
+  /** Focuses the inner input without colliding with HTMLElement#focus(). */
   @Method()
-  async focus(): Promise<void> {
+  async focusInput(): Promise<void> {
     this.inputEl?.focus();
   }
 

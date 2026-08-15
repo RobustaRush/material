@@ -411,7 +411,10 @@ export class MaterialSearch {
     const next = e.relatedTarget as Node | null;
     if (next && this.el.shadowRoot?.contains(next)) return;
     if (next && this.el.contains(next)) return;
-    this.setOpen(false);
+    // A focus transition can be dispatched while Stencil is reconciling the
+    // view (for example when the leading affordance swaps). Defer the state
+    // change out of that render pass to avoid a re-entrant render.
+    requestAnimationFrame(() => this.setOpen(false));
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {

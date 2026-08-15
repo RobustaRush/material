@@ -121,11 +121,11 @@ describe('material-textfield', () => {
     expect(nativeChange).toHaveReceivedEventTimes(1);
   });
 
-  it('focus() focuses the inner input, not a slotted trailing control', async () => {
+  it('focusInput() focuses the inner input, not a slotted trailing control', async () => {
     const page = await newE2EPage();
     await page.setContent(`<material-textfield label="Name"></material-textfield>`);
     const el = await page.find('material-textfield');
-    await el.callMethod('focus');
+    await el.callMethod('focusInput');
     await page.waitForChanges();
     const activeId = await page.evaluate(() =>
       document.querySelector('material-textfield')?.shadowRoot?.activeElement?.id,

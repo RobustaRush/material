@@ -80,7 +80,7 @@ export class MaterialJsonField {
   @Prop({ mutable: true }) value = '{}';
   @Prop() name?: string;
   @Prop() label?: string;
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop({ reflect: true }) readonly = false;
   @Prop({ reflect: true }) required = false;
   @Prop({ reflect: true }) error = false;

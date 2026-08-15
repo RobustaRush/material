@@ -17,7 +17,7 @@ describe('material-number-field', () => {
   it('renders a formatted visible value and a canonical hidden input', async () => {
     const page = await newSpecPage({
       components: [MaterialNumberField],
-      html: `<material-number-field name="amount" label="Amount" value="12.5" step="0.01" prefix="$" suffix="USD"></material-number-field>`,
+      html: `<material-number-field name="amount" label="Amount" value="12.5" step="0.01" prefix-text="$" suffix="USD"></material-number-field>`,
     });
     const textfield = page.root!.querySelector('material-textfield')!;
     expect(textfield.getAttribute('label')).toBe('Amount');

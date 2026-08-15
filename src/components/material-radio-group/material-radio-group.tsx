@@ -58,7 +58,7 @@ export class MaterialRadioGroup {
 
   @Prop({ mutable: true, reflect: true }) value?: string;
   @Prop() name?: string;
-  @Prop({ reflect: true }) disabled = false;
+  @Prop({ mutable: true, reflect: true }) disabled = false;
   @Prop({ reflect: true }) required = false;
   @Prop({ reflect: true }) error = false;
   @Prop() label?: string;

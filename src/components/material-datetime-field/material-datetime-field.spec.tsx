@@ -36,7 +36,7 @@ describe('material-datetime-field', () => {
       components: [MaterialDatetimeField],
       html: `<material-datetime-field format="%Y-%m-%d %H:%M"></material-datetime-field>`,
     });
-    page.rootInstance.inputFormats = ['%Y-%m-%d %H:%M'];
+    page.root!.inputFormats = ['%Y-%m-%d %H:%M'];
     const spy = jest.fn();
     page.root!.addEventListener('valueChange', spy);
 

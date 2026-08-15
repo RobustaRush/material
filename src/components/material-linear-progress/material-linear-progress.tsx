@@ -64,14 +64,17 @@ export class MaterialLinearProgress {
   private prefersReducedMotion = false;
   private mql?: MediaQueryList;
 
+  componentWillLoad() {
+    this.recomputePaths(performance.now());
+  }
+
   componentDidLoad() {
     this.resizeObserver = new ResizeObserver(() => this.measure());
     this.resizeObserver.observe(this.el);
-    this.measure();
     this.mql = window.matchMedia('(prefers-reduced-motion: reduce)');
     this.prefersReducedMotion = this.mql.matches;
     this.mql.addEventListener('change', this.handleReducedMotion);
-    this.recomputePaths(performance.now());
+    requestAnimationFrame(this.measure);
     this.startLoop();
   }
 

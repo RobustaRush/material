@@ -54,7 +54,10 @@ export class MaterialPagination {
   /** Page numbers kept visible on each side of the current page. */
   @Prop() siblings = 1;
 
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  // See material-breadcrumbs: the host's `aria-label` must not double as a
+  // Stencil prop attribute, otherwise rendering the fallback label mutates a
+  // prop during render.
+  @Prop({ attribute: 'navigation-label' }) navigationLabel?: string;
 
   @Event() materialPageChange!: EventEmitter<{ page: number }>;
 
@@ -144,8 +147,9 @@ export class MaterialPagination {
   }
 
   render() {
+    const label = this.navigationLabel ?? this.el.getAttribute('aria-label') ?? gettext('Pagination');
     return (
-      <Host role="navigation" aria-label={this.ariaLabel ?? gettext('Pagination')}>
+      <Host role="navigation" aria-label={label}>
         {this.navTarget(-1)}
         {this.items().map((p) =>
           p === 0

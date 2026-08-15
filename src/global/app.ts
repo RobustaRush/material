@@ -36,6 +36,11 @@ const THEME_CLASSES = [
 export default () => {
   if (typeof document === 'undefined') return;
 
+  // E2E cases deliberately mount bare components so they can exercise their
+  // DOM in isolation. A browser driven by WebDriver is not a consumer page,
+  // so the production setup diagnostic is only noise there.
+  if (navigator.webdriver) return;
+
   const check = () => {
     const tokens = getComputedStyle(document.documentElement)
       .getPropertyValue('--md-sys-color-primary')

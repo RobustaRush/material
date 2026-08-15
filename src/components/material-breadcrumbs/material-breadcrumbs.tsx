@@ -32,7 +32,11 @@ import { gettext } from '../../utils/i18n';
 export class MaterialBreadcrumbs {
   @Element() el!: HTMLElement;
 
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  // `aria-label` belongs to the host element. Mapping this prop to that same
+  // attribute makes Stencil write the default label during render, then treat
+  // its own write as a prop change. Keep a separate property attribute while
+  // still accepting an initial host `aria-label` below.
+  @Prop({ attribute: 'navigation-label' }) navigationLabel?: string;
 
   // Re-runs after Unpoly swaps the crumbs (slotchange).
   private markCurrent = () => {
@@ -47,8 +51,9 @@ export class MaterialBreadcrumbs {
   }
 
   render() {
+    const label = this.navigationLabel ?? this.el.getAttribute('aria-label') ?? gettext('Breadcrumbs');
     return (
-      <Host role="navigation" aria-label={this.ariaLabel ?? gettext('Breadcrumbs')}>
+      <Host role="navigation" aria-label={label}>
         <slot onSlotchange={this.markCurrent} />
       </Host>
     );
